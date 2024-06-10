@@ -1,0 +1,11 @@
+Playground/vcpkg_installed
+Sparkle/vcpkg_installed
+
+.vs
+
+packages/
+
+*.nupkg
+x64
+
+*.exe
