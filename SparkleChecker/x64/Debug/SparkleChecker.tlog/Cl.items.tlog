@@ -1,0 +1,12 @@
+C:\Users\User\source\repos\Sparkle\SparkleChecker\src\application\spk_application_tester.cpp;C:\Users\User\source\repos\Sparkle\SparkleChecker\x64\Debug\spk_application_tester.obj
+C:\Users\User\source\repos\Sparkle\SparkleChecker\src\application\spk_widget_based_application_tester.cpp;C:\Users\User\source\repos\Sparkle\SparkleChecker\x64\Debug\spk_widget_based_application_tester.obj
+C:\Users\User\source\repos\Sparkle\SparkleChecker\src\structure\design_pattern\spk_activable_object_tester.cpp;C:\Users\User\source\repos\Sparkle\SparkleChecker\x64\Debug\spk_activable_object_tester.obj
+C:\Users\User\source\repos\Sparkle\SparkleChecker\src\structure\design_pattern\spk_contract_provider_tester.cpp;C:\Users\User\source\repos\Sparkle\SparkleChecker\x64\Debug\spk_contract_provider_tester.obj
+C:\Users\User\source\repos\Sparkle\SparkleChecker\src\structure\design_pattern\spk_inherence_object_tester.cpp;C:\Users\User\source\repos\Sparkle\SparkleChecker\x64\Debug\spk_inherence_object_tester.obj
+C:\Users\User\source\repos\Sparkle\SparkleChecker\src\structure\design_pattern\spk_stateful_object_tester.cpp;C:\Users\User\source\repos\Sparkle\SparkleChecker\x64\Debug\spk_stateful_object_tester.obj
+C:\Users\User\source\repos\Sparkle\SparkleChecker\src\structure\math\spk_geometry_2D_tester.cpp;C:\Users\User\source\repos\Sparkle\SparkleChecker\x64\Debug\spk_geometry_2D_tester.obj
+C:\Users\User\source\repos\Sparkle\SparkleChecker\src\structure\spk_iostream_tester.cpp;C:\Users\User\source\repos\Sparkle\SparkleChecker\x64\Debug\spk_iostream_tester.obj
+C:\Users\User\source\repos\Sparkle\SparkleChecker\src\structure\spk_safe_pointer_tester.cpp;C:\Users\User\source\repos\Sparkle\SparkleChecker\x64\Debug\spk_safe_pointer_tester.obj
+C:\Users\User\source\repos\Sparkle\SparkleChecker\src\structure\thread\spk_persistant_worker_tester.cpp;C:\Users\User\source\repos\Sparkle\SparkleChecker\x64\Debug\spk_persistant_worker_tester.obj
+C:\Users\User\source\repos\Sparkle\SparkleChecker\src\structure\thread\spk_thread_tester.cpp;C:\Users\User\source\repos\Sparkle\SparkleChecker\x64\Debug\spk_thread_tester.obj
+C:\Users\User\source\repos\Sparkle\SparkleChecker\src\widget\spk_widget_tester.cpp;C:\Users\User\source\repos\Sparkle\SparkleChecker\x64\Debug\spk_widget_tester.obj
