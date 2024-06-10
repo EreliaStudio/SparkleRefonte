@@ -1,5 +1,9 @@
 Playground/vcpkg_installed
+Playground/obj
+
 Sparkle/vcpkg_installed
+Sparkle/lib
+Sparkle/obj
 
 .vs
 
