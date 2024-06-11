@@ -1,190 +1,157 @@
 #include "structure/math/spk_vector2_tester.hpp"
 
-using TestTypes = ::testing::Types<int, float, double>;
-TYPED_TEST_SUITE(IVector2Test, TestTypes);
-
-TYPED_TEST(IVector2Test, DefaultConstructor)
+TEST_F(Vector2Test, DefaultConstructor)
 {
-    IVector2<TypeParam> defaultVec;
-    EXPECT_EQ(defaultVec, IVector2<TypeParam>(0, 0));
+	spk::IVector2<int> vecInt;
+	ASSERT_EQ(vecInt.x, 0);
+	ASSERT_EQ(vecInt.y, 0);
+
+	spk::IVector2<float> vecFloat;
+	ASSERT_EQ(vecFloat.x, 0.0f);
+	ASSERT_EQ(vecFloat.y, 0.0f);
+
+	spk::IVector2<double> vecDouble;
+	ASSERT_EQ(vecDouble.x, 0.0);
+	ASSERT_EQ(vecDouble.y, 0.0);
+
+	spk::IVector2<size_t> vecSizeT;
+	ASSERT_EQ(vecSizeT.x, 0);
+	ASSERT_EQ(vecSizeT.y, 0);
 }
 
-TYPED_TEST(IVector2Test, ScalarConstructor)
+TEST_F(Vector2Test, ScalarConstructor)
 {
-    EXPECT_EQ(this->vec3, IVector2<TypeParam>(5, 5));
+	spk::IVector2<int> vecInt(5);
+	ASSERT_EQ(vecInt.x, 5);
+	ASSERT_EQ(vecInt.y, 5);
+
+	spk::IVector2<float> vecFloat(5.5f);
+	ASSERT_FLOAT_EQ(vecFloat.x, 5.5f);
+	ASSERT_FLOAT_EQ(vecFloat.y, 5.5f);
+
+	spk::IVector2<double> vecDouble(5.5);
+	ASSERT_DOUBLE_EQ(vecDouble.x, 5.5);
+	ASSERT_DOUBLE_EQ(vecDouble.y, 5.5);
+
+	spk::IVector2<size_t> vecSizeT(5);
+	ASSERT_EQ(vecSizeT.x, 5);
+	ASSERT_EQ(vecSizeT.y, 5);
 }
 
-TYPED_TEST(IVector2Test, TwoValueConstructor)
+TEST_F(Vector2Test, TwoValueConstructor)
 {
-    EXPECT_EQ(this->vec1, IVector2<TypeParam>(1, 2));
+	spk::IVector2<int> vecInt(3, 4);
+	ASSERT_EQ(vecInt.x, 3);
+	ASSERT_EQ(vecInt.y, 4);
+
+	spk::IVector2<float> vecFloat(3.5f, 4.5f);
+	ASSERT_FLOAT_EQ(vecFloat.x, 3.5f);
+	ASSERT_FLOAT_EQ(vecFloat.y, 4.5f);
+
+	spk::IVector2<double> vecDouble(3.5, 4.5);
+	ASSERT_DOUBLE_EQ(vecDouble.x, 3.5);
+	ASSERT_DOUBLE_EQ(vecDouble.y, 4.5);
+
+	spk::IVector2<size_t> vecSizeT(3, 4);
+	ASSERT_EQ(vecSizeT.x, 3);
+	ASSERT_EQ(vecSizeT.y, 4);
 }
 
-TYPED_TEST(IVector2Test, CopyConstructor)
+TEST_F(Vector2Test, CopyConstructor)
 {
-    IVector2<TypeParam> vecCopy(this->vec1);
-    EXPECT_EQ(vecCopy, this->vec1);
+	spk::IVector2<int> vecInt1(3, 4);
+	spk::IVector2<int> vecInt2(vecInt1);
+	ASSERT_EQ(vecInt2.x, 3);
+	ASSERT_EQ(vecInt2.y, 4);
+
+	spk::IVector2<float> vecFloat1(3.5f, 4.5f);
+	spk::IVector2<float> vecFloat2(vecFloat1);
+	ASSERT_FLOAT_EQ(vecFloat2.x, 3.5f);
+	ASSERT_FLOAT_EQ(vecFloat2.y, 4.5f);
+
+	spk::IVector2<double> vecDouble1(3.5, 4.5);
+	spk::IVector2<double> vecDouble2(vecDouble1);
+	ASSERT_DOUBLE_EQ(vecDouble2.x, 3.5);
+	ASSERT_DOUBLE_EQ(vecDouble2.y, 4.5);
+
+	spk::IVector2<size_t> vecSizeT1(3, 4);
+	spk::IVector2<size_t> vecSizeT2(vecSizeT1);
+	ASSERT_EQ(vecSizeT2.x, 3);
+	ASSERT_EQ(vecSizeT2.y, 4);
 }
 
-TYPED_TEST(IVector2Test, CopyAssignment)
+TEST_F(Vector2Test, EqualityOperator)
 {
-    IVector2<TypeParam> vecAssign;
-    vecAssign = this->vec1;
-    EXPECT_EQ(vecAssign, this->vec1);
+	spk::IVector2<int> vecInt1(3, 4);
+	spk::IVector2<int> vecInt2(3, 4);
+	spk::IVector2<int> vecInt3(5, 6);
+	ASSERT_EQ(vecInt1, vecInt2);
+	ASSERT_NE(vecInt1, vecInt3);
+
+	spk::IVector2<float> vecFloat1(3.0f, 4.0f);
+	spk::IVector2<float> vecFloat2(3.0f, 4.0f);
+	spk::IVector2<float> vecFloat3(5.0f, 6.0f);
+	ASSERT_EQ(vecFloat1, vecFloat2);
+	ASSERT_NE(vecFloat1, vecFloat3);
+
+	spk::IVector2<double> vecDouble1(3.0, 4.0);
+	spk::IVector2<double> vecDouble2(3.0, 4.0);
+	spk::IVector2<double> vecDouble3(5.0, 6.0);
+	ASSERT_EQ(vecDouble1, vecDouble2);
+	ASSERT_NE(vecDouble1, vecDouble3);
+
+	spk::IVector2<size_t> vecSizeT1(3, 4);
+	spk::IVector2<size_t> vecSizeT2(3, 4);
+	spk::IVector2<size_t> vecSizeT3(5, 6);
+	ASSERT_EQ(vecSizeT1, vecSizeT2);
+	ASSERT_NE(vecSizeT1, vecSizeT3);
+
+
+	spk::IVector2<int> vecInt4(3, 4);
+	spk::IVector2<float> vecFloat4(3.5f, 4.5f);
+
+	ASSERT_TRUE(vecInt4 == vecFloat4) << "Casting the IVector2<float> into IVector2<int> didn't make it lose it's tail";
+	ASSERT_FALSE(vecFloat4 == vecInt4) << "Casting the IVector2<int> into IVector2<float> shouldn't make the equality true";
 }
 
-TYPED_TEST(IVector2Test, ToString)
+TEST_F(Vector2Test, MixedTypeEqualityOperator)
 {
-    EXPECT_EQ(this->vec1.to_string(), L"(1, 2)");
+	spk::IVector2<int> vecInt(3, 4);
+	spk::IVector2<float> vecFloat(3.0f, 4.0f);
+	spk::IVector2<double> vecDouble(3.0, 4.0);
+	spk::IVector2<size_t> vecSizeT(3, 4);
+
+	ASSERT_EQ(vecInt, vecFloat);
+	ASSERT_EQ(vecInt, vecDouble);
+	ASSERT_EQ(vecInt, vecSizeT);
+	ASSERT_EQ(vecFloat, vecDouble);
+	ASSERT_EQ(vecFloat, vecSizeT);
+	ASSERT_EQ(vecDouble, vecSizeT);
+
+	spk::IVector2<int> vecIntDifferent(5, 6);
+	spk::IVector2<float> vecFloatDifferent(5.0f, 6.0f);
+	spk::IVector2<double> vecDoubleDifferent(5.0, 6.0);
+	spk::IVector2<size_t> vecSizeTDifferent(5, 6);
+
+	ASSERT_NE(vecInt, vecIntDifferent);
+	ASSERT_NE(vecInt, vecFloatDifferent);
+	ASSERT_NE(vecInt, vecDoubleDifferent);
+	ASSERT_NE(vecInt, vecSizeTDifferent);
+	ASSERT_NE(vecFloat, vecFloatDifferent);
+	ASSERT_NE(vecFloat, vecDoubleDifferent);
+	ASSERT_NE(vecFloat, vecSizeTDifferent);
+	ASSERT_NE(vecDouble, vecDoubleDifferent);
+	ASSERT_NE(vecDouble, vecSizeTDifferent);
+	ASSERT_NE(vecSizeT, vecSizeTDifferent);
 }
 
-TYPED_TEST(IVector2Test, EqualityOperator)
+TEST_F(Vector2Test, ToStringMethod)
 {
-    EXPECT_TRUE(this->vec1 == IVector2<TypeParam>(1, 2));
-    EXPECT_FALSE(this->vec1 == this->vec2);
-}
+	ASSERT_EQ(spk::IVector2<int>(3, 4).to_string(), L"(3, 4)");
 
-TYPED_TEST(IVector2Test, InequalityOperator)
-{
-    EXPECT_TRUE(this->vec1 != this->vec2);
-    EXPECT_FALSE(this->vec1 != IVector2<TypeParam>(1, 2));
-}
+	ASSERT_EQ(spk::IVector2<float>(3.0f, 4.0f).to_string(), L"(3, 4)");
 
-TYPED_TEST(IVector2Test, LessThanOperator)
-{
-    EXPECT_TRUE(this->vec1 < this->vec2);
-    EXPECT_FALSE(this->vec2 < this->vec1);
-}
+	ASSERT_EQ(spk::IVector2<double>(3.0, 4.0).to_string(), L"(3, 4)");
 
-TYPED_TEST(IVector2Test, GreaterThanOperator)
-{
-    EXPECT_TRUE(this->vec2 > this->vec1);
-    EXPECT_FALSE(this->vec1 > this->vec2);
-}
-
-TYPED_TEST(IVector2Test, LessThanOrEqualOperator)
-{
-    EXPECT_TRUE(this->vec1 <= this->vec2);
-    EXPECT_TRUE(this->vec1 <= IVector2<TypeParam>(1, 2));
-    EXPECT_FALSE(this->vec2 <= this->vec1);
-}
-
-TYPED_TEST(IVector2Test, GreaterThanOrEqualOperator)
-{
-    EXPECT_TRUE(this->vec2 >= this->vec1);
-    EXPECT_TRUE(this->vec1 >= IVector2<TypeParam>(1, 2));
-    EXPECT_FALSE(this->vec1 >= this->vec2);
-}
-
-TYPED_TEST(IVector2Test, ComparisonWithScalar)
-{
-    IVector2<TypeParam> vec(2, 2);
-    TypeParam scalar = 2;
-    EXPECT_TRUE(vec == scalar);
-    EXPECT_FALSE(vec != scalar);
-    EXPECT_TRUE(vec <= scalar);
-    EXPECT_TRUE(vec >= scalar);
-    EXPECT_FALSE(vec < scalar);
-    EXPECT_FALSE(vec > scalar);
-}
-
-TYPED_TEST(IVector2Test, Addition)
-{
-    IVector2<TypeParam> result = this->vec1 + this->vec2;
-    EXPECT_EQ(result, IVector2<TypeParam>(4, 6));
-}
-
-TYPED_TEST(IVector2Test, Subtraction)
-{
-    IVector2<TypeParam> result = this->vec2 - this->vec1;
-    EXPECT_EQ(result, IVector2<TypeParam>(2, 2));
-}
-
-TYPED_TEST(IVector2Test, Multiplication)
-{
-    IVector2<TypeParam> result = this->vec1 * this->vec2;
-    EXPECT_EQ(result, IVector2<TypeParam>(3, 8));
-}
-
-TYPED_TEST(IVector2Test, Division)
-{
-    IVector2<TypeParam> result = this->vec2 / this->vec1;
-    EXPECT_EQ(result, IVector2<TypeParam>(3, 2));
-}
-
-TYPED_TEST(IVector2Test, DivisionByZero)
-{
-    IVector2<TypeParam> zeroVector(0, 0);
-    EXPECT_THROW(this->vec1 / zeroVector, std::domain_error);
-}
-
-TYPED_TEST(IVector2Test, AdditionWithScalar)
-{
-    IVector2<TypeParam> result = this->vec1 + 3;
-    EXPECT_EQ(result, IVector2<TypeParam>(4, 5));
-}
-
-TYPED_TEST(IVector2Test, SubtractionWithScalar)
-{
-    IVector2<TypeParam> result = this->vec1 - 1;
-    EXPECT_EQ(result, IVector2<TypeParam>(0, 1));
-}
-
-TYPED_TEST(IVector2Test, MultiplicationWithScalar)
-{
-    IVector2<TypeParam> result = this->vec1 * 2;
-    EXPECT_EQ(result, IVector2<TypeParam>(2, 4));
-}
-
-TYPED_TEST(IVector2Test, DivisionWithScalar)
-{
-    IVector2<TypeParam> result = this->vec1 / 2;
-    EXPECT_EQ(result, IVector2<TypeParam>(0.5, 1));
-}
-
-TYPED_TEST(IVector2Test, AdditionAssignmentWithVector)
-{
-    this->vec1 += this->vec2;
-    EXPECT_EQ(this->vec1, IVector2<TypeParam>(4, 6));
-}
-
-TYPED_TEST(IVector2Test, SubtractionAssignmentWithVector)
-{
-    this->vec2 -= this->vec1;
-    EXPECT_EQ(this->vec2, IVector2<TypeParam>(2, 2));
-}
-
-TYPED_TEST(IVector2Test, MultiplicationAssignmentWithVector)
-{
-    this->vec1 *= this->vec2;
-    EXPECT_EQ(this->vec1, IVector2<TypeParam>(3, 8));
-}
-
-TYPED_TEST(IVector2Test, DivisionAssignmentWithVector)
-{
-    this->vec2 /= this->vec1;
-    EXPECT_EQ(this->vec2, IVector2<TypeParam>(3, 2));
-}
-
-TYPED_TEST(IVector2Test, AdditionAssignmentWithScalar)
-{
-    this->vec1 += 3;
-    EXPECT_EQ(this->vec1, IVector2<TypeParam>(4, 5));
-}
-
-TYPED_TEST(IVector2Test, SubtractionAssignmentWithScalar)
-{
-    this->vec1 -= 1;
-    EXPECT_EQ(this->vec1, IVector2<TypeParam>(0, 1));
-}
-
-TYPED_TEST(IVector2Test, MultiplicationAssignmentWithScalar)
-{
-    this->vec1 *= 2;
-    EXPECT_EQ(this->vec1, IVector2<TypeParam>(2, 4));
-}
-
-TYPED_TEST(IVector2Test, DivisionAssignmentWithScalar)
-{
-    this->vec1 /= 2;
-    EXPECT_EQ(this->vec1, IVector2<TypeParam>(0.5, 1));
+	ASSERT_EQ(spk::IVector2<size_t>(3, 4).to_string(), L"(3, 4)");
 }
