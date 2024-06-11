@@ -175,6 +175,13 @@ namespace spk
 				os << L"(" << p_position.x << L" x " << p_position.y << L")";
 				return os;
 			}
+
+			spk::String to_string() const
+			{
+				std::wstringstream wss;
+				wss << *this;
+				return wss.str();
+			}
 		};
 
 		struct Size
@@ -339,10 +346,17 @@ namespace spk
 				return !(*this == p_scalar);
 			}
 
-			friend std::wostream& operator<<(std::wostream& os, const Size& p_size)
+			friend std::wostream& operator<<(std::wostream& p_os, const Size& p_size)
 			{
-				os << L"(" << p_size.width << L" x " << p_size.height << L")";
-				return os;
+				p_os << L"(" << p_size.width << L" x " << p_size.height << L")";
+				return p_os;
+			}
+
+			spk::String to_string() const
+			{
+				std::wstringstream wss;
+				wss << *this;
+				return wss.str();
 			}
 		};
 

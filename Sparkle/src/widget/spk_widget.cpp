@@ -45,7 +45,7 @@ namespace spk
 	void Widget::setDepth(const spk::Real& p_depth)
 	{
 		spk::Real delta = p_depth - _depth;
-		for (auto& child : children()) //Children is a method from InherenceObject
+		for (auto& child : children())
 		{
 			static_cast<Widget*>(child)->setDepth(static_cast<Widget*>(child)->depth() + delta);
 		}

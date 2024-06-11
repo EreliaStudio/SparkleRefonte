@@ -40,6 +40,7 @@
     <ClInclude Include="include\structure\design_pattern\spk_inherence_object.hpp" />
     <ClInclude Include="include\structure\design_pattern\spk_stateful_object.hpp" />
     <ClInclude Include="include\structure\math\spk_geometry_2D.hpp" />
+    <ClInclude Include="include\structure\math\spk_vector2.hpp" />
     <ClInclude Include="include\structure\spk_iostream.hpp" />
     <ClInclude Include="include\structure\spk_safe_pointer.hpp" />
     <ClInclude Include="include\structure\thread\spk_persistant_worker.hpp" />
@@ -102,22 +103,22 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\User\source\repos\Sparkle\Sparkle\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Sparkle\include;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)lib\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Users\User\source\repos\Sparkle\Sparkle\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Sparkle\include;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)lib\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\User\source\repos\Sparkle\Sparkle\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Sparkle\include;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)lib\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Users\User\source\repos\Sparkle\Sparkle\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Sparkle\include;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)lib\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>

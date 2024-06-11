@@ -33,23 +33,23 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\User\source\repos\Sparkle\SparkleChecker\include;$(IncludePath)</IncludePath>
-    <ExternalIncludePath>C:\Users\User\source\repos\Sparkle\Sparkle\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <IncludePath>$(SolutionDir)\SparkleChecker\include;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>$(SolutionDir)\Sparkle\include;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Users\User\source\repos\Sparkle\SparkleChecker\include;$(IncludePath)</IncludePath>
-    <ExternalIncludePath>C:\Users\User\source\repos\Sparkle\Sparkle\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <IncludePath>$(SolutionDir)\SparkleChecker\include;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>$(SolutionDir)\Sparkle\include;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\User\source\repos\Sparkle\SparkleChecker\include;$(IncludePath)</IncludePath>
-    <ExternalIncludePath>C:\Users\User\source\repos\Sparkle\Sparkle\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <IncludePath>$(SolutionDir)\SparkleChecker\include;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>$(SolutionDir)\Sparkle\include;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Users\User\source\repos\Sparkle\SparkleChecker\include;$(IncludePath)</IncludePath>
-    <ExternalIncludePath>C:\Users\User\source\repos\Sparkle\Sparkle\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <IncludePath>$(SolutionDir)\SparkleChecker\include;$(IncludePath)</IncludePath>
+    <ExternalIncludePath>$(SolutionDir)\Sparkle\include;$(ExternalIncludePath)</ExternalIncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup />
@@ -133,6 +133,7 @@
     <ClCompile Include="src\structure\design_pattern\spk_inherence_object_tester.cpp" />
     <ClCompile Include="src\structure\design_pattern\spk_stateful_object_tester.cpp" />
     <ClCompile Include="src\structure\math\spk_geometry_2D_tester.cpp" />
+    <ClCompile Include="src\structure\math\spk_vector2_tester.cpp" />
     <ClCompile Include="src\structure\spk_iostream_tester.cpp" />
     <ClCompile Include="src\structure\spk_safe_pointer_tester.cpp" />
     <ClCompile Include="src\structure\thread\spk_persistant_worker_tester.cpp" />
@@ -154,6 +155,7 @@
     <ClInclude Include="include\structure\design_pattern\spk_inherence_object_tester.hpp" />
     <ClInclude Include="include\structure\design_pattern\spk_stateful_object_tester.hpp" />
     <ClInclude Include="include\structure\math\spk_geometry_2D_tester.hpp" />
+    <ClInclude Include="include\structure\math\spk_vector2_tester.hpp" />
     <ClInclude Include="include\structure\spk_iostream_tester.hpp" />
     <ClInclude Include="include\structure\spk_safe_pointer_tester.hpp" />
     <ClInclude Include="include\structure\thread\spk_persistant_worker_tester.hpp" />

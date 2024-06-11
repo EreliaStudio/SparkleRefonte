@@ -144,6 +144,7 @@ TEST_F(WidgetTest, AddChild)
 	::CustomWidget childWidget(L"ChildWidget");
 
 	EXPECT_EQ(parentWidget.children().size(), 0) << "Parent widget should have no children initially";
+	EXPECT_EQ(parentWidget.depth(), 0) << "Parent widget depth should be 0 when initialized";
 
 	parentWidget.addChild(&childWidget);
 
@@ -153,13 +154,18 @@ TEST_F(WidgetTest, AddChild)
 
 TEST_F(WidgetTest, SetDepth)
 {
-	::CustomWidget widget(L"TestWidget");
+	::CustomWidget parentWidget(L"TestWidget");
+	::CustomWidget childWidget(L"ChildWidget");
 
-	EXPECT_EQ(widget.depth(), 0) << "Depth should be 0 initially";
+	parentWidget.addChild(&childWidget);
 
-	widget.setDepth(5.0);
+	EXPECT_EQ(parentWidget.depth(), 0) << "Parent depth should be 0 initially";
+	EXPECT_EQ(childWidget.depth(), 1) << "Child depth should be 1 initially";
 
-	EXPECT_EQ(widget.depth(), 5.0) << "Depth should be 5 after setting depth to 5";
+	parentWidget.setDepth(5.0);
+
+	EXPECT_EQ(parentWidget.depth(), 5.0) << "Parent depth should be 5 after setting depth to 5";
+	EXPECT_EQ(childWidget.depth(), 6.0) << "Child depth should be 6 after setting parent's depth to 5";
 }
 
 TEST_F(WidgetTest, ForceGeometryChange)

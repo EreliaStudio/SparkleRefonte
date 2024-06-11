@@ -71,26 +71,26 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\User\source\repos\Sparkle\Playground\include;$(IncludePath)</IncludePath>
-    <ExternalIncludePath>C:\Users\User\source\repos\Sparkle\Sparkle\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <IncludePath>$(SolutionDir)\Playground\include</IncludePath>
+    <ExternalIncludePath>$(SolutionDir)\Sparkle\include;$(ExternalIncludePath)</ExternalIncludePath>
     <OutDir>$(ProjectDir)executable\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\Users\User\source\repos\Sparkle\Playground\include;$(IncludePath)</IncludePath>
-    <ExternalIncludePath>C:\Users\User\source\repos\Sparkle\Sparkle\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <IncludePath>$(SolutionDir)\Playground\include</IncludePath>
+    <ExternalIncludePath>$(SolutionDir)\Sparkle\include;$(ExternalIncludePath)</ExternalIncludePath>
     <OutDir>$(ProjectDir)executable\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\User\source\repos\Sparkle\Playground\include;$(IncludePath)</IncludePath>
-    <ExternalIncludePath>C:\Users\User\source\repos\Sparkle\Sparkle\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <IncludePath>$(SolutionDir)\Playground\include</IncludePath>
+    <ExternalIncludePath>$(SolutionDir)\Sparkle\include;$(ExternalIncludePath)</ExternalIncludePath>
     <OutDir>$(ProjectDir)executable\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Users\User\source\repos\Sparkle\Playground\include;$(IncludePath)</IncludePath>
-    <ExternalIncludePath>C:\Users\User\source\repos\Sparkle\Sparkle\include;$(ExternalIncludePath)</ExternalIncludePath>
+    <IncludePath>$(SolutionDir)\Playground\include</IncludePath>
+    <ExternalIncludePath>$(SolutionDir)\Sparkle\include;$(ExternalIncludePath)</ExternalIncludePath>
     <OutDir>$(ProjectDir)executable\$(PlatformTarget)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)obj\$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
