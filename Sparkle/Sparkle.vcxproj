@@ -44,6 +44,7 @@
     <ClInclude Include="include\structure\design_pattern\spk_event_notifier.hpp" />
     <ClInclude Include="include\structure\design_pattern\spk_inherence_object.hpp" />
     <ClInclude Include="include\structure\design_pattern\spk_observable_value.hpp" />
+    <ClInclude Include="include\structure\design_pattern\spk_singleton.hpp" />
     <ClInclude Include="include\structure\design_pattern\spk_stateful_object.hpp" />
     <ClInclude Include="include\structure\math\spk_geometry_2D.hpp" />
     <ClInclude Include="include\structure\math\spk_vector2.hpp" />

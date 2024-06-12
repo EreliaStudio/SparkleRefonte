@@ -113,6 +113,9 @@
     <ClInclude Include="include\structure\design_pattern\spk_event_notifier.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="include\structure\design_pattern\spk_singleton.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json" />
