@@ -8,11 +8,11 @@ TEST_F(ContractProviderTest, SubscribeJob)
 
     ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should be 0 at the start of the test";
 
-    contract.execute();
+    provider.trigger(); // Trigger the job through the provider
 
     expectedExecutionCount = 1;
 
-    ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should be 1 after calling execute() on the contract";
+    ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should be 1 after calling trigger() on the provider";
 }
 
 TEST_F(ContractProviderTest, ResignJob)
@@ -28,7 +28,9 @@ TEST_F(ContractProviderTest, ResignJob)
     ASSERT_EQ(contract.isValid(), false) << "A contract should be invalid when resigned";
     ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should be 0 at the start of the test";
 
-    ASSERT_THROW(contract.execute(), std::runtime_error) << "Executing a resigned contract should throw a runtime error";
+    provider.trigger();
+
+    ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should remain 0 after triggering the provider since the contract was resigned";
 }
 
 TEST_F(ContractProviderTest, MultipleJobsExecution)
@@ -40,15 +42,10 @@ TEST_F(ContractProviderTest, MultipleJobsExecution)
 
     ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should be 0 at the start of the test";
 
-    contract1.execute();
-    expectedExecutionCount = 1;
-
-    ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should be 1 after calling execute() on contract 1";
-
-    contract2.execute();
+    provider.trigger(); // Trigger both jobs through the provider
     expectedExecutionCount = 2;
 
-    ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should be 2 after calling execute() on contract 2";
+    ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should be 2 after triggering the provider";
 }
 
 TEST_F(ContractProviderTest, UnsubscribeJob)
@@ -59,10 +56,12 @@ TEST_F(ContractProviderTest, UnsubscribeJob)
 
     int expectedExecutionCount = 0;
 
-    ASSERT_EQ(contract.isValid(), false) << "A contract should be invalid when the provider unsubscribe it";
+    ASSERT_EQ(contract.isValid(), false) << "A contract should be invalid when the provider unsubscribes it";
     ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should be 0 at the start of the test";
 
-    ASSERT_THROW(contract.execute(), std::runtime_error) << "Executing an unsubscribed contract should throw a runtime error";
+    provider.trigger();
+
+    ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should remain 0 after triggering the provider since the contract was unsubscribed";
 }
 
 TEST_F(ContractProviderTest, ResignRemovesFromProvider)
@@ -75,18 +74,20 @@ TEST_F(ContractProviderTest, ResignRemovesFromProvider)
 
     ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should be 0 at the start of the test";
 
-    ASSERT_THROW(contract.execute(), std::runtime_error) << "Executing a resigned contract should throw a runtime error";
-    ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should still be 0 after trying to execute a resigned contract";
+    provider.trigger();
+
+    ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should remain 0 after triggering the provider since the contract was resigned";
 
     provider.unsubscribe(contract);
 
-    ASSERT_THROW(contract.execute(), std::runtime_error) << "Executing an unsubscribed contract should throw a runtime error";
-    ASSERT_NO_THROW(provider.trigger()) << "Triggering contract provider should not throw a runtime error";
+    provider.trigger();
+
+    ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should remain 0 after unsubscribing the contract from the provider";
 }
 
 TEST_F(ContractProviderTest, TriggerExecutesAllJobs)
 {
-    auto contract = provider.subscribe(incrementCountJob);
+    auto contract1 = provider.subscribe(incrementCountJob);
     auto contract2 = provider.subscribe(incrementCountJob);
 
     int expectedExecutionCount = 0;
@@ -108,10 +109,10 @@ TEST_F(ContractProviderTest, DestructorResignsContract)
 
         ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should be 0 at the start of the test";
 
-        contract.execute();
+        provider.trigger();
         expectedExecutionCount = 1;
 
-        ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should be 1 after calling execute() on the contract";
+        ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should be 1 after triggering the provider";
     }
 
     expectedExecutionCount = 1;
@@ -135,13 +136,33 @@ TEST_F(ContractProviderTest, RelinquishJob)
 
     contract.relinquish();
 
-    ASSERT_THROW(contract.execute(), std::runtime_error) << "Executing a relinquished contract should not throw a runtime error";
-
-    expectedExecutionCount = 0;
-    ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should be 0 after calling execute() on the relinquished contract";
+    ASSERT_EQ(contract.isValid(), false) << "A contract should be invalid when relinquished";
 
     provider.trigger();
 
     expectedExecutionCount = 1;
-    ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should be 1 after calling trigger() on the provider";
+
+    ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should be 1 after triggering the provider even if the contract was relinquished";
+}
+
+TEST_F(ContractProviderTest, InvalidateContracts)
+{
+    auto contract1 = provider.subscribe(incrementCountJob);
+    auto contract2 = provider.subscribe(incrementCountJob);
+
+    int expectedExecutionCount = 0;
+
+    ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should be 0 at the start of the test";
+
+    provider.trigger();
+
+    expectedExecutionCount = 2;
+    ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should be 2 after triggering the provider before all contracts invalidation";
+
+    provider.invalidateContracts();
+
+    provider.trigger();
+
+    expectedExecutionCount = 2;
+    ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should still be 2 after triggering the provider after all contracts were invalidated";
 }

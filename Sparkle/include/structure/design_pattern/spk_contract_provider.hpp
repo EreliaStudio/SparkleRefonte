@@ -48,14 +48,6 @@ namespace spk
 				return (!(_job == nullptr || *_job == nullptr));
 			}
 
-			void execute()
-			{
-				if (isValid() == false)
-					throw std::runtime_error("Can't execute a resigned contract");
-
-				(*_job)();
-			}
-
 			void resign()
 			{
 				if (isValid() == false)

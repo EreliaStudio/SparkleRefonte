@@ -119,11 +119,6 @@ TEST_F(EventNotifierTest, RelinquishJob)
 
     contract.relinquish();
 
-    ASSERT_THROW(contract.execute(), std::runtime_error) << "Executing a relinquished contract should throw a runtime error";
-
-    expectedExecutionCount = 0;
-    ASSERT_EQ(executionCount, expectedExecutionCount) << "Execution count should be 0 after calling execute() on the relinquished contract";
-
     notifier->notifyEvent("TestEvent");
 
     expectedExecutionCount = 1;
