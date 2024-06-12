@@ -89,6 +89,20 @@ namespace spk
 
 		}
 
+		~ContractProvider()
+		{
+			invalidateContracts();
+		}
+
+		void invalidateContracts()
+		{
+			for (auto& job : _subscribedJobs)
+			{
+				*job = nullptr;
+			}
+			_subscribedJobs.clear();
+		}
+
 		Contract subscribe(const Job& p_job)
 		{
 			std::shared_ptr<Job> toAdd = std::make_shared<Job>(p_job);
