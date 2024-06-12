@@ -107,10 +107,10 @@ TEST_F(Vector2Test, EqualityOperator)
 	EXPECT_NE(vecSizeT1, vecSizeT3) << "Equality operator should return false for different size_t vectors";
 
 	spk::IVector2<int> vecInt4(3, 4);
-	spk::IVector2<float> vecFloat4(3.0f, 4.0f);
+	spk::IVector2<float> vecFloat4(3.5f, 4.0f);
 
-	EXPECT_TRUE(vecInt4 == vecFloat4) << "Mixed-type equality operator should return true for equivalent int and float vectors";
-	EXPECT_TRUE(vecFloat4 == vecInt4) << "Mixed-type equality operator should return true for equivalent float and int vectors";
+	EXPECT_TRUE(vecInt4 == vecFloat4) << "Upon casting float to int, vecFloat should be equal as 3.5 should be concidered as 3";
+	EXPECT_FALSE(vecFloat4 == vecInt4) << "Upon casting int to float, vecInt should be equal as 3 should be concidered as 3.0 and therefor must be different";
 }
 
 TEST_F(Vector2Test, MixedTypeEqualityOperator)

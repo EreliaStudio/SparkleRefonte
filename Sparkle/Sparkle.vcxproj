@@ -41,6 +41,7 @@
     <ClInclude Include="include\structure\design_pattern\spk_stateful_object.hpp" />
     <ClInclude Include="include\structure\math\spk_geometry_2D.hpp" />
     <ClInclude Include="include\structure\math\spk_vector2.hpp" />
+    <ClInclude Include="include\structure\math\spk_vector3.hpp" />
     <ClInclude Include="include\structure\spk_iostream.hpp" />
     <ClInclude Include="include\structure\spk_safe_pointer.hpp" />
     <ClInclude Include="include\structure\thread\spk_persistant_worker.hpp" />
