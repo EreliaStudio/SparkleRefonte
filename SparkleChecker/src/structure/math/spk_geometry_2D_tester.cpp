@@ -213,3 +213,25 @@ TEST_F(Geometry2DTest, GeometryInequality)
 	ASSERT_FALSE(geometry1 != geometry2) << "geometry1 should be equal to geometry2, hence not unequal";
 	ASSERT_TRUE(geometry1 != geometry3) << "geometry1 should be unequal to geometry3";
 }
+
+TEST_F(Geometry2DTest, OperatorStreamOutput)
+{
+	spk::Geometry2D::Position pos(10, 20);
+	spk::Geometry2D::Size size(30, 40);
+	spk::Geometry2D geometry(pos, size);
+
+	std::wstringstream wss;
+	wss << pos;
+	std::wstring expectedPosOutput = L"(10 x 20)";
+	ASSERT_EQ(wss.str(), expectedPosOutput) << "Position output mismatch";
+
+	wss.str(L""); // Clear the stream
+	wss << size;
+	std::wstring expectedSizeOutput = L"(30 x 40)";
+	ASSERT_EQ(wss.str(), expectedSizeOutput) << "Size output mismatch";
+
+	wss.str(L""); // Clear the stream
+	wss << geometry;
+	std::wstring expectedGeometryOutput = L"Anchor : (10 x 20) - Size : (30 x 40)";
+	ASSERT_EQ(wss.str(), expectedGeometryOutput) << "Geometry2D output mismatch";
+}

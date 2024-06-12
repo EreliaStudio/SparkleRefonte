@@ -152,6 +152,10 @@ namespace spk
         template<typename UType>
         IVector2<TType> operator/(const IVector2<UType>& other) const
         {
+            if (other.x == 0 || other.y == 0)
+            {
+                throw std::runtime_error("Division by zero");
+            }
             return IVector2<TType>(x / other.x, y / other.y);
         }
 
@@ -177,6 +181,10 @@ namespace spk
         template<typename UType>
         IVector2<TType> operator/(UType scalar) const
         {
+            if (scalar == 0)
+            {
+                throw std::runtime_error("Division by zero");
+            }
             return IVector2<TType>(x / scalar, y / scalar);
         }
 
@@ -208,6 +216,10 @@ namespace spk
         template<typename UType>
         IVector2<TType>& operator/=(const IVector2<UType>& other)
         {
+            if (other.x == 0 || other.y == 0)
+            {
+                throw std::runtime_error("Division by zero");
+            }
             x /= other.x;
             y /= other.y;
             return *this;
@@ -241,6 +253,11 @@ namespace spk
         template<typename UType>
         IVector2<TType>& operator/=(UType scalar)
         {
+            if (scalar == 0)
+            {
+                throw std::runtime_error("Division by zero");
+            }
+
             x /= static_cast<TType>(scalar);
             y /= static_cast<TType>(scalar);
             return *this;
@@ -270,6 +287,10 @@ spk::IVector2<TType> operator*(UType scalar, const spk::IVector2<TType>& vec)
 template<typename TType, typename UType, typename = std::enable_if_t<std::is_arithmetic<UType>::value>>
 spk::IVector2<TType> operator/(UType scalar, const spk::IVector2<TType>& vec)
 {
+    if (vec.x == 0 || vec.y == 0)
+    {
+        throw std::runtime_error("Division by zero");
+    }
     return spk::IVector2<TType>(scalar / vec.x, scalar / vec.y);
 }
 

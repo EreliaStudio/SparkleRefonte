@@ -153,29 +153,29 @@ TEST_F(Vector2Test, ComparatorOperators)
 	spk::IVector2<int> xBiggerYEqual(6, 6);
 	spk::IVector2<int> xLowerYEqual(4, 6);
 
-	//EXPECT_TRUE(value < xEqualYEqual) << "Comparing with X Equal and Y Bigger with operator < should return false";
-	//EXPECT_TRUE(value < xEqualYBigger) << "Comparing with X Equal and Y Bigger with operator < should return false";
-	//EXPECT_TRUE(value < xEqualYLower) << "Comparing with X Equal and Y Bigger with operator < should return true";
-	//EXPECT_TRUE(value < xBiggerYEqual) << "Comparing with X Equal and Y Bigger with operator < should return false";
-	//EXPECT_TRUE(value < xLowerYEqual) << "Comparing with X Equal and Y Bigger with operator < should return true";
+	EXPECT_FALSE(value < xEqualYEqual) << "Comparing with X Equal and Y Bigger with operator < should return false";
+	EXPECT_TRUE(value < xEqualYBigger) << "Comparing with X Equal and Y Bigger with operator < should return false";
+	EXPECT_FALSE(value < xEqualYLower) << "Comparing with X Equal and Y Bigger with operator < should return true";
+	EXPECT_TRUE(value < xBiggerYEqual) << "Comparing with X Equal and Y Bigger with operator < should return false";
+	EXPECT_FALSE(value < xLowerYEqual) << "Comparing with X Equal and Y Bigger with operator < should return true";
 
-	//EXPECT_TRUE(value > xEqualYEqual) << "Comparing with X Equal and Y Bigger with operator > should return false";
-	//EXPECT_TRUE(value > xEqualYBigger) << "Comparing with X Equal and Y Bigger with operator > should return false";
-	//EXPECT_TRUE(value > xEqualYLower) << "Comparing with X Equal and Y Bigger with operator > should return true";
-	//EXPECT_TRUE(value > xBiggerYEqual) << "Comparing with X Equal and Y Bigger with operator > should return false";
-	//EXPECT_TRUE(value > xLowerYEqual) << "Comparing with X Equal and Y Bigger with operator > should return true";
+	EXPECT_FALSE(value > xEqualYEqual) << "Comparing with X Equal and Y Bigger with operator > should return false";
+	EXPECT_FALSE(value > xEqualYBigger) << "Comparing with X Equal and Y Bigger with operator > should return false";
+	EXPECT_TRUE(value > xEqualYLower) << "Comparing with X Equal and Y Bigger with operator > should return true";
+	EXPECT_FALSE(value > xBiggerYEqual) << "Comparing with X Equal and Y Bigger with operator > should return false";
+	EXPECT_TRUE(value > xLowerYEqual) << "Comparing with X Equal and Y Bigger with operator > should return true";
 
-	//EXPECT_TRUE(value <= xEqualYEqual) << "Comparing with X Equal and Y Bigger with operator <= should return false";
-	//EXPECT_TRUE(value <= xEqualYBigger) << "Comparing with X Equal and Y Bigger with operator <= should return false";
-	//EXPECT_TRUE(value <= xEqualYLower) << "Comparing with X Equal and Y Bigger with operator <= should return true";
-	//EXPECT_TRUE(value <= xBiggerYEqual) << "Comparing with X Equal and Y Bigger with operator <= should return false";
-	//EXPECT_TRUE(value <= xLowerYEqual) << "Comparing with X Equal and Y Bigger with operator <= should return true";
+	EXPECT_TRUE(value <= xEqualYEqual) << "Comparing with X Equal and Y Bigger with operator <= should return false";
+	EXPECT_TRUE(value <= xEqualYBigger) << "Comparing with X Equal and Y Bigger with operator <= should return false";
+	EXPECT_FALSE(value <= xEqualYLower) << "Comparing with X Equal and Y Bigger with operator <= should return true";
+	EXPECT_TRUE(value <= xBiggerYEqual) << "Comparing with X Equal and Y Bigger with operator <= should return false";
+	EXPECT_FALSE(value <= xLowerYEqual) << "Comparing with X Equal and Y Bigger with operator <= should return true";
 	
-	//EXPECT_TRUE(value >= xEqualYEqual) << "Comparing with X Equal and Y Bigger with operator >= should return false";
-	//EXPECT_TRUE(value >= xEqualYBigger) << "Comparing with X Equal and Y Bigger with operator >= should return false";
-	//EXPECT_TRUE(value >= xEqualYLower) << "Comparing with X Equal and Y Bigger with operator >= should return true";
-	//EXPECT_TRUE(value >= xBiggerYEqual) << "Comparing with X Equal and Y Bigger with operator >= should return false";
-	//EXPECT_TRUE(value >= xLowerYEqual) << "Comparing with X Equal and Y Bigger with operator >= should return true";
+	EXPECT_TRUE(value >= xEqualYEqual) << "Comparing with X Equal and Y Bigger with operator >= should return false";
+	EXPECT_FALSE(value >= xEqualYBigger) << "Comparing with X Equal and Y Bigger with operator >= should return false";
+	EXPECT_TRUE(value >= xEqualYLower) << "Comparing with X Equal and Y Bigger with operator >= should return true";
+	EXPECT_FALSE(value >= xBiggerYEqual) << "Comparing with X Equal and Y Bigger with operator >= should return false";
+	EXPECT_TRUE(value >= xLowerYEqual) << "Comparing with X Equal and Y Bigger with operator >= should return true";
 }
 
 TEST_F(Vector2Test, ToStringMethod)
@@ -184,4 +184,178 @@ TEST_F(Vector2Test, ToStringMethod)
 	EXPECT_EQ(spk::IVector2<float>(3.5f, 4.5f).to_string(), L"(3.5, 4.5)") << "to_string method should return correct string representation for float";
 	EXPECT_EQ(spk::IVector2<double>(3.5, 4.5).to_string(), L"(3.5, 4.5)") << "to_string method should return correct string representation for double";
 	EXPECT_EQ(spk::IVector2<size_t>(3, 4).to_string(), L"(3, 4)") << "to_string method should return correct string representation for size_t";
+}
+
+TEST_F(Vector2Test, ArithmeticOperators)
+{
+	spk::IVector2<int> vecInt1(3, 4);
+	spk::IVector2<int> vecInt2(1, 2);
+
+	auto vecIntResult = vecInt1 + vecInt2;
+	EXPECT_EQ(vecIntResult, spk::IVector2<int>(4, 6)) << "Addition operator should add correctly for int";
+
+	vecIntResult = vecInt1 - vecInt2;
+	EXPECT_EQ(vecIntResult, spk::IVector2<int>(2, 2)) << "Subtraction operator should subtract correctly for int";
+
+	vecIntResult = vecInt1 * vecInt2;
+	EXPECT_EQ(vecIntResult, spk::IVector2<int>(3, 8)) << "Multiplication operator should multiply correctly for int";
+
+	vecIntResult = vecInt1 / vecInt2;
+	EXPECT_EQ(vecIntResult, spk::IVector2<int>(3, 2)) << "Division operator should divide correctly for int";
+
+	spk::IVector2<float> vecFloat1(3.0f, 4.0f);
+	spk::IVector2<float> vecFloat2(1.0f, 2.0f);
+
+	auto vecFloatResult = vecFloat1 + vecFloat2;
+	EXPECT_EQ(vecFloatResult, spk::IVector2<float>(4.0f, 6.0f)) << "Addition operator should add correctly for float";
+
+	vecFloatResult = vecFloat1 - vecFloat2;
+	EXPECT_EQ(vecFloatResult, spk::IVector2<float>(2.0f, 2.0f)) << "Subtraction operator should subtract correctly for float";
+
+	vecFloatResult = vecFloat1 * vecFloat2;
+	EXPECT_EQ(vecFloatResult, spk::IVector2<float>(3.0f, 8.0f)) << "Multiplication operator should multiply correctly for float";
+
+	vecFloatResult = vecFloat1 / vecFloat2;
+	EXPECT_EQ(vecFloatResult, spk::IVector2<float>(3.0f, 2.0f)) << "Division operator should divide correctly for float";
+}
+
+TEST_F(Vector2Test, CompoundAssignmentOperators)
+{
+	spk::IVector2<int> vecInt(3, 4);
+	spk::IVector2<int> vecIntOther(1, 2);
+
+	vecInt += vecIntOther;
+	EXPECT_EQ(vecInt, spk::IVector2<int>(4, 6)) << "Compound addition operator should add correctly for int";
+
+	vecInt -= vecIntOther;
+	EXPECT_EQ(vecInt, spk::IVector2<int>(3, 4)) << "Compound subtraction operator should subtract correctly for int";
+
+	vecInt *= vecIntOther;
+	EXPECT_EQ(vecInt, spk::IVector2<int>(3, 8)) << "Compound multiplication operator should multiply correctly for int";
+
+	vecInt /= vecIntOther;
+	EXPECT_EQ(vecInt, spk::IVector2<int>(3, 4)) << "Compound division operator should divide correctly for int";
+
+	spk::IVector2<float> vecFloat(3.0f, 4.0f);
+	spk::IVector2<float> vecFloatOther(1.0f, 2.0f);
+
+	vecFloat += vecFloatOther;
+	EXPECT_EQ(vecFloat, spk::IVector2<float>(4.0f, 6.0f)) << "Compound addition operator should add correctly for float";
+
+	vecFloat -= vecFloatOther;
+	EXPECT_EQ(vecFloat, spk::IVector2<float>(3.0f, 4.0f)) << "Compound subtraction operator should subtract correctly for float";
+
+	vecFloat *= vecFloatOther;
+	EXPECT_EQ(vecFloat, spk::IVector2<float>(3.0f, 8.0f)) << "Compound multiplication operator should multiply correctly for float";
+
+	vecFloat /= vecFloatOther;
+	EXPECT_EQ(vecFloat, spk::IVector2<float>(3.0f, 4.0f)) << "Compound division operator should divide correctly for float";
+}
+
+TEST_F(Vector2Test, ArithmeticOperatorsWithScalar)
+{
+	spk::IVector2<int> vecInt(3, 4);
+	int scalar = 2;
+
+	auto vecIntResult = vecInt + scalar;
+	EXPECT_EQ(vecIntResult, spk::IVector2<int>(5, 6)) << "Addition operator with scalar should add correctly for int";
+
+	vecIntResult = vecInt - scalar;
+	EXPECT_EQ(vecIntResult, spk::IVector2<int>(1, 2)) << "Subtraction operator with scalar should subtract correctly for int";
+
+	vecIntResult = vecInt * scalar;
+	EXPECT_EQ(vecIntResult, spk::IVector2<int>(6, 8)) << "Multiplication operator with scalar should multiply correctly for int";
+
+	vecIntResult = vecInt / scalar;
+	EXPECT_EQ(vecIntResult, spk::IVector2<int>(1, 2)) << "Division operator with scalar should divide correctly for int";
+
+	spk::IVector2<float> vecFloat(3.0f, 4.0f);
+	float scalarFloat = 2.0f;
+
+	auto vecFloatResult = vecFloat + scalarFloat;
+	EXPECT_EQ(vecFloatResult, spk::IVector2<float>(5.0f, 6.0f)) << "Addition operator with scalar should add correctly for float";
+
+	vecFloatResult = vecFloat - scalarFloat;
+	EXPECT_EQ(vecFloatResult, spk::IVector2<float>(1.0f, 2.0f)) << "Subtraction operator with scalar should subtract correctly for float";
+
+	vecFloatResult = vecFloat * scalarFloat;
+	EXPECT_EQ(vecFloatResult, spk::IVector2<float>(6.0f, 8.0f)) << "Multiplication operator with scalar should multiply correctly for float";
+
+	vecFloatResult = vecFloat / scalarFloat;
+	EXPECT_EQ(vecFloatResult, spk::IVector2<float>(1.5f, 2.0f)) << "Division operator with scalar should divide correctly for float";
+}
+
+TEST_F(Vector2Test, CompoundAssignmentOperatorsWithScalar)
+{
+	spk::IVector2<int> vecInt(3, 4);
+	int scalar = 2;
+
+	vecInt += scalar;
+	EXPECT_EQ(vecInt, spk::IVector2<int>(5, 6)) << "Compound addition operator with scalar should add correctly for int";
+
+	vecInt -= scalar;
+	EXPECT_EQ(vecInt, spk::IVector2<int>(3, 4)) << "Compound subtraction operator with scalar should subtract correctly for int";
+
+	vecInt *= scalar;
+	EXPECT_EQ(vecInt, spk::IVector2<int>(6, 8)) << "Compound multiplication operator with scalar should multiply correctly for int";
+
+	vecInt /= scalar;
+	EXPECT_EQ(vecInt, spk::IVector2<int>(3, 4)) << "Compound division operator with scalar should divide correctly for int";
+
+	spk::IVector2<float> vecFloat(3.0f, 4.0f);
+	float scalarFloat = 2.0f;
+
+	vecFloat += scalarFloat;
+	EXPECT_EQ(vecFloat, spk::IVector2<float>(5.0f, 6.0f)) << "Compound addition operator with scalar should add correctly for float";
+
+	vecFloat -= scalarFloat;
+	EXPECT_EQ(vecFloat, spk::IVector2<float>(3.0f, 4.0f)) << "Compound subtraction operator with scalar should subtract correctly for float";
+
+	vecFloat *= scalarFloat;
+	EXPECT_EQ(vecFloat, spk::IVector2<float>(6.0f, 8.0f)) << "Compound multiplication operator with scalar should multiply correctly for float";
+
+	vecFloat /= scalarFloat;
+	EXPECT_EQ(vecFloat, spk::IVector2<float>(3.0f, 4.0f)) << "Compound division operator with scalar should divide correctly for float";
+}
+
+TEST_F(Vector2Test, DivisionByZero)
+{
+	spk::IVector2<int> vecInt(3, 4);
+	int zeroInt = 0;
+
+	EXPECT_THROW(
+		{
+			spk::IVector2<int> result = vecInt / zeroInt;
+		}, std::runtime_error) << "Division by zero for int should throw runtime_error";
+
+	EXPECT_THROW(
+		{
+			vecInt /= zeroInt;
+		}, std::runtime_error) << "Division assignment by zero for int should throw runtime_error";
+
+	spk::IVector2<float> vecFloat(3.0f, 4.0f);
+	float zeroFloat = 0.0f;
+
+	EXPECT_THROW(
+		{
+			spk::IVector2<float> result = vecFloat / zeroFloat;
+		}, std::runtime_error) << "Division by zero for float should throw runtime_error";
+
+	EXPECT_THROW(
+		{
+			vecFloat /= zeroFloat;
+		}, std::runtime_error) << "Division assignment by zero for float should throw runtime_error";
+
+	spk::IVector2<double> vecDouble(3.0, 4.0);
+	double zeroDouble = 0.0;
+
+	EXPECT_THROW(
+		{
+			spk::IVector2<double> result = vecDouble / zeroDouble;
+		}, std::runtime_error) << "Division by zero for double should throw runtime_error";
+
+	EXPECT_THROW(
+		{
+			vecDouble /= zeroDouble;
+		}, std::runtime_error) << "Division assignment by zero for double should throw runtime_error";
 }
