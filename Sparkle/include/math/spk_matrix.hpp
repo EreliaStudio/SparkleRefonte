@@ -267,6 +267,96 @@ namespace spk
 			os << std::string(wstr.begin(), wstr.end());
 			return os;
 		}
+
+		template <size_t X = SizeX, size_t Y = SizeY, typename std::enable_if_t<(X == 4 && Y == 4), int> = 0>
+		static IMatrix lookAt(const spk::Vector3& p_from, const spk::Vector3& p_to, const spk::Vector3& p_up)
+		{
+			const spk::Vector3 forward = ((p_to - p_from).normalize());
+			const spk::Vector3 right = (forward != p_up && forward != p_up.inverse() ? forward.cross(p_up).normalize() : spk::Vector3(1, 0, 0));
+			const spk::Vector3 up = right.cross(forward);
+
+			IMatrix result;
+
+			result[0][0] = right.x;
+			result[0][1] = right.y;
+			result[0][2] = right.z;
+			result[1][0] = up.x;
+			result[1][1] = up.y;
+			result[1][2] = up.z;
+			result[2][0] = -forward.x;
+			result[2][1] = -forward.y;
+			result[2][2] = -forward.z;
+			result[0][3] = -right.dot(p_from);
+			result[1][3] = -up.dot(p_from);
+			result[2][3] = forward.dot(p_from);
+
+			return result;
+		}
+
+		template <size_t X = SizeX, size_t Y = SizeY, typename std::enable_if_t<(X == 4 && Y == 4), int> = 0>
+		static IMatrix rotateAroundAxis(const spk::Vector3& p_axis, const float& p_rotationAngle)
+		{
+			IMatrix result;
+
+			const float rad = spk::degreeToRadian(p_rotationAngle);
+
+			Vector3 v = p_axis.normalize();
+
+			float c = cos(rad);
+			float s = sin(rad);
+
+			result[0][0] = c + v.x * v.x * (1 - c);
+			result[0][1] = v.x * v.y * (1 - c) - v.z * s;
+			result[0][2] = v.x * v.z * (1 - c) + v.y * s;
+
+			result[1][0] = v.y * v.x * (1 - c) + v.z * s;
+			result[1][1] = c + v.y * v.y * (1 - c);
+			result[1][2] = v.y * v.z * (1 - c) - v.x * s;
+
+			result[2][0] = v.z * v.x * (1 - c) - v.y * s;
+			result[2][1] = v.z * v.y * (1 - c) + v.x * s;
+			result[2][2] = c + v.z * v.z * (1 - c);
+
+			result[3][0] = 0.0f;
+			result[3][1] = 0.0f;
+			result[3][2] = 0.0f;
+			result[3][3] = 1.0f;
+
+			return result;
+		}
+
+		template <size_t X = SizeX, size_t Y = SizeY, typename std::enable_if_t<(X == 4 && Y == 4), int> = 0>
+		static IMatrix perspective(float p_fov, float p_aspectRatio, float p_nearPlane, float p_farPlane)
+		{
+			IMatrix result;
+
+			const float rad = spk::degreeToRadian(p_fov);
+			const float tanHalfFov = tan(rad / 2.0f);
+
+			result[0][0] = 1.0f / (tanHalfFov * p_aspectRatio);
+			result[1][1] = -1.0f / tanHalfFov;
+			result[2][2] = -(p_farPlane + p_nearPlane) / (p_farPlane - p_nearPlane);
+			result[3][2] = -1.0f;
+			result[2][3] = -(2.0f * p_farPlane * p_nearPlane) / (p_farPlane - p_nearPlane);
+			result[3][3] = 0.0f;
+
+			return result;
+		}
+
+		template <size_t X = SizeX, size_t Y = SizeY, typename std::enable_if_t<(X == 4 && Y == 4), int> = 0>
+		static IMatrix ortho(float p_left, float p_right, float p_bottom, float p_top, float p_nearPlane, float p_farPlane)
+		{
+			IMatrix result;
+
+			result[0][0] = 2.0f / (p_right - p_left);
+			result[1][1] = 2.0f / (p_top - p_bottom);
+			result[2][2] = -2.0f / (p_farPlane - p_nearPlane);
+			result[3][0] = -(p_right + p_left) / (p_right - p_left);
+			result[3][1] = -(p_top + p_bottom) / (p_top - p_bottom);
+			result[3][2] = -(p_farPlane + p_nearPlane) / (p_farPlane - p_nearPlane);
+
+			return result;
+		}
 	};
 
 	using Matrix3x3 = IMatrix<3, 3>;

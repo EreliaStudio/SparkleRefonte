@@ -55,11 +55,35 @@ namespace spk
             return wss.str();
         }
 
-        // Equality operators
+
         template<typename UType>
         bool operator==(const IVector2<UType>& other) const
         {
-            return x == static_cast<TType>(other.x) && y == static_cast<TType>(other.y);
+            if constexpr (std::is_floating_point<TType>::value)
+            {
+                constexpr TType epsilon = static_cast<TType>(1e-5);
+                return std::fabs(x - static_cast<TType>(other.x)) < epsilon &&
+                    std::fabs(y - static_cast<TType>(other.y)) < epsilon;
+            }
+            else
+            {
+                return x == static_cast<TType>(other.x) && y == static_cast<TType>(other.y);
+            }
+        }
+
+        template<typename UType>
+        bool operator==(UType scalar) const
+        {
+            if constexpr (std::is_floating_point<TType>::value)
+            {
+                constexpr TType epsilon = static_cast<TType>(1e-5);
+                return std::fabs(x - static_cast<TType>(scalar)) < epsilon &&
+                    std::fabs(y - static_cast<TType>(scalar)) < epsilon;
+            }
+            else
+            {
+                return x == static_cast<TType>(scalar) && y == static_cast<TType>(scalar);
+            }
         }
 
         template<typename UType>
@@ -91,13 +115,6 @@ namespace spk
         bool operator>=(const IVector2<UType>& other) const
         {
             return !(*this < other);
-        }
-
-        // Comparison operators with scalar
-        template<typename UType>
-        bool operator==(UType scalar) const
-        {
-            return x == scalar && y == scalar;
         }
 
         template<typename UType>
