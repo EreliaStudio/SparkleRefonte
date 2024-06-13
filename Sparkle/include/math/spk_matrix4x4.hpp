@@ -55,7 +55,31 @@ namespace spk
 
 		Matrix4x4 inverse() const;
 
+		spk::String to_string() const
+		{
+			std::wstringstream wss;
+			wss << *this;
+			return wss.str();
+		}
+
 		friend std::wostream& operator<<(std::wostream& p_os, const Matrix4x4& p_matrix)
+		{
+			p_os << std::endl;
+			for (size_t y = 0; y < 4; y++)
+			{
+				for (size_t x = 0; x < 4; x++)
+				{
+					if (x != 0)
+						p_os << " ";
+					p_os << p_matrix.data[x][y];
+				}
+				p_os << std::endl;
+			}
+
+			return p_os;
+		}
+
+		friend std::ostream& operator<<(std::ostream& p_os, const Matrix4x4& p_matrix)
 		{
 			p_os << std::endl;
 			for (size_t y = 0; y < 4; y++)

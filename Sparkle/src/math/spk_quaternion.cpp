@@ -79,7 +79,10 @@ namespace spk
 
 	bool Quaternion::operator==(const Quaternion& p_rhs) const
 	{
-		return x == p_rhs.x && y == p_rhs.y && z == p_rhs.z && w == p_rhs.w;
+		return std::fabs(x - p_rhs.x) < std::numeric_limits<float>::epsilon() &&
+			std::fabs(y - p_rhs.y) < std::numeric_limits<float>::epsilon() &&
+			std::fabs(z - p_rhs.z) < std::numeric_limits<float>::epsilon() &&
+			std::fabs(w - p_rhs.w) < std::numeric_limits<float>::epsilon();
 	}
 
 	bool Quaternion::operator!=(const Quaternion& p_rhs) const
@@ -234,13 +237,33 @@ namespace spk
 
 	Vector3 Quaternion::applyRotation(const spk::Vector3& p_inputPoint) const
 	{
-		Quaternion point(p_inputPoint.x, p_inputPoint.y, p_inputPoint.z, 0);
-		Quaternion result = *this * point * this->normalize().inverse();
-		return Vector3(result.x, result.y, result.z);
+		Quaternion conjQuat = conjugate();
+		Quaternion rotatedQuat = *this * p_inputPoint * conjQuat;
+
+		return Vector3(rotatedQuat.x, rotatedQuat.y, rotatedQuat.z);
 	}
 
 	Vector3 Quaternion::toVector3() const
 	{
 		return (spk::Vector3(x, y, z));
 	}
+
+	Matrix4x4 Quaternion::matrix() const {
+		return Matrix4x4({
+		   w, -z,  y, x,
+		   z,  w, -x, y,
+		  -y,  x,  w, z,
+		  -x, -y, -z, w
+			});
+	}
+	
+	Matrix4x4 Quaternion::rotationMatrix() const {
+		return Matrix4x4({
+		  1 - 2 * y * y - 2 * z * z, 2 * x * y - 2 * z * w, 2 * x * z + 2 * y * w, 0.0,
+		  2 * x * y + 2 * z * w, 1 - 2 * x * x - 2 * z * z, 2 * y * z - 2 * x * w, 0.0,
+		  2 * x * z - 2 * y * w, 2 * y * z + 2 * x * w, 1 - 2 * x * x - 2 * y * y, 0.0,
+		  0.0, 0.0, 0.0, 0.0
+			});
+	}
+
 }

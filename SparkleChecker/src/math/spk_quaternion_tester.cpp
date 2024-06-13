@@ -120,10 +120,10 @@ TEST_F(QuaternionTest, FromAxisAngle)
 
 TEST_F(QuaternionTest, ApplyRotation)
 {
-    spk::Quaternion quat(1.0f, 0.0f, 0.0f, 0.0f);
+    spk::Quaternion quat(1.0f, 0.0f, 0.0f, 1.0f);
     spk::Vector3 point(0.0f, 1.0f, 0.0f);
     spk::Vector3 result = quat.applyRotation(point);
-    spk::Vector3 expected(0.0f, 0.0f, -1.0f);
+    spk::Vector3 expected(0.0f, 0.0f, 1.0f);
     EXPECT_EQ(result, expected) << "ApplyRotation should rotate correctly";
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "math/spk_vector3.hpp"
+#include "math/spk_matrix4x4.hpp"
 #include <cmath>
 #include <iostream>
 
@@ -72,6 +73,19 @@ namespace spk
 
 		Vector3 applyRotation(const spk::Vector3& p_inputPoint) const;
 
+		spk::String to_string() const
+		{
+			std::wstringstream wss;
+			wss << *this;
+			return wss.str();
+		}
+
+		friend std::wostream& operator<<(std::wostream& p_os, const Quaternion& p_quaternion)
+		{
+			p_os << p_quaternion.x << L" / " << p_quaternion.y << L" / " << p_quaternion.z << L" / " << p_quaternion.w;
+			return (p_os);
+		}
+
 		friend std::ostream& operator<<(std::ostream& p_os, const Quaternion& p_quaternion)
 		{
 			p_os << p_quaternion.x << " / " << p_quaternion.y << " / " << p_quaternion.z << " / " << p_quaternion.w;
@@ -79,5 +93,7 @@ namespace spk
 		}
 
 		Vector3 toVector3() const;
+		Matrix4x4 matrix() const;
+		Matrix4x4 rotationMatrix() const;
 	};
 }
