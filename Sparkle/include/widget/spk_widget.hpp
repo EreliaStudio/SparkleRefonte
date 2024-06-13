@@ -25,7 +25,7 @@ namespace spk
 
 		bool _needGeometryChange = true;
 		Geometry2DInt _geometry;
-		spk::Real _depth;
+		float _depth;
 
 		virtual void _onGeometryChange();
 		virtual void _onRender();
@@ -53,8 +53,8 @@ namespace spk
 			return (spk::SafePointer<TChildType>(newChild));
 		}
 
-		void setDepth(const spk::Real& p_depth);
-		const spk::Real& depth() const;
+		void setDepth(const float& p_depth);
+		const float& depth() const;
 
 		void forceGeometryChange(const Geometry2DInt& p_geometry);
 		void setGeometry(const Geometry2DInt& p_geometry);

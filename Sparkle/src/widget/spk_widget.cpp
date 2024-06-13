@@ -42,9 +42,9 @@ namespace spk
 		p_child->setDepth(depth() + 1);
 	}
 
-	void Widget::setDepth(const spk::Real& p_depth)
+	void Widget::setDepth(const float& p_depth)
 	{
-		spk::Real delta = p_depth - _depth;
+		float delta = p_depth - _depth;
 		for (auto& child : children())
 		{
 			static_cast<Widget*>(child)->setDepth(static_cast<Widget*>(child)->depth() + delta);
@@ -52,7 +52,7 @@ namespace spk
 		_depth = p_depth;
 	}
 
-	const spk::Real& Widget::depth() const
+	const float& Widget::depth() const
 	{
 		return (_depth);
 	}

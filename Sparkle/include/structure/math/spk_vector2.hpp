@@ -263,6 +263,10 @@ namespace spk
             return *this;
         }
     };
+
+    using Vector2 = IVector2<float_t>;
+    using Vector2Int = IVector2<int32_t>;
+    using Vector2UInt = IVector2<uint32_t>;
 }
 
 // Arithmetic operators with scalar outside of the class

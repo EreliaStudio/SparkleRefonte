@@ -385,3 +385,195 @@ TEST_F(Vector3Test, DivisionByZero)
 			vecDouble /= zeroDouble;
 		}, std::runtime_error) << "Division assignment by zero for double should throw runtime_error";
 }
+
+TEST_F(Vector3Test, DistanceMethod)
+{
+	spk::IVector3<int> vec1(1, 2, 3);
+	spk::IVector3<int> vec2(4, 5, 6);
+	EXPECT_FLOAT_EQ(vec1.distance(vec2), static_cast<float>(std::sqrt(27))) << "Distance method should return the correct distance between two vectors";
+
+	spk::IVector3<float> vecFloat1(1.0f, 2.0f, 3.0f);
+	spk::IVector3<float> vecFloat2(4.0f, 5.0f, 6.0f);
+	EXPECT_FLOAT_EQ(vecFloat1.distance(vecFloat2), static_cast<float>(std::sqrt(27.0f))) << "Distance method should return the correct distance between two float vectors";
+
+	spk::IVector3<double> vecDouble1(1.0, 2.0, 3.0);
+	spk::IVector3<double> vecDouble2(4.0, 5.0, 6.0);
+	EXPECT_FLOAT_EQ(vecDouble1.distance(vecDouble2), static_cast<float>(std::sqrt(27.0))) << "Distance method should return the correct distance between two double vectors";
+}
+
+TEST_F(Vector3Test, NormMethod)
+{
+	spk::IVector3<int> vec(1, 2, 2);
+	EXPECT_FLOAT_EQ(vec.norm(), 3.0f) << "Norm method should return the correct norm of the vector";
+
+	spk::IVector3<float> vecFloat(1.0f, 2.0f, 2.0f);
+	EXPECT_FLOAT_EQ(vecFloat.norm(), 3.0f) << "Norm method should return the correct norm of the float vector";
+
+	spk::IVector3<double> vecDouble(1.0, 2.0, 2.0);
+	EXPECT_DOUBLE_EQ(vecDouble.norm(), 3.0) << "Norm method should return the correct norm of the double vector";
+}
+
+TEST_F(Vector3Test, NormalizeMethod)
+{
+	spk::IVector3<int> vec(3, 0, 4);
+	auto normVec = vec.normalize();
+	EXPECT_EQ(normVec, spk::IVector3<float>(0.6f, 0.0f, 0.8f)) << "Normalize method should return the correct normalized vector";
+
+	spk::IVector3<float> vecFloat(3.0f, 0.0f, 4.0f);
+	auto normVecFloat = vecFloat.normalize();
+	EXPECT_EQ(normVecFloat, spk::IVector3<float>(0.6f, 0.0f, 0.8f)) << "Normalize method should return the correct normalized vector for float";
+
+	spk::IVector3<double> vecDouble(3.0, 0.0, 4.0);
+	auto normVecDouble = vecDouble.normalize();
+	EXPECT_EQ(normVecDouble, spk::IVector3<double>(0.6, 0.0, 0.8)) << "Normalize method should return the correct normalized vector for double";
+}
+
+TEST_F(Vector3Test, CrossMethod)
+{
+	spk::IVector3<int> vec1(1, 2, 3);
+	spk::IVector3<int> vec2(4, 5, 6);
+	auto crossVec = vec1.cross(vec2);
+	EXPECT_EQ(crossVec, spk::IVector3<int>(-3, 6, -3)) << "Cross product method should return the correct vector";
+
+	spk::IVector3<float> vecFloat1(1.0f, 2.0f, 3.0f);
+	spk::IVector3<float> vecFloat2(4.0f, 5.0f, 6.0f);
+	auto crossVecFloat = vecFloat1.cross(vecFloat2);
+	EXPECT_EQ(crossVecFloat, spk::IVector3<float>(-3.0f, 6.0f, -3.0f)) << "Cross product method should return the correct vector for float";
+
+	spk::IVector3<double> vecDouble1(1.0, 2.0, 3.0);
+	spk::IVector3<double> vecDouble2(4.0, 5.0, 6.0);
+	auto crossVecDouble = vecDouble1.cross(vecDouble2);
+	EXPECT_EQ(crossVecDouble, spk::IVector3<double>(-3.0, 6.0, -3.0)) << "Cross product method should return the correct vector for double";
+}
+
+TEST_F(Vector3Test, RotateMethod)
+{
+	spk::IVector3<float> vec(1.0f, 0.0f, 0.0f);
+	spk::IVector3<float> rotationValues(0.0f, 0.0f, 90.0f);
+	auto rotatedVec = vec.rotate(rotationValues);
+	EXPECT_NEAR(rotatedVec.x, 0.0f, 1e-6) << "Rotate method should return the correct rotated x value";
+	EXPECT_NEAR(rotatedVec.y, 1.0f, 1e-6) << "Rotate method should return the correct rotated y value";
+	EXPECT_NEAR(rotatedVec.z, 0.0f, 1e-6) << "Rotate method should return the correct rotated z value";
+
+	spk::IVector3<double> vecDouble(1.0, 0.0, 0.0);
+	spk::IVector3<double> rotationValuesDouble(0.0, 0.0, 90.0);
+	auto rotatedVecDouble = vecDouble.rotate(rotationValuesDouble);
+	EXPECT_NEAR(rotatedVecDouble.x, 0.0, 1e-6) << "Rotate method should return the correct rotated x value for double";
+	EXPECT_NEAR(rotatedVecDouble.y, 1.0, 1e-6) << "Rotate method should return the correct rotated y value for double";
+	EXPECT_NEAR(rotatedVecDouble.z, 0.0, 1e-6) << "Rotate method should return the correct rotated z value for double";
+}
+
+TEST_F(Vector3Test, DotMethod)
+{
+	spk::IVector3<int> vec1(1, 2, 3);
+	spk::IVector3<int> vec2(4, 5, 6);
+	EXPECT_EQ(vec1.dot(vec2), 32) << "Dot product method should return the correct dot product";
+
+	spk::IVector3<float> vecFloat1(1.0f, 2.0f, 3.0f);
+	spk::IVector3<float> vecFloat2(4.0f, 5.0f, 6.0f);
+	EXPECT_FLOAT_EQ(vecFloat1.dot(vecFloat2), 32.0f) << "Dot product method should return the correct dot product for float";
+
+	spk::IVector3<double> vecDouble1(1.0, 2.0, 3.0);
+	spk::IVector3<double> vecDouble2(4.0, 5.0, 6.0);
+	EXPECT_DOUBLE_EQ(vecDouble1.dot(vecDouble2), 32.0) << "Dot product method should return the correct dot product for double";
+}
+
+TEST_F(Vector3Test, InverseMethod)
+{
+	spk::IVector3<int> vec(1, -2, 3);
+	auto invVec = vec.inverse();
+	EXPECT_EQ(invVec, spk::IVector3<int>(-1, 2, -3)) << "Inverse method should return the correct inverted vector";
+}
+
+TEST_F(Vector3Test, XYMethod)
+{
+	spk::IVector3<int> vec(1, 2, 3);
+	auto xyVec = vec.xy();
+	EXPECT_EQ(xyVec, spk::IVector2<int>(1, 2)) << "XY method should return the correct 2D vector with X and Y components";
+}
+
+TEST_F(Vector3Test, XZMethod)
+{
+	spk::IVector3<int> vec(1, 2, 3);
+	auto xzVec = vec.xz();
+	EXPECT_EQ(xzVec, spk::IVector2<int>(1, 3)) << "XZ method should return the correct 2D vector with X and Z components";
+}
+
+TEST_F(Vector3Test, YZMethod)
+{
+	spk::IVector3<int> vec(1, 2, 3);
+	auto yzVec = vec.yz();
+	EXPECT_EQ(yzVec, spk::IVector2<int>(2, 3)) << "YZ method should return the correct 2D vector with Y and Z components";
+}
+
+TEST_F(Vector3Test, RadianToDegreeMethod)
+{
+	spk::IVector3<float> radians(3.14159f, 3.14159f / 2, 3.14159f / 4);
+	auto degrees = spk::IVector3<float>::radianToDegree(radians);
+	EXPECT_NEAR(degrees.x, 180.0f, 0.001f) << "Radian to degree conversion should return the correct degree value";
+	EXPECT_NEAR(degrees.y, 90.0f, 0.001f) << "Radian to degree conversion should return the correct degree value";
+	EXPECT_NEAR(degrees.z, 45.0f, 0.001f) << "Radian to degree conversion should return the correct degree value";
+}
+
+TEST_F(Vector3Test, DegreeToRadianMethod)
+{
+	spk::IVector3<float> degrees(180.0f, 90.0f, 45.0f);
+	auto radians = spk::IVector3<float>::degreeToRadian(degrees);
+	EXPECT_NEAR(radians.x, 3.14159f, 0.001f) << "Degree to radian conversion should return the correct radian value";
+	EXPECT_NEAR(radians.y, 3.14159f / 2, 0.001f) << "Degree to radian conversion should return the correct radian value";
+	EXPECT_NEAR(radians.z, 3.14159f / 4, 0.001f) << "Degree to radian conversion should return the correct radian value";
+}
+
+TEST_F(Vector3Test, ClampMethod)
+{
+	spk::IVector3<int> vec(5, 10, 15);
+	spk::IVector3<int> lower(0, 5, 10);
+	spk::IVector3<int> upper(10, 15, 20);
+	auto clampedVec = vec.clamp(lower, upper);
+	EXPECT_EQ(clampedVec, spk::IVector3<int>(5, 10, 15)) << "Clamp method should return the correct clamped vector";
+}
+
+TEST_F(Vector3Test, FloorMethod)
+{
+	spk::IVector3<float> vec(1.5f, 2.7f, 3.9f);
+	auto flooredVec = spk::IVector3<float>::floor(vec);
+	EXPECT_EQ(flooredVec, spk::IVector3<int>(1, 2, 3)) << "Floor method should return the correct floored vector";
+}
+
+TEST_F(Vector3Test, CeilingMethod)
+{
+	spk::IVector3<float> vec(1.1f, 2.3f, 3.6f);
+	auto ceilingVec = spk::IVector3<float>::ceiling(vec);
+	EXPECT_EQ(ceilingVec, spk::IVector3<int>(2, 3, 4)) << "Ceiling method should return the correct ceiling vector";
+}
+
+TEST_F(Vector3Test, RoundMethod)
+{
+	spk::IVector3<float> vec(1.4f, 2.5f, 3.6f);
+	auto roundedVec = spk::IVector3<float>::round(vec);
+	EXPECT_EQ(roundedVec, spk::IVector3<int>(1, 3, 4)) << "Round method should return the correct rounded vector";
+}
+
+TEST_F(Vector3Test, MinMethod)
+{
+	spk::IVector3<int> vec1(1, 4, 3);
+	spk::IVector3<int> vec2(2, 3, 4);
+	auto minVec = spk::IVector3<int>::min(vec1, vec2);
+	EXPECT_EQ(minVec, spk::IVector3<int>(1, 3, 3)) << "Min method should return the correct component-wise minimum vector";
+}
+
+TEST_F(Vector3Test, MaxMethod)
+{
+	spk::IVector3<int> vec1(1, 4, 3);
+	spk::IVector3<int> vec2(2, 3, 4);
+	auto maxVec = spk::IVector3<int>::max(vec1, vec2);
+	EXPECT_EQ(maxVec, spk::IVector3<int>(2, 4, 4)) << "Max method should return the correct component-wise maximum vector";
+}
+
+TEST_F(Vector3Test, LerpMethod)
+{
+	spk::IVector3<int> start(0, 0, 0);
+	spk::IVector3<int> end(10, 10, 10);
+	auto lerpVec = spk::IVector3<int>::lerp(start, end, 0.5f);
+	EXPECT_EQ(lerpVec, spk::IVector3<int>(5, 5, 5)) << "Lerp method should return the correct linearly interpolated vector";
+}

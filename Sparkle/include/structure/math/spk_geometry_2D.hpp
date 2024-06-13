@@ -419,6 +419,6 @@ namespace spk
 		}
 	};
 
-	using Geometry2D = IGeometry2D<spk::Real>;
+	using Geometry2D = IGeometry2D<float>;
 	using Geometry2DInt = IGeometry2D<int>;
 }
