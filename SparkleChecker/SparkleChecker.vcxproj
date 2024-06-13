@@ -140,6 +140,7 @@
     <ClCompile Include="src\structure\design_pattern\spk_stateful_object_tester.cpp" />
     <ClCompile Include="src\structure\math\spk_geometry_2D_tester.cpp" />
     <ClCompile Include="src\structure\math\spk_math_tester.cpp" />
+    <ClCompile Include="src\structure\math\spk_matrix4x4_tester.cpp" />
     <ClCompile Include="src\structure\math\spk_vector2_tester.cpp" />
     <ClCompile Include="src\structure\math\spk_vector3_tester.cpp" />
     <ClCompile Include="src\structure\spk_iostream_tester.cpp" />
@@ -169,6 +170,7 @@
     <ClInclude Include="include\structure\design_pattern\spk_stateful_object_tester.hpp" />
     <ClInclude Include="include\structure\math\spk_geometry_2D_tester.hpp" />
     <ClInclude Include="include\structure\math\spk_math_tester.hpp" />
+    <ClInclude Include="include\structure\math\spk_matrix4x4_tester.hpp" />
     <ClInclude Include="include\structure\math\spk_vector2_tester.hpp" />
     <ClInclude Include="include\structure\math\spk_vector3_tester.hpp" />
     <ClInclude Include="include\structure\spk_iostream_tester.hpp" />

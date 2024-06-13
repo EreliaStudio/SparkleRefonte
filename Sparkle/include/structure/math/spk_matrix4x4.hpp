@@ -64,7 +64,7 @@ namespace spk
 				{
 					if (x != 0)
 						p_os << " ";
-					p_os << std::setw(10) << p_matrix.data[x][y];
+					p_os << p_matrix.data[x][y];
 				}
 				p_os << std::endl;
 			}
