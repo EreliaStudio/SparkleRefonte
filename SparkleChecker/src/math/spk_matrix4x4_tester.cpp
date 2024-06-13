@@ -1,4 +1,4 @@
-#include "structure/math/spk_matrix4x4_tester.hpp"
+#include "math/spk_matrix4x4_tester.hpp"
 
 TEST_F(Matrix4x4Test, DefaultConstructor)
 {

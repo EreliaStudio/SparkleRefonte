@@ -1,9 +1,9 @@
 #pragma once
 
 #include <gtest/gtest.h>
-#include "structure/math/spk_vector2.hpp"
+#include "math/spk_vector3.hpp"
 
-class Vector2Test : public ::testing::Test
+class Vector3Test : public ::testing::Test
 {
 protected:
 
@@ -16,7 +16,7 @@ protected:
 namespace spk
 {
 	template<typename TType>
-	void PrintTo(const IVector2<TType>& vec, std::ostream* os)
+	void PrintTo(const IVector3<TType>& vec, std::ostream* os)
 	{
 		*os << vec;
 	}

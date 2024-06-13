@@ -1,6 +1,6 @@
-#include "structure/math/spk_matrix4x4.hpp"
+#include "math/spk_matrix4x4.hpp"
 
-#include "structure/math/spk_math.hpp"
+#include "math/spk_math.hpp"
 
 namespace spk
 {

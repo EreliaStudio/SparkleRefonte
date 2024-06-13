@@ -8,8 +8,8 @@
 #include <sstream>
 #include <algorithm>
 
-#include "structure/math/spk_math.hpp"
-#include "structure/math/spk_vector2.hpp"
+#include "math/spk_math.hpp"
+#include "math/spk_vector2.hpp"
 
 namespace spk
 {

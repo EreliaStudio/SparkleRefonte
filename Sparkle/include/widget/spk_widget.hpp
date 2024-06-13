@@ -7,7 +7,7 @@
 #include "structure/design_pattern/spk_inherence_object.hpp"
 #include "structure/design_pattern/spk_activable_object.hpp"
 
-#include "structure/math/spk_geometry_2D.hpp"
+#include "math/spk_geometry_2D.hpp"
 
 namespace spk
 {

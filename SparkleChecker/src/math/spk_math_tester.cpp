@@ -1,4 +1,4 @@
-#include "structure/math/spk_math_tester.hpp"
+#include "math/spk_math_tester.hpp"
 
 TEST(PositiveModuloTest, BasicTests)
 {

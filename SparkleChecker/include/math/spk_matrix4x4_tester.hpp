@@ -1,7 +1,7 @@
 #pragma once
 
 #include "gtest/gtest.h"
-#include "structure/math/spk_matrix4x4.hpp"
+#include "math/spk_matrix4x4.hpp"
 
 using namespace spk;
 

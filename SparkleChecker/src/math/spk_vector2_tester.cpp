@@ -1,4 +1,4 @@
-#include "structure/math/spk_vector2_tester.hpp"
+#include "math/spk_vector2_tester.hpp"
 
 TEST_F(Vector2Test, DefaultConstructor)
 {

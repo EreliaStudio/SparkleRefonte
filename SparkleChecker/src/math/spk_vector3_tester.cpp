@@ -1,4 +1,4 @@
-#include "structure/math/spk_vector3_tester.hpp"
+#include "math/spk_vector3_tester.hpp"
 
 TEST_F(Vector3Test, DefaultConstructor)
 {

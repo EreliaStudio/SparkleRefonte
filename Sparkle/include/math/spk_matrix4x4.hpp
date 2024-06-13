@@ -3,8 +3,8 @@
 #include <iomanip>
 #include <cmath>
 
-#include "structure/math/spk_vector2.hpp"
-#include "structure/math/spk_vector3.hpp"
+#include "math/spk_vector2.hpp"
+#include "math/spk_vector3.hpp"
 
 namespace spk
 {
