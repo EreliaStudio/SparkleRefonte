@@ -125,7 +125,7 @@
     <ClInclude Include="include\structure\design_pattern\spk_singleton.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\math\spk_matrix4x4.hpp">
+    <ClInclude Include="include\math\spk_matrix.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="include\math\spk_math.hpp">

@@ -2,6 +2,8 @@
 
 #include "spk_define.hpp"
 
+#include <cstdlib>
+#include <cmath>
 #include <iostream>
 #include <type_traits>
 #include <unordered_map>
@@ -59,11 +61,36 @@ namespace spk
             return wss.str();
         }
 
-        // Equality operators
         template<typename UType>
         bool operator==(const IVector3<UType>& other) const
         {
-            return x == static_cast<TType>(other.x) && y == static_cast<TType>(other.y) && z == static_cast<TType>(other.z);
+            if constexpr (std::is_floating_point<TType>::value)
+            {
+                constexpr TType epsilon = static_cast<TType>(1e-5);
+                return std::fabs(x - static_cast<TType>(other.x)) < epsilon &&
+                    std::fabs(y - static_cast<TType>(other.y)) < epsilon &&
+                    std::fabs(z - static_cast<TType>(other.z)) < epsilon;
+            }
+            else
+            {
+                return x == static_cast<TType>(other.x) && y == static_cast<TType>(other.y) && z == static_cast<TType>(other.z);
+            }
+        }
+
+        template<typename UType>
+        bool operator==(UType scalar) const
+        {
+            if constexpr (std::is_floating_point<TType>::value)
+            {
+                constexpr TType epsilon = static_cast<TType>(1e-5);
+                return std::fabs(x - static_cast<TType>(scalar)) < epsilon &&
+                    std::fabs(y - static_cast<TType>(scalar)) < epsilon &&
+                    std::fabs(z - static_cast<TType>(scalar)) < epsilon;
+            }
+            else
+            {
+                return x == static_cast<TType>(scalar) && y == static_cast<TType>(scalar) && z == static_cast<TType>(scalar);
+            }
         }
 
         template<typename UType>
@@ -72,7 +99,12 @@ namespace spk
             return !(*this == other);
         }
 
-        // Comparison operators
+        template<typename UType>
+        bool operator!=(UType scalar) const
+        {
+            return !(*this == scalar);
+        }
+
         template<typename UType>
         bool operator<(const IVector3<UType>& other) const
         {
@@ -95,19 +127,6 @@ namespace spk
         bool operator>=(const IVector3<UType>& other) const
         {
             return !(*this < other);
-        }
-
-        // Comparison operators with scalar
-        template<typename UType>
-        bool operator==(UType scalar) const
-        {
-            return x == scalar && y == scalar && z == scalar;
-        }
-
-        template<typename UType>
-        bool operator!=(UType scalar) const
-        {
-            return !(*this == scalar);
         }
 
         template<typename UType>
@@ -424,7 +443,6 @@ namespace spk
     using Vector3UInt = IVector3<uint32_t>;
 }
 
-// Arithmetic operators with scalar outside of the class
 template<typename TType, typename UType, typename = std::enable_if_t<std::is_arithmetic<UType>::value>>
 spk::IVector3<TType> operator+(UType scalar, const spk::IVector3<TType>& vec)
 {
@@ -453,7 +471,6 @@ spk::IVector3<TType> operator/(UType scalar, const spk::IVector3<TType>& vec)
     return spk::IVector3<TType>(scalar / vec.x, scalar / vec.y, scalar / vec.z);
 }
 
-// Hash function for IVector3 to use in unordered_map
 namespace std
 {
     template<typename TType>

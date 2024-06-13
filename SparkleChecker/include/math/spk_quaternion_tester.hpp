@@ -12,12 +12,3 @@ protected:
 
 	}
 };
-
-namespace spk
-{
-	template<typename TType>
-	void PrintTo(const IVector2<TType>& vec, std::ostream* os)
-	{
-		*os << vec;
-	}
-}

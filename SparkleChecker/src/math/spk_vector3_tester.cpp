@@ -100,8 +100,12 @@ TEST_F(Vector3Test, EqualityOperator)
 {
 	spk::IVector3<int> vecInt1(3, 4, 5);
 	spk::IVector3<int> vecInt2(3, 4, 5);
-	spk::IVector3<int> vecInt3(6, 7, 8);
+	spk::IVector3<int> vecInt3(6, 4, 5);
 	EXPECT_EQ(vecInt1, vecInt2) << "Equality operator should return true for equal int vectors";
+	EXPECT_NE(vecInt1, vecInt3) << "Equality operator should return false for different int vectors";
+	vecInt3 = spk::IVector3<int>(3, 5, 5);
+	EXPECT_NE(vecInt1, vecInt3) << "Equality operator should return false for different int vectors";
+	vecInt3 = spk::IVector3<int>(3, 4, 6);
 	EXPECT_NE(vecInt1, vecInt3) << "Equality operator should return false for different int vectors";
 
 	spk::IVector3<float> vecFloat1(3.0f, 4.0f, 5.0f);
@@ -109,18 +113,33 @@ TEST_F(Vector3Test, EqualityOperator)
 	spk::IVector3<float> vecFloat3(6.0f, 7.0f, 8.0f);
 	EXPECT_EQ(vecFloat1, vecFloat2) << "Equality operator should return true for equal float vectors";
 	EXPECT_NE(vecFloat1, vecFloat3) << "Equality operator should return false for different float vectors";
+	EXPECT_NE(vecFloat1, vecFloat3) << "Equality operator should return false for different int vectors";
+	vecFloat3 = spk::IVector3<float>(3, 5, 5);
+	EXPECT_NE(vecFloat1, vecFloat3) << "Equality operator should return false for different int vectors";
+	vecFloat3 = spk::IVector3<float>(3, 4, 6);
+	EXPECT_NE(vecFloat1, vecFloat3) << "Equality operator should return false for different int vectors";
 
 	spk::IVector3<double> vecDouble1(3.0, 4.0, 5.0);
 	spk::IVector3<double> vecDouble2(3.0, 4.0, 5.0);
 	spk::IVector3<double> vecDouble3(6.0, 7.0, 8.0);
 	EXPECT_EQ(vecDouble1, vecDouble2) << "Equality operator should return true for equal double vectors";
 	EXPECT_NE(vecDouble1, vecDouble3) << "Equality operator should return false for different double vectors";
+	EXPECT_NE(vecDouble1, vecDouble3) << "Equality operator should return false for different int vectors";
+	vecDouble3 = spk::IVector3<double>(3, 5, 5);
+	EXPECT_NE(vecDouble1, vecDouble3) << "Equality operator should return false for different int vectors";
+	vecDouble3 = spk::IVector3<double>(3, 4, 6);
+	EXPECT_NE(vecDouble1, vecDouble3) << "Equality operator should return false for different int vectors";
 
 	spk::IVector3<size_t> vecSizeT1(3, 4, 5);
 	spk::IVector3<size_t> vecSizeT2(3, 4, 5);
 	spk::IVector3<size_t> vecSizeT3(6, 7, 8);
 	EXPECT_EQ(vecSizeT1, vecSizeT2) << "Equality operator should return true for equal size_t vectors";
 	EXPECT_NE(vecSizeT1, vecSizeT3) << "Equality operator should return false for different size_t vectors";
+	EXPECT_NE(vecSizeT1, vecSizeT3) << "Equality operator should return false for different int vectors";
+	vecSizeT3 = spk::IVector3<size_t>(3, 5, 5);
+	EXPECT_NE(vecSizeT1, vecSizeT3) << "Equality operator should return false for different int vectors";
+	vecSizeT3 = spk::IVector3<size_t>(3, 4, 6);
+	EXPECT_NE(vecSizeT1, vecSizeT3) << "Equality operator should return false for different int vectors";
 
 	spk::IVector3<int> vecInt4(3, 4, 5);
 	spk::IVector3<float> vecFloat4(3.5f, 4.0f, 5.0f);

@@ -52,7 +52,7 @@
     <ClInclude Include="include\structure\design_pattern\spk_stateful_object.hpp" />
     <ClInclude Include="include\math\spk_geometry_2D.hpp" />
     <ClInclude Include="include\math\spk_math.hpp" />
-    <ClInclude Include="include\math\spk_matrix4x4.hpp" />
+    <ClInclude Include="include\math\spk_matrix.hpp" />
     <ClInclude Include="include\math\spk_quaternion.hpp" />
     <ClInclude Include="include\math\spk_vector2.hpp" />
     <ClInclude Include="include\math\spk_vector3.hpp" />
