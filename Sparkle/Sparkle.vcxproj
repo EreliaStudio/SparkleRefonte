@@ -35,6 +35,7 @@
     <ClInclude Include="include\application\spk_console_application.hpp" />
     <ClInclude Include="include\application\spk_graphical_application.hpp" />
     <ClInclude Include="include\application\spk_widget_based_application.hpp" />
+    <ClInclude Include="include\spk_file_functions.hpp" />
     <ClInclude Include="include\spk_sfinae.hpp" />
     <ClInclude Include="include\sparkle.hpp" />
     <ClInclude Include="include\spk_debug_macro.hpp" />
