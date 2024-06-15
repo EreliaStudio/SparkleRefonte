@@ -278,17 +278,17 @@ namespace spk
 			IMatrix result;
 
 			result[0][0] = right.x;
-			result[0][1] = right.y;
-			result[0][2] = right.z;
+			result[1][0] = right.y;
+			result[2][0] = right.z;
 			result[1][0] = up.x;
 			result[1][1] = up.y;
 			result[1][2] = up.z;
 			result[2][0] = -forward.x;
 			result[2][1] = -forward.y;
 			result[2][2] = -forward.z;
-			result[0][3] = -right.dot(p_from);
-			result[1][3] = -up.dot(p_from);
-			result[2][3] = forward.dot(p_from);
+			result[3][0] = -right.dot(p_from);
+			result[3][1] = -up.dot(p_from);
+			result[3][2] = forward.dot(p_from);
 
 			return result;
 		}

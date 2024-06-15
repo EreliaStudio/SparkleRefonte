@@ -143,14 +143,14 @@ TEST_F(MatrixTest, MatrixOutputStream_ostream)
 		0, 0, 0, 1
 		});
 
-	std::ostringstream oss;
+	std::wostringstream oss;
 	oss << matrix;
 	std::wstring expected_wstr =
 		L"[2 - 0 - 0 - 3] - "
 		L"[0 - 2 - 0 - 4] - "
 		L"[0 - 0 - 2 - 5] - "
 		L"[0 - 0 - 0 - 1]";
-	std::string expected(expected_wstr.begin(), expected_wstr.end());
+	std::wstring expected(expected_wstr.begin(), expected_wstr.end());
 
 	ASSERT_EQ(oss.str(), expected);
 }
@@ -194,15 +194,15 @@ TEST_F(MatrixTest, ScaleMatrix)
 
 TEST_F(MatrixTest, LookAtMatrix)
 {
-	spk::Vector3 from = spk::Vector3(0, 0, 0);
-	spk::Vector3 to = spk::Vector3(0, 0, -1);
+	spk::Vector3 from = spk::Vector3(2, 2, 2);
+	spk::Vector3 to = spk::Vector3(2, 2, -1);
 	spk::Vector3 up = spk::Vector3(0, 1, 0);
 
 	spk::Matrix4x4 lookAtMatrix = spk::Matrix4x4::lookAt(from, to, up);
 
-	spk::Vector3 result = lookAtMatrix * spk::Vector3(0, 0, 0);
+	spk::Vector3 result = lookAtMatrix * spk::Vector3(1, -1, 0);
 
-	ASSERT_EQ(result, spk::Vector3(0, 0, 0)) << "Wrong lookAt matrix transformation";
+	ASSERT_EQ(result, spk::Vector3(-1, -3, -2)) << "Wrong lookAt matrix transformation";
 }
 
 TEST_F(MatrixTest, RotateAroundAxisMatrix)
