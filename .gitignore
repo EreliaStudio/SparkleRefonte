@@ -13,3 +13,5 @@ packages/
 x64
 
 *.exe
+/SparkleChecker/Debug
+/Debug

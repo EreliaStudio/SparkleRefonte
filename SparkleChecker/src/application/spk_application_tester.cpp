@@ -11,8 +11,6 @@ TEST_F(ApplicationTest, AddBehaviorToSpecificThread)
 {
 	spk::String threadName = L"WorkerThread";
 
-	app.addBehavior(threadName, callback);
-
 	auto contract = app.addBehavior(threadName, callback);
 
 	ASSERT_TRUE(contract.isValid()) << "Contract should be valid after adding behavior to specific thread.";

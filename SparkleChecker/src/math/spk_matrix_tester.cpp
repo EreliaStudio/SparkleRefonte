@@ -236,19 +236,30 @@ TEST_F(MatrixTest, PerspectiveMatrix)
 
 TEST_F(MatrixTest, OrthoMatrix)
 {
-	float left = -1.0f;
-	float right = 1.0f;
-	float bottom = -1.0f;
-	float top = 1.0f;
+	float left = -10.0f;
+	float right = 10.0f;
+	float bottom = -10.0f;
+	float top = 10.0f;
 	float nearPlane = -1.0f;
 	float farPlane = 1.0f;
 
 	spk::Matrix4x4 orthoMatrix = spk::Matrix4x4::ortho(left, right, bottom, top, nearPlane, farPlane);
 
-	ASSERT_FLOAT_EQ(orthoMatrix[0][0], 2.0f / (right - left)) << "Wrong ortho matrix element [0][0]";
-	ASSERT_FLOAT_EQ(orthoMatrix[1][1], 2.0f / (top - bottom)) << "Wrong ortho matrix element [1][1]";
-	ASSERT_FLOAT_EQ(orthoMatrix[2][2], -2.0f / (farPlane - nearPlane)) << "Wrong ortho matrix element [2][2]";
-	ASSERT_FLOAT_EQ(orthoMatrix[3][0], -(right + left) / (right - left)) << "Wrong ortho matrix element [3][0]";
-	ASSERT_FLOAT_EQ(orthoMatrix[3][1], -(top + bottom) / (top - bottom)) << "Wrong ortho matrix element [3][1]";
-	ASSERT_FLOAT_EQ(orthoMatrix[3][2], -(farPlane + nearPlane) / (farPlane - nearPlane)) << "Wrong ortho matrix element [3][2]";
+	spk::Vector3 computedPositions[4] = {
+		orthoMatrix * spk::Vector3(5, 5, 0),
+		orthoMatrix * spk::Vector3(5, -5, 0),
+		orthoMatrix * spk::Vector3(-5, 5, 0),
+		orthoMatrix * spk::Vector3(-5, -5, 0)
+	};
+	spk::Vector3 expectedPositions[4] = {
+		spk::Vector3(0.5f, 0.5f, 0),
+		spk::Vector3(0.5f, -0.5f, 0),
+		spk::Vector3(-0.5f, 0.5f, 0),
+		spk::Vector3(-0.5f, -0.5f, 0)
+	};
+
+	for (size_t i = 0; i < 4; i++)
+	{
+		ASSERT_EQ(computedPositions[i], expectedPositions[i]) << "Error on computed position [" << i << "]";
+	}
 }
