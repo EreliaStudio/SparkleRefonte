@@ -1,7 +1,5 @@
 #pragma once
 
-#include "spk_define.hpp"
-
 #include <vector>
 #include <map>
 
@@ -13,7 +11,7 @@ namespace spk
 	class Application
 	{
 	public:
-		static constexpr const spk::Char* MainThreadName = L"MainThread";
+		static constexpr const wchar_t* MainThreadName = L"MainThread";
 		using Job = spk::ContractProvider::Job;
 		using Contract = spk::ContractProvider::Contract;
 
@@ -22,8 +20,8 @@ namespace spk
 		std::atomic<int> _errorCode;
 
 		std::shared_ptr<spk::ContractProvider> _mainThreadContract;
-		std::unordered_map<spk::String, std::shared_ptr<spk::PersistantWorker>> _workers;
-		std::unordered_map<spk::String, std::shared_ptr<spk::ContractProvider>> _contractProviders;
+		std::unordered_map<std::wstring, std::shared_ptr<spk::PersistantWorker>> _workers;
+		std::unordered_map<std::wstring, std::shared_ptr<spk::ContractProvider>> _contractProviders;
 
 	public:
 		Application() :
@@ -33,7 +31,7 @@ namespace spk
 			_workers[MainThreadName] = nullptr;
 		}
 
-		Contract addBehavior(const spk::String& p_threadName, const Job& p_job)
+		Contract addBehavior(const std::wstring& p_threadName, const Job& p_job)
 		{
 			if (_workers.contains(p_threadName) == false)
 				_contractProviders[p_threadName] = std::make_shared<spk::ContractProvider>();

@@ -26,13 +26,13 @@ namespace spk
 		return state();
 	}
 
-	ActivableObject::Contract ActivableObject::addActivationCallback(const std::function<void()>& callback)
+	ActivableObject::Contract ActivableObject::addActivationCallback(const std::function<void()>& p_callback)
 	{
-		return (StatefulObject<bool>::addCallback(true, callback));
+		return (StatefulObject<bool>::addCallback(true, p_callback));
 	}
 
-	ActivableObject::Contract ActivableObject::addDeactivationCallback(const std::function<void()>& callback)
+	ActivableObject::Contract ActivableObject::addDeactivationCallback(const std::function<void()>& p_callback)
 	{
-		return (StatefulObject<bool>::addCallback(false, callback));
+		return (StatefulObject<bool>::addCallback(false, p_callback));
 	}
 }

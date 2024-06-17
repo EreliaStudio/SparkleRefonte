@@ -1,6 +1,6 @@
 #pragma once
 
-#include "spk_define.hpp"
+#pragma once
 
 #include "structure/spk_iostream.hpp"
 

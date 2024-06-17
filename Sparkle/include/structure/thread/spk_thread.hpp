@@ -1,6 +1,5 @@
 #pragma once
 
-#include "spk_define.hpp"
 #include "structure/spk_iostream.hpp"
 
 #include <unordered_map>
@@ -14,12 +13,12 @@ namespace spk
 	class Thread
 	{
 	private:
-		spk::String _name;
+		std::wstring _name;
 		std::function<void()> _callback;
 		std::unique_ptr<std::thread> _handle = nullptr;
 
 	public:
-		Thread(const spk::String& p_name, const std::function<void()>& p_callback) :
+		Thread(const std::wstring& p_name, const std::function<void()>& p_callback) :
 			_name(p_name),
 			_callback([p_name, p_callback]() {
 			spk::cout.setPrefix(p_name);

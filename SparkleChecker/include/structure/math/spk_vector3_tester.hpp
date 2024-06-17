@@ -1,7 +1,7 @@
 #pragma once
 
 #include <gtest/gtest.h>
-#include "math/spk_vector3.hpp"
+#include "structure/math/spk_vector3.hpp"
 
 class Vector3Test : public ::testing::Test
 {

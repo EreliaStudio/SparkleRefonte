@@ -1,7 +1,5 @@
 #pragma once
 
-#include "spk_define.hpp"
-
 #include <iostream>
 #include <sstream>
 #include <mutex>
@@ -13,14 +11,14 @@ namespace spk
 	private:
 		std::wostream* _stream;
 		std::wstringstream _buffer;
-		spk::String _prefix;
+		std::wstring _prefix;
 		std::recursive_mutex _mutex;
 		bool _newLine;
 
 	public:
 		IOStream(std::wostream& stream);
 
-		void setPrefix(const spk::String& prefix);
+		void setPrefix(const std::wstring& prefix);
 
 		template <typename TOutputedType>
 		IOStream& operator<<(const TOutputedType& value)
@@ -33,10 +31,10 @@ namespace spk
 			}
 			_buffer << value;
 
-			spk::String bufferContent = _buffer.str();
-			spk::Lenght pos = 0;
+			std::wstring bufferContent = _buffer.str();
+			size_t pos = 0;
 
-			while ((pos = bufferContent.find(L'\n', pos)) != spk::String::npos)
+			while ((pos = bufferContent.find(L'\n', pos)) != std::wstring::npos)
 			{
 				_newLine = true;
 				pos++;
@@ -48,7 +46,7 @@ namespace spk
 			return *this;
 		}
 
-		typedef std::basic_ostream<spk::Char, std::char_traits<spk::Char>> CoutType;
+		typedef std::basic_ostream<wchar_t, std::char_traits<wchar_t>> CoutType;
 
 		// To support std::endl and other manipulators
 		IOStream& operator<<(CoutType& (*func)(CoutType&));

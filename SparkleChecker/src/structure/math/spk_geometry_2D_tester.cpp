@@ -1,4 +1,4 @@
-#include "math/spk_geometry_2D_tester.hpp"
+#include "structure/math/spk_geometry_2D_tester.hpp"
 
 TEST_F(Geometry2DTest, DefaultConstructor)
 {

@@ -1,6 +1,6 @@
-#include "math/spk_matrix_tester.hpp"
+#include "structure/math/spk_matrix_tester.hpp"
 
-#include "math/spk_vector3.hpp"
+#include "structure/math/spk_vector3.hpp"
 
 TEST_F(MatrixTest, MatrixConstructor)
 {
@@ -105,13 +105,21 @@ TEST_F(MatrixTest, MatrixToString)
 		0, 0, 0, 1
 		});
 
-	std::wstring expected =
+	std::wstring expectedWideString =
 		L"[2 - 0 - 0 - 3] - "
 		L"[0 - 2 - 0 - 4] - "
 		L"[0 - 0 - 2 - 5] - "
 		L"[0 - 0 - 0 - 1]";
 
-	ASSERT_EQ(matrix.to_string(), expected);
+	ASSERT_EQ(matrix.to_wstring(), expectedWideString);
+
+	std::string expectedString =
+		"[2 - 0 - 0 - 3] - "
+		"[0 - 2 - 0 - 4] - "
+		"[0 - 0 - 2 - 5] - "
+		"[0 - 0 - 0 - 1]";
+
+	ASSERT_EQ(matrix.to_string(), expectedString);
 }
 
 TEST_F(MatrixTest, MatrixOutputStream_wostream)
@@ -143,14 +151,13 @@ TEST_F(MatrixTest, MatrixOutputStream_ostream)
 		0, 0, 0, 1
 		});
 
-	std::wostringstream oss;
+	std::ostringstream oss;
 	oss << matrix;
-	std::wstring expected_wstr =
-		L"[2 - 0 - 0 - 3] - "
-		L"[0 - 2 - 0 - 4] - "
-		L"[0 - 0 - 2 - 5] - "
-		L"[0 - 0 - 0 - 1]";
-	std::wstring expected(expected_wstr.begin(), expected_wstr.end());
+	std::string expected =
+		"[2 - 0 - 0 - 3] - "
+		"[0 - 2 - 0 - 4] - "
+		"[0 - 0 - 2 - 5] - "
+		"[0 - 0 - 0 - 1]";
 
 	ASSERT_EQ(oss.str(), expected);
 }
@@ -247,15 +254,15 @@ TEST_F(MatrixTest, OrthoMatrix)
 
 	spk::Vector3 computedPositions[4] = {
 		orthoMatrix * spk::Vector3(5, 5, 0),
-		orthoMatrix * spk::Vector3(5, -5, 0),
-		orthoMatrix * spk::Vector3(-5, 5, 0),
-		orthoMatrix * spk::Vector3(-5, -5, 0)
+		orthoMatrix * spk::Vector3(5, -5, 0.25),
+		orthoMatrix * spk::Vector3(-5, 5, 0.5),
+		orthoMatrix * spk::Vector3(-5, -5, 0.75)
 	};
 	spk::Vector3 expectedPositions[4] = {
 		spk::Vector3(0.5f, 0.5f, 0),
-		spk::Vector3(0.5f, -0.5f, 0),
-		spk::Vector3(-0.5f, 0.5f, 0),
-		spk::Vector3(-0.5f, -0.5f, 0)
+		spk::Vector3(0.5f, -0.5f, -0.25),
+		spk::Vector3(-0.5f, 0.5f, -0.5),
+		spk::Vector3(-0.5f, -0.5f, -0.75)
 	};
 
 	for (size_t i = 0; i < 4; i++)

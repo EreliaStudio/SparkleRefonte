@@ -3,8 +3,8 @@
 #include <stdexcept>
 #include <string>
 
-#include "math/spk_vector2.hpp"
-#include "math/spk_vector3.hpp"
+#include "structure/math/spk_vector2.hpp"
+#include "structure/math/spk_vector3.hpp"
 
 namespace spk
 {
@@ -235,37 +235,56 @@ namespace spk
 			return (scaleMatrix(p_scale.x, p_scale.y, p_scale.z));
 		}
 
-		spk::String to_string() const
+		friend std::wostream& operator<<(std::wostream& os, const IMatrix& mat)
 		{
-			std::wstringstream wss;
 			for (size_t j = 0; j < SizeY; ++j)
 			{
 				if (j != 0)
-					wss << " - ";
+					os << " - ";
 
-				wss << L"[";
+				os << L"[";
 				for (size_t i = 0; i < SizeX; ++i)
 				{
 					if (i != 0)
-						wss << L" - ";
-					wss << (*this)[i][j];
+						os << L" - ";
+					os << mat[i][j];
 				}
-				wss << L"]";
+				os << L"]";
 			}
+			return os;
+		}
+
+		friend std::ostream& operator<<(std::ostream& os, const IMatrix& mat)
+		{
+			for (size_t j = 0; j < SizeY; ++j)
+			{
+				if (j != 0)
+					os << " - ";
+
+				os << "[";
+				for (size_t i = 0; i < SizeX; ++i)
+				{
+					if (i != 0)
+						os << " - ";
+					os << mat[i][j];
+				}
+				os << "]";
+			}
+			return os;
+		}
+
+		std::wstring to_wstring() const
+		{
+			std::wstringstream wss;
+			wss << *this;
 			return wss.str();
 		}
 
-		friend std::wostream& operator<<(std::wostream& os, const IMatrix& matrix)
+		std::string to_string() const
 		{
-			os << matrix.to_string();
-			return os;
-		}
-
-		friend std::ostream& operator<<(std::ostream& os, const IMatrix& matrix)
-		{
-			std::wstring wstr = matrix.to_string();
-			os << std::string(wstr.begin(), wstr.end());
-			return os;
+			std::stringstream ss;
+			ss << *this;
+			return ss.str();
 		}
 
 		template <size_t X = SizeX, size_t Y = SizeY, typename std::enable_if_t<(X == 4 && Y == 4), int> = 0>

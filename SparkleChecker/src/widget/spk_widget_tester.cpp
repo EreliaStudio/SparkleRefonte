@@ -31,7 +31,7 @@ namespace
 		}
 
 	public:
-		CustomWidget(const spk::String& p_name) :
+		CustomWidget(const std::wstring& p_name) :
 			Widget(p_name), _geometryChangeCounter(0), _renderCounter(0), _updateCounter(0)
 		{
 

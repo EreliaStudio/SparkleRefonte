@@ -1,13 +1,11 @@
 #pragma once
 
-#include "spk_define.hpp"
-
 #include "structure/spk_safe_pointer.hpp"
 
 #include "structure/design_pattern/spk_inherence_object.hpp"
 #include "structure/design_pattern/spk_activable_object.hpp"
 
-#include "math/spk_geometry_2D.hpp"
+#include "structure/math/spk_geometry_2D.hpp"
 
 namespace spk
 {
@@ -18,7 +16,7 @@ namespace spk
 		public spk::ActivableObject //An object who must contain a state as boolean, with a method activate and deactivate. It must also contain a set of callback where users can add callback to activation and deactivation
 	{
 	private:
-		spk::String _name;
+		std::wstring _name;
 		Widget* _parent;
 
 		std::vector<Widget*> _managedChildren;
@@ -32,12 +30,12 @@ namespace spk
 		virtual void _onUpdate();
 
 	public:
-		Widget(const spk::String& p_name);
-		Widget(const spk::String& p_name, Widget* p_parent);
+		Widget(const std::wstring& p_name);
+		Widget(const std::wstring& p_name, Widget* p_parent);
 
 		~Widget();
 
-		const spk::String& name() const;
+		const std::wstring& name() const;
 
 		void addChild(Widget* p_child) override;
 

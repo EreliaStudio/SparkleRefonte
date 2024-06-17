@@ -1,14 +1,13 @@
 #pragma once
 
-#include "spk_define.hpp"
 #include <cmath>
 #include <iostream>
 #include <type_traits>
 #include <array>
-#include "math/spk_math.hpp"
-#include "math/spk_vector2.hpp"
-#include "math/spk_vector3.hpp"
-#include "math/spk_matrix.hpp"
+#include "structure/math/spk_math.hpp"
+#include "structure/math/spk_vector2.hpp"
+#include "structure/math/spk_vector3.hpp"
+#include "structure/math/spk_matrix.hpp"
 
 namespace spk
 {
@@ -67,11 +66,18 @@ namespace spk
 			return (os);
 		}
 
-		spk::String to_string() const
+		std::wstring to_wstring() const
 		{
 			std::wstringstream wss;
 			wss << *this;
-			return (wss.str());
+			return wss.str();
+		}
+
+		std::string to_string() const
+		{
+			std::stringstream ss;
+			ss << *this;
+			return ss.str();
 		}
 
 		IQuaternion<TType> normalize() const

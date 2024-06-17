@@ -27,7 +27,7 @@ namespace
 		}
 
 	public:
-		CustomWidget(spk::Application* p_application, const spk::String& p_name, Widget* p_parent = nullptr)
+		CustomWidget(spk::Application* p_application, const std::wstring& p_name, Widget* p_parent = nullptr)
 			: spk::Widget(p_name, p_parent), _application(p_application), _renderCounter(0), _updateCounter(0)
 		{
 		}

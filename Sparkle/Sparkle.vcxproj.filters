@@ -39,13 +39,13 @@
     <ClCompile Include="src\structure\container\spk_data_buffer.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\math\spk_matrix4x4.cpp">
+    <ClCompile Include="src\structure\math\spk_matrix4x4.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\math\spk_math.cpp">
+    <ClCompile Include="src\structure\math\spk_math.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\math\spk_quaternion.cpp">
+    <ClCompile Include="src\structure\math\spk_quaternion.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -54,9 +54,6 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="include\application\spk_application.hpp">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
-    <ClInclude Include="include\spk_define.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="include\structure\spk_iostream.hpp">
@@ -92,7 +89,7 @@
     <ClInclude Include="include\structure\design_pattern\spk_contract_provider.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\math\spk_geometry_2D.hpp">
+    <ClInclude Include="include\structure\math\spk_geometry_2D.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="include\structure\spk_safe_pointer.hpp">
@@ -101,10 +98,10 @@
     <ClInclude Include="include\spk_debug_macro.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\math\spk_vector2.hpp">
+    <ClInclude Include="include\structure\math\spk_vector2.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\math\spk_vector3.hpp">
+    <ClInclude Include="include\structure\math\spk_vector3.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="include\structure\container\spk_pool.hpp">
@@ -125,16 +122,16 @@
     <ClInclude Include="include\structure\design_pattern\spk_singleton.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\math\spk_matrix.hpp">
+    <ClInclude Include="include\structure\math\spk_matrix.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\math\spk_math.hpp">
+    <ClInclude Include="include\structure\math\spk_math.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="include\spk_file_functions.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\math\spk_quaternion.hpp">
+    <ClInclude Include="include\structure\math\spk_quaternion.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>

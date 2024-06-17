@@ -15,24 +15,24 @@ namespace spk
 		EventNotifier() = default;
 		virtual ~EventNotifier() = default;
 
-		ContractProvider::Contract subscribe(const TType& event, const ContractProvider::Job& job)
+		ContractProvider::Contract subscribe(const TType& p_event, const ContractProvider::Job& p_job)
 		{
-			return _eventProviders[event].subscribe(job);
+			return _eventProviders[p_event].subscribe(p_job);
 		}
 
-		void invalidateContracts(const TType& event)
+		void invalidateContracts(const TType& p_event)
 		{
-			_eventProviders[event].invalidateContracts();
+			_eventProviders[p_event].invalidateContracts();
 		}
 
-		void unsubscribe(const TType& event, const ContractProvider::Contract& p_contract)
+		void unsubscribe(const TType& p_event, const ContractProvider::Contract& p_contract)
 		{
-			_eventProviders[event].unsubscribe(p_contract);
+			_eventProviders[p_event].unsubscribe(p_contract);
 		}
 
-		void notifyEvent(const TType& event)
+		void notifyEvent(const TType& p_event)
 		{
-			auto it = _eventProviders.find(event);
+			auto it = _eventProviders.find(p_event);
 			if (it != _eventProviders.end())
 			{
 				it->second.trigger();

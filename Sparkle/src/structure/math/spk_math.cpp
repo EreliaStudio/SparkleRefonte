@@ -1,4 +1,4 @@
-#include "math/spk_math.hpp"
+#include "structure/math/spk_math.hpp"
 
 #include <stdexcept>
 

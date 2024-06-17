@@ -9,7 +9,7 @@ TEST_F(ApplicationTest, AddBehaviorToMainThread)
 
 TEST_F(ApplicationTest, AddBehaviorToSpecificThread)
 {
-	spk::String threadName = L"WorkerThread";
+	std::wstring threadName = L"WorkerThread";
 
 	auto contract = app.addBehavior(threadName, callback);
 

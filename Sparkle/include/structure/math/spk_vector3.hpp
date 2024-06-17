@@ -1,7 +1,5 @@
 #pragma once
 
-#include "spk_define.hpp"
-
 #include <cstdlib>
 #include <cmath>
 #include <iostream>
@@ -10,8 +8,8 @@
 #include <sstream>
 #include <algorithm>
 
-#include "math/spk_math.hpp"
-#include "math/spk_vector2.hpp"
+#include "structure/math/spk_math.hpp"
+#include "structure/math/spk_vector2.hpp"
 
 namespace spk
 {
@@ -53,12 +51,18 @@ namespace spk
             return os;
         }
 
-        // to_string method
-        spk::String to_string() const
+        std::wstring to_wstring() const
         {
             std::wstringstream wss;
             wss << *this;
             return wss.str();
+        }
+
+        std::string to_string() const
+        {
+            std::stringstream ss;
+            ss << *this;
+            return ss.str();
         }
 
         template<typename UType>

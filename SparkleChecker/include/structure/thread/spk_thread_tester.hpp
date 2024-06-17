@@ -9,7 +9,7 @@ class ThreadTest : public ::testing::Test
 {
 protected:
 	std::atomic<bool> callbackExecuted;
-	spk::String threadName;
+	std::wstring threadName;
 	std::function<void()> callback;
 
 	void SetUp() override

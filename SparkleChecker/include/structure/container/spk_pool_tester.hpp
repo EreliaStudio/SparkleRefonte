@@ -2,7 +2,6 @@
 
 #include "gtest/gtest.h"
 
-#include "spk_define.hpp"
 #include "structure/container/spk_pool.hpp"
 
 class PoolTest : public ::testing::Test

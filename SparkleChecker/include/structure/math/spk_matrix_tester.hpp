@@ -1,7 +1,7 @@
 #pragma once
 
 #include "gtest/gtest.h"
-#include "math/spk_matrix.hpp"
+#include "structure/math/spk_matrix.hpp"
 
 class MatrixTest : public ::testing::Test
 {

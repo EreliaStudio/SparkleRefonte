@@ -1,7 +1,5 @@
 #pragma once
 
-#include "spk_define.hpp"
-
 #include <iostream>
 #include <type_traits>
 #include <unordered_map>
@@ -47,12 +45,19 @@ namespace spk
             return os;
         }
 
-        // to_string method
-        spk::String to_string() const
+
+        std::wstring to_wstring() const
         {
             std::wstringstream wss;
             wss << *this;
             return wss.str();
+        }
+
+        std::string to_string() const
+        {
+            std::stringstream ss;
+            ss << *this;
+            return ss.str();
         }
 
 

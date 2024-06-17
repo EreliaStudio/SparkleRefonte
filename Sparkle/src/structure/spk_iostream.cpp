@@ -6,7 +6,7 @@ namespace spk
 	{
 	}
 
-	void IOStream::setPrefix(const spk::String& prefix)
+	void IOStream::setPrefix(const std::wstring& prefix)
 	{
 		std::lock_guard<std::recursive_mutex> lock(_mutex);
 		_prefix = prefix;

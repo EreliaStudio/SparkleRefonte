@@ -2,7 +2,8 @@
 
 #include "gtest/gtest.h"
 
-#include "spk_define.hpp"
+#pragma once
+
 #include "structure/design_pattern/spk_contract_provider.hpp"
 
 class ContractProviderTest : public ::testing::Test

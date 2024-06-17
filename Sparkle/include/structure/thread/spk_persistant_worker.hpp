@@ -12,7 +12,7 @@ namespace spk
 		using spk::Thread::join;
 
 	public:
-		PersistantWorker(const spk::String& p_name, const std::function<void()>& p_callback) :
+		PersistantWorker(const std::wstring& p_name, const std::function<void()>& p_callback) :
 			spk::Thread(p_name, [this, p_callback]()
 				{
 					this->_running = true;

@@ -9,7 +9,7 @@ class PersistantWorkerTest : public ::testing::Test
 {
 protected:
 	std::atomic<int> counter;
-	spk::String workerName;
+	std::wstring workerName;
 	std::function<void()> callback;
 
 	void SetUp() override

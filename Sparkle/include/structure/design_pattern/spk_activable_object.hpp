@@ -17,8 +17,8 @@ namespace spk
 		void deactivate();
 		bool isActive() const;
 
-		Contract addActivationCallback(const std::function<void()>& callback);
-		Contract addDeactivationCallback(const std::function<void()>& callback);
+		Contract addActivationCallback(const std::function<void()>& p_callback);
+		Contract addDeactivationCallback(const std::function<void()>& p_callback);
 
 	private:
 		using StatefulObject<bool>::setState;

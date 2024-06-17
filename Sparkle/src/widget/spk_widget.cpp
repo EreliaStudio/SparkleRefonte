@@ -5,7 +5,7 @@
 namespace spk
 {
 
-	Widget::Widget(const spk::String& p_name) :
+	Widget::Widget(const std::wstring& p_name) :
 		_name(p_name),
 		_parent(nullptr),
 		_depth(0)
@@ -13,7 +13,7 @@ namespace spk
 
 	}
 
-	Widget::Widget(const spk::String& p_name, Widget* p_parent) :
+	Widget::Widget(const std::wstring& p_name, Widget* p_parent) :
 		Widget(p_name)
 	{
 		if (p_parent != nullptr)
@@ -31,7 +31,7 @@ namespace spk
 		}
 	}
 
-	const spk::String& Widget::name() const
+	const std::wstring& Widget::name() const
 	{
 		return (_name);
 	}

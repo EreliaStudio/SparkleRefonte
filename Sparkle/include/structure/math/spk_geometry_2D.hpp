@@ -1,6 +1,5 @@
 #pragma once
 
-#include <spk_define.hpp>
 #include <iostream>
 
 namespace spk
@@ -48,7 +47,7 @@ namespace spk
 			}
 
 			template<typename TScalarType>
-			Position operator-(const TType& p_scalar) const
+			Position operator-(const TScalarType& p_scalar) const
 			{
 				return { x - p_scalar, y - p_scalar };
 			}
@@ -59,7 +58,7 @@ namespace spk
 			}
 
 			template<typename TScalarType>
-			Position operator*(const TType& p_scalar) const
+			Position operator*(const TScalarType& p_scalar) const
 			{
 				return { x * p_scalar, y * p_scalar };
 			}
@@ -70,7 +69,7 @@ namespace spk
 			}
 
 			template<typename TScalarType>
-			Position operator/(const TType& p_scalar) const
+			Position operator/(const TScalarType& p_scalar) const
 			{
 				if (p_scalar == 0)
 					throw std::runtime_error("Can't divide by zero");
@@ -85,7 +84,7 @@ namespace spk
 			}
 
 			template<typename TScalarType>
-			Position& operator+=(const TType& p_scalar)
+			Position& operator+=(const TScalarType& p_scalar)
 			{
 				x += p_scalar;
 				y += p_scalar;
@@ -100,7 +99,7 @@ namespace spk
 			}
 
 			template<typename TScalarType>
-			Position& operator-=(const TType& p_scalar)
+			Position& operator-=(const TScalarType& p_scalar)
 			{
 				x -= p_scalar;
 				y -= p_scalar;
@@ -115,7 +114,7 @@ namespace spk
 			}
 
 			template<typename TScalarType>
-			Position& operator*=(const TType& p_scalar)
+			Position& operator*=(const TScalarType& p_scalar)
 			{
 				x *= p_scalar;
 				y *= p_scalar;
@@ -130,7 +129,7 @@ namespace spk
 			}
 
 			template<typename TScalarType>
-			Position& operator/=(const TType& p_scalar)
+			Position& operator/=(const TScalarType& p_scalar)
 			{
 				if (p_scalar == 0)
 					throw std::runtime_error("Can't divide by zero");
@@ -159,28 +158,41 @@ namespace spk
 			}
 
 			template<typename TScalarType>
-			bool operator==(const TType& p_scalar) const
+			bool operator==(const TScalarType& p_scalar) const
 			{
 				return x == p_scalar && y == p_scalar;
 			}
 
 			template<typename TScalarType>
-			bool operator!=(const TType& p_scalar) const
+			bool operator!=(const TScalarType& p_scalar) const
 			{
 				return !(*this == p_scalar);
 			}
 
-			friend std::wostream& operator<<(std::wostream& os, const Position& p_position)
+			friend std::ostream& operator<<(std::ostream& p_os, const Position& p_position)
 			{
-				os << L"(" << p_position.x << L" x " << p_position.y << L")";
-				return os;
+				p_os << "(" << p_position.x << " x " << p_position.y << ")";
+				return p_os;
 			}
 
-			spk::String to_string() const
+			friend std::wostream& operator<<(std::wostream& p_os, const Position& p_position)
+			{
+				p_os << L"(" << p_position.x << L" x " << p_position.y << L")";
+				return p_os;
+			}
+
+			std::wstring to_wstring() const
 			{
 				std::wstringstream wss;
 				wss << *this;
 				return wss.str();
+			}
+
+			std::string to_string() const
+			{
+				std::stringstream ss;
+				ss << *this;
+				return ss.str();
 			}
 		};
 
@@ -352,11 +364,19 @@ namespace spk
 				return p_os;
 			}
 
-			spk::String to_string() const
+
+			std::wstring to_wstring() const
 			{
 				std::wstringstream wss;
 				wss << *this;
 				return wss.str();
+			}
+
+			std::string to_string() const
+			{
+				std::stringstream ss;
+				ss << *this;
+				return ss.str();
 			}
 		};
 
