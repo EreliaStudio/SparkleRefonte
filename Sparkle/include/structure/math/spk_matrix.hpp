@@ -81,6 +81,7 @@ namespace spk
 				throw std::invalid_argument("Can't access the column " + std::to_string(p_index) + " on a matrix " + std::to_string(SizeX) + "x" + std::to_string(SizeY));
 			return (cols[p_index]);
 		}
+
 		const Column& operator[](size_t p_index) const
 		{
 			if (p_index >= SizeX)
@@ -88,7 +89,7 @@ namespace spk
 			return (cols[p_index]);
 		}
 
-		Vector3 operator*(const Vector3& vec) const
+		Vector3 operator*(const Vector3& p_vec) const
 		{
 			if (SizeX != 4 || SizeY != 4)
 			{
@@ -96,14 +97,14 @@ namespace spk
 			}
 
 			Vector3 result;
-			result.x = (*this)[0][0] * vec.x + (*this)[1][0] * vec.y + (*this)[2][0] * vec.z + (*this)[3][0] * 1;
-			result.y = (*this)[0][1] * vec.x + (*this)[1][1] * vec.y + (*this)[2][1] * vec.z + (*this)[3][1] * 1;
-			result.z = (*this)[0][2] * vec.x + (*this)[1][2] * vec.y + (*this)[2][2] * vec.z + (*this)[3][2] * 1;
+			result.x = (*this)[0][0] * p_vec.x + (*this)[1][0] * p_vec.y + (*this)[2][0] * p_vec.z + (*this)[3][0] * 1;
+			result.y = (*this)[0][1] * p_vec.x + (*this)[1][1] * p_vec.y + (*this)[2][1] * p_vec.z + (*this)[3][1] * 1;
+			result.z = (*this)[0][2] * p_vec.x + (*this)[1][2] * p_vec.y + (*this)[2][2] * p_vec.z + (*this)[3][2] * 1;
 
 			return result;
 		}
 
-		Vector2 operator*(const Vector2& vec) const
+		Vector2 operator*(const Vector2& p_vec) const
 		{
 			if (SizeX != 3 || SizeY != 3)
 			{
@@ -111,13 +112,13 @@ namespace spk
 			}
 
 			Vector2 result;
-			result.x = (*this)[0][0] * vec.x + (*this)[1][0] * vec.y + (*this)[2][0] * 1;
-			result.y = (*this)[0][1] * vec.x + (*this)[1][1] * vec.y + (*this)[2][1] * 1;
+			result.x = (*this)[0][0] * p_vec.x + (*this)[1][0] * p_vec.y + (*this)[2][0] * 1;
+			result.y = (*this)[0][1] * p_vec.x + (*this)[1][1] * p_vec.y + (*this)[2][1] * 1;
 
 			return result;
 		}
 
-		IMatrix<SizeX, SizeY> operator*(const IMatrix<SizeX, SizeY>& other) const
+		IMatrix<SizeX, SizeY> operator*(const IMatrix<SizeX, SizeY>& p_other) const
 		{
 			IMatrix<SizeX, SizeY> result;
 
@@ -128,7 +129,7 @@ namespace spk
 					result[i][j] = 0;
 					for (size_t k = 0; k < SizeX; ++k)
 					{
-						result[i][j] += (*this)[i][k] * other[k][j];
+						result[i][j] += (*this)[i][k] * p_other[k][j];
 					}
 				}
 			}
@@ -136,13 +137,13 @@ namespace spk
 			return result;
 		}
 
-		bool operator==(const IMatrix& other) const
+		bool operator==(const IMatrix& p_other) const
 		{
 			for (size_t i = 0; i < SizeX; ++i)
 			{
 				for (size_t j = 0; j < SizeY; ++j)
 				{
-					if ((*this)[i][j] != other[i][j])
+					if ((*this)[i][j] != p_other[i][j])
 					{
 						return false;
 					}
@@ -151,23 +152,23 @@ namespace spk
 			return true;
 		}
 
-		bool operator!=(const IMatrix& other) const
+		bool operator!=(const IMatrix& p_other) const
 		{
-			return !(*this == other);
+			return !(*this == p_other);
 		}
 
-		static IMatrix<4, 4> rotationMatrix(float angleX, float angleY, float angleZ)
+		static IMatrix<4, 4> rotationMatrix(float p_angleX, float p_angleY, float p_angleZ)
 		{
 			IMatrix<4, 4> mat;
 
-			float cosX = std::cos(spk::degreeToRadian(angleX));
-			float sinX = std::sin(spk::degreeToRadian(angleX));
+			float cosX = std::cos(spk::degreeToRadian(p_angleX));
+			float sinX = std::sin(spk::degreeToRadian(p_angleX));
 
-			float cosY = std::cos(spk::degreeToRadian(angleY));
-			float sinY = std::sin(spk::degreeToRadian(angleY));
+			float cosY = std::cos(spk::degreeToRadian(p_angleY));
+			float sinY = std::sin(spk::degreeToRadian(p_angleY));
 
-			float cosZ = std::cos(spk::degreeToRadian(angleZ));
-			float sinZ = std::sin(spk::degreeToRadian(angleZ));
+			float cosZ = std::cos(spk::degreeToRadian(p_angleZ));
+			float sinZ = std::sin(spk::degreeToRadian(p_angleZ));
 
 			IMatrix<4, 4> rotationX = {
 				1, 0, 0, 0,
@@ -200,12 +201,12 @@ namespace spk
 			return (rotationMatrix(p_angle.x, p_angle.y, p_angle.z));
 		}
 
-		static IMatrix<4, 4> translationMatrix(float translateX, float translateY, float translateZ)
+		static IMatrix<4, 4> translationMatrix(float p_translateX, float p_translateY, float p_translateZ)
 		{
 			IMatrix<4, 4> mat = {
-				1, 0, 0, translateX,
-				0, 1, 0, translateY,
-				0, 0, 1, translateZ,
+				1, 0, 0, p_translateX,
+				0, 1, 0, p_translateY,
+				0, 0, 1, p_translateZ,
 				0, 0, 0, 1
 			};
 
@@ -218,12 +219,12 @@ namespace spk
 		}
 
 		// Scale Matrix
-		static IMatrix<4, 4> scaleMatrix(float scaleX, float scaleY, float scaleZ)
+		static IMatrix<4, 4> scaleMatrix(float p_scaleX, float p_scaleY, float p_scaleZ)
 		{
 			IMatrix<4, 4> mat = {
-				scaleX, 0, 0, 0,
-				0, scaleY, 0, 0,
-				0, 0, scaleZ, 0,
+				p_scaleX, 0, 0, 0,
+				0, p_scaleY, 0, 0,
+				0, 0, p_scaleZ, 0,
 				0, 0, 0, 1
 			};
 
@@ -235,42 +236,42 @@ namespace spk
 			return (scaleMatrix(p_scale.x, p_scale.y, p_scale.z));
 		}
 
-		friend std::wostream& operator<<(std::wostream& os, const IMatrix& mat)
+		friend std::wostream& operator<<(std::wostream& p_os, const IMatrix& p_mat)
 		{
 			for (size_t j = 0; j < SizeY; ++j)
 			{
 				if (j != 0)
-					os << " - ";
+					p_os << " - ";
 
-				os << L"[";
+				p_os << L"[";
 				for (size_t i = 0; i < SizeX; ++i)
 				{
 					if (i != 0)
-						os << L" - ";
-					os << mat[i][j];
+						p_os << L" - ";
+					p_os << p_mat[i][j];
 				}
-				os << L"]";
+				p_os << L"]";
 			}
-			return os;
+			return p_os;
 		}
 
-		friend std::ostream& operator<<(std::ostream& os, const IMatrix& mat)
+		friend std::ostream& operator<<(std::ostream& p_os, const IMatrix& p_mat)
 		{
 			for (size_t j = 0; j < SizeY; ++j)
 			{
 				if (j != 0)
-					os << " - ";
+					p_os << " - ";
 
-				os << "[";
+				p_os << "[";
 				for (size_t i = 0; i < SizeX; ++i)
 				{
 					if (i != 0)
-						os << " - ";
-					os << mat[i][j];
+						p_os << " - ";
+					p_os << p_mat[i][j];
 				}
-				os << "]";
+				p_os << "]";
 			}
-			return os;
+			return p_os;
 		}
 
 		std::wstring to_wstring() const

@@ -4,6 +4,9 @@
 #include <type_traits>
 #include <unordered_map>
 #include <sstream>
+#include <algorithm>
+
+#include "structure/math/spk_math.hpp"
 
 namespace spk
 {
@@ -17,32 +20,32 @@ namespace spk
         // Default constructor
         IVector2() : x(0), y(0) {}
 
-        // Constructor with scalar
+        // Constructor with p_scalar
         template<typename UType, typename = std::enable_if_t<std::is_arithmetic<UType>::value>>
-        IVector2(UType scalar) : x(static_cast<TType>(scalar)), y(static_cast<TType>(scalar)) {}
+        IVector2(UType p_scalar) : x(static_cast<TType>(p_scalar)), y(static_cast<TType>(p_scalar)) {}
 
         // Constructor with two values
         template<typename UType, typename VType,
             typename = std::enable_if_t<std::is_arithmetic<UType>::value&& std::is_arithmetic<VType>::value>>
-            IVector2(UType xVal, VType yVal) : x(static_cast<TType>(xVal)), y(static_cast<TType>(yVal)) {}
+            IVector2(UType p_xVal, VType p_yVal) : x(static_cast<TType>(p_xVal)), y(static_cast<TType>(p_yVal)) {}
 
         // Copy constructor
-        IVector2(const IVector2<TType>& other) = default;
+        IVector2(const IVector2<TType>& p_other) = default;
 
         // Copy assignment operator
-        IVector2& operator=(const IVector2<TType>& other) = default;
+        IVector2& operator=(const IVector2<TType>& p_other) = default;
 
         // Stream insertion operator
-        friend std::wostream& operator<<(std::wostream& os, const IVector2& vec)
+        friend std::wostream& operator<<(std::wostream& p_os, const IVector2& p_vec)
         {
-            os << L"(" << vec.x << L", " << vec.y << L")";
-            return os;
+            p_os << L"(" << p_vec.x << L", " << p_vec.y << L")";
+            return p_os;
         }
 
-        friend std::ostream& operator<<(std::ostream& os, const IVector2& vec)
+        friend std::ostream& operator<<(std::ostream& p_os, const IVector2& p_vec)
         {
-            os << "(" << vec.x << ", " << vec.y << ")";
-            return os;
+            p_os << "(" << p_vec.x << ", " << p_vec.y << ")";
+            return p_os;
         }
 
 
@@ -62,227 +65,341 @@ namespace spk
 
 
         template<typename UType>
-        bool operator==(const IVector2<UType>& other) const
+        bool operator==(const IVector2<UType>& p_other) const
         {
             if constexpr (std::is_floating_point<TType>::value)
             {
                 constexpr TType epsilon = static_cast<TType>(1e-5);
-                return std::fabs(x - static_cast<TType>(other.x)) < epsilon &&
-                    std::fabs(y - static_cast<TType>(other.y)) < epsilon;
+                return std::fabs(x - static_cast<TType>(p_other.x)) < epsilon &&
+                    std::fabs(y - static_cast<TType>(p_other.y)) < epsilon;
             }
             else
             {
-                return x == static_cast<TType>(other.x) && y == static_cast<TType>(other.y);
+                return x == static_cast<TType>(p_other.x) && y == static_cast<TType>(p_other.y);
             }
         }
 
         template<typename UType>
-        bool operator==(UType scalar) const
+        bool operator==(UType p_scalar) const
         {
             if constexpr (std::is_floating_point<TType>::value)
             {
                 constexpr TType epsilon = static_cast<TType>(1e-5);
-                return std::fabs(x - static_cast<TType>(scalar)) < epsilon &&
-                    std::fabs(y - static_cast<TType>(scalar)) < epsilon;
+                return std::fabs(x - static_cast<TType>(p_scalar)) < epsilon &&
+                    std::fabs(y - static_cast<TType>(p_scalar)) < epsilon;
             }
             else
             {
-                return x == static_cast<TType>(scalar) && y == static_cast<TType>(scalar);
+                return x == static_cast<TType>(p_scalar) && y == static_cast<TType>(p_scalar);
             }
         }
 
         template<typename UType>
-        bool operator!=(const IVector2<UType>& other) const
+        bool operator!=(const IVector2<UType>& p_other) const
         {
-            return !(*this == other);
+            return !(*this == p_other);
         }
 
         // Comparison operators
         template<typename UType>
-        bool operator<(const IVector2<UType>& other) const
+        bool operator<(const IVector2<UType>& p_other) const
         {
-            return x < other.x || (x == other.x && y < other.y);
+            return x < p_other.x || (x == p_other.x && y < p_other.y);
         }
 
         template<typename UType>
-        bool operator>(const IVector2<UType>& other) const
+        bool operator>(const IVector2<UType>& p_other) const
         {
-            return x > other.x || (x == other.x && y > other.y);
+            return x > p_other.x || (x == p_other.x && y > p_other.y);
         }
 
         template<typename UType>
-        bool operator<=(const IVector2<UType>& other) const
+        bool operator<=(const IVector2<UType>& p_other) const
         {
-            return !(*this > other);
+            return !(*this > p_other);
         }
 
         template<typename UType>
-        bool operator>=(const IVector2<UType>& other) const
+        bool operator>=(const IVector2<UType>& p_other) const
         {
-            return !(*this < other);
+            return !(*this < p_other);
         }
 
         template<typename UType>
-        bool operator!=(UType scalar) const
+        bool operator!=(UType p_scalar) const
         {
-            return !(*this == scalar);
+            return !(*this == p_scalar);
         }
 
         template<typename UType>
-        bool operator<(UType scalar) const
+        bool operator<(UType p_scalar) const
         {
-            return x < scalar && y < scalar;
+            return x < p_scalar && y < p_scalar;
         }
 
         template<typename UType>
-        bool operator>(UType scalar) const
+        bool operator>(UType p_scalar) const
         {
-            return x > scalar && y > scalar;
+            return x > p_scalar && y > p_scalar;
         }
 
         template<typename UType>
-        bool operator<=(UType scalar) const
+        bool operator<=(UType p_scalar) const
         {
-            return x <= scalar && y <= scalar;
+            return x <= p_scalar && y <= p_scalar;
         }
 
         template<typename UType>
-        bool operator>=(UType scalar) const
+        bool operator>=(UType p_scalar) const
         {
-            return x >= scalar && y >= scalar;
+            return x >= p_scalar && y >= p_scalar;
         }
 
         // Arithmetic operators with another vector
         template<typename UType>
-        IVector2<TType> operator+(const IVector2<UType>& other) const
+        IVector2<TType> operator+(const IVector2<UType>& p_other) const
         {
-            return IVector2<TType>(x + other.x, y + other.y);
+            return IVector2<TType>(x + p_other.x, y + p_other.y);
         }
 
         template<typename UType>
-        IVector2<TType> operator-(const IVector2<UType>& other) const
+        IVector2<TType> operator-(const IVector2<UType>& p_other) const
         {
-            return IVector2<TType>(x - other.x, y - other.y);
+            return IVector2<TType>(x - p_other.x, y - p_other.y);
         }
 
         template<typename UType>
-        IVector2<TType> operator*(const IVector2<UType>& other) const
+        IVector2<TType> operator*(const IVector2<UType>& p_other) const
         {
-            return IVector2<TType>(x * other.x, y * other.y);
+            return IVector2<TType>(x * p_other.x, y * p_other.y);
         }
 
         template<typename UType>
-        IVector2<TType> operator/(const IVector2<UType>& other) const
+        IVector2<TType> operator/(const IVector2<UType>& p_other) const
         {
-            if (other.x == 0 || other.y == 0)
+            if (p_other.x == 0 || p_other.y == 0)
             {
                 throw std::runtime_error("Division by zero");
             }
-            return IVector2<TType>(x / other.x, y / other.y);
+            return IVector2<TType>(x / p_other.x, y / p_other.y);
         }
 
-        // Arithmetic operators with a scalar
+        // Arithmetic operators with a p_scalar
         template<typename UType>
-        IVector2<TType> operator+(UType scalar) const
+        IVector2<TType> operator+(UType p_scalar) const
         {
-            return IVector2<TType>(x + scalar, y + scalar);
-        }
-
-        template<typename UType>
-        IVector2<TType> operator-(UType scalar) const
-        {
-            return IVector2<TType>(x - scalar, y - scalar);
+            return IVector2<TType>(x + p_scalar, y + p_scalar);
         }
 
         template<typename UType>
-        IVector2<TType> operator*(UType scalar) const
+        IVector2<TType> operator-(UType p_scalar) const
         {
-            return IVector2<TType>(x * scalar, y * scalar);
+            return IVector2<TType>(x - p_scalar, y - p_scalar);
         }
 
         template<typename UType>
-        IVector2<TType> operator/(UType scalar) const
+        IVector2<TType> operator*(UType p_scalar) const
         {
-            if (scalar == 0)
+            return IVector2<TType>(x * p_scalar, y * p_scalar);
+        }
+
+        template<typename UType>
+        IVector2<TType> operator/(UType p_scalar) const
+        {
+            if (p_scalar == 0)
             {
                 throw std::runtime_error("Division by zero");
             }
-            return IVector2<TType>(x / scalar, y / scalar);
+            return IVector2<TType>(x / p_scalar, y / p_scalar);
         }
 
         // Compound assignment operators with another vector
         template<typename UType>
-        IVector2<TType>& operator+=(const IVector2<UType>& other)
+        IVector2<TType>& operator+=(const IVector2<UType>& p_other)
         {
-            x += other.x;
-            y += other.y;
+            x += p_other.x;
+            y += p_other.y;
             return *this;
         }
 
         template<typename UType>
-        IVector2<TType>& operator-=(const IVector2<UType>& other)
+        IVector2<TType>& operator-=(const IVector2<UType>& p_other)
         {
-            x -= other.x;
-            y -= other.y;
+            x -= p_other.x;
+            y -= p_other.y;
             return *this;
         }
 
         template<typename UType>
-        IVector2<TType>& operator*=(const IVector2<UType>& other)
+        IVector2<TType>& operator*=(const IVector2<UType>& p_other)
         {
-            x *= other.x;
-            y *= other.y;
+            x *= p_other.x;
+            y *= p_other.y;
             return *this;
         }
 
         template<typename UType>
-        IVector2<TType>& operator/=(const IVector2<UType>& other)
+        IVector2<TType>& operator/=(const IVector2<UType>& p_other)
         {
-            if (other.x == 0 || other.y == 0)
+            if (p_other.x == 0 || p_other.y == 0)
             {
                 throw std::runtime_error("Division by zero");
             }
-            x /= other.x;
-            y /= other.y;
+            x /= p_other.x;
+            y /= p_other.y;
             return *this;
         }
 
-        // Compound assignment operators with a scalar
+        // Compound assignment operators with a p_scalar
         template<typename UType>
-        IVector2<TType>& operator+=(UType scalar)
+        IVector2<TType>& operator+=(UType p_scalar)
         {
-            x += static_cast<TType>(scalar);
-            y += static_cast<TType>(scalar);
-            return *this;
-        }
-
-        template<typename UType>
-        IVector2<TType>& operator-=(UType scalar)
-        {
-            x -= static_cast<TType>(scalar);
-            y -= static_cast<TType>(scalar);
+            x += static_cast<TType>(p_scalar);
+            y += static_cast<TType>(p_scalar);
             return *this;
         }
 
         template<typename UType>
-        IVector2<TType>& operator*=(UType scalar)
+        IVector2<TType>& operator-=(UType p_scalar)
         {
-            x *= static_cast<TType>(scalar);
-            y *= static_cast<TType>(scalar);
+            x -= static_cast<TType>(p_scalar);
+            y -= static_cast<TType>(p_scalar);
             return *this;
         }
 
         template<typename UType>
-        IVector2<TType>& operator/=(UType scalar)
+        IVector2<TType>& operator*=(UType p_scalar)
         {
-            if (scalar == 0)
+            x *= static_cast<TType>(p_scalar);
+            y *= static_cast<TType>(p_scalar);
+            return *this;
+        }
+
+        template<typename UType>
+        IVector2<TType>& operator/=(UType p_scalar)
+        {
+            if (p_scalar == 0)
             {
                 throw std::runtime_error("Division by zero");
             }
 
-            x /= static_cast<TType>(scalar);
-            y /= static_cast<TType>(scalar);
+            x /= static_cast<TType>(p_scalar);
+            y /= static_cast<TType>(p_scalar);
             return *this;
+        }
+
+        template<typename TOtherType>
+        float distance(const IVector2<TOtherType>& p_other) const
+        {
+            return static_cast<float>(std::sqrt(std::pow(p_other.x - x, 2) + std::pow(p_other.y - y, 2)));
+        }
+
+        float norm() const
+        {
+            return static_cast<float>(std::sqrt(x * x + y * y));
+        }
+
+        IVector2<float> normalize() const
+        {
+            float len = norm();
+            if (len == 0)
+                throw std::runtime_error("Can't calculated a norm for a vector of len 0");
+            return IVector2<float>(x / len, y / len);
+        }
+
+        IVector2<TType> rotate(const TType& p_angle) const
+        {
+            TType radian = spk::degreeToRadian(static_cast<float>(p_angle));
+            TType cos_a = std::cos(radian);
+            TType sin_a = std::sin(radian);
+
+            return IVector2<TType>(
+                x * cos_a - y * sin_a,
+                x * sin_a + y * cos_a);
+        }
+
+        IVector2<TType> cross() const
+        {
+            return IVector2<TType>(-y, x);
+        }
+
+        TType dot(const IVector2<TType>& p_other) const
+        {
+            return x * p_other.x + y * p_other.y;
+        }
+
+        IVector2<TType> inverse() const
+        {
+            return IVector2<TType>(-x, -y);
+        }
+
+        static IVector2 radianToDegree(const IVector2& p_radians)
+        {
+            return IVector2(
+                spk::radianToDegree(p_radians.x),
+                spk::radianToDegree(p_radians.y)
+            );
+        }
+
+        static IVector2 degreeToRadian(const IVector2& p_degrees)
+        {
+            return IVector2(
+                spk::degreeToRadian(p_degrees.x),
+                spk::degreeToRadian(p_degrees.y)
+            );
+        }
+
+        IVector2 clamp(const IVector2& p_lowerValue, const IVector2& p_higherValue)
+        {
+            return IVector2(
+                std::clamp(x, p_lowerValue.x, p_higherValue.x),
+                std::clamp(y, p_lowerValue.y, p_higherValue.y)
+            );
+        }
+
+        template <typename TOtherType>
+        static IVector2 floor(const IVector2<TOtherType>& p_vector)
+        {
+            IVector2 result;
+            result.x = std::floor(p_vector.x);
+            result.y = std::floor(p_vector.y);
+            return result;
+        }
+
+        template <typename TOtherType>
+        static IVector2 ceiling(const IVector2<TOtherType>& p_vector)
+        {
+            IVector2 result;
+            result.x = std::ceil(p_vector.x);
+            result.y = std::ceil(p_vector.y);
+            return result;
+        }
+
+        template <typename TOtherType>
+        static IVector2 round(const IVector2<TOtherType>& p_vector)
+        {
+            IVector2 result;
+            result.x = std::round(p_vector.x);
+            result.y = std::round(p_vector.y);
+            return result;
+        }
+
+        static IVector2 min(const IVector2& p_min, const IVector2& p_max)
+        {
+            return IVector2(std::min(p_min.x, p_max.x), std::min(p_min.y, p_max.y));
+        }
+
+        static IVector2 max(const IVector2& p_min, const IVector2& p_max)
+        {
+            return IVector2(std::max(p_min.x, p_max.x), std::max(p_min.y, p_max.y));
+        }
+
+        static IVector2 lerp(const IVector2& p_startingPoint, const IVector2& p_endingPoint, float t)
+        {
+            return IVector2(
+                p_startingPoint.x + (p_endingPoint.x - p_startingPoint.x) * t,
+                p_startingPoint.y + (p_endingPoint.y - p_startingPoint.y) * t
+            );
         }
     };
 
@@ -291,33 +408,33 @@ namespace spk
     using Vector2UInt = IVector2<uint32_t>;
 }
 
-// Arithmetic operators with scalar outside of the class
+// Arithmetic operators with p_scalar outside of the class
 template<typename TType, typename UType, typename = std::enable_if_t<std::is_arithmetic<UType>::value>>
-spk::IVector2<TType> operator+(UType scalar, const spk::IVector2<TType>& vec)
+spk::IVector2<TType> operator+(UType p_scalar, const spk::IVector2<TType>& p_vec)
 {
-    return spk::IVector2<TType>(scalar + vec.x, scalar + vec.y);
+    return spk::IVector2<TType>(p_scalar + p_vec.x, p_scalar + p_vec.y);
 }
 
 template<typename TType, typename UType, typename = std::enable_if_t<std::is_arithmetic<UType>::value>>
-spk::IVector2<TType> operator-(UType scalar, const spk::IVector2<TType>& vec)
+spk::IVector2<TType> operator-(UType p_scalar, const spk::IVector2<TType>& p_vec)
 {
-    return spk::IVector2<TType>(scalar - vec.x, scalar - vec.y);
+    return spk::IVector2<TType>(p_scalar - p_vec.x, p_scalar - p_vec.y);
 }
 
 template<typename TType, typename UType, typename = std::enable_if_t<std::is_arithmetic<UType>::value>>
-spk::IVector2<TType> operator*(UType scalar, const spk::IVector2<TType>& vec)
+spk::IVector2<TType> operator*(UType p_scalar, const spk::IVector2<TType>& p_vec)
 {
-    return spk::IVector2<TType>(scalar * vec.x, scalar * vec.y);
+    return spk::IVector2<TType>(p_scalar * p_vec.x, p_scalar * p_vec.y);
 }
 
 template<typename TType, typename UType, typename = std::enable_if_t<std::is_arithmetic<UType>::value>>
-spk::IVector2<TType> operator/(UType scalar, const spk::IVector2<TType>& vec)
+spk::IVector2<TType> operator/(UType p_scalar, const spk::IVector2<TType>& p_vec)
 {
-    if (vec.x == 0 || vec.y == 0)
+    if (p_vec.x == 0 || p_vec.y == 0)
     {
         throw std::runtime_error("Division by zero");
     }
-    return spk::IVector2<TType>(scalar / vec.x, scalar / vec.y);
+    return spk::IVector2<TType>(p_scalar / p_vec.x, p_scalar / p_vec.y);
 }
 
 // Hash function for IVector2 to use in unordered_map
@@ -326,9 +443,9 @@ namespace std
     template<typename TType>
     struct hash< spk::IVector2<TType> >
     {
-        size_t operator()(const spk::IVector2<TType>& vec) const
+        size_t operator()(const spk::IVector2<TType>& p_vec) const
         {
-            return hash<TType>()(vec.x) ^ (hash<TType>()(vec.y) << 1);
+            return hash<TType>()(p_vec.x) ^ (hash<TType>()(p_vec.y) << 1);
         }
     };
 }

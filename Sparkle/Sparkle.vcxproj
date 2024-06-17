@@ -25,7 +25,6 @@
     <ClCompile Include="src\application\spk_console_application.cpp" />
     <ClCompile Include="src\application\spk_graphical_application.cpp" />
     <ClCompile Include="src\application\spk_widget_based_application.cpp" />
-    <ClCompile Include="src\structure\math\spk_quaternion.cpp" />
     <ClCompile Include="src\structure\container\spk_data_buffer.cpp" />
     <ClCompile Include="src\structure\design_pattern\spk_activable_object.cpp" />
     <ClCompile Include="src\structure\spk_iostream.cpp" />
@@ -52,7 +51,6 @@
     <ClInclude Include="include\structure\math\spk_geometry_2D.hpp" />
     <ClInclude Include="include\structure\math\spk_math.hpp" />
     <ClInclude Include="include\structure\math\spk_matrix.hpp" />
-    <ClInclude Include="include\structure\math\spk_quaternion.hpp" />
     <ClInclude Include="include\structure\math\spk_vector2.hpp" />
     <ClInclude Include="include\structure\math\spk_vector3.hpp" />
     <ClInclude Include="include\structure\spk_iostream.hpp" />
