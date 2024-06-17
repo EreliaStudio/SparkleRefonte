@@ -16,12 +16,12 @@ namespace spk
 		bool _newLine;
 
 	public:
-		IOStream(std::wostream& stream);
+		IOStream(std::wostream& p_stream);
 
-		void setPrefix(const std::wstring& prefix);
+		void setPrefix(const std::wstring& p_prefix);
 
 		template <typename TOutputedType>
-		IOStream& operator<<(const TOutputedType& value)
+		IOStream& operator<<(const TOutputedType& p_value)
 		{
 			std::lock_guard<std::recursive_mutex> lock(_mutex);
 			if (_newLine)
@@ -29,7 +29,7 @@ namespace spk
 				*_stream << _prefix;
 				_newLine = false;
 			}
-			_buffer << value;
+			_buffer << p_value;
 
 			std::wstring bufferContent = _buffer.str();
 			size_t pos = 0;
@@ -49,7 +49,7 @@ namespace spk
 		typedef std::basic_ostream<wchar_t, std::char_traits<wchar_t>> CoutType;
 
 		// To support std::endl and other manipulators
-		IOStream& operator<<(CoutType& (*func)(CoutType&));
+		IOStream& operator<<(CoutType& (*p_func)(CoutType&));
 
 		void redirect(std::wostream& p_stream);
 	};

@@ -2,18 +2,18 @@
 
 namespace spk
 {
-	IOStream::IOStream(std::wostream& stream) : _stream(&stream), _newLine(true)
+	IOStream::IOStream(std::wostream& p_stream) : _stream(&p_stream), _newLine(true)
 	{
 	}
 
-	void IOStream::setPrefix(const std::wstring& prefix)
+	void IOStream::setPrefix(const std::wstring& p_prefix)
 	{
 		std::lock_guard<std::recursive_mutex> lock(_mutex);
-		_prefix = prefix;
+		_prefix = p_prefix;
 	}
 
 	// To support std::endl and other manipulators
-	IOStream& IOStream::operator<<(CoutType& (*func)(CoutType&))
+	IOStream& IOStream::operator<<(CoutType& (*p_func)(CoutType&))
 	{
 		std::lock_guard<std::recursive_mutex> lock(_mutex);
 		if (_newLine)
@@ -24,7 +24,7 @@ namespace spk
 		*_stream << _buffer.str();
 		_buffer.str(L"");
 		_buffer.clear();
-		func(*_stream);
+		p_func(*_stream);
 		_newLine = true;
 		return *this;
 	}
