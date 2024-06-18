@@ -8,15 +8,7 @@ namespace spk
 	class ConsoleApplication : public spk::Application
 	{
 	private:
-		class CentralWidget : public spk::Widget
-		{
-		private:
-
-		public:
-			CentralWidget();
-		};
-
-		std::unique_ptr<CentralWidget> _centralWidget;
+		std::unique_ptr<Widget> _centralWidget;
 
 	public:
 		ConsoleApplication();

@@ -21,8 +21,8 @@ namespace spk
 		Thread(const std::wstring& p_name, const std::function<void()>& p_callback) :
 			_name(p_name),
 			_callback([p_name, p_callback]() {
-			spk::cout.setPrefix(p_name);
-			spk::cerr.setPrefix(p_name);
+			// spk::cout.setPrefix(p_name);
+			// spk::cerr.setPrefix(p_name);
 			p_callback();
 				})
 		{

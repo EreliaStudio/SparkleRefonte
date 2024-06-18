@@ -50,3 +50,54 @@ TEST_F(PersistantWorkerTest, WorkerStartStopStart)
 	int secondCount = counter.load();
 	ASSERT_GT(secondCount, firstCount) << "Callback should have been executed additional times after second start.";
 }
+
+TEST_F(PersistantWorkerTest, PreparationStepAddition)
+{
+	spk::PersistantWorker worker(workerName, callback);
+
+	auto contract = worker.addPreparationStep([]() {
+		// Preparation job logic
+		});
+
+	ASSERT_TRUE(contract.isValid()) << "Preparation contract should be valid after addition.";
+}
+
+TEST_F(PersistantWorkerTest, PreparationStepsTriggered)
+{
+	bool preparationStepExecuted = false;
+
+	spk::PersistantWorker worker(workerName, callback);
+
+	worker.addPreparationStep([&]() {
+		preparationStepExecuted = true;
+		}).relinquish();
+
+	worker.start();
+	std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	worker.stop();
+
+	ASSERT_TRUE(preparationStepExecuted) << "Preparation step should have been executed.";
+}
+
+TEST_F(PersistantWorkerTest, MultiplePreparationSteps)
+{
+	bool step1Executed = false;
+	bool step2Executed = false;
+
+	spk::PersistantWorker worker(workerName, callback);
+
+	worker.addPreparationStep([&]() {
+		step1Executed = true;
+		}).relinquish();
+
+	worker.addPreparationStep([&]() {
+		step2Executed = true;
+		}).relinquish();
+
+	worker.start();
+	std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	worker.stop();
+
+	ASSERT_TRUE(step1Executed) << "First preparation step should have been executed.";
+	ASSERT_TRUE(step2Executed) << "Second preparation step should have been executed.";
+}

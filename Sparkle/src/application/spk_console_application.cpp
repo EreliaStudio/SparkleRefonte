@@ -2,16 +2,12 @@
 
 namespace spk
 {
-	ConsoleApplication::CentralWidget::CentralWidget() :
-		spk::Widget(L"CentralWidget")
-	{
-		activate();
-	}
-
 	ConsoleApplication::ConsoleApplication() :
 		Application(),
-		_centralWidget(std::make_unique<CentralWidget>())
+		_centralWidget(std::make_unique<Widget>(L"CentralWidget"))
 	{
+		_centralWidget->activate();
+		// addPreparationStep([&]() {spk::cout.setPrefix(L"MainThread"); });
 		addBehavior([&]() { centralWidget()->update(); }).relinquish();
 	}
 

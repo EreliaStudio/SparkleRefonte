@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\structure\graphical\spk_window.cpp" />
     <ClCompile Include="src\structure\math\spk_math.cpp" />
     <ClCompile Include="src\structure\math\spk_matrix4x4.cpp" />
     <ClCompile Include="src\application\spk_application.cpp" />
