@@ -3,9 +3,13 @@
 namespace spk
 {
 	GraphicalApplication::GraphicalApplication() :
-		spk::WidgetBasedApplication()
+		spk::Application()
 	{
-		addBehavior([&]() { centralWidget()->render(); }).relinquish();
-		addBehavior([&]() { centralWidget()->update(); }).relinquish();
+
+	}
+
+	spk::SafePointer<Window> GraphicalApplication::createWindow(const std::wstring& p_title, const spk::Geometry2DInt& p_geometry)
+	{
+		return (nullptr);
 	}
 }

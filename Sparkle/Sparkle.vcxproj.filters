@@ -33,9 +33,6 @@
     <ClCompile Include="src\application\spk_graphical_application.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\application\spk_widget_based_application.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="src\structure\container\spk_data_buffer.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
@@ -74,9 +71,6 @@
     <ClInclude Include="include\widget\spk_widget.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\application\spk_widget_based_application.hpp">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
     <ClInclude Include="include\application\spk_console_application.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
@@ -86,7 +80,7 @@
     <ClInclude Include="include\structure\design_pattern\spk_contract_provider.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\structure\math\spk_geometry_2D.hpp">
+    <ClInclude Include="include\structure\graphical\spk_geometry_2D.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="include\structure\spk_safe_pointer.hpp">
@@ -126,6 +120,9 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="include\spk_file_functions.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\structure\graphical\spk_window.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>

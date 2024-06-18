@@ -1,6 +1,4 @@
-#include "application/spk_widget_based_application_tester.hpp"
-
-#include "spk_debug_macro.hpp"
+#include "application/spk_console_application_tester.hpp"
 
 namespace
 {
@@ -34,14 +32,14 @@ namespace
 	};
 }
 
-TEST_F(WidgetBasedApplicationTest, CentralWidgetInitialization)
+TEST_F(ConsoleApplicationTest, CentralWidgetInitialization)
 {
 	auto centralWidget = app.centralWidget();
 	ASSERT_NE(centralWidget, nullptr) << "Central widget should be initialized.";
 	ASSERT_EQ(centralWidget->depth(), 0.0) << "Central widget should have a default depth of 0.0.";
 }
 
-TEST_F(WidgetBasedApplicationTest, AddWidget)
+TEST_F(ConsoleApplicationTest, AddWidget)
 {
 	spk::Widget* widget = new spk::Widget(L"TestWidget");
 	app.centralWidget()->addChild(widget);
@@ -51,7 +49,7 @@ TEST_F(WidgetBasedApplicationTest, AddWidget)
 	ASSERT_EQ(children[0], widget) << "The added widget should be the child of the central widget.";
 }
 
-TEST_F(WidgetBasedApplicationTest, WidgetHierarchy)
+TEST_F(ConsoleApplicationTest, WidgetHierarchy)
 {
 	spk::Widget* parentWidget = new spk::Widget(L"ParentWidget");
 	spk::Widget* childWidget = new spk::Widget(L"ChildWidget");
@@ -68,7 +66,7 @@ TEST_F(WidgetBasedApplicationTest, WidgetHierarchy)
 	ASSERT_EQ(childChildren[0], childWidget) << "The added child widget should be the child of the parent widget.";
 }
 
-TEST_F(WidgetBasedApplicationTest, WidgetActivation)
+TEST_F(ConsoleApplicationTest, WidgetActivation)
 {
 	spk::Widget* widget = new spk::Widget(L"ActivableWidget");
 	app.centralWidget()->addChild(widget);
@@ -80,7 +78,7 @@ TEST_F(WidgetBasedApplicationTest, WidgetActivation)
 	ASSERT_FALSE(widget->isActive()) << "Widget should be inactive after deactivation.";
 }
 
-TEST_F(WidgetBasedApplicationTest, AddActivationCallback)
+TEST_F(ConsoleApplicationTest, AddActivationCallback)
 {
 	spk::Widget* widget = new spk::Widget(L"ActivableWidget");
 	app.centralWidget()->addChild(widget);
@@ -94,7 +92,7 @@ TEST_F(WidgetBasedApplicationTest, AddActivationCallback)
 	ASSERT_TRUE(contract.isValid()) << "Contract should be valid after adding activation callback.";
 }
 
-TEST_F(WidgetBasedApplicationTest, CustomWidgetBehavior)
+TEST_F(ConsoleApplicationTest, CustomWidgetBehavior)
 {
 	spk::SafePointer<CustomWidget> customWidget = app.centralWidget()->makeChild<CustomWidget>(&app, L"CustomWidget");
 	customWidget->activate();

@@ -24,7 +24,6 @@
     <ClCompile Include="src\application\spk_application.cpp" />
     <ClCompile Include="src\application\spk_console_application.cpp" />
     <ClCompile Include="src\application\spk_graphical_application.cpp" />
-    <ClCompile Include="src\application\spk_widget_based_application.cpp" />
     <ClCompile Include="src\structure\container\spk_data_buffer.cpp" />
     <ClCompile Include="src\structure\design_pattern\spk_activable_object.cpp" />
     <ClCompile Include="src\structure\spk_iostream.cpp" />
@@ -34,7 +33,6 @@
     <ClInclude Include="include\application\spk_application.hpp" />
     <ClInclude Include="include\application\spk_console_application.hpp" />
     <ClInclude Include="include\application\spk_graphical_application.hpp" />
-    <ClInclude Include="include\application\spk_widget_based_application.hpp" />
     <ClInclude Include="include\spk_file_functions.hpp" />
     <ClInclude Include="include\spk_sfinae.hpp" />
     <ClInclude Include="include\sparkle.hpp" />
@@ -48,7 +46,8 @@
     <ClInclude Include="include\structure\design_pattern\spk_observable_value.hpp" />
     <ClInclude Include="include\structure\design_pattern\spk_singleton.hpp" />
     <ClInclude Include="include\structure\design_pattern\spk_stateful_object.hpp" />
-    <ClInclude Include="include\structure\math\spk_geometry_2D.hpp" />
+    <ClInclude Include="include\structure\graphical\spk_window.hpp" />
+    <ClInclude Include="include\structure\graphical\spk_geometry_2D.hpp" />
     <ClInclude Include="include\structure\math\spk_math.hpp" />
     <ClInclude Include="include\structure\math\spk_matrix.hpp" />
     <ClInclude Include="include\structure\math\spk_vector2.hpp" />

@@ -1,12 +1,12 @@
 #pragma once
 
-#include "application/spk_widget_based_application.hpp"
+#include "application/spk_console_application.hpp"
 #include "gtest/gtest.h"
 
-class WidgetBasedApplicationTest : public ::testing::Test
+class ConsoleApplicationTest : public ::testing::Test
 {
 protected:
-	spk::WidgetBasedApplication app;
+	spk::ConsoleApplication app;
 
 	void SetUp() override
 	{

@@ -1,14 +1,19 @@
 #pragma once
 
-#include "application/spk_widget_based_application.hpp"
+#include "application/spk_application.hpp"
+
+#include "structure/spk_safe_pointer.hpp"
+#include "structure/graphical/spk_window.hpp"
 
 namespace spk
 {
-	class GraphicalApplication : public WidgetBasedApplication
+	class GraphicalApplication : public Application
 	{
 	private:
 
 	public:
 		GraphicalApplication();
+
+		spk::SafePointer<Window> createWindow(const std::wstring& p_title, const spk::Geometry2DInt& p_geometry);
 	};
 }
