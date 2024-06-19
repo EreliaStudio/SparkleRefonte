@@ -7,7 +7,9 @@ namespace spk
 		auto bufferContent = _buffer.str();
 		{
 			std::lock_guard<std::recursive_mutex> lock(_mutex);
-			_outputStream << "[" << _prefix << "] - " << bufferContent;
+			if (_prefix != L"")
+				_outputStream << "[" << _prefix << "] - ";
+			_outputStream << bufferContent;
 		}
 		_buffer.str(L"");
 		_buffer.clear();
