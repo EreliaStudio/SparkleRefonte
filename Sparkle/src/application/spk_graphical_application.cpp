@@ -13,8 +13,24 @@ namespace spk
 		std::unique_ptr<spk::Window> newWindow = std::make_unique<spk::Window>(this, p_title, p_geometry);
 		
 		spk::SafePointer<Window> newWindowSafePointer = newWindow.get();
+		Contracts contracts = {
+		std::make_unique<spk::ContractProvider::Contract>(addBehavior([newWindowSafePointer]()
+			{
+				newWindowSafePointer->pullEvents();
+			})),
+		std::make_unique<spk::ContractProvider::Contract>(addBehavior([newWindowSafePointer]()
+			{
+				newWindowSafePointer->clear();
+				newWindowSafePointer->render();
+				newWindowSafePointer->swap();
+			})),
+		std::make_unique<spk::ContractProvider::Contract>(addBehavior(p_title + L"Updater", [newWindowSafePointer]()
+			{
+				newWindowSafePointer->update();
+			}))
+		};
 
-		_windows[p_title] = std::move(newWindow);
+		_windows[p_title] = std::make_tuple<std::unique_ptr<Window>, Contracts>(std::move(newWindow), std::move(contracts));
 
 		return (newWindowSafePointer);
 	}

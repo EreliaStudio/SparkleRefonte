@@ -10,10 +10,7 @@ namespace spk
 	Window::Window(GraphicalApplication* p_application, const std::wstring& p_title, const spk::Geometry2DInt& p_geometry) :
 		_rootWidget(std::make_unique<Widget>(p_title + L" - CentralWidget")),
 		_title(p_title),
-		_geometry(p_geometry),
-		_pullMessageContract(p_application->addBehavior([&]() {pullEvents(); })),
-		_renderContract(p_application->addBehavior([&]() {clear(); render(); swap(); })),
-		_updateContract(p_application->addBehavior(p_title + L"Updater", [&]() {update(); }))
+		_geometry(p_geometry)
 	{
 
 	}

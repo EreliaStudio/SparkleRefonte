@@ -17,10 +17,6 @@ namespace spk
 		std::wstring _title;
 		spk::Geometry2DInt _geometry;
 
-		spk::ContractProvider::Contract _pullMessageContract;
-		spk::ContractProvider::Contract _renderContract;
-		spk::ContractProvider::Contract _updateContract;
-
 	public:
 		Window(GraphicalApplication* p_application, const std::wstring& p_title, const spk::Geometry2DInt& p_geometry);
 

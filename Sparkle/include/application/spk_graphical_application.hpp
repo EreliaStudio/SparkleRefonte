@@ -12,7 +12,13 @@ namespace spk
 	class GraphicalApplication : public Application
 	{
 	private:
-		std::map<std::wstring, std::unique_ptr<Window>> _windows;
+		struct Contracts
+		{
+			std::unique_ptr<spk::ContractProvider::Contract> _pullMessageContract;
+			std::unique_ptr<spk::ContractProvider::Contract> _renderContract;
+			std::unique_ptr<spk::ContractProvider::Contract> _updateContract;
+		};
+		std::map < std::wstring, std::tuple<std::unique_ptr<Window>, Contracts> > _windows;
 
 	public:
 		GraphicalApplication();
