@@ -6,35 +6,32 @@
 
 namespace spk
 {
-    class IOStream
-    {
-    public:
-        IOStream(std::wostream& stream) :
-            _stream(stream)
-        {
-        }
+	class IOStream
+	{
+	private:
+		std::wostream& _outputStream;
+		static inline std::recursive_mutex _mutex;
+		std::wstringstream _buffer;
+		std::wstring _prefix;
 
-        template<typename T>
-        IOStream& operator<<(const T& value)
-        {
-            //std::lock_guard<std::mutex> lock(_mutex);
-            _stream << value;
-            return *this;
-        }
+		void _flushBuffer();
 
-        // For manipulators like std::endl
-        IOStream& operator<<(std::wostream& (*manip)(std::wostream&))
-        {
-            //std::lock_guard<std::mutex> lock(_mutex);
-            _stream << manip;
-            return *this;
-        }
+	public:
+		IOStream(std::wostream& p_outputStream);
+		void setPrefix(const std::wstring& p_prefix);
 
-    private:
-        std::wostream& _stream;
-        std::mutex _mutex;
-    };
+		template <typename T>
+		IOStream& operator<<(const T& value)
+		{
+			_buffer << value;
+			return *this;
+		}
 
-	extern IOStream cout;
-	extern IOStream cerr;
+		using Manipulator = std::wostream& (std::wostream&);
+
+		IOStream& operator<<(Manipulator manip);
+	};
+
+	extern thread_local IOStream cout;
+	extern thread_local IOStream cerr;
 }
