@@ -8,7 +8,7 @@ namespace spk
 	Window::Window(const std::wstring& p_title, const spk::Geometry2DInt& p_geometry) :
 		_rootWidget(std::make_unique<Widget>(p_title + L" - CentralWidget"))
 	{
-		spk::cout << "Creating window [" << p_title << "]" << std::endl;
+		spk::cout << L"Creating window [" << p_title << L"]" << std::endl;
 	}
 
 	void Window::clear()
@@ -18,7 +18,9 @@ namespace spk
 
 	void Window::render()
 	{
-		std::cout << "Rendering process" << std::endl;
+		spk::cout << "Rendering process" << std::endl;
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
 		clear();
 
 		_rootWidget->render();
@@ -33,8 +35,8 @@ namespace spk
 
 	void Window::update()
 	{
-		std::cout << "Updating process" << std::endl;
-
+		spk::cout << "Updating process" << std::endl;
+		std::this_thread::sleep_for(std::chrono::milliseconds(1));
 	}
 
 	spk::SafePointer<Widget> Window::widget() const
