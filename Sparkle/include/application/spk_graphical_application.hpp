@@ -18,5 +18,6 @@ namespace spk
 		GraphicalApplication();
 
 		spk::SafePointer<Window> createWindow(const std::wstring& p_title, const spk::Geometry2DInt& p_geometry);
+		void closeWindow(const spk::SafePointer<Window>& p_window);
 	};
 }

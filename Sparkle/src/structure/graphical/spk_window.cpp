@@ -3,12 +3,19 @@
 #include "widget/spk_widget.hpp"
 #include "structure/spk_iostream.hpp"
 
+#include "application/spk_graphical_application.hpp"
+
 namespace spk
 {
-	Window::Window(const std::wstring& p_title, const spk::Geometry2DInt& p_geometry) :
-		_rootWidget(std::make_unique<Widget>(p_title + L" - CentralWidget"))
+	Window::Window(GraphicalApplication* p_application, const std::wstring& p_title, const spk::Geometry2DInt& p_geometry) :
+		_rootWidget(std::make_unique<Widget>(p_title + L" - CentralWidget")),
+		_title(p_title),
+		_geometry(p_geometry),
+		_pullMessageContract(p_application->addBehavior([&]() {pullEvents(); })),
+		_renderContract(p_application->addBehavior([&]() {clear(); render(); swap(); })),
+		_updateContract(p_application->addBehavior(p_title + L"Updater", [&]() {update(); }))
 	{
-		spk::cout << L"Creating window [" << p_title << L"]" << std::endl;
+
 	}
 
 	void Window::clear()
@@ -18,25 +25,22 @@ namespace spk
 
 	void Window::render()
 	{
-		spk::cout << "Rendering process" << std::endl;
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
-
-		clear();
-
 		_rootWidget->render();
-
-		swap();
 	}
 
 	void Window::swap()
 	{
-		_rootWidget->update();
+
 	}
 
 	void Window::update()
 	{
-		spk::cout << "Updating process" << std::endl;
-		std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		_rootWidget->update();
+	}
+
+	void Window::pullEvents()
+	{
+
 	}
 
 	spk::SafePointer<Widget> Window::widget() const
@@ -47,5 +51,15 @@ namespace spk
 	Window::operator spk::SafePointer<Widget>() const
 	{
 		return (_rootWidget.get());
+	}
+
+	const std::wstring& Window::title() const
+	{
+		return (_title);
+	}
+	
+	const spk::Geometry2DInt& Window::geometry() const
+	{
+		return (_geometry);
 	}
 }

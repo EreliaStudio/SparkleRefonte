@@ -74,6 +74,7 @@ namespace spk
 					worker->start();
 			}
 
+			spk::cout.setPrefix(L"MainThread");
 			_mainThreadWorker->preparationJobs().trigger();
 			while (_isRunning == true)
 			{
