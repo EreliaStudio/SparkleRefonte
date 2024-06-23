@@ -55,6 +55,10 @@
     <ClInclude Include="include\structure\math\spk_vector3.hpp" />
     <ClInclude Include="include\structure\spk_iostream.hpp" />
     <ClInclude Include="include\structure\spk_safe_pointer.hpp" />
+    <ClInclude Include="include\structure\system\device\spk_controller.hpp" />
+    <ClInclude Include="include\structure\system\device\spk_keyboard.hpp" />
+    <ClInclude Include="include\structure\system\device\spk_mouse.hpp" />
+    <ClInclude Include="include\structure\system\event\spk_event.hpp" />
     <ClInclude Include="include\structure\thread\spk_persistant_worker.hpp" />
     <ClInclude Include="include\structure\thread\spk_thread.hpp" />
     <ClInclude Include="include\widget\spk_widget.hpp" />

@@ -44,12 +44,12 @@ namespace spk
 			return (_workers[p_threadName].get());
 		}
 
-		Contract addBehavior(const std::wstring& p_threadName, const Job& p_job)
+		Contract addExecutionStep(const std::wstring& p_threadName, const Job& p_job)
 		{
 			return (worker(p_threadName)->addExecutionStep(p_job));
 		}
 
-		Contract addBehavior(const Job& p_job)
+		Contract addExecutionStep(const Job& p_job)
 		{
 			return (_workers[MainThreadName]->addExecutionStep(p_job));
 		}

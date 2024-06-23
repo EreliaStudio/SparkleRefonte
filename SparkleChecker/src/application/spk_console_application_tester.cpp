@@ -97,8 +97,8 @@ TEST_F(ConsoleApplicationTest, CustomWidgetBehavior)
 	spk::SafePointer<CustomWidget> customWidget = app.centralWidget()->makeChild<CustomWidget>(&app, L"CustomWidget");
 	customWidget->activate();
 
-	app.addBehavior([&]() { app.centralWidget()->render(); }).relinquish();
-	app.addBehavior([&]() { app.centralWidget()->update(); }).relinquish();
+	app.addExecutionStep([&]() { app.centralWidget()->render(); }).relinquish();
+	app.addExecutionStep([&]() { app.centralWidget()->update(); }).relinquish();
 
 	int errorCode = app.run();
 	ASSERT_EQ(errorCode, 0) << "Application should quit with code 0 after 100 updates and 100 renders.";

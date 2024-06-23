@@ -1,24 +1,24 @@
 #include "application/spk_application_tester.hpp"
 
-TEST_F(ApplicationTest, AddBehaviorToMainThread)
+TEST_F(ApplicationTest, addExecutionStepToMainThread)
 {
-	auto contract = app.addBehavior(callback);
+	auto contract = app.addExecutionStep(callback);
 
 	ASSERT_TRUE(contract.isValid()) << "Contract should be valid after adding behavior to main thread.";
 }
 
-TEST_F(ApplicationTest, AddBehaviorToSpecificThread)
+TEST_F(ApplicationTest, addExecutionStepToSpecificThread)
 {
 	std::wstring threadName = L"WorkerThread";
 
-	auto contract = app.addBehavior(threadName, callback);
+	auto contract = app.addExecutionStep(threadName, callback);
 
 	ASSERT_TRUE(contract.isValid()) << "Contract should be valid after adding behavior to specific thread.";
 }
 
 TEST_F(ApplicationTest, RunApplication)
 {
-	auto contract = app.addBehavior(callback);
+	auto contract = app.addExecutionStep(callback);
 
 	int errorReturn = 0;
 	std::thread runThread([this, &errorReturn]() { errorReturn = app.run(); });
@@ -36,7 +36,7 @@ TEST_F(ApplicationTest, RunApplication)
 
 TEST_F(ApplicationTest, QuitApplicationWithError)
 {
-	auto contract = app.addBehavior(callback);
+	auto contract = app.addExecutionStep(callback);
 
 	int errorReturn = 0;
 	std::thread runThread([this, &errorReturn]() { errorReturn = app.run(); });

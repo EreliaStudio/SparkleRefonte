@@ -8,38 +8,30 @@ namespace spk
 
 	}
 
+	GraphicalApplication::WindowHandler::WindowHandler(GraphicalApplication* p_application, const std::wstring& p_title, const spk::Geometry2DInt& p_geometry) :
+		window(p_title, p_geometry),
+		updateThreadExecutionContract(p_application->addExecutionStep([&]() {
+				
+			})),
+		renderThreadExecutionContract(p_application->addExecutionStep([&]() {
+				window.pullEvents();
+			}))
+	{
+
+	}
+
 	spk::SafePointer<Window> GraphicalApplication::createWindow(const std::wstring& p_title, const spk::Geometry2DInt& p_geometry)
 	{
-		std::unique_ptr<spk::Window> newWindow = std::make_unique<spk::Window>(this, p_title, p_geometry);
-		
-		spk::SafePointer<Window> newWindowSafePointer = newWindow.get();
-		Contracts contracts = {
-		std::make_unique<spk::ContractProvider::Contract>(addBehavior([newWindowSafePointer]()
-			{
-				newWindowSafePointer->pullEvents();
-			})),
-		std::make_unique<spk::ContractProvider::Contract>(addBehavior([newWindowSafePointer]()
-			{
-				newWindowSafePointer->clear();
-				newWindowSafePointer->render();
-				newWindowSafePointer->swap();
-			})),
-		std::make_unique<spk::ContractProvider::Contract>(addBehavior(p_title + L"Updater", [newWindowSafePointer]()
-			{
-				newWindowSafePointer->update();
-			}))
-		};
+		_windowHandlers[p_title] = std::make_unique<WindowHandler>(this, p_title, p_geometry);
 
-		_windows[p_title] = std::make_tuple<std::unique_ptr<Window>, Contracts>(std::move(newWindow), std::move(contracts));
-
-		return (newWindowSafePointer);
+		return (&(_windowHandlers[p_title]->window));
 	}
 
 	void GraphicalApplication::closeWindow(const spk::SafePointer<Window>& p_window)
 	{
-		if (_windows.contains(p_window->title()) == true)
+		if (_windowHandlers.contains(p_window->title()) == true)
 		{
-			_windows.erase(p_window->title());
+			_windowHandlers.erase(p_window->title());
 		}
 	}
 }

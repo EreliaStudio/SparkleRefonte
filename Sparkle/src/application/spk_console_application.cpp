@@ -7,8 +7,7 @@ namespace spk
 		_centralWidget(std::make_unique<Widget>(L"CentralWidget"))
 	{
 		_centralWidget->activate();
-		// addPreparationStep([&]() {spk::cout.setPrefix(L"MainThread"); });
-		addBehavior([&]() { centralWidget()->update(); }).relinquish();
+		addExecutionStep([&]() { centralWidget()->update(); }).relinquish();
 	}
 
 	spk::SafePointer<Widget> ConsoleApplication::centralWidget() const
