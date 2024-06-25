@@ -31,6 +31,13 @@
     <ClCompile Include="src\widget\spk_widget.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\application\module\spk_controller_module.hpp" />
+    <ClInclude Include="include\application\module\spk_keyboard_module.hpp" />
+    <ClInclude Include="include\application\module\spk_module.hpp" />
+    <ClInclude Include="include\application\module\spk_mouse_module.hpp" />
+    <ClInclude Include="include\application\module\spk_paint_module.hpp" />
+    <ClInclude Include="include\application\module\spk_system_module.hpp" />
+    <ClInclude Include="include\application\module\spk_update_module.hpp" />
     <ClInclude Include="include\application\spk_application.hpp" />
     <ClInclude Include="include\application\spk_console_application.hpp" />
     <ClInclude Include="include\application\spk_graphical_application.hpp" />

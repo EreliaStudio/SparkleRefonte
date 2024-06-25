@@ -10,19 +10,56 @@
 namespace spk
 {
 	std::unordered_set<UINT> Window::_subscribedEvents = {
-		
+		WM_PAINT,
+		WM_SIZE,
+		WM_LBUTTONDOWN,
+		WM_RBUTTONDOWN,
+		WM_MBUTTONDOWN,
+		WM_LBUTTONUP,
+		WM_RBUTTONUP,
+		WM_MBUTTONUP,
+		WM_MOUSEMOVE,
+		WM_MOUSEWHEEL,
+		WM_KEYDOWN,
+		WM_KEYUP,
+		WM_CHAR,
+		WM_SETFOCUS,
+		WM_KILLFOCUS,
+		WM_CLOSE,
+		WM_QUIT,
+		WM_MOVE
 	};
 
 	LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
-		if (_subscribedEvents.contains(uMsg) == true)
-		{
-			spk::Event newEvent;
+		if (_subscribedEvents.contains(uMsg) == false)
+			return DefWindowProc(hwnd, uMsg, wParam, lParam);
+			
+		Window* window = nullptr;
 
-			newEvent.construct(hwnd, uMsg, wParam, lParam);
+		if (uMsg == WM_NCCREATE)
+		{
+			CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
+			window = reinterpret_cast<Window*>(pCreate->lpCreateParams);
+			SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(window));
+		}
+		else
+		{
+			window = reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 		}
 
-		return DefWindowProc(hwnd, uMsg, wParam, lParam);
+		window->_receiveEvent(uMsg, wParam, lParam);
+
+		return true;
+	}
+
+
+	void Window::_receiveEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
+	{
+		if (_threadSafeQueues.contains(uMsg) == false)
+			return ;
+
+		_threadSafeQueues[uMsg]->push(spk::Event(this, uMsg, wParam, lParam));
 	}
 
 	bool Window::_createWindow()
@@ -52,7 +89,7 @@ namespace spk
 			nullptr,       // Parent window    
 			nullptr,       // Menu
 			_hInstance,    // Instance handle
-			nullptr        // Additional application data
+			this           // Additional application data
 		);
 
 		if (_hwnd == nullptr)
@@ -90,6 +127,11 @@ namespace spk
 	void Window::swap()
 	{
 
+	}
+
+	void Window::bind(UINT p_messageType, spk::ThreadSafeQueue<spk::Event>* p_threadSafeQueue)
+	{
+		_threadSafeQueues[p_messageType] = p_threadSafeQueue;
 	}
 
 	void Window::pullEvents()

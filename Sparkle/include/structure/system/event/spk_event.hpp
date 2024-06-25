@@ -126,6 +126,16 @@ namespace spk
 			}
 		} carriage;
 
+		Event()
+		{
+
+		}
+
+		Event(spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
+		{
+			construct(p_window, uMsg, wParam, lParam);
+		}
+
 		bool construct(spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			consumed = false;
@@ -134,103 +144,101 @@ namespace spk
 			{
 			case WM_PAINT:
 			{
-				carriage.paintCarriage.type = PaintCarriage::Type::Requested;
+				carriage.paintCarriage.type = Carriage::PaintCarriage::Type::Requested;
 				carriage.paintCarriage.window = p_window;
 				break;
 			}
 			case WM_SIZE:
 			{
-				carriage.paintCarriage.type = PaintCarriage::Type::OnResize;
+				carriage.paintCarriage.type = Carriage::PaintCarriage::Type::OnResize;
 				carriage.paintCarriage.window = p_window;
 				break;
 			}
 			case WM_LBUTTONDOWN:
+			{
+				carriage.mouseCarriage.type = Carriage::MouseCarriage::Type::Press;
+				carriage.mouseCarriage.button = spk::Mouse::Button::Left;
+				break;
+			}
 			case WM_RBUTTONDOWN:
+			{
+				carriage.mouseCarriage.type = Carriage::MouseCarriage::Type::Press;
+				carriage.mouseCarriage.button = spk::Mouse::Button::Right;
+				break;
+			}
 			case WM_MBUTTONDOWN:
 			{
-				carriage.mouseCarriage.type = MouseCarriage::Type::Press;
-				switch (uMsg)
-				{
-				case WM_LBUTTONDOWN:
-					carriage.mouseCarriage.button = spk::Mouse::Button::Left;
-					break;
-				case WM_RBUTTONDOWN:
-					carriage.mouseCarriage.button = spk::Mouse::Button::Right;
-					break;
-				case WM_MBUTTONDOWN:
-					carriage.mouseCarriage.button = spk::Mouse::Button::Middle;
-					break;
-				}
+				carriage.mouseCarriage.type = Carriage::MouseCarriage::Type::Press;
+				carriage.mouseCarriage.button = spk::Mouse::Button::Middle;
 				break;
 			}
 			case WM_LBUTTONUP:
+			{
+				carriage.mouseCarriage.type = Carriage::MouseCarriage::Type::Release;
+				carriage.mouseCarriage.button = spk::Mouse::Button::Left;
+				break;
+			}
 			case WM_RBUTTONUP:
+			{
+				carriage.mouseCarriage.type = Carriage::MouseCarriage::Type::Release;
+				carriage.mouseCarriage.button = spk::Mouse::Button::Right;
+				break;
+			}
 			case WM_MBUTTONUP:
 			{
-				carriage.mouseCarriage.type = MouseCarriage::Type::Release;
-				switch (uMsg)
-				{
-				case WM_LBUTTONUP:
-					carriage.mouseCarriage.button = spk::Mouse::Button::Left;
-					break;
-				case WM_RBUTTONUP:
-					carriage.mouseCarriage.button = spk::Mouse::Button::Right;
-					break;
-				case WM_MBUTTONUP:
-					carriage.mouseCarriage.button = spk::Mouse::Button::Middle;
-					break;
-				}
+				carriage.mouseCarriage.type = Carriage::MouseCarriage::Type::Release;
+				carriage.mouseCarriage.button = spk::Mouse::Button::Middle;
 				break;
 			}
 			case WM_MOUSEMOVE:
 			{
-				carriage.mouseCarriage.type = MouseCarriage::Type::Motion;
-				carriage.mouseCarriage.position = spk::Vector2Int{ GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam) };
+				carriage.mouseCarriage.type = Carriage::MouseCarriage::Type::Motion;
+				carriage.mouseCarriage.position = spk::Vector2Int{ LOWORD(wParam), HIWORD(wParam) };
 				break;
 			}
 			case WM_MOUSEWHEEL:
 			{
-				carriage.mouseCarriage.type = MouseCarriage::Type::Wheel;
+				carriage.mouseCarriage.type = Carriage::MouseCarriage::Type::Wheel;
 				carriage.mouseCarriage.scrollValue = GET_WHEEL_DELTA_WPARAM(wParam) / (float)WHEEL_DELTA;
 				break;
 			}
 			case WM_KEYDOWN:
 			{
-				carriage.keyboardCarriage.type = KeyboardCarriage::Type::Press;
+				carriage.keyboardCarriage.type = Carriage::KeyboardCarriage::Type::Press;
 				carriage.keyboardCarriage.key = static_cast<spk::Keyboard::Key>(wParam);
 				break;
 			}
 			case WM_KEYUP:
 			{
-				carriage.keyboardCarriage.type = KeyboardCarriage::Type::Release;
+				carriage.keyboardCarriage.type = Carriage::KeyboardCarriage::Type::Release;
 				carriage.keyboardCarriage.key = static_cast<spk::Keyboard::Key>(wParam);
 				break;
 			}
 			case WM_CHAR:
 			{
-				carriage.keyboardCarriage.type = KeyboardCarriage::Type::Press;
+				carriage.keyboardCarriage.type = Carriage::KeyboardCarriage::Type::Press;
 				carriage.keyboardCarriage.glyph = static_cast<wchar_t>(wParam);
 				break;
 			}
 			case WM_SETFOCUS:
 			{
-				carriage.systemCarriage.type = SystemCarriage::Type::Focus;
+				carriage.systemCarriage.type = Carriage::SystemCarriage::Type::Focus;
 				break;
 			}
 			case WM_KILLFOCUS:
 			{
-				carriage.systemCarriage.type = SystemCarriage::Type::Focus;
+				carriage.systemCarriage.type = Carriage::SystemCarriage::Type::Focus;
 				break;
 			}
 			case WM_CLOSE:
 			case WM_QUIT:
 			{
-				carriage.systemCarriage.type = SystemCarriage::Type::Quit;
+				carriage.systemCarriage.type = Carriage::SystemCarriage::Type::Quit;
 				break;
 			}
 			case WM_MOVE:
 			{
-				carriage.systemCarriage.type = SystemCarriage::Type::Move;
+				carriage.systemCarriage.type = Carriage::SystemCarriage::Type::Move;
 				break;
 			}
 			default:
