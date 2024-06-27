@@ -13,17 +13,24 @@
 #include "structure/design_pattern/spk_contract_provider.hpp"
 
 #include <deque>
+#include <map>
 #include <unordered_set>
 #include <Windows.h>
+
+#include "structure/system/event/spk_event.hpp"
 
 namespace spk
 {
 	class GraphicalApplication;
 	class Widget;
+	class IModule;
 
 	class Window
 	{
 	private:
+		friend class PaintModule;
+		friend struct Event;
+
 		std::unique_ptr<Widget> _rootWidget;
 		
 		std::wstring _title;
@@ -31,21 +38,21 @@ namespace spk
 		
 		HWND _hwnd;
 		HINSTANCE _hInstance;
-		static std::unordered_set<UINT> _subscribedEvents;
-		std::map<UINT, spk::ThreadSafeQueue<spk::Event>*> _threadSafeQueues;
+		std::map<UINT, spk::IModule*> _subscribedModules;
 
 		static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 		bool _createWindow();
 		void _showWindow(int nCmdShow);
-		void _receiveEvent(UINT uMsg, WPARAM wParam, LPARAM lParam);
+		bool _receiveEvent(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	public:
 		Window(const std::wstring& p_title, const spk::Geometry2DInt& p_geometry);
 
+		void close();
 		void clear();
 		void swap();
 
-		void bind(UINT, spk::ThreadSafeQueue<spk::Event>*);
+		void bindModule(spk::IModule* p_module);
 		void pullEvents();
 
 		spk::SafePointer<Widget> widget() const;

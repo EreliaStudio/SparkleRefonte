@@ -6,35 +6,12 @@
 #include "application/spk_graphical_application.hpp"
 
 #include "structure/system/event/spk_event.hpp"
+#include "application/module/spk_module.hpp"
 
 namespace spk
 {
-	std::unordered_set<UINT> Window::_subscribedEvents = {
-		WM_PAINT,
-		WM_SIZE,
-		WM_LBUTTONDOWN,
-		WM_RBUTTONDOWN,
-		WM_MBUTTONDOWN,
-		WM_LBUTTONUP,
-		WM_RBUTTONUP,
-		WM_MBUTTONUP,
-		WM_MOUSEMOVE,
-		WM_MOUSEWHEEL,
-		WM_KEYDOWN,
-		WM_KEYUP,
-		WM_CHAR,
-		WM_SETFOCUS,
-		WM_KILLFOCUS,
-		WM_CLOSE,
-		WM_QUIT,
-		WM_MOVE
-	};
-
 	LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
-		if (_subscribedEvents.contains(uMsg) == false)
-			return DefWindowProc(hwnd, uMsg, wParam, lParam);
-			
 		Window* window = nullptr;
 
 		if (uMsg == WM_NCCREATE)
@@ -48,18 +25,19 @@ namespace spk
 			window = reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 		}
 
-		window->_receiveEvent(uMsg, wParam, lParam);
-
-		return true;
+		if (window != nullptr && window->_receiveEvent(uMsg, wParam, lParam) == true)
+			return (0);
+		
+		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
 
 
-	void Window::_receiveEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
+	bool Window::_receiveEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
-		if (_threadSafeQueues.contains(uMsg) == false)
-			return ;
-
-		_threadSafeQueues[uMsg]->push(spk::Event(this, uMsg, wParam, lParam));
+		if (_subscribedModules.contains(uMsg) == false)
+			return (false);
+		_subscribedModules[uMsg]->receiveEvent(spk::Event(this, uMsg, wParam, lParam));
+		return (true);
 	}
 
 	bool Window::_createWindow()
@@ -119,6 +97,12 @@ namespace spk
 		_showWindow(SW_SHOW);
 	}
 
+	void Window::close()
+	{
+		SetWindowLongPtr(_hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(nullptr));
+		_subscribedModules.clear();
+	}
+
 	void Window::clear()
 	{
 
@@ -129,14 +113,18 @@ namespace spk
 
 	}
 
-	void Window::bind(UINT p_messageType, spk::ThreadSafeQueue<spk::Event>* p_threadSafeQueue)
+	void Window::bindModule(spk::IModule* p_module)
 	{
-		_threadSafeQueues[p_messageType] = p_threadSafeQueue;
+		for (const auto& ID : p_module->eventIDs())
+		{
+			_subscribedModules[ID] = p_module;
+		}
 	}
 
 	void Window::pullEvents()
 	{
 		MSG msg;
+
 		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
 		{
 			TranslateMessage(&msg);

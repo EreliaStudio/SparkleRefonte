@@ -19,6 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\application\module\spk_controller_module.cpp" />
+    <ClCompile Include="src\application\module\spk_keyboard_module.cpp" />
+    <ClCompile Include="src\application\module\spk_module.cpp" />
+    <ClCompile Include="src\application\module\spk_mouse_module.cpp" />
+    <ClCompile Include="src\application\module\spk_paint_module.cpp" />
+    <ClCompile Include="src\application\module\spk_system_module.cpp" />
+    <ClCompile Include="src\application\module\spk_update_module.cpp" />
     <ClCompile Include="src\structure\graphical\spk_window.cpp" />
     <ClCompile Include="src\structure\math\spk_math.cpp" />
     <ClCompile Include="src\structure\math\spk_matrix4x4.cpp" />
@@ -28,6 +35,7 @@
     <ClCompile Include="src\structure\container\spk_data_buffer.cpp" />
     <ClCompile Include="src\structure\design_pattern\spk_activable_object.cpp" />
     <ClCompile Include="src\structure\spk_iostream.cpp" />
+    <ClCompile Include="src\structure\structure\event\spk_event.cpp" />
     <ClCompile Include="src\widget\spk_widget.cpp" />
   </ItemGroup>
   <ItemGroup>

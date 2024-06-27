@@ -5,12 +5,20 @@
 
 namespace spk
 {
-	class Module
+	class IModule
+	{
+	public:
+		virtual void receiveEvent(spk::Event&& p_event) = 0;
+		virtual const std::vector<UINT>& eventIDs() = 0;
+	};
+
+	template <typename TEventType>
+	class Module : public IModule
 	{
 	private:
-		spk::ThreadSafeQueue<spk::Event> eventQueue;
+		spk::ThreadSafeQueue<TEventType> _eventQueue;
 
-		virtual void _treatEvent(spk::Event&& p_event) = 0;
+		virtual void _treatEvent(TEventType&& p_event) = 0;
 
 	public:
 		Module()
@@ -18,17 +26,22 @@ namespace spk
 
 		}
 
-		void treatMessages()
+		const std::vector<UINT>& eventIDs()
 		{
-			while (eventQueue.empty() == false)
-			{
-				_treatEvent(std::move(eventQueue.pop()));
-			}
+			return (TEventType::EventIDs);
 		}
 
-		spk::ThreadSafeQueue<spk::Event>& eventQueue()
+		void receiveEvent(spk::Event&& p_event)
 		{
-			return (eventQueue);
+			_eventQueue.push(std::move((TEventType&&)(p_event)));
+		}
+
+		void treatMessages()
+		{
+			while (_eventQueue.empty() == false)
+			{
+				_treatEvent(std::move(_eventQueue.pop()));
+			}
 		}
 	};
 }

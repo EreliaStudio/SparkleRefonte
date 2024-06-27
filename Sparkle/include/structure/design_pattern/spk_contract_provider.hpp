@@ -73,7 +73,7 @@ namespace spk
 	private:
 		std::vector<std::shared_ptr<Job>> _subscribedJobs;
 		std::vector<Contract> _relinquishedContracts;
-		std::mutex _mutex;
+		std::recursive_mutex _mutex;
 
 	public:
 		ContractProvider()
@@ -99,7 +99,7 @@ namespace spk
 		{
 			std::shared_ptr<Job> toAdd = std::make_shared<Job>(p_job);
 
-			std::lock_guard<std::mutex> lock(_mutex);
+			std::lock_guard<std::recursive_mutex> lock(_mutex);
 			_subscribedJobs.push_back(toAdd);
 
 			return (Contract(this, toAdd));
@@ -107,13 +107,13 @@ namespace spk
 
 		void relinquish(Contract&& p_contract)
 		{
-			std::lock_guard<std::mutex> lock(_mutex);
+			std::lock_guard<std::recursive_mutex> lock(_mutex);
 			_relinquishedContracts.push_back(std::move(p_contract));
 		}
 
 		void unsubscribe(const Contract& p_contract)
 		{
-			std::lock_guard<std::mutex> lock(_mutex);
+			std::lock_guard<std::recursive_mutex> lock(_mutex);
 			auto it = std::remove(_subscribedJobs.begin(), _subscribedJobs.end(), p_contract._job);
 			if (it != _subscribedJobs.end())
 			{
@@ -126,10 +126,11 @@ namespace spk
 
 		void trigger()
 		{
-			std::lock_guard<std::mutex> lock(_mutex);
+			std::lock_guard<std::recursive_mutex> lock(_mutex);
 			for (auto& job : _subscribedJobs)
 			{
-				(*job)();
+				if (job != nullptr)
+					(*job)();
 			}
 		}
 	};

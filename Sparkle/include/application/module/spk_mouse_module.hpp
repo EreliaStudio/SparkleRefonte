@@ -2,20 +2,18 @@
 
 #include "application/module/spk_module.hpp"
 
+#include "structure/system/event/spk_event.hpp"
+
+#include "spk_debug_macro.hpp"
+
 namespace spk
 {
-	class MouseModule : public spk::Module
+	class MouseModule : public spk::Module<spk::MouseEvent>
 	{
 	private:
-		void _treatEvent(spk::Event&& p_event)
-		{
-
-		}
+		void _treatEvent(spk::MouseEvent&& p_event);
 
 	public:
-		MouseModule()
-		{
-
-		}
+		MouseModule();
 	};
 }

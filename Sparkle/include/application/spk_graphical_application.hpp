@@ -34,6 +34,7 @@ namespace spk
 			ControllerModule controllerModule;
 
 			WindowHandler(GraphicalApplication* p_application, const std::wstring& p_title, const spk::Geometry2DInt& p_geometry);
+			void stop();
 		};
 
 		std::map < std::wstring, std::unique_ptr<WindowHandler>> _windowHandlers;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <iostream>
+
 namespace spk
 {
 	template <typename TType>
@@ -24,6 +26,18 @@ namespace spk
 		bool operator != (const TType* p_other) const
 		{
 			return (p_other != _ptr);
+		}
+
+		friend std::ostream& operator << (std::ostream& p_os, const spk::SafePointer<TType>& p_ptr)
+		{
+			p_os << p_ptr.get();
+			return (p_os);
+		}
+
+		friend std::wostream& operator << (std::wostream& p_os, const spk::SafePointer<TType>& p_ptr)
+		{
+			p_os << p_ptr.get();
+			return (p_os);
 		}
 
 	private:
