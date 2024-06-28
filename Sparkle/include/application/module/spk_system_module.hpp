@@ -7,17 +7,13 @@
 #include "spk_debug_macro.hpp"
 
 namespace spk
-{
-	class GraphicalApplication;
-	
+{	
 	class SystemModule : public spk::Module<spk::SystemEvent>
 	{
-	private:
-		spk::SafePointer<GraphicalApplication> _applicationToManage;
-		
+	private:		
 		void _treatEvent(spk::SystemEvent&& p_event);
 
 	public:
-		SystemModule(spk::SafePointer<GraphicalApplication> p_applicationToManage);
+		SystemModule();
 	};
 }

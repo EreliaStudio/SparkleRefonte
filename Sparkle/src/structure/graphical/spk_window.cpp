@@ -14,13 +14,14 @@ namespace spk
 
 	LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
-		Window* window = nullptr;
+		/*Window* window = nullptr;
 
 		if (uMsg == WM_NCCREATE)
 		{
 			CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
 			window = reinterpret_cast<Window*>(pCreate->lpCreateParams);
 			SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(window));
+			std::cout << "Setting user data for hwnd [" << hwnd << "] : " << window << std::endl;
 		}
 		else
 		{
@@ -28,7 +29,7 @@ namespace spk
 		}
 
 		if (window != nullptr && window->_receiveEvent(uMsg, wParam, lParam) == true)
-			return (0);
+			return (0);*/
 
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
@@ -43,25 +44,6 @@ namespace spk
 
 	void Window::_createContext()
 	{
-		WNDCLASSEX wc = { 0 };
-		wc.cbSize = sizeof(WNDCLASSEX);
-		wc.style = CS_HREDRAW | CS_VREDRAW;
-		wc.lpfnWndProc = Window::WindowProc;
-		wc.cbClsExtra = 0;
-		wc.cbWndExtra = sizeof(Window*);
-		wc.hInstance = GetModuleHandle(nullptr);
-		wc.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
-		wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-		wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
-		wc.lpszMenuName = nullptr;
-		wc.lpszClassName = L"SPKWindowClass";
-		wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
-
-		if (!RegisterClassEx(&wc))
-		{
-			throw std::runtime_error("Failed to register window class.");
-		}
-
 		_hwnd = CreateWindowEx(
 			0,
 			L"SPKWindowClass",
@@ -78,17 +60,19 @@ namespace spk
 
 		ShowWindow(_hwnd, SW_SHOW);
 		UpdateWindow(_hwnd);
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
+
 
 	Window::Window(const std::wstring& p_title, const spk::Geometry2DInt& p_geometry) :
 		_rootWidget(std::make_unique<Widget>(p_title + L" - CentralWidget")),
 		_title(p_title),
 		_geometry(p_geometry),
 		_windowRendererThread(p_title + L" - Renderer"),
-		_windowUpdaterThread(p_title + L" - Updater"),
-		systemModule(this)
+		_windowUpdaterThread(p_title + L" - Updater")
 	{
-		_windowRendererThread.addPreparationStep([&]() {_createContext(); });
+		_windowRendererThread.addPreparationStep([&]() {_createContext(); }).relinquish();
 		_windowRendererThread.addExecutionStep([&]() {
 				pullEvents();
 				
@@ -97,12 +81,12 @@ namespace spk
 				
 			}).relinquish();
 
-			window.bindModule(&mouseModule);
-			window.bindModule(&keyboardModule);
-			window.bindModule(&controllerModule);
-			window.bindModule(&updateModule);
-			window.bindModule(&paintModule);
-			window.bindModule(&systemModule);
+		bindModule(&mouseModule);
+		bindModule(&keyboardModule);
+		bindModule(&controllerModule);
+		bindModule(&updateModule);
+		bindModule(&paintModule);
+		bindModule(&systemModule);
 	}
 
 	void Window::close()

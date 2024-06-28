@@ -11,14 +11,13 @@ namespace spk
 		case spk::SystemEvent::Type::Quit:
 		{
 			spk::cout << "Removing window : " << p_event.window << " with title : " << p_event.window->title() << std::endl;
-			_applicationToManage->closeWindow(p_event.window);
+			p_event.window->close();
 			break;
 		}
 		}
 	}
 
-	SystemModule::SystemModule(spk::SafePointer<GraphicalApplication> p_applicationToManage) :
-			_applicationToManage(p_applicationToManage)
+	SystemModule::SystemModule()
 	{
 
 	}
