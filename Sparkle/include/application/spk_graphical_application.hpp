@@ -10,6 +10,7 @@ namespace spk
 	class GraphicalApplication : public Application
 	{
 	private:
+		std::map<std::wstring, std::unique_ptr<spk::Window>> _windows;
 
 	public:
 		GraphicalApplication();

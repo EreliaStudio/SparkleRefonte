@@ -19,6 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\application\module\spk_controller_module.cpp" />
+    <ClCompile Include="src\application\module\spk_keyboard_module.cpp" />
+    <ClCompile Include="src\application\module\spk_module.cpp" />
+    <ClCompile Include="src\application\module\spk_mouse_module.cpp" />
+    <ClCompile Include="src\application\module\spk_paint_module.cpp" />
+    <ClCompile Include="src\application\module\spk_system_module.cpp" />
+    <ClCompile Include="src\application\module\spk_update_module.cpp" />
     <ClCompile Include="src\structure\graphical\spk_window.cpp" />
     <ClCompile Include="src\structure\math\spk_math.cpp" />
     <ClCompile Include="src\structure\math\spk_matrix4x4.cpp" />
@@ -32,6 +39,13 @@
     <ClCompile Include="src\widget\spk_widget.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\application\module\spk_controller_module.hpp" />
+    <ClInclude Include="include\application\module\spk_keyboard_module.hpp" />
+    <ClInclude Include="include\application\module\spk_module.hpp" />
+    <ClInclude Include="include\application\module\spk_mouse_module.hpp" />
+    <ClInclude Include="include\application\module\spk_paint_module.hpp" />
+    <ClInclude Include="include\application\module\spk_system_module.hpp" />
+    <ClInclude Include="include\application\module\spk_update_module.hpp" />
     <ClInclude Include="include\application\spk_application.hpp" />
     <ClInclude Include="include\application\spk_console_application.hpp" />
     <ClInclude Include="include\application\spk_graphical_application.hpp" />
@@ -41,6 +55,7 @@
     <ClInclude Include="include\spk_debug_macro.hpp" />
     <ClInclude Include="include\structure\container\spk_data_buffer.hpp" />
     <ClInclude Include="include\structure\container\spk_pool.hpp" />
+    <ClInclude Include="include\structure\container\spk_thread_safe_queue.hpp" />
     <ClInclude Include="include\structure\design_pattern\spk_activable_object.hpp" />
     <ClInclude Include="include\structure\design_pattern\spk_contract_provider.hpp" />
     <ClInclude Include="include\structure\design_pattern\spk_event_notifier.hpp" />

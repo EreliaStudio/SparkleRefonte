@@ -14,35 +14,51 @@
 
 #include "widget/spk_widget.hpp"
 
+#include "structure/thread/spk_persistant_worker.hpp"
+
+#include "application/module/spk_module.hpp"
+
 #include <deque>
 #include <map>
 #include <unordered_set>
 #include <Windows.h>
 
-#include "structure/system/event/spk_event.hpp"
+#include "application/module/spk_mouse_module.hpp"
+#include "application/module/spk_keyboard_module.hpp"
+#include "application/module/spk_system_module.hpp"
+#include "application/module/spk_update_module.hpp"
+#include "application/module/spk_paint_module.hpp"
+#include "application/module/spk_controller_module.hpp"
 
 namespace spk
 {
-	class GraphicalApplication;
-	class Widget;
-
 	class Window
 	{
-	private:
-		friend class PaintModule;
 		friend struct Event;
+		friend class GraphicalApplication;
 
+	private:
 		std::unique_ptr<Widget> _rootWidget;
 		
 		std::wstring _title;
 		spk::Geometry2DInt _geometry;
-		
-		HWND _hwnd;
-		HINSTANCE _hInstance;
+		spk::PersistantWorker _windowRendererThread;
+		spk::PersistantWorker _windowUpdaterThread;
 
+		HWND _hwnd;
+		MouseModule mouseModule;
+		KeyboardModule keyboardModule;
+		SystemModule systemModule;
+		UpdateModule updateModule;
+		PaintModule paintModule;
+		ControllerModule controllerModule;
+
+		std::map<UINT, spk::IModule*> _subscribedModules;
+
+		void _initialize();
 		static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-		bool _createWindow();
-		void _showWindow(int nCmdShow);
+		void _createContext();
+
 		bool _receiveEvent(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	public:
@@ -53,6 +69,7 @@ namespace spk
 		void swap();
 
 		void pullEvents();
+		void bindModule(spk::IModule* p_module);
 
 		spk::SafePointer<Widget> widget() const;
 		operator spk::SafePointer<Widget>() const;

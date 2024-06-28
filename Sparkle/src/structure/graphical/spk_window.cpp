@@ -1,14 +1,17 @@
 #include "structure/graphical/spk_window.hpp"
 
-#include "widget/spk_widget.hpp"
-#include "structure/spk_iostream.hpp"
-
 #include "application/spk_graphical_application.hpp"
 
-#include "structure/system/event/spk_event.hpp"
+#include "spk_debug_macro.hpp"
 
 namespace spk
 {
+	void Window::_initialize()
+	{
+		_windowRendererThread.start();
+		_windowUpdaterThread.start();
+	}
+
 	LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		Window* window = nullptr;
@@ -26,76 +29,92 @@ namespace spk
 
 		if (window != nullptr && window->_receiveEvent(uMsg, wParam, lParam) == true)
 			return (0);
-		
+
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
 
-
 	bool Window::_receiveEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
+		if (_subscribedModules.contains(uMsg) == false)
+			return (false);
+		_subscribedModules[uMsg]->receiveEvent(spk::Event(this, uMsg, wParam, lParam));
 		return (true);
 	}
 
-	bool Window::_createWindow()
+	void Window::_createContext()
 	{
-		const wchar_t CLASS_NAME[] = L"Sample Window Class";
+		WNDCLASSEX wc = { 0 };
+		wc.cbSize = sizeof(WNDCLASSEX);
+		wc.style = CS_HREDRAW | CS_VREDRAW;
+		wc.lpfnWndProc = Window::WindowProc;
+		wc.cbClsExtra = 0;
+		wc.cbWndExtra = sizeof(Window*);
+		wc.hInstance = GetModuleHandle(nullptr);
+		wc.hIcon = LoadIcon(nullptr, IDI_APPLICATION);
+		wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
+		wc.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+		wc.lpszMenuName = nullptr;
+		wc.lpszClassName = L"SPKWindowClass";
+		wc.hIconSm = LoadIcon(nullptr, IDI_APPLICATION);
 
-		WNDCLASS wc = { };
-
-		wc.lpfnWndProc = WindowProc;
-		wc.hInstance = _hInstance;
-		wc.lpszClassName = CLASS_NAME;
-
-		RegisterClass(&wc);
-
-		_hwnd = CreateWindowEx(
-			0,                              // Optional window styles.
-			CLASS_NAME,                     // Window class
-			_title.c_str(),                 // Window text
-			WS_OVERLAPPEDWINDOW,            // Window style
-
-			// Size and position
-			_geometry.x,
-			_geometry.y,
-			_geometry.width,
-			_geometry.height,
-
-			nullptr,       // Parent window    
-			nullptr,       // Menu
-			_hInstance,    // Instance handle
-			this           // Additional application data
-		);
-
-		if (_hwnd == nullptr)
+		if (!RegisterClassEx(&wc))
 		{
-			return false;
+			throw std::runtime_error("Failed to register window class.");
 		}
 
-		return true;
-	}
+		_hwnd = CreateWindowEx(
+			0,
+			L"SPKWindowClass",
+			_title.c_str(),
+			WS_OVERLAPPEDWINDOW,
+			_geometry.x, _geometry.y,
+			_geometry.width, _geometry.height,
+			nullptr, nullptr, GetModuleHandle(nullptr), this);
 
-	void Window::_showWindow(int nCmdShow)
-	{
-		ShowWindow(_hwnd, nCmdShow);
+		if (!_hwnd)
+		{
+			throw std::runtime_error("Failed to create window.");
+		}
+
+		ShowWindow(_hwnd, SW_SHOW);
+		UpdateWindow(_hwnd);
 	}
 
 	Window::Window(const std::wstring& p_title, const spk::Geometry2DInt& p_geometry) :
 		_rootWidget(std::make_unique<Widget>(p_title + L" - CentralWidget")),
 		_title(p_title),
 		_geometry(p_geometry),
-		_hwnd(nullptr),
-		_hInstance(GetModuleHandle(nullptr))
+		_windowRendererThread(p_title + L" - Renderer"),
+		_windowUpdaterThread(p_title + L" - Updater"),
+		systemModule(this)
 	{
-		if (!_createWindow())
-		{
-			throw std::runtime_error("Failed to create window.");
-		}
-		_showWindow(SW_SHOW);
+		_windowRendererThread.addPreparationStep([&]() {_createContext(); });
+		_windowRendererThread.addExecutionStep([&]() {
+				pullEvents();
+				
+			}).relinquish();
+		_windowUpdaterThread.addExecutionStep([&]() {
+				
+			}).relinquish();
+
+			window.bindModule(&mouseModule);
+			window.bindModule(&keyboardModule);
+			window.bindModule(&controllerModule);
+			window.bindModule(&updateModule);
+			window.bindModule(&paintModule);
+			window.bindModule(&systemModule);
 	}
 
 	void Window::close()
 	{
-		SetWindowLongPtr(_hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(nullptr));
+		_windowRendererThread.stop();
+		_windowUpdaterThread.stop();
+
+		if (_hwnd)
+		{
+			DestroyWindow(_hwnd);
+			_hwnd = nullptr;
+		}
 	}
 
 	void Window::clear()
@@ -116,6 +135,14 @@ namespace spk
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
+		}
+	}
+	
+	void Window::bindModule(spk::IModule* p_module)
+	{
+		for (const auto& ID : p_module->eventIDs())
+		{
+			_subscribedModules[ID] = p_module;
 		}
 	}
 
