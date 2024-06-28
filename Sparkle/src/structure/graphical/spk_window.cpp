@@ -6,7 +6,6 @@
 #include "application/spk_graphical_application.hpp"
 
 #include "structure/system/event/spk_event.hpp"
-#include "application/module/spk_module.hpp"
 
 namespace spk
 {
@@ -34,9 +33,6 @@ namespace spk
 
 	bool Window::_receiveEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
-		if (_subscribedModules.contains(uMsg) == false)
-			return (false);
-		_subscribedModules[uMsg]->receiveEvent(spk::Event(this, uMsg, wParam, lParam));
 		return (true);
 	}
 
@@ -100,7 +96,6 @@ namespace spk
 	void Window::close()
 	{
 		SetWindowLongPtr(_hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(nullptr));
-		_subscribedModules.clear();
 	}
 
 	void Window::clear()
@@ -111,14 +106,6 @@ namespace spk
 	void Window::swap()
 	{
 
-	}
-
-	void Window::bindModule(spk::IModule* p_module)
-	{
-		for (const auto& ID : p_module->eventIDs())
-		{
-			_subscribedModules[ID] = p_module;
-		}
 	}
 
 	void Window::pullEvents()

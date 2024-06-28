@@ -5,18 +5,22 @@ namespace spk
 	void IOStream::_flushBuffer()
 	{
 		auto bufferContent = _buffer.str();
+
+		if (bufferContent.size() == 0)
+			return;
+
 		{
 			std::lock_guard<std::recursive_mutex> lock(_mutex);
 			if (_prefix != L"")
-				_outputStream << "[" << _prefix << "] - ";
-			_outputStream << bufferContent;
+				*_outputStream << "[" << _prefix << "] - ";
+			*_outputStream << bufferContent;
 		}
 		_buffer.str(L"");
 		_buffer.clear();
 	}
 
 	IOStream::IOStream(std::wostream& p_outputStream) :
-		_outputStream(p_outputStream),
+		_outputStream(&p_outputStream),
 		_prefix(L"")
 	{
 
@@ -27,6 +31,16 @@ namespace spk
 		_prefix = p_prefix;
 	}
 
+	void IOStream::redirect(std::wostream& p_outputStream)
+	{
+		_outputStream = &p_outputStream;
+	}
+
+	void IOStream::flush()
+	{
+		_flushBuffer();
+	}
+
 	IOStream& IOStream::operator<<(Manipulator manip)
 	{
 		_buffer << manip;
@@ -35,6 +49,11 @@ namespace spk
 			_flushBuffer();
 		}
 		return *this;
+	}
+
+	std::wstring IOStream::str() const
+	{
+		return (_buffer.str());
 	}
 
 	thread_local spk::IOStream cout = spk::IOStream(std::wcout);

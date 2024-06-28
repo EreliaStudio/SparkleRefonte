@@ -2,10 +2,7 @@
 
 int main()
 {	
-	spk::GraphicalApplication app;
-
-	app.createWindow(L"FirstWindow", spk::Geometry2DInt(0, 0, 800, 400));
-	app.createWindow(L"SecondWindow", spk::Geometry2DInt(500, 0, 400, 800));
+	spk::GraphicalApplication app(L"FirstWindow", spk::Geometry2DInt(0, 0, 800, 400));
 
 	return (app.run());
 }

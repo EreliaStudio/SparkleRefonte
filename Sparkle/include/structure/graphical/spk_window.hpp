@@ -12,6 +12,8 @@
 
 #include "structure/design_pattern/spk_contract_provider.hpp"
 
+#include "widget/spk_widget.hpp"
+
 #include <deque>
 #include <map>
 #include <unordered_set>
@@ -23,7 +25,6 @@ namespace spk
 {
 	class GraphicalApplication;
 	class Widget;
-	class IModule;
 
 	class Window
 	{
@@ -38,7 +39,6 @@ namespace spk
 		
 		HWND _hwnd;
 		HINSTANCE _hInstance;
-		std::map<UINT, spk::IModule*> _subscribedModules;
 
 		static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 		bool _createWindow();
@@ -52,7 +52,6 @@ namespace spk
 		void clear();
 		void swap();
 
-		void bindModule(spk::IModule* p_module);
 		void pullEvents();
 
 		spk::SafePointer<Widget> widget() const;
