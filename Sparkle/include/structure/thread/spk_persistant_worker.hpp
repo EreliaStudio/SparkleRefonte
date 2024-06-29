@@ -37,16 +37,17 @@ namespace spk
 
 		~PersistantWorker()
 		{
-			stop();
+			if (this->_running.load() == true)
+				stop();
 		}
 
 		void stop()
 		{
 			this->_running = false;
-			if (isJoinable())
+			/*if (isJoinable())
 			{
 				join();
-			}
+			}*/
 		}
 
 		Contract addPreparationStep(const Job& p_job)

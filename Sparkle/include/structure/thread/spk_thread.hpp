@@ -46,10 +46,11 @@ namespace spk
 
 		virtual void join()
 		{
-			if (_handle && _handle->joinable())
+			if (_handle != nullptr && _handle->joinable())
 			{
 				_handle->join();
 				_handle.reset();
+				_handle = nullptr;
 			}
 		}
 

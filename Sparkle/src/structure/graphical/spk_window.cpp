@@ -6,22 +6,22 @@
 
 namespace spk
 {
-	void Window::_initialize()
+	void Window::_initialize(const std::function<void(spk::SafePointer<spk::Window>)>& p_onClosureCallback)
 	{
 		_windowRendererThread.start();
 		_windowUpdaterThread.start();
+		_onClosureCallback = p_onClosureCallback;
 	}
 
 	LRESULT CALLBACK Window::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
-		/*Window* window = nullptr;
+		Window* window = nullptr;
 
 		if (uMsg == WM_NCCREATE)
 		{
 			CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
 			window = reinterpret_cast<Window*>(pCreate->lpCreateParams);
 			SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(window));
-			std::cout << "Setting user data for hwnd [" << hwnd << "] : " << window << std::endl;
 		}
 		else
 		{
@@ -29,7 +29,7 @@ namespace spk
 		}
 
 		if (window != nullptr && window->_receiveEvent(uMsg, wParam, lParam) == true)
-			return (0);*/
+			return (0);
 
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
@@ -60,8 +60,6 @@ namespace spk
 
 		ShowWindow(_hwnd, SW_SHOW);
 		UpdateWindow(_hwnd);
-
-		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
 
 
@@ -75,7 +73,7 @@ namespace spk
 		_windowRendererThread.addPreparationStep([&]() {_createContext(); }).relinquish();
 		_windowRendererThread.addExecutionStep([&]() {
 				pullEvents();
-				
+				systemModule.treatMessages();
 			}).relinquish();
 		_windowUpdaterThread.addExecutionStep([&]() {
 				
@@ -99,6 +97,9 @@ namespace spk
 			DestroyWindow(_hwnd);
 			_hwnd = nullptr;
 		}
+
+		if (_onClosureCallback != nullptr)
+			_onClosureCallback(this);
 	}
 
 	void Window::clear()

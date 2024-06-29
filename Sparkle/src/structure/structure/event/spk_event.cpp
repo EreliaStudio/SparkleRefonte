@@ -15,9 +15,6 @@ namespace spk
 
 	bool Event::construct(spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
-		DEBUG_LINE();
-		spk::cout << "Constructing an event id [" << uMsg << "] for windows [" << p_window << "]" << std::endl;
-		DEBUG_LINE();
 		switch (uMsg)
 		{
 		case WM_PAINT:
@@ -114,7 +111,6 @@ namespace spk
 		case WM_QUIT:
 			systemEvent.type = SystemEvent::Type::Quit;
 			systemEvent.window = p_window;
-			p_window->close();
 			break;
 
 		case WM_MOVE:

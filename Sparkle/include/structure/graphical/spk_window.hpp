@@ -54,8 +54,9 @@ namespace spk
 		ControllerModule controllerModule;
 
 		std::map<UINT, spk::IModule*> _subscribedModules;
+		std::function<void(spk::SafePointer<spk::Window>)> _onClosureCallback = nullptr;
 
-		void _initialize();
+		void _initialize(const std::function<void(spk::SafePointer<spk::Window>)>& p_onClosureCallback);
 		static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 		void _createContext();
 

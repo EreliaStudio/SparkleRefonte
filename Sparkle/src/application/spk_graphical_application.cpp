@@ -43,6 +43,15 @@ namespace spk
 				throw std::runtime_error("Failed to register window class.");
 			}
 		}
+
+		this->addExecutionStep([&](){
+			while (_windowToRemove.empty() == false)
+			{
+				closeWindow(_windowToRemove.pop());
+				if (_windows.size() == 0)
+					quit(0);
+			}
+		}).relinquish();
 	}
 
 	spk::SafePointer<Window> GraphicalApplication::createWindow(const std::wstring& p_title, const spk::Geometry2DInt& p_geometry)
@@ -51,7 +60,7 @@ namespace spk
 			throw std::runtime_error("Can't create a second window named [" + wstring_to_string(p_title) + "]");
 		_windows[p_title] = std::make_unique<spk::Window>(p_title, p_geometry);
 
-		_windows[p_title]->_initialize();
+		_windows[p_title]->_initialize([&](spk::SafePointer<spk::Window> windowPtr){_windowToRemove.push(std::move(windowPtr));});
 
 		return (_windows[p_title].get());
 	}

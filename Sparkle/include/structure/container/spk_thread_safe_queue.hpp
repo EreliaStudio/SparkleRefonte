@@ -19,14 +19,14 @@ namespace spk
         {	
             return (m_queue.empty());
         }
-    
-        void push(TType&& item)
-        {
-            std::unique_lock<std::mutex> lock(m_mutex);
 
-            m_queue.push(std::move(item));
-            m_cond.notify_one();
-        }
+		void push(TType&& item)
+		{
+			std::unique_lock<std::mutex> lock(m_mutex);
+
+			m_queue.push(std::move(item));
+			m_cond.notify_one();
+		}
 
         TType pop()
         {
