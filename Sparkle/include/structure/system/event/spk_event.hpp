@@ -10,6 +10,8 @@
 #include "structure/system/device/spk_keyboard.hpp"
 #include "structure/system/device/spk_controller.hpp"
 
+#include "structure/graphical/spk_geometry_2D.hpp"
+
 namespace spk
 {
 	class Window;
@@ -140,12 +142,12 @@ namespace spk
 			struct
 			{
 				spk::SafePointer<Window> window;
-				spk::Vector2Int newSize;
+				spk::Geometry2DInt::Size newSize;
 			};
 			struct
 			{
 				spk::SafePointer<Window> window;
-				spk::Vector2Int newPosition;
+				spk::Geometry2DInt::Position newPosition;
 			};
 		};
 	};

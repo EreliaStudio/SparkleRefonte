@@ -65,6 +65,8 @@ namespace spk
 	public:
 		Window(const std::wstring& p_title, const spk::Geometry2DInt& p_geometry);
 
+		void move(const spk::Geometry2DInt::Position& p_newPosition);
+		void resize(const spk::Geometry2DInt::Size& p_newSize);
 		void close();
 		void clear();
 		void swap();

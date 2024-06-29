@@ -33,7 +33,7 @@ namespace spk
 
 		void receiveEvent(spk::Event&& p_event)
 		{
-			_eventQueue.push(std::move((TEventType&&)(p_event)));
+			_eventQueue.push(std::move(reinterpret_cast<TEventType&&>(p_event)));
 		}
 
 		void treatMessages()

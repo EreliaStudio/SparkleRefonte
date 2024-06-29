@@ -96,7 +96,7 @@ namespace spk
 		case WM_SIZE:
 			systemEvent.type = SystemEvent::Type::Resize;
 			systemEvent.window = p_window;
-			systemEvent.newSize = spk::Vector2Int(LOWORD(lParam), HIWORD(lParam));
+			systemEvent.newSize = spk::Geometry2DInt::Size(LOWORD(lParam), HIWORD(lParam));
 			break;
 
 		case WM_SETFOCUS:
@@ -116,7 +116,7 @@ namespace spk
 		case WM_MOVE:
 			systemEvent.type = SystemEvent::Type::Move;
 			systemEvent.window = p_window;
-			systemEvent.newPosition = spk::Vector2Int(LOWORD(lParam), HIWORD(lParam));
+			systemEvent.newPosition = spk::Geometry2DInt::Position(LOWORD(lParam), HIWORD(lParam));
 			break;
 
 		default:
