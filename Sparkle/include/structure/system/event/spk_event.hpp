@@ -12,6 +12,14 @@
 
 #include "structure/graphical/spk_geometry_2D.hpp"
 
+#include <unordered_map>
+#include <functional>
+
+static const UINT WM_LEFT_JOYSTICK_MOVE = RegisterWindowMessage(L"WM_LEFT_JOYSTICK_MOVE");
+static const UINT WM_RIGHT_JOYSTICK_MOVE = RegisterWindowMessage(L"WM_RIGHT_JOYSTICK_MOVE");
+static const UINT WM_CONTROLLER_BUTTON_PRESS = RegisterWindowMessage(L"WM_CONTROLLER_BUTTON_PRESS");
+static const UINT WM_CONTROLLER_BUTTON_RELEASE = RegisterWindowMessage(L"WM_CONTROLLER_BUTTON_RELEASE");
+
 namespace spk
 {
 	class Window;
@@ -99,7 +107,13 @@ namespace spk
 
 	struct ControllerEvent : public IEvent
 	{
-		static inline std::vector<UINT> EventIDs = {};
+
+		static inline std::vector<UINT> EventIDs = {
+			WM_LEFT_JOYSTICK_MOVE,
+			WM_RIGHT_JOYSTICK_MOVE,
+			WM_CONTROLLER_BUTTON_PRESS,
+			WM_CONTROLLER_BUTTON_RELEASE
+		};
 		enum class Type
 		{
 			Press,
@@ -113,7 +127,7 @@ namespace spk
 			struct
 			{
 				spk::Controller::Joystick::ID id;
-				spk::Vector2 values;
+				spk::Vector2Int values;
 			} joystick;
 		};
 	};
@@ -154,6 +168,9 @@ namespace spk
 
 	struct Event
 	{
+		using ConstructorLambda = std::function<void(Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)>;
+		static const std::unordered_map<UINT, ConstructorLambda> _constructionMap;
+	
 		union
 		{
 			PaintEvent paintEvent;

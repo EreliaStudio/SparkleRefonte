@@ -11,7 +11,8 @@ namespace spk
 	class MouseModule : public spk::Module<spk::MouseEvent>
 	{
 	private:
-		void _treatEvent(spk::MouseEvent&& p_event);
+		void _treatEvent(spk::MouseEvent&& p_event) override;
+		spk::MouseEvent _convertEventToEventType(spk::Event&& p_event) override;
 
 	public:
 		MouseModule();

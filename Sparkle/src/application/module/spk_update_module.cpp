@@ -7,6 +7,11 @@ namespace spk
 		DEBUG_LINE();
 	}
 
+	spk::UpdateEvent UpdateModule::_convertEventToEventType(spk::Event&& p_event)
+	{
+		return (p_event.updateEvent);
+	}
+
 	UpdateModule::UpdateModule()
 	{
 

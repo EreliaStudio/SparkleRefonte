@@ -10,6 +10,9 @@
 
 #include "structure/container/spk_thread_safe_queue.hpp"
 
+#include "structure/system/device/spk_controller_input_thread.hpp"
+
+
 #include "structure/design_pattern/spk_contract_provider.hpp"
 
 #include "widget/spk_widget.hpp"
@@ -44,6 +47,7 @@ namespace spk
 		spk::Geometry2DInt _geometry;
 		spk::PersistantWorker _windowRendererThread;
 		spk::PersistantWorker _windowUpdaterThread;
+		ControllerInputThread _controllerInputThread;
 
 		HWND _hwnd;
 		MouseModule mouseModule;

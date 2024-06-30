@@ -7,6 +7,11 @@ namespace spk
 
 	}
 
+	spk::MouseEvent MouseModule::_convertEventToEventType(spk::Event&& p_event)
+	{
+		return (p_event.mouseEvent);
+	}
+
 	MouseModule::MouseModule()
 	{
 

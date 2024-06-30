@@ -44,6 +44,11 @@ namespace spk
 		}
 	}
 
+	spk::SystemEvent SystemModule::_convertEventToEventType(spk::Event&& p_event)
+	{
+		return (p_event.systemEvent);
+	}
+
 	SystemModule::SystemModule()
 	{
 

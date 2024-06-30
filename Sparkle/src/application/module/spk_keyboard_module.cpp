@@ -7,6 +7,11 @@ namespace spk
 		DEBUG_LINE();
 	}
 
+	spk::KeyboardEvent KeyboardModule::_convertEventToEventType(spk::Event&& p_event)
+	{
+		return (p_event.keyboardEvent);
+	}
+
 	KeyboardModule::KeyboardModule()
 	{
 

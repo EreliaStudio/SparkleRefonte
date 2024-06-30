@@ -56,12 +56,16 @@ namespace spk
 
 	spk::SafePointer<Window> GraphicalApplication::createWindow(const std::wstring& p_title, const spk::Geometry2DInt& p_geometry)
 	{
+		DEBUG_LINE();
 		if (_windows.contains(p_title) == true)
 			throw std::runtime_error("Can't create a second window named [" + wstring_to_string(p_title) + "]");
+		DEBUG_LINE();
 		_windows[p_title] = std::make_unique<spk::Window>(p_title, p_geometry);
 
+		DEBUG_LINE();
 		_windows[p_title]->_initialize([&](spk::SafePointer<spk::Window> windowPtr){_windowToRemove.push(std::move(windowPtr));});
 
+		DEBUG_LINE();
 		return (_windows[p_title].get());
 	}
 

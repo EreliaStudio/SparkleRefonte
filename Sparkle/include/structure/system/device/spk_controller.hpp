@@ -18,8 +18,12 @@ namespace spk
 			UpArrow,
 			Start,
 			Select,
-			LeftStick,
-			RightStick
+			R1,
+			L1,
+			R2,
+			L2,
+			R3,
+			L3
 		};
 
 		struct Joystick
@@ -37,3 +41,9 @@ namespace spk
 		Joystick rightJoystick;
 	};
 }
+
+std::ostream& operator << (std::ostream& p_os, const spk::Controller::Button& p_button);
+std::ostream& operator << (std::ostream& p_os, const spk::Controller::Joystick::ID& p_joystickID);
+
+std::wostream& operator << (std::wostream& p_os, const spk::Controller::Button& p_button);
+std::wostream& operator << (std::wostream& p_os, const spk::Controller::Joystick::ID& p_joystickID);

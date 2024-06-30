@@ -11,7 +11,8 @@ namespace spk
 	class ControllerModule : public spk::Module<spk::ControllerEvent>
 	{
 	private:
-		void _treatEvent(spk::ControllerEvent&& p_event);
+		void _treatEvent(spk::ControllerEvent&& p_event) override;
+		spk::ControllerEvent _convertEventToEventType(spk::Event&& p_event) override;
 
 	public:
 		ControllerModule();

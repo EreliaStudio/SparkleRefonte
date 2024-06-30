@@ -10,6 +10,11 @@ namespace spk
 
 	}
 
+	spk::PaintEvent PaintModule::_convertEventToEventType(spk::Event&& p_event)
+	{
+		return (p_event.paintEvent);
+	}
+
 	PaintModule::PaintModule()
 	{
 

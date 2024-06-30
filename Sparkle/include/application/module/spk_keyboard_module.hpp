@@ -11,7 +11,8 @@ namespace spk
 	class KeyboardModule : public spk::Module<spk::KeyboardEvent>
 	{
 	private:
-		void _treatEvent(spk::KeyboardEvent&& p_event);
+		void _treatEvent(spk::KeyboardEvent&& p_event) override;
+		spk::KeyboardEvent _convertEventToEventType(spk::Event&& p_event) override;
 
 	public:
 		KeyboardModule();

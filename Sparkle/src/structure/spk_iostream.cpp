@@ -4,6 +4,8 @@ namespace spk
 {
 	void IOStream::_flushBuffer()
 	{
+		if (_outputStream == nullptr)
+			_outputStream = &std::wcout;
 		auto bufferContent = _buffer.str();
 
 		if (bufferContent.size() == 0)

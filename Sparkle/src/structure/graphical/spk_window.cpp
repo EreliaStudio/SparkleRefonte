@@ -10,6 +10,7 @@ namespace spk
 	{
 		_windowRendererThread.start();
 		_windowUpdaterThread.start();
+		_controllerInputThread.start();
 		_onClosureCallback = p_onClosureCallback;
 	}
 
@@ -53,11 +54,14 @@ namespace spk
 			_geometry.width, _geometry.height,
 			nullptr, nullptr, GetModuleHandle(nullptr), this);
 
+
 		if (!_hwnd)
 		{
 			throw std::runtime_error("Failed to create window.");
 		}
 
+		_controllerInputThread.bind(_hwnd);
+		
 		ShowWindow(_hwnd, SW_SHOW);
 		UpdateWindow(_hwnd);
 	}
@@ -73,10 +77,14 @@ namespace spk
 		_windowRendererThread.addPreparationStep([&]() {_createContext(); }).relinquish();
 		_windowRendererThread.addExecutionStep([&]() {
 				pullEvents();
+				paintModule.treatMessages();
 				systemModule.treatMessages();
 			}).relinquish();
 		_windowUpdaterThread.addExecutionStep([&]() {
-				
+				mouseModule.treatMessages();
+				keyboardModule.treatMessages();
+				controllerModule.treatMessages();
+				updateModule.treatMessages();
 			}).relinquish();
 
 		bindModule(&mouseModule);
@@ -101,6 +109,7 @@ namespace spk
 	{
 		_windowRendererThread.stop();
 		_windowUpdaterThread.stop();
+		_controllerInputThread.stop();
 
 		if (_hwnd)
 		{

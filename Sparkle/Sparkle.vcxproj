@@ -35,10 +35,12 @@
     <ClCompile Include="src\structure\container\spk_data_buffer.cpp" />
     <ClCompile Include="src\structure\design_pattern\spk_activable_object.cpp" />
     <ClCompile Include="src\structure\spk_iostream.cpp" />
+    <ClCompile Include="src\structure\structure\device\spk_controller.cpp" />
     <ClCompile Include="src\structure\structure\event\spk_event.cpp" />
     <ClCompile Include="src\widget\spk_widget.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\structure\system\device\spk_controller_input_thread.hpp" />
     <ClInclude Include="include\application\module\spk_controller_module.hpp" />
     <ClInclude Include="include\application\module\spk_keyboard_module.hpp" />
     <ClInclude Include="include\application\module\spk_module.hpp" />
