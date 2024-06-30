@@ -38,6 +38,8 @@ std::ostream& operator << (std::ostream& p_os, const spk::Controller::Button& p_
 		p_os << "R3"; break;
 	case spk::Controller::Button::L3:
 		p_os << "L3"; break;
+	default:
+		p_os << "Unknow"; break;
 	}
 	return (p_os);
 }
@@ -90,6 +92,8 @@ std::wostream& operator << (std::wostream& p_os, const spk::Controller::Button& 
 		p_os << "R3"; break;
 	case spk::Controller::Button::L3:
 		p_os << "L3"; break;
+	default:
+		p_os << "Unknow"; break;
 	}
 	return (p_os);
 }

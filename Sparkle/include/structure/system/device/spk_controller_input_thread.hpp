@@ -89,11 +89,13 @@ namespace spk
 				{
 					spk::cout << "Pressing button ID [" << i << "]" << std::endl;
 					PostButtonPress(_hWnd, static_cast<spk::Controller::Button>(i));
+					_prevControllerState.rgbButtons[i] = !_controllerState.rgbButtons[i];
 				}
 				else if (!(_controllerState.rgbButtons[i] & 0x80) && (_prevControllerState.rgbButtons[i] & 0x80))
 				{
 					spk::cout << "Releasing button ID [" << i << "]" << std::endl;
 					PostButtonRelease(_hWnd, static_cast<spk::Controller::Button>(i));
+					_prevControllerState.rgbButtons[i] = !_controllerState.rgbButtons[i];
 				}
 			}
 
@@ -102,16 +104,17 @@ namespace spk
 			{
 				spk::cout << "Moving joystick Left by [" << _controllerState.lX << " / " << _controllerState.lY << "]" << std::endl;
 				PostLeftJoystickMove(_hWnd, _controllerState.lX, _controllerState.lY);
+				_prevControllerState.lX = _controllerState.lX;
+				_prevControllerState.lY = _controllerState.lY;
 			}
 
 			if (_controllerState.lRx != _prevControllerState.lRx || _controllerState.lRy != _prevControllerState.lRy)
 			{
 				spk::cout << "Moving joystick Right by [" << _controllerState.lRx << " / " << _controllerState.lRy << "]" << std::endl;
 				PostRightJoystickMove(_hWnd, _controllerState.lRx, _controllerState.lRy);
+				_prevControllerState.lRx = _controllerState.lRx;
+				_prevControllerState.lRy = _controllerState.lRy;
 			}
-
-			// Update previous state
-			_prevControllerState = _controllerState;
 		}
 
 		static void PostButtonPress(HWND hWnd, spk::Controller::Button button)

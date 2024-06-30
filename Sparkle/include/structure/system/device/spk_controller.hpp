@@ -23,7 +23,8 @@ namespace spk
 			R2,
 			L2,
 			R3,
-			L3
+			L3,
+			Unknow
 		};
 
 		struct Joystick

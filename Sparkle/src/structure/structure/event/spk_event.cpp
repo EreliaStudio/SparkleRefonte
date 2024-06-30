@@ -6,13 +6,38 @@
 
 namespace spk
 {
+	Controller::Button ControllerEvent::apiValueToControllerButton(int value)
+	{
+			switch (value)
+			{
+			case 0: return Controller::Button::A;
+			case 1: return Controller::Button::B;
+			case 2: return Controller::Button::X;
+			case 3: return Controller::Button::Y;
+			case 4: return Controller::Button::LeftArrow;
+			case 5: return Controller::Button::DownArrow;
+			case 6: return Controller::Button::RightArrow;
+			case 7: return Controller::Button::UpArrow;
+			case 8: return Controller::Button::Start;
+			case 9: return Controller::Button::Select;
+			case 10: return Controller::Button::R1;
+			case 11: return Controller::Button::L1;
+			case 12: return Controller::Button::R2;
+			case 13: return Controller::Button::L2;
+			case 14: return Controller::Button::R3;
+			case 15: return Controller::Button::L3;
+			default:
+				return Controller::Button::Unknow;
+			}
+	}
+
 	Event::Event() {}
 
 	Event::Event(spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		construct(p_window, uMsg, wParam, lParam);
 	}
-	
+
 	const std::unordered_map<UINT, Event::ConstructorLambda> Event::_constructionMap =
 	{
 		{
@@ -191,6 +216,31 @@ namespace spk
 				p_event->controllerEvent.joystick.id = Controller::Joystick::ID::Left;
 				p_event->controllerEvent.joystick.values = spk::Vector2Int(LOWORD(lParam), HIWORD(lParam));
 			}
+		},
+		{
+			WM_RIGHT_JOYSTICK_MOVE,
+			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
+			{
+				p_event->controllerEvent.type = ControllerEvent::Type::Motion;
+				p_event->controllerEvent.joystick.id = Controller::Joystick::ID::Right;
+				p_event->controllerEvent.joystick.values = spk::Vector2Int(LOWORD(lParam), HIWORD(lParam));
+			}
+		},
+		{
+			WM_CONTROLLER_BUTTON_PRESS,
+			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
+			{
+				p_event->controllerEvent.type = ControllerEvent::Type::Press;
+				p_event->controllerEvent.button = ControllerEvent::apiValueToControllerButton(LOWORD(lParam));
+			}
+		},
+		{
+			WM_CONTROLLER_BUTTON_RELEASE,
+			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
+			{
+				p_event->controllerEvent.type = ControllerEvent::Type::Release;
+				p_event->controllerEvent.button = ControllerEvent::apiValueToControllerButton(LOWORD(lParam));
+			}
 		}
 	};
 
@@ -201,7 +251,6 @@ namespace spk
 		if (uMsg == WM_PAINT)
 			ValidateRect(p_window->_hwnd, NULL);
 
-		spk::cout << "Event id : " << WM_CONTROLLER_BUTTON_PRESS << " / " << WM_CONTROLLER_BUTTON_RELEASE << " / " << WM_LEFT_JOYSTICK_MOVE << " / " << WM_RIGHT_JOYSTICK_MOVE << std::endl;
 		setModifiers(uMsg);
 		_constructionMap.at(uMsg)(this, p_window, uMsg, wParam, lParam);
 		return (true);

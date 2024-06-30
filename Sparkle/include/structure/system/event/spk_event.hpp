@@ -120,6 +120,8 @@ namespace spk
 			Release,
 			Motion
 		};
+		static Controller::Button apiValueToControllerButton(int value);
+
 		Type type;
 		union
 		{
