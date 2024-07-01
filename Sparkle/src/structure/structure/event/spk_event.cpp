@@ -156,7 +156,7 @@ namespace spk
 			WM_CHAR,
 			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
-				p_event->keyboardEvent.type = KeyboardEvent::Type::Press;
+				p_event->keyboardEvent.type = KeyboardEvent::Type::Glyph;
 				p_event->keyboardEvent.glyph = static_cast<wchar_t>(wParam);
 			}
 		},

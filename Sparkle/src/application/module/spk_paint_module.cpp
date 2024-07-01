@@ -6,7 +6,6 @@ namespace spk
 {
 	void PaintModule::_treatEvent(spk::PaintEvent&& p_event)
 	{
-		DEBUG_LINE();
 
 	}
 

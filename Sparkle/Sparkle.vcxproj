@@ -36,6 +36,7 @@
     <ClCompile Include="src\structure\design_pattern\spk_activable_object.cpp" />
     <ClCompile Include="src\structure\spk_iostream.cpp" />
     <ClCompile Include="src\structure\structure\device\spk_controller.cpp" />
+    <ClCompile Include="src\structure\structure\device\spk_keyboard.cpp" />
     <ClCompile Include="src\structure\structure\event\spk_event.cpp" />
     <ClCompile Include="src\widget\spk_widget.cpp" />
   </ItemGroup>

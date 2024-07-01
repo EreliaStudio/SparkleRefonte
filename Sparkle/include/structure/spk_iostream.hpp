@@ -9,10 +9,10 @@ namespace spk
 	class IOStream
 	{
 	private:
+		std::wstring _prefix;
+		std::wstringstream _buffer;
 		std::wostream* _outputStream = nullptr;
 		static inline std::recursive_mutex _mutex;
-		std::wstringstream _buffer;
-		std::wstring _prefix;
 
 		void _flushBuffer();
 

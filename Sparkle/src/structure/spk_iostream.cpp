@@ -2,6 +2,9 @@
 
 namespace spk
 {
+	thread_local spk::IOStream cout(std::wcout);
+	thread_local spk::IOStream cerr(std::wcerr);
+
 	void IOStream::_flushBuffer()
 	{
 		if (_outputStream == nullptr)
@@ -57,7 +60,4 @@ namespace spk
 	{
 		return (_buffer.str());
 	}
-
-	thread_local spk::IOStream cout = spk::IOStream(std::wcout);
-	thread_local spk::IOStream cerr = spk::IOStream(std::wcerr);
 }

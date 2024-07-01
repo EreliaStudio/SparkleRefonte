@@ -95,7 +95,8 @@ namespace spk
 		enum class Type
 		{
 			Press,
-			Release
+			Release,
+			Glyph
 		};
 		Type type;
 		union

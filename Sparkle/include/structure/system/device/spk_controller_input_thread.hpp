@@ -2,6 +2,7 @@
 
 #define DIRECTINPUT_VERSION 0x0800
 
+#include "structure/spk_iostream.hpp"
 #include <dinput.h>
 #include <iostream>
 #include "structure/thread/spk_persistant_worker.hpp"
@@ -17,41 +18,37 @@ namespace spk
 	class ControllerInputThread
 	{
 	private:
-		HWND _hWnd;
-		bool _initialization = false;
-		IDirectInput8* _directInput;
-		IDirectInputDevice8* _controller;
-		DIJOYSTATE _controllerState;
-		DIJOYSTATE _prevControllerState;
 		PersistantWorker _worker;
+		HWND _hWnd = NULL;
+		bool _initialization = false;
+		IDirectInput8* _directInput = nullptr;
+		IDirectInputDevice8* _controller = nullptr;
+		DIJOYSTATE _controllerState = DIJOYSTATE();
+		DIJOYSTATE _prevControllerState = DIJOYSTATE();
 
 		bool InitializeDirectInput()
 		{
 			HRESULT hr = DirectInput8Create(GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&_directInput, NULL);
 			if (FAILED(hr))
 			{
-				spk::cout << "Failed to DirectInput8Create" << std::endl;
 				return false;
 			}
 
 			hr = _directInput->CreateDevice(GUID_Joystick, &_controller, NULL);
 			if (FAILED(hr))
 			{
-				spk::cout << "Failed to CreateDevice" << std::endl;
 				return false;
 			}
 
 			hr = _controller->SetDataFormat(&c_dfDIJoystick);
 			if (FAILED(hr))
 			{
-				spk::cout << "Failed to SetDataFormat" << std::endl;
 				return false;
 			}
 
 			hr = _controller->SetCooperativeLevel(_hWnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
 			if (FAILED(hr))
 			{
-				spk::cout << "Failed to SetCooperativeLevel" << std::endl;
 				return false;
 			}
 
@@ -99,7 +96,6 @@ namespace spk
 				}
 			}
 
-			// Process joystick movement
 			if (_controllerState.lX != _prevControllerState.lX || _controllerState.lY != _prevControllerState.lY)
 			{
 				spk::cout << "Moving joystick Left by [" << _controllerState.lX << " / " << _controllerState.lY << "]" << std::endl;
@@ -139,9 +135,9 @@ namespace spk
 
 	public:
 		ControllerInputThread() :
+			_worker(L"ControllerInputThread"),
 			_directInput(nullptr),
-			_controller(nullptr),
-			_worker(L"ControllerInputThread")
+			_controller(nullptr)
 		{
 
 		}
