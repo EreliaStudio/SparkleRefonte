@@ -75,6 +75,9 @@
     <ClCompile Include="src\structure\structure\device\spk_keyboard.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="src\structure\structure\device\spk_mouse.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\sparkle.hpp">

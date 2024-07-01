@@ -16,3 +16,6 @@ namespace spk
 		Vector2Int position;
 	};
 }
+
+std::ostream& operator << (std::ostream & p_os, const spk::Mouse::Button & p_button);
+std::wostream& operator << (std::wostream & p_os, const spk::Mouse::Button & p_button);

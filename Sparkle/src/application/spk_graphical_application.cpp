@@ -21,7 +21,7 @@ namespace spk
 	{
 		WNDCLASSEX wc = { 0 };
 		wc.cbSize = sizeof(WNDCLASSEX);
-		wc.style = CS_HREDRAW | CS_VREDRAW;
+		wc.style = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
 		wc.lpfnWndProc = Window::WindowProc;
 		wc.cbClsExtra = 0;
 		wc.cbWndExtra = sizeof(Window*);
