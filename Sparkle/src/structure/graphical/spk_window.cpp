@@ -98,11 +98,13 @@ namespace spk
 	void Window::move(const spk::Geometry2DInt::Position& p_newPosition)
 	{
 		_geometry.anchor = p_newPosition;
+		_rootWidget->setGeometry(_geometry);
 	}
 	
 	void Window::resize(const spk::Geometry2DInt::Size& p_newSize)
 	{
 		_geometry.size = p_newSize;
+		_rootWidget->setGeometry(_geometry);
 	}
 
 	void Window::close()
@@ -124,6 +126,11 @@ namespace spk
 	void Window::clear()
 	{
 
+	}
+
+	void Window::render()
+	{
+		_rootWidget->render();
 	}
 
 	void Window::swap()

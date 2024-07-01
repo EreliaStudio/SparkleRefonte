@@ -4,7 +4,14 @@ namespace spk
 {
 	void UpdateModule::_treatEvent(spk::UpdateEvent&& p_event)
 	{
-		DEBUG_LINE();
+		switch (p_event.type)
+		{
+			case UpdateEvent::Type::Requested
+			{
+
+				break;
+			}
+		}
 	}
 
 	spk::UpdateEvent UpdateModule::_convertEventToEventType(spk::Event&& p_event)
