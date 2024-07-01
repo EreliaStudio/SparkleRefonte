@@ -8,15 +8,18 @@ namespace spk
 		{
 		case KeyboardEvent::Type::Press:
 		{
-			//spk::cout << "Pressing key [" << p_event.key << "]" << std::endl;
+			spk::cout << "Pressing key [" << p_event.key << "]" << std::endl;
+			break;
 		}
 		case  KeyboardEvent::Type::Release:
 		{
-			//spk::cout << "Releasing key [" << p_event.key << "]" << std::endl;
+			spk::cout << "Releasing key [" << p_event.key << "]" << std::endl;
+			break;
 		}
 		case  KeyboardEvent::Type::Glyph:
 		{
 			spk::cout << "Entering char [" << p_event.glyph << "]" << std::endl;
+			break;
 		}
 		}
 	}
