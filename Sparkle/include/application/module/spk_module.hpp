@@ -3,6 +3,8 @@
 #include "structure/container/spk_thread_safe_queue.hpp"
 #include "structure/system/event/spk_event.hpp"
 
+#include "widget/spk_widget.hpp"
+
 namespace spk
 {
 	class IModule

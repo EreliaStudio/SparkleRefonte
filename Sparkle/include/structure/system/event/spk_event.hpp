@@ -14,7 +14,9 @@
 
 #include <unordered_map>
 #include <functional>
+#include <chrono>
 
+static const UINT WM_UPDATE = RegisterWindowMessage(L"WM_UPDATE");
 static const UINT WM_LEFT_JOYSTICK_MOVE = RegisterWindowMessage(L"WM_LEFT_JOYSTICK_MOVE");
 static const UINT WM_RIGHT_JOYSTICK_MOVE = RegisterWindowMessage(L"WM_RIGHT_JOYSTICK_MOVE");
 static const UINT WM_CONTROLLER_BUTTON_PRESS = RegisterWindowMessage(L"WM_CONTROLLER_BUTTON_PRESS");
@@ -33,10 +35,20 @@ namespace spk
 
 	struct IEvent
 	{
+	private:
+		HWND _hwnd;
+
+	public:
 		bool consumed;
 		Modifiers modifiers;
 
-		IEvent() : consumed(false) {}
+		IEvent(HWND p_hwnd) :
+			consumed(false),
+			_hwnd(p_hwnd)
+		{}
+
+		void requestPaint() const;
+		void requestUpdate() const;
 	};
 
 	struct PaintEvent : public IEvent
@@ -47,7 +59,13 @@ namespace spk
 			Requested
 		};
 		Type type;
-		spk::SafePointer<Window> window;
+		spk::SafePointer<spk::Window> window;
+
+		PaintEvent(HWND p_hwnd) :
+			IEvent(p_hwnd)
+		{
+
+		}
 	};
 
 	struct UpdateEvent : public IEvent
@@ -58,8 +76,15 @@ namespace spk
 			Requested
 		};
 		Type type;
-		long long deltaTime;
 		long long time;
+
+		UpdateEvent(HWND p_hwnd) :
+			IEvent(p_hwnd),
+			type(spk::UpdateEvent::Type::Requested),
+			time(duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count())
+		{
+
+		}
 	};
 
 	struct MouseEvent : public IEvent
@@ -85,6 +110,12 @@ namespace spk
 			spk::Vector2Int position;
 			float scrollValue;
 		};
+
+		MouseEvent(HWND p_hwnd) :
+			IEvent(p_hwnd)
+		{
+
+		}
 	};
 
 	struct KeyboardEvent : public IEvent
@@ -104,11 +135,16 @@ namespace spk
 			spk::Keyboard::Key key;
 			wchar_t glyph;
 		};
+
+		KeyboardEvent(HWND p_hwnd) :
+			IEvent(p_hwnd)
+		{
+
+		}
 	};
 
 	struct ControllerEvent : public IEvent
 	{
-
 		static inline std::vector<UINT> EventIDs = {
 			WM_LEFT_JOYSTICK_MOVE,
 			WM_RIGHT_JOYSTICK_MOVE,
@@ -133,6 +169,12 @@ namespace spk
 				spk::Vector2Int values;
 			} joystick;
 		};
+
+		ControllerEvent(HWND p_hwnd) :
+			IEvent(p_hwnd)
+		{
+
+		}
 	};
 
 	struct SystemEvent : public IEvent
@@ -158,15 +200,21 @@ namespace spk
 		{
 			struct
 			{
-				spk::SafePointer<Window> window;
+				spk::SafePointer<spk::Window> window;
 				spk::Geometry2DInt::Size newSize;
 			};
 			struct
 			{
-				spk::SafePointer<Window> window;
+				spk::SafePointer<spk::Window> window;
 				spk::Geometry2DInt::Position newPosition;
 			};
 		};
+
+		SystemEvent(HWND p_hwnd) :
+			IEvent(p_hwnd)
+		{
+
+		}
 	};
 
 	struct Event

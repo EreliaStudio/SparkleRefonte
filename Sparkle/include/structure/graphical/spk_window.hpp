@@ -73,8 +73,10 @@ namespace spk
 		void resize(const spk::Geometry2DInt::Size& p_newSize);
 		void close();
 		void clear();
-		void render();
 		void swap();
+
+		void requestRepaint() const;
+		void requestUpdate() const;
 
 		void pullEvents();
 		void bindModule(spk::IModule* p_module);

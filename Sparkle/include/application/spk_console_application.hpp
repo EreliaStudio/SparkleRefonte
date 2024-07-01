@@ -9,9 +9,12 @@ namespace spk
 	{
 	private:
 		std::unique_ptr<Widget> _centralWidget;
+		HWND _hwnd;
+
+		HWND createBackgroundHandle(const std::wstring& p_title);
 
 	public:
-		ConsoleApplication();
+		ConsoleApplication(const std::wstring& p_title);
 
 		spk::SafePointer<Widget> centralWidget() const;
 

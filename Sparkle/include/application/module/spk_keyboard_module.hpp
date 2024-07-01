@@ -11,10 +11,14 @@ namespace spk
 	class KeyboardModule : public spk::Module<spk::KeyboardEvent>
 	{
 	private:
+		spk::Widget* _rootWidget;
+
 		void _treatEvent(spk::KeyboardEvent&& p_event) override;
 		spk::KeyboardEvent _convertEventToEventType(spk::Event&& p_event) override;
 
 	public:
 		KeyboardModule();
+
+		void linkToWidget(spk::Widget* p_rootWidget);
 	};
 }

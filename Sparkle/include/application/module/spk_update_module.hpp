@@ -11,10 +11,14 @@ namespace spk
 	class UpdateModule : public spk::Module<spk::UpdateEvent>
 	{
 	private:
+		spk::Widget* _rootWidget;
+
 		void _treatEvent(spk::UpdateEvent&& p_event) override;
 		spk::UpdateEvent _convertEventToEventType(spk::Event&& p_event) override;
 
 	public:
 		UpdateModule();
+
+		void linkToWidget(spk::Widget* p_rootWidget);
 	};
 }

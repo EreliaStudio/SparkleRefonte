@@ -4,24 +4,7 @@ namespace spk
 {
 	void KeyboardModule::_treatEvent(spk::KeyboardEvent&& p_event)
 	{
-		switch (p_event.type)
-		{
-		case KeyboardEvent::Type::Press:
-		{
-			spk::cout << "Pressing key [" << p_event.key << "]" << std::endl;
-			break;
-		}
-		case  KeyboardEvent::Type::Release:
-		{
-			spk::cout << "Releasing key [" << p_event.key << "]" << std::endl;
-			break;
-		}
-		case  KeyboardEvent::Type::Glyph:
-		{
-			spk::cout << "Entering char [" << p_event.glyph << "]" << std::endl;
-			break;
-		}
-		}
+		_rootWidget->onKeyboardEvent(p_event);
 	}
 
 	spk::KeyboardEvent KeyboardModule::_convertEventToEventType(spk::Event&& p_event)
@@ -32,5 +15,10 @@ namespace spk
 	KeyboardModule::KeyboardModule()
 	{
 
+	}
+
+	void KeyboardModule::linkToWidget(spk::Widget* p_rootWidget)
+	{
+		_rootWidget = p_rootWidget;
 	}
 }

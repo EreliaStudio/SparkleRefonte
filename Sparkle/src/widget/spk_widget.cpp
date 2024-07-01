@@ -87,46 +87,101 @@ namespace spk
 
 	void Widget::_onGeometryChange()
 	{
+
 	}
-	
-	void Widget::_onRender()
+
+	void Widget::_onPaintEvent(const spk::PaintEvent& p_event)
 	{
 
 	}
 
-	void Widget::render()
+	void Widget::onPaintEvent(const spk::PaintEvent& p_event)
 	{
 		if (isActive() == false)
-			return ;
+			return;
 
 		if (_needGeometryChange == true)
-		{	
+		{
 			updateGeometry();
 		}
 
-		_onRender();
+		_onPaintEvent(p_event);
 
 		for (auto& child : children())
 		{
-			child->render();
+			child->onPaintEvent(p_event);
 		}
 	}
 
-	void Widget::_onUpdate()
+	void Widget::_onUpdateEvent(const spk::UpdateEvent& p_event)
 	{
 
 	}
 
-	void Widget::update()
+	void Widget::onUpdateEvent(const spk::UpdateEvent& p_event)
 	{
 		if (isActive() == false)
 			return;
 
 		for (auto& child : children())
 		{
-			child->update();
+			child->onUpdateEvent(p_event);
 		}
 
-		_onUpdate();
+		_onUpdateEvent(p_event);
+	}
+
+	void Widget::_onKeyboardEvent(const spk::KeyboardEvent& p_event)
+	{
+
+	}
+
+	void Widget::onKeyboardEvent(const spk::KeyboardEvent& p_event)
+	{
+		if (isActive() == false)
+			return;
+
+		for (auto& child : children())
+		{
+			child->onKeyboardEvent(p_event);
+		}
+
+		_onKeyboardEvent(p_event);
+	}
+
+	void Widget::_onMouseEvent(const spk::MouseEvent& p_event)
+	{
+
+	}
+
+	void Widget::onMouseEvent(const spk::MouseEvent& p_event)
+	{
+		if (isActive() == false)
+			return;
+
+		for (auto& child : children())
+		{
+			child->onMouseEvent(p_event);
+		}
+
+		_onMouseEvent(p_event);
+	}
+	
+	void Widget::_onControllerEvent(const spk::ControllerEvent& p_event)
+	{
+
+	}
+	
+	void Widget::onControllerEvent(const spk::ControllerEvent& p_event)
+	{
+		if (isActive() == false)
+			return;
+
+		for (auto& child : children())
+		{
+			child->onControllerEvent(p_event);
+		}
+
+		_onControllerEvent(p_event);
 	}
 }

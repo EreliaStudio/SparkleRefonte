@@ -93,6 +93,12 @@ namespace spk
 		bindModule(&updateModule);
 		bindModule(&paintModule);
 		bindModule(&systemModule);
+
+		mouseModule.linkToWidget(_rootWidget.get());
+		keyboardModule.linkToWidget(_rootWidget.get());
+		controllerModule.linkToWidget(_rootWidget.get());
+		updateModule.linkToWidget(_rootWidget.get());
+		paintModule.linkToWidget(_rootWidget.get());
 	}
 
 	void Window::move(const spk::Geometry2DInt::Position& p_newPosition)
@@ -128,14 +134,19 @@ namespace spk
 
 	}
 
-	void Window::render()
+	void Window::requestRepaint() const
 	{
-		_rootWidget->render();
+		PostMessageA(_hwnd, WM_PAINT, 0, 0);
 	}
 
 	void Window::swap()
 	{
 
+	}
+
+	void Window::requestUpdate() const
+	{
+		PostMessageA(_hwnd, WM_UPDATE, 0, 0);
 	}
 
 	void Window::pullEvents()

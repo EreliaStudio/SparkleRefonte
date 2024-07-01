@@ -4,8 +4,20 @@
 
 #include "spk_debug_macro.hpp"
 
+#include <chrono>
+
 namespace spk
 {
+	void IEvent::requestPaint() const
+	{
+		PostMessageA(_hwnd, WM_PAINT, 0, 0);
+	}
+
+	void IEvent::requestUpdate() const
+	{
+		PostMessageA(_hwnd, WM_UPDATE, 0, 0);
+	}
+
 	Controller::Button ControllerEvent::apiValueToControllerButton(int value)
 	{
 			switch (value)
@@ -240,6 +252,15 @@ namespace spk
 			{
 				p_event->controllerEvent.type = ControllerEvent::Type::Release;
 				p_event->controllerEvent.button = ControllerEvent::apiValueToControllerButton(LOWORD(lParam));
+			}
+		},
+		{
+			WM_UPDATE,
+			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
+			{
+				p_event->updateEvent.type = UpdateEvent::Type::Requested;
+
+				p_event->updateEvent.time = duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 			}
 		}
 	};

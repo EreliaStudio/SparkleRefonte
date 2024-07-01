@@ -6,14 +6,7 @@ namespace spk
 {
 	void PaintModule::_treatEvent(spk::PaintEvent&& p_event)
 	{
-		switch (p_event.type)
-		{
-		case spk::PaintEvent::Type::Requested:
-		{
-			p_event.window->render();
-			break;
-		}
-		}
+		_rootWidget->onPaintEvent(p_event);
 	}
 
 	spk::PaintEvent PaintModule::_convertEventToEventType(spk::Event&& p_event)
@@ -24,5 +17,10 @@ namespace spk
 	PaintModule::PaintModule()
 	{
 
+	}
+
+	void PaintModule::linkToWidget(spk::Widget* p_rootWidget)
+	{
+		_rootWidget = p_rootWidget;
 	}
 }

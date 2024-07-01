@@ -11,10 +11,14 @@ namespace spk
 	class ControllerModule : public spk::Module<spk::ControllerEvent>
 	{
 	private:
+		spk::Widget* _rootWidget;
+
 		void _treatEvent(spk::ControllerEvent&& p_event) override;
 		spk::ControllerEvent _convertEventToEventType(spk::Event&& p_event) override;
 
 	public:
 		ControllerModule();
+
+		void linkToWidget(spk::Widget* p_rootWidget);
 	};
 }

@@ -7,6 +7,8 @@
 
 #include "structure/graphical/spk_geometry_2D.hpp"
 
+#include "structure/system/event/spk_event.hpp"
+
 namespace spk
 {
 	class Widget :
@@ -24,8 +26,11 @@ namespace spk
 		float _depth;
 
 		virtual void _onGeometryChange();
-		virtual void _onRender();
-		virtual void _onUpdate();
+		virtual void _onPaintEvent(const spk::PaintEvent& p_event);
+		virtual void _onUpdateEvent(const spk::UpdateEvent& p_event);
+		virtual void _onKeyboardEvent(const spk::KeyboardEvent& p_event);
+		virtual void _onMouseEvent(const spk::MouseEvent& p_event);
+		virtual void _onControllerEvent(const spk::ControllerEvent& p_event);
 
 	public:
 		Widget(const std::wstring& p_name);
@@ -59,7 +64,10 @@ namespace spk
 
 		const Geometry2DInt& geometry() const;
 
-		void render();
-		void update();
+		void onPaintEvent(const spk::PaintEvent& p_event);
+		void onUpdateEvent(const spk::UpdateEvent& p_event);
+		void onKeyboardEvent(const spk::KeyboardEvent& p_event);
+		void onMouseEvent(const spk::MouseEvent& p_event);
+		void onControllerEvent(const spk::ControllerEvent& p_event);
 	};
 }
