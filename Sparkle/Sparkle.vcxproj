@@ -80,6 +80,7 @@
     <ClInclude Include="include\structure\system\device\spk_keyboard.hpp" />
     <ClInclude Include="include\structure\system\device\spk_mouse.hpp" />
     <ClInclude Include="include\structure\system\event\spk_event.hpp" />
+    <ClInclude Include="include\structure\system\exception\spk_exception.hpp" />
     <ClInclude Include="include\structure\system\spk_input_state.hpp" />
     <ClInclude Include="include\structure\thread\spk_persistant_worker.hpp" />
     <ClInclude Include="include\structure\thread\spk_thread.hpp" />
