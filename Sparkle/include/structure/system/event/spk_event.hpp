@@ -245,3 +245,21 @@ namespace spk
 		void setModifiers(UINT uMsg);
 	};
 }
+
+std::ostream& operator << (std::ostream& p_os, const spk::MouseEvent::Type& p_type);
+std::wostream& operator << (std::wostream& p_os, const spk::MouseEvent::Type& p_type);
+
+std::ostream& operator << (std::ostream& p_os, const spk::KeyboardEvent::Type& p_type);
+std::wostream& operator << (std::wostream& p_os, const spk::KeyboardEvent::Type& p_type);
+
+std::ostream& operator << (std::ostream& p_os, const spk::ControllerEvent::Type& p_type);
+std::wostream& operator << (std::wostream& p_os, const spk::ControllerEvent::Type& p_type);
+
+std::ostream& operator << (std::ostream& p_os, const spk::SystemEvent::Type& p_type);
+std::wostream& operator << (std::wostream& p_os, const spk::SystemEvent::Type& p_type);
+
+std::ostream& operator << (std::ostream& p_os, const spk::PaintEvent::Type& p_type);
+std::wostream& operator << (std::wostream& p_os, const spk::PaintEvent::Type& p_type);
+
+std::ostream& operator << (std::ostream& p_os, const spk::UpdateEvent::Type& p_type);
+std::wostream& operator << (std::wostream& p_os, const spk::UpdateEvent::Type& p_type);

@@ -39,6 +39,7 @@
     <ClCompile Include="src\structure\structure\system\device\spk_keyboard.cpp" />
     <ClCompile Include="src\structure\structure\system\device\spk_mouse.cpp" />
     <ClCompile Include="src\structure\structure\system\event\spk_event.cpp" />
+    <ClCompile Include="src\structure\structure\system\event\spk_event_output_operator.cpp" />
     <ClCompile Include="src\widget\spk_widget.cpp" />
   </ItemGroup>
   <ItemGroup>
