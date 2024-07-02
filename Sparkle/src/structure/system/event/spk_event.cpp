@@ -222,18 +222,20 @@ namespace spk
 			WM_LEFT_JOYSTICK_MOTION,
 			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
+				static const short halfValue = std::numeric_limits<unsigned short>::max() / 2;
 				p_event->controllerEvent.type = ControllerEvent::Type::JoystickMotion;
 				p_event->controllerEvent.joystick.id = Controller::Joystick::ID::Left;
-				p_event->controllerEvent.joystick.values = spk::Vector2Int(static_cast<unsigned short>(wParam), std::numeric_limits<unsigned short>::max() - static_cast<unsigned short>(lParam));
+				p_event->controllerEvent.joystick.values = spk::Vector2Int(static_cast<unsigned short>(wParam) - halfValue, std::numeric_limits<unsigned short>::max() - static_cast<unsigned short>(lParam) - halfValue);
 			}
 		},
 		{
 			WM_RIGHT_JOYSTICK_MOTION,
 			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
+				static const short halfValue = std::numeric_limits<unsigned short>::max() / 2;
 				p_event->controllerEvent.type = ControllerEvent::Type::JoystickMotion;
 				p_event->controllerEvent.joystick.id = Controller::Joystick::ID::Right;
-				p_event->controllerEvent.joystick.values = spk::Vector2Int(static_cast<unsigned short>(wParam), std::numeric_limits<unsigned short>::max() - static_cast<unsigned short>(lParam));
+				p_event->controllerEvent.joystick.values = spk::Vector2Int(static_cast<unsigned short>(wParam) - halfValue, std::numeric_limits<unsigned short>::max() - static_cast<unsigned short>(lParam) - halfValue);
 			}
 		},
 		{
@@ -242,7 +244,7 @@ namespace spk
 			{
 				p_event->controllerEvent.type = ControllerEvent::Type::TriggerMotion;
 				p_event->controllerEvent.trigger.id = Controller::Trigger::ID::Left;
-				p_event->controllerEvent.trigger.value = HIWORD(wParam);
+				p_event->controllerEvent.trigger.value = static_cast<unsigned short>(wParam);
 			}
 		},
 		{
@@ -251,7 +253,7 @@ namespace spk
 			{
 				p_event->controllerEvent.type = ControllerEvent::Type::TriggerMotion;
 				p_event->controllerEvent.trigger.id = Controller::Trigger::ID::Right;
-				p_event->controllerEvent.trigger.value = HIWORD(wParam);
+				p_event->controllerEvent.trigger.value = static_cast<unsigned short>(wParam);
 			}
 		},
 		{

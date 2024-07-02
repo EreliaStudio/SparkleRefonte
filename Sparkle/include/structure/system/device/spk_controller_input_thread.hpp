@@ -79,26 +79,6 @@ namespace spk
 				return;
 			}
 
-			/*printf("X:%5d ", _controllerState.lX);
-			printf("Y:%5d ", _controllerState.lY);
-			printf("Z:%5d ", _controllerState.lZ);
-			printf("Rx:%5d ", _controllerState.lRx);
-			printf("Ry:%5d ", _controllerState.lRy);
-			printf("Rz:%5d ", _controllerState.lRz);
-			printf("Slider0:%5d ", _controllerState.rglSlider[0]);
-			printf("Slider1:%5d ", _controllerState.rglSlider[1]);
-
-			printf("Hat:%5d ", _controllerState.rgdwPOV[0]);
-
-			printf("Buttons: ");
-			for (unsigned int buttonIndex = 0; buttonIndex < 32; ++buttonIndex) {
-				if (_controllerState.rgbButtons[buttonIndex]) {
-					printf("%d ", buttonIndex);
-				}
-			}
-
-			printf("\n");*/
-
 			// Process buttons
 			for (int i = 0; i < 32; ++i)
 			{
@@ -130,15 +110,24 @@ namespace spk
 
 			if (_controllerState.lZ != _prevControllerState.lZ)
 			{
-				PostLeftTriggerMove(_hWnd, _controllerState.lZ);
+				unsigned short leftTriggerValue = (_controllerState.lZ & 0xFF00) >> 8; // Extract high byte for L2
+				unsigned short rightTriggerValue = _controllerState.lZ & 0x00FF; // Extract low byte for R2
+
+				unsigned short prevLeftTriggerValue = (_prevControllerState.lZ & 0xFF00) >> 8; // Extract high byte for L2
+				unsigned short prevRightTriggerValue = _prevControllerState.lZ & 0x00FF; // Extract low byte for R2
+
+				if (leftTriggerValue != prevLeftTriggerValue)
+				{
+					PostLeftTriggerMove(_hWnd, leftTriggerValue);
+				}
+				if (rightTriggerValue != prevRightTriggerValue)
+				{
+					PostRightTriggerMove(_hWnd, rightTriggerValue);
+				}
+
 				_prevControllerState.lZ = _controllerState.lZ;
 			}
-
-			if (_controllerState.lRz != _prevControllerState.lRz)
-			{
-				PostRightTriggerMove(_hWnd, _controllerState.lRz);
-				_prevControllerState.lRz = _controllerState.lRz;
-			}
+			
 
 			if (_controllerState.rgdwPOV[0] != _prevControllerState.rgdwPOV[0])
 			{
