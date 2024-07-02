@@ -17,8 +17,11 @@
 #include <chrono>
 
 static const UINT WM_UPDATE = RegisterWindowMessage(L"WM_UPDATE");
-static const UINT WM_LEFT_JOYSTICK_MOVE = RegisterWindowMessage(L"WM_LEFT_JOYSTICK_MOVE");
-static const UINT WM_RIGHT_JOYSTICK_MOVE = RegisterWindowMessage(L"WM_RIGHT_JOYSTICK_MOVE");
+static const UINT WM_LEFT_JOYSTICK_MOTION = RegisterWindowMessage(L"WM_LEFT_JOYSTICK_MOTION");
+static const UINT WM_RIGHT_JOYSTICK_MOTION = RegisterWindowMessage(L"WM_RIGHT_JOYSTICK_MOTION");
+static const UINT WM_LEFT_TRIGGER_MOTION = RegisterWindowMessage(L"WM_LEFT_TRIGGER_MOTION");
+static const UINT WM_RIGHT_TRIGGER_MOTION = RegisterWindowMessage(L"WM_RIGHT_TRIGGER_MOTION");
+static const UINT WM_DIRECTIONAL_CROSS_MOTION = RegisterWindowMessage(L"WM_DIRECTIONAL_CROSS_MOTION");
 static const UINT WM_CONTROLLER_BUTTON_PRESS = RegisterWindowMessage(L"WM_CONTROLLER_BUTTON_PRESS");
 static const UINT WM_CONTROLLER_BUTTON_RELEASE = RegisterWindowMessage(L"WM_CONTROLLER_BUTTON_RELEASE");
 
@@ -151,8 +154,11 @@ namespace spk
 	struct ControllerEvent : public IEvent
 	{
 		static inline std::vector<UINT> EventIDs = {
-			WM_LEFT_JOYSTICK_MOVE,
-			WM_RIGHT_JOYSTICK_MOVE,
+			WM_LEFT_JOYSTICK_MOTION,
+			WM_RIGHT_JOYSTICK_MOTION,
+			WM_LEFT_TRIGGER_MOTION,
+			WM_RIGHT_TRIGGER_MOTION,
+			WM_DIRECTIONAL_CROSS_MOTION,
 			WM_CONTROLLER_BUTTON_PRESS,
 			WM_CONTROLLER_BUTTON_RELEASE
 		};
@@ -160,7 +166,9 @@ namespace spk
 		{
 			Press,
 			Release,
-			Motion
+			TriggerMotion,
+			JoystickMotion,
+			DirectionalCrossMotion
 		};
 		static Controller::Button apiValueToControllerButton(int value);
 
@@ -174,6 +182,15 @@ namespace spk
 				spk::Controller::Joystick::ID id;
 				spk::Vector2Int values;
 			} joystick;
+			struct
+			{
+				spk::Controller::Trigger::ID id;
+				float value;
+			} trigger;
+			struct
+			{
+				spk::Vector2Int values;
+			} directionalCross;
 		};
 
 		ControllerEvent(HWND p_hwnd) :

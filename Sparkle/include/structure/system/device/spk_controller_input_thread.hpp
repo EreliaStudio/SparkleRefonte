@@ -23,8 +23,8 @@ namespace spk
 		bool _initialization = false;
 		IDirectInput8* _directInput = nullptr;
 		IDirectInputDevice8* _controller = nullptr;
-		DIJOYSTATE _controllerState = DIJOYSTATE();
-		DIJOYSTATE _prevControllerState = DIJOYSTATE();
+		DIJOYSTATE  _controllerState = DIJOYSTATE();
+		DIJOYSTATE  _prevControllerState = DIJOYSTATE();
 
 		bool InitializeDirectInput()
 		{
@@ -79,37 +79,100 @@ namespace spk
 				return;
 			}
 
+			/*printf("X:%5d ", _controllerState.lX);
+			printf("Y:%5d ", _controllerState.lY);
+			printf("Z:%5d ", _controllerState.lZ);
+			printf("Rx:%5d ", _controllerState.lRx);
+			printf("Ry:%5d ", _controllerState.lRy);
+			printf("Rz:%5d ", _controllerState.lRz);
+			printf("Slider0:%5d ", _controllerState.rglSlider[0]);
+			printf("Slider1:%5d ", _controllerState.rglSlider[1]);
+
+			printf("Hat:%5d ", _controllerState.rgdwPOV[0]);
+
+			printf("Buttons: ");
+			for (unsigned int buttonIndex = 0; buttonIndex < 32; ++buttonIndex) {
+				if (_controllerState.rgbButtons[buttonIndex]) {
+					printf("%d ", buttonIndex);
+				}
+			}
+
+			printf("\n");*/
+
 			// Process buttons
 			for (int i = 0; i < 32; ++i)
 			{
 				if ((_controllerState.rgbButtons[i] & 0x80) && !(_prevControllerState.rgbButtons[i] & 0x80))
 				{
-					spk::cout << "Pressing button ID [" << i << "]" << std::endl;
 					PostButtonPress(_hWnd, static_cast<spk::Controller::Button>(i));
-					_prevControllerState.rgbButtons[i] = !_controllerState.rgbButtons[i];
+					_prevControllerState.rgbButtons[i] = _controllerState.rgbButtons[i];
 				}
 				else if (!(_controllerState.rgbButtons[i] & 0x80) && (_prevControllerState.rgbButtons[i] & 0x80))
 				{
-					spk::cout << "Releasing button ID [" << i << "]" << std::endl;
 					PostButtonRelease(_hWnd, static_cast<spk::Controller::Button>(i));
-					_prevControllerState.rgbButtons[i] = !_controllerState.rgbButtons[i];
+					_prevControllerState.rgbButtons[i] = _controllerState.rgbButtons[i];
 				}
 			}
 
 			if (_controllerState.lX != _prevControllerState.lX || _controllerState.lY != _prevControllerState.lY)
 			{
-				spk::cout << "Moving joystick Left by [" << _controllerState.lX << " / " << _controllerState.lY << "]" << std::endl;
-				PostLeftJoystickMove(_hWnd, _controllerState.lX, _controllerState.lY);
+				PostLeftJoystickMove(_hWnd, static_cast<unsigned short>(_controllerState.lX), static_cast<unsigned short>(_controllerState.lY));
 				_prevControllerState.lX = _controllerState.lX;
 				_prevControllerState.lY = _controllerState.lY;
 			}
 
 			if (_controllerState.lRx != _prevControllerState.lRx || _controllerState.lRy != _prevControllerState.lRy)
 			{
-				spk::cout << "Moving joystick Right by [" << _controllerState.lRx << " / " << _controllerState.lRy << "]" << std::endl;
-				PostRightJoystickMove(_hWnd, _controllerState.lRx, _controllerState.lRy);
+				PostRightJoystickMove(_hWnd, static_cast<unsigned short>(_controllerState.lRx), static_cast<unsigned short>(_controllerState.lRy));
 				_prevControllerState.lRx = _controllerState.lRx;
 				_prevControllerState.lRy = _controllerState.lRy;
+			}
+
+			if (_controllerState.lZ != _prevControllerState.lZ)
+			{
+				PostLeftTriggerMove(_hWnd, _controllerState.lZ);
+				_prevControllerState.lZ = _controllerState.lZ;
+			}
+
+			if (_controllerState.lRz != _prevControllerState.lRz)
+			{
+				PostRightTriggerMove(_hWnd, _controllerState.lRz);
+				_prevControllerState.lRz = _controllerState.lRz;
+			}
+
+			if (_controllerState.rgdwPOV[0] != _prevControllerState.rgdwPOV[0])
+			{
+				switch (_controllerState.rgdwPOV[0])
+				{
+				case -1:
+					spk::cout << "Case -1" << std::endl;
+					PostRightDirectionalCrossMotion(_hWnd, 0, 0); break;
+				case 0:
+					spk::cout << "Case 0" << std::endl;
+					PostRightDirectionalCrossMotion(_hWnd, 0, 1); break;
+				case 4500:
+					spk::cout << "Case 4500" << std::endl;
+					PostRightDirectionalCrossMotion(_hWnd, 1, 1); break;
+				case 9000:
+					spk::cout << "Case 9000" << std::endl;
+					PostRightDirectionalCrossMotion(_hWnd, 1, 0); break;
+				case 13500:
+					spk::cout << "Case 13500" << std::endl;
+					PostRightDirectionalCrossMotion(_hWnd, 1, -1); break;
+				case 18000:
+					spk::cout << "Case 18000" << std::endl;
+					PostRightDirectionalCrossMotion(_hWnd, 0, -1); break;
+				case 22500:
+					spk::cout << "Case 22500" << std::endl;
+					PostRightDirectionalCrossMotion(_hWnd, -1, -1); break;
+				case 27000:
+					spk::cout << "Case 27000" << std::endl;
+					PostRightDirectionalCrossMotion(_hWnd, -1, 0); break;
+				case 31500:
+					spk::cout << "Case 31500" << std::endl;
+					PostRightDirectionalCrossMotion(_hWnd, -1, 1); break;
+				}
+				_prevControllerState.rgdwPOV[0] = _controllerState.rgdwPOV[0];
 			}
 		}
 
@@ -123,14 +186,30 @@ namespace spk
 			PostMessage(hWnd, WM_CONTROLLER_BUTTON_RELEASE, static_cast<int>(button), 0);
 		}
 
-		static void PostLeftJoystickMove(HWND hWnd, const int& p_x, const int& p_y)
+		static void PostLeftJoystickMove(HWND hWnd, const unsigned short& p_x, const unsigned short& p_y)
 		{
-			PostMessage(hWnd, WM_LEFT_JOYSTICK_MOVE, p_x, p_y);
+			PostMessage(hWnd, WM_LEFT_JOYSTICK_MOTION, static_cast<WPARAM>(p_x), static_cast<LPARAM>(p_y));
 		}
 
-		static void PostRightJoystickMove(HWND hWnd, const int& p_x, const int& p_y)
+		static void PostRightJoystickMove(HWND hWnd, const unsigned short& p_x, const unsigned short& p_y)
 		{
-			PostMessage(hWnd, WM_RIGHT_JOYSTICK_MOVE, p_x, p_y);
+			PostMessage(hWnd, WM_RIGHT_JOYSTICK_MOTION, static_cast<WPARAM>(p_x), static_cast<LPARAM>(p_y));
+		}
+
+		static void PostLeftTriggerMove(HWND hWnd, const int& p_x)
+		{
+			PostMessage(hWnd, WM_LEFT_TRIGGER_MOTION, p_x, 0);
+		}
+
+		static void PostRightTriggerMove(HWND hWnd, const int& p_x)
+		{
+			PostMessage(hWnd, WM_RIGHT_TRIGGER_MOTION, p_x, 0);
+		}
+
+		static void PostRightDirectionalCrossMotion(HWND hWnd, const int& p_x, const int& p_y)
+		{
+			LPARAM packedParams = MAKELPARAM(static_cast<WORD>(p_x), static_cast<WORD>(p_y));
+			PostMessage(hWnd, WM_DIRECTIONAL_CROSS_MOTION, 0, packedParams);
 		}
 
 	public:

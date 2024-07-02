@@ -45,9 +45,6 @@
     <ClCompile Include="src\structure\graphical\spk_window.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\structure\structure\system\event\spk_event.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="src\application\module\spk_controller_module.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
@@ -69,16 +66,19 @@
     <ClCompile Include="src\application\module\spk_update_module.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\structure\structure\system\device\spk_controller.cpp">
+    <ClCompile Include="src\structure\system\device\spk_controller.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\structure\structure\system\device\spk_keyboard.cpp">
+    <ClCompile Include="src\structure\system\device\spk_keyboard.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\structure\structure\system\device\spk_mouse.cpp">
+    <ClCompile Include="src\structure\system\device\spk_mouse.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\structure\structure\system\event\spk_event_output_operator.cpp">
+    <ClCompile Include="src\structure\system\event\spk_event.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\structure\system\event\spk_event_output_operator.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

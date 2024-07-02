@@ -6,7 +6,7 @@ namespace spk
 	{
 		switch (p_event.type)
 		{
-		case spk::ControllerEvent::Type::Motion:
+		case spk::ControllerEvent::Type::JoystickMotion:
 		{
 			if (p_event.joystick.id == spk::Controller::Joystick::ID::Left)
 			{
@@ -18,6 +18,25 @@ namespace spk
 				_controller.rightJoystick.delta = p_event.joystick.values - _controller.rightJoystick.position;
 				_controller.rightJoystick.position = p_event.joystick.values;
 			}
+			break;
+		}
+		case spk::ControllerEvent::Type::TriggerMotion:
+		{
+			if (p_event.trigger.id == spk::Controller::Trigger::ID::Left)
+			{
+				_controller.leftTrigger.ratio = static_cast<float>(p_event.trigger.value) / static_cast<float>(std::numeric_limits<unsigned short>::max());
+				std::cout << "Controller set to : " << _controller.leftTrigger.ratio << " and trigger value : " << p_event.trigger.value << std::endl;
+			}
+			else if (p_event.trigger.id == spk::Controller::Trigger::ID::Right)
+			{
+				_controller.rightTrigger.ratio = static_cast<float>(p_event.trigger.value) / static_cast<float>(std::numeric_limits<unsigned short>::max());
+				std::cout << "Controller set to : " << _controller.rightTrigger.ratio << " and trigger value : " << p_event.trigger.value << std::endl;
+			}
+			break;
+		}
+		case spk::ControllerEvent::Type::DirectionalCrossMotion:
+		{
+			_controller.directionalCross = p_event.directionalCross.values;
 			break;
 		}
 		case spk::ControllerEvent::Type::Press:

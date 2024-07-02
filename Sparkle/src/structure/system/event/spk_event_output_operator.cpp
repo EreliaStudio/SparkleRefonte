@@ -80,8 +80,12 @@ std::ostream& operator << (std::ostream& p_os, const spk::ControllerEvent::Type&
 		p_os << "Press"; break;
 	case spk::ControllerEvent::Type::Release:
 		p_os << "Release"; break;
-	case spk::ControllerEvent::Type::Motion:
-		p_os << "Motion"; break;
+	case spk::ControllerEvent::Type::JoystickMotion:
+		p_os << "JoystickMotion"; break;
+	case spk::ControllerEvent::Type::TriggerMotion:
+		p_os << "TriggerMotion"; break;
+	case spk::ControllerEvent::Type::DirectionalCrossMotion:
+		p_os << "DirectionalCrossMotion"; break;
 	default:
 		p_os << "Unknown"; break;
 	}
@@ -96,8 +100,12 @@ std::wostream& operator << (std::wostream& p_os, const spk::ControllerEvent::Typ
 		p_os << L"Press"; break;
 	case spk::ControllerEvent::Type::Release:
 		p_os << L"Release"; break;
-	case spk::ControllerEvent::Type::Motion:
-		p_os << L"Motion"; break;
+	case spk::ControllerEvent::Type::JoystickMotion:
+		p_os << L"JoystickMotion"; break;
+	case spk::ControllerEvent::Type::TriggerMotion:
+		p_os << L"TriggerMotion"; break;
+	case spk::ControllerEvent::Type::DirectionalCrossMotion:
+		p_os << L"DirectionalCrossMotion"; break;
 	default:
 		p_os << L"Unknown"; break;
 	}

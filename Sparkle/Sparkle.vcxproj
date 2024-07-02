@@ -35,11 +35,11 @@
     <ClCompile Include="src\structure\container\spk_data_buffer.cpp" />
     <ClCompile Include="src\structure\design_pattern\spk_activable_object.cpp" />
     <ClCompile Include="src\structure\spk_iostream.cpp" />
-    <ClCompile Include="src\structure\structure\system\device\spk_controller.cpp" />
-    <ClCompile Include="src\structure\structure\system\device\spk_keyboard.cpp" />
-    <ClCompile Include="src\structure\structure\system\device\spk_mouse.cpp" />
-    <ClCompile Include="src\structure\structure\system\event\spk_event.cpp" />
-    <ClCompile Include="src\structure\structure\system\event\spk_event_output_operator.cpp" />
+    <ClCompile Include="src\structure\system\device\spk_controller.cpp" />
+    <ClCompile Include="src\structure\system\device\spk_keyboard.cpp" />
+    <ClCompile Include="src\structure\system\device\spk_mouse.cpp" />
+    <ClCompile Include="src\structure\system\event\spk_event.cpp" />
+    <ClCompile Include="src\structure\system\event\spk_event_output_operator.cpp" />
     <ClCompile Include="src\widget\spk_widget.cpp" />
   </ItemGroup>
   <ItemGroup>

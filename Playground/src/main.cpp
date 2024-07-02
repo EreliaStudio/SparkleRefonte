@@ -1,81 +1,161 @@
 #include "playground.hpp"
 
-int main()
+class TestWidget : public spk::Widget
 {
-	std::wstring pipelineCode = LR"(
-//Allow inclusion of predefined code
-#include <myInclude>
-//Allow inclusion of code contained inside user provided file
-#include "pipeline/myCustomInclude.lum"
-
-//Definition of an input variable, from the user to the VertexPass
-Input -> VertexPass : type variableNameA;
-//Definition of a data passed by the vertex pass to the fragment pass
-VertexPass -> FragmentPass : type variableNameB;
-
-//Definition of attribute block, who will contain information shared by every triangle of a single call
-AttributeBlock pushConstants
-{
-	type variableNameC;
-};
-
-//Definition of a constant block, who will contain information shared by every triangle of every call.
-ConstantBlock constants
-{
-	type variableNameD;
-};
-
-//Description of Sampler2D.
-//Texture is suppose to be concidered as a "struct" with the following method :
-// - int myTexture.size.width -> represent the width in pixel of the texture
-// - int myTexture.size.height -> represent the height in pixel of the texture
-// - vec2 myTexture.convertUVToPixel(ivec2 pixelCoord) -> convert a coordinate as pixels into a UV coordinate
-// - ivec2 myTexture.convertUVToPixel(vec2 uvCoord) -> convert a coordinate as UVs into a pixel coordinate
-// - Color myTexture.pixel(vec2 coord) -> request a pixel at coordinate "coord" expressed between 0 and 1
-// - Color myTexture.fetch(ivec2 coord) -> request a pixel at coordinate "coord" express between [0 / 0] and [width / height]
-Texture myTexture;
-
-//Creation of a new function, names [functionName], returning a [returnType], and taking as input a [type]
-returnType functionName(type inputVariableNameA)
-{
-	returnType result;
-
-	return (result);
-}
-
-//Definition of the vertex pass, who will be responsible to fill the value "pixelPosition" and pass the value desired to the fragment pass
-VertexPass()
-{
-	vec4 finalPixelPosition = vec4(0, 0, 0, 1);
-
-	//Definition of a value with a constructor like in glsl
-	variableNameB = type(10);
-
-	//Add the content of the debug to the debug log of the pipeline, readable using the "debugLog" method of the Pipeline object
-	//This line may be writen inside the shader a large number of time. 
-	debug("Variable B = " + variableNameB + " elements");
-
-	if (variableNameB == 5)
+private:
+	void _onGeometryChange()
 	{
-		//raiseException is a build-in function that will raise an error, who will throw an exception inside your program with the desired error message
-		//The exception raised will be a spk::PipelineException, and will contain the line and function who raised the exception in addition of the string passed as parameter to raiseException
-		raiseException("Custom pipeline failed with variable B == " + variableNameB + "!");
+
 	}
 
-	//pixelPosition is a key word of Lumina, who will describe the pixel on screen to edit, express between -1 and 1 on both axis.
-	//Its type is vec4
-	pixelPosition = finalPixelPosition;
-}
+	void _onPaintEvent(const spk::PaintEvent& p_event)
+	{
 
-FragmentPass()
+	}
+
+	void _onUpdateEvent(const spk::UpdateEvent& p_event)
+	{
+
+	}
+
+	void _onKeyboardEvent(const spk::KeyboardEvent& p_event)
+	{
+
+	}
+
+	void _onMouseEvent(const spk::MouseEvent& p_event)
+	{
+
+	}
+
+	void _onControllerEvent(const spk::ControllerEvent& p_event)
+	{
+		if (p_event.type == spk::ControllerEvent::Type::DirectionalCrossMotion)
+		{
+			spk::cout << "Directionnal cross : " << p_event.controller->directionalCross << std::endl;
+		}
+		else if (p_event.type == spk::ControllerEvent::Type::TriggerMotion)
+		{
+			if (p_event.trigger.id == spk::Controller::Trigger::ID::Left)
+				spk::cout << "L2 Trigger motion : " << p_event.controller->leftTrigger.ratio << std::endl;
+			if (p_event.trigger.id == spk::Controller::Trigger::ID::Right)
+				spk::cout << "R2 Trigger motion : " << p_event.controller->rightTrigger.ratio << std::endl;
+		}
+		if (p_event.type == spk::ControllerEvent::Type::JoystickMotion)
+		{
+			if (p_event.joystick.id == spk::Controller::Joystick::ID::Left)
+				spk::cout << "Left Joystick motion : " << p_event.controller->leftJoystick.position << std::endl;
+			if (p_event.joystick.id == spk::Controller::Trigger::ID::Right)
+				spk::cout << "Right Joystick motion : " << p_event.controller->rightJoystick.position << std::endl;
+		}
+	}
+
+public:
+	TestWidget(const std::wstring& p_name) :
+		spk::Widget(p_name)
+	{
+
+	}
+
+	TestWidget(const std::wstring& p_name, spk::SafePointer<Widget> p_parent) :
+		spk::Widget(p_name, p_parent)
+	{
+
+	}
+};
+
+int main()
 {
-	vec4 finalPixelColor = vec4(0, 1, 0, 1);
+	spk::GraphicalApplication app;
 
-	//pixelColor is a key word of Lumina, who will describe the pixel color on screen to edit, express between 0 and 1 on both axis.
-	//Its type is vec4
-	pixelColor = finalPixelColor;
-}
-)";
+	spk::SafePointer<spk::Window> firstWindow = app.createWindow(L"FirstWindow", spk::Geometry2DInt(0, 0, 800, 400));
+	spk::SafePointer<spk::Window> secondWindow = app.createWindow(L"SecondWindow", spk::Geometry2DInt(0, 200, 400, 800));
 
-	return (0);
+	TestWidget myWidget(L"TestWidget", firstWindow->widget());
+	myWidget.activate();
+
+	TestWidget myWidget2(L"TestWidget", secondWindow->widget());
+	myWidget2.activate();
+
+	return (app.run());
 }
+
+//int main()
+//{
+//	std::wstring pipelineCode = LR"(
+////Allow inclusion of predefined code
+//#include <myInclude>
+////Allow inclusion of code contained inside user provided file
+//#include "pipeline/myCustomInclude.lum"
+//
+////Definition of an input variable, from the user to the VertexPass
+//Input -> VertexPass : type variableNameA;
+////Definition of a data passed by the vertex pass to the fragment pass
+//VertexPass -> FragmentPass : type variableNameB;
+//
+////Definition of attribute block, who will contain information shared by every triangle of a single call
+//AttributeBlock pushConstants
+//{
+//	type variableNameC;
+//};
+//
+////Definition of a constant block, who will contain information shared by every triangle of every call.
+//ConstantBlock constants
+//{
+//	type variableNameD;
+//};
+//
+////Description of Sampler2D.
+////Texture is suppose to be concidered as a "struct" with the following method :
+//// - int myTexture.size.width -> represent the width in pixel of the texture
+//// - int myTexture.size.height -> represent the height in pixel of the texture
+//// - vec2 myTexture.convertUVToPixel(ivec2 pixelCoord) -> convert a coordinate as pixels into a UV coordinate
+//// - ivec2 myTexture.convertUVToPixel(vec2 uvCoord) -> convert a coordinate as UVs into a pixel coordinate
+//// - Color myTexture.pixel(vec2 coord) -> request a pixel at coordinate "coord" expressed between 0 and 1
+//// - Color myTexture.fetch(ivec2 coord) -> request a pixel at coordinate "coord" express between [0 / 0] and [width / height]
+//Texture myTexture;
+//
+////Creation of a new function, names [functionName], returning a [returnType], and taking as input a [type]
+//returnType functionName(type inputVariableNameA)
+//{
+//	returnType result;
+//
+//	return (result);
+//}
+//
+////Definition of the vertex pass, who will be responsible to fill the value "pixelPosition" and pass the value desired to the fragment pass
+//VertexPass()
+//{
+//	vec4 finalPixelPosition = vec4(0, 0, 0, 1);
+//
+//	//Definition of a value with a constructor like in glsl
+//	variableNameB = type(10);
+//
+//	//Add the content of the debug to the debug log of the pipeline, readable using the "debugLog" method of the Pipeline object
+//	//This line may be writen inside the shader a large number of time. 
+//	debug("Variable B = " + variableNameB + " elements");
+//
+//	if (variableNameB == 5)
+//	{
+//		//raiseException is a build-in function that will raise an error, who will throw an exception inside your program with the desired error message
+//		//The exception raised will be a spk::PipelineException, and will contain the line and function who raised the exception in addition of the string passed as parameter to raiseException
+//		raiseException("Custom pipeline failed with variable B == " + variableNameB + "!");
+//	}
+//
+//	//pixelPosition is a key word of Lumina, who will describe the pixel on screen to edit, express between -1 and 1 on both axis.
+//	//Its type is vec4
+//	pixelPosition = finalPixelPosition;
+//}
+//
+//FragmentPass()
+//{
+//	vec4 finalPixelColor = vec4(0, 1, 0, 1);
+//
+//	//pixelColor is a key word of Lumina, who will describe the pixel color on screen to edit, express between 0 and 1 on both axis.
+//	//Its type is vec4
+//	pixelColor = finalPixelColor;
+//}
+//)";
+//
+//	return (0);
+//}

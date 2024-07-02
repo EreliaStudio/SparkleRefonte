@@ -34,8 +34,6 @@ namespace spk
 			case 9: return Controller::Button::Select;
 			case 10: return Controller::Button::R1;
 			case 11: return Controller::Button::L1;
-			case 12: return Controller::Button::R2;
-			case 13: return Controller::Button::L2;
 			case 14: return Controller::Button::R3;
 			case 15: return Controller::Button::L3;
 			default:
@@ -145,7 +143,7 @@ namespace spk
 			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 				p_event->mouseEvent.type = MouseEvent::Type::Wheel;
-				p_event->mouseEvent.scrollValue = GET_WHEEL_DELTA_WPARAM(wParam) / (float)WHEEL_DELTA;
+				p_event->mouseEvent.scrollValue = HIWORD(wParam) / (float)WHEEL_DELTA;
 			}
 		},
 		{
@@ -221,21 +219,47 @@ namespace spk
 			}
 		},
 		{
-			WM_LEFT_JOYSTICK_MOVE,
+			WM_LEFT_JOYSTICK_MOTION,
 			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
-				p_event->controllerEvent.type = ControllerEvent::Type::Motion;
+				p_event->controllerEvent.type = ControllerEvent::Type::JoystickMotion;
 				p_event->controllerEvent.joystick.id = Controller::Joystick::ID::Left;
-				p_event->controllerEvent.joystick.values = spk::Vector2Int(LOWORD(lParam), HIWORD(lParam));
+				p_event->controllerEvent.joystick.values = spk::Vector2Int(static_cast<unsigned short>(wParam), std::numeric_limits<unsigned short>::max() - static_cast<unsigned short>(lParam));
 			}
 		},
 		{
-			WM_RIGHT_JOYSTICK_MOVE,
+			WM_RIGHT_JOYSTICK_MOTION,
 			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
-				p_event->controllerEvent.type = ControllerEvent::Type::Motion;
+				p_event->controllerEvent.type = ControllerEvent::Type::JoystickMotion;
 				p_event->controllerEvent.joystick.id = Controller::Joystick::ID::Right;
-				p_event->controllerEvent.joystick.values = spk::Vector2Int(LOWORD(lParam), HIWORD(lParam));
+				p_event->controllerEvent.joystick.values = spk::Vector2Int(static_cast<unsigned short>(wParam), std::numeric_limits<unsigned short>::max() - static_cast<unsigned short>(lParam));
+			}
+		},
+		{
+			WM_LEFT_TRIGGER_MOTION,
+			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
+			{
+				p_event->controllerEvent.type = ControllerEvent::Type::TriggerMotion;
+				p_event->controllerEvent.trigger.id = Controller::Trigger::ID::Left;
+				p_event->controllerEvent.trigger.value = HIWORD(wParam);
+			}
+		},
+		{
+			WM_RIGHT_TRIGGER_MOTION,
+			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
+			{
+				p_event->controllerEvent.type = ControllerEvent::Type::TriggerMotion;
+				p_event->controllerEvent.trigger.id = Controller::Trigger::ID::Right;
+				p_event->controllerEvent.trigger.value = HIWORD(wParam);
+			}
+		},
+		{
+			WM_DIRECTIONAL_CROSS_MOTION,
+			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
+			{
+				p_event->controllerEvent.type = ControllerEvent::Type::DirectionalCrossMotion;
+				p_event->controllerEvent.directionalCross.values = spk::Vector2Int(static_cast<short>(LOWORD(lParam)), static_cast<short>(HIWORD(lParam)));
 			}
 		},
 		{

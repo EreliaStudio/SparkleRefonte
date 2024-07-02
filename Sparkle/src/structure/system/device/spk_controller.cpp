@@ -30,10 +30,6 @@ std::ostream& operator << (std::ostream& p_os, const spk::Controller::Button& p_
 		p_os << "R1"; break;
 	case spk::Controller::Button::L1:
 		p_os << "L1"; break;
-	case spk::Controller::Button::R2:
-		p_os << "R2"; break;
-	case spk::Controller::Button::L2:
-		p_os << "L2"; break;
 	case spk::Controller::Button::R3:
 		p_os << "R3"; break;
 	case spk::Controller::Button::L3:
@@ -51,6 +47,18 @@ std::ostream& operator << (std::ostream& p_os, const spk::Controller::Joystick::
 	case spk::Controller::Joystick::ID::Left:
 		p_os << "Left"; break;
 	case spk::Controller::Joystick::ID::Right:
+		p_os << "Right"; break;
+	}
+	return (p_os);
+}
+
+std::ostream& operator << (std::ostream& p_os, const spk::Controller::Trigger::ID& p_triggerID)
+{
+	switch (p_triggerID)
+	{
+	case spk::Controller::Trigger::ID::Left:
+		p_os << "Left"; break;
+	case spk::Controller::Trigger::ID::Right:
 		p_os << "Right"; break;
 	}
 	return (p_os);
@@ -84,10 +92,6 @@ std::wostream& operator << (std::wostream& p_os, const spk::Controller::Button& 
 		p_os << "R1"; break;
 	case spk::Controller::Button::L1:
 		p_os << "L1"; break;
-	case spk::Controller::Button::R2:
-		p_os << "R2"; break;
-	case spk::Controller::Button::L2:
-		p_os << "L2"; break;
 	case spk::Controller::Button::R3:
 		p_os << "R3"; break;
 	case spk::Controller::Button::L3:
@@ -105,6 +109,18 @@ std::wostream& operator << (std::wostream& p_os, const spk::Controller::Joystick
 	case spk::Controller::Joystick::ID::Left:
 		p_os << L"Left"; break;
 	case spk::Controller::Joystick::ID::Right:
+		p_os << L"Right"; break;
+	}
+	return (p_os);
+}
+
+std::wostream& operator << (std::wostream& p_os, const spk::Controller::Trigger::ID& p_triggerID)
+{
+	switch (p_triggerID)
+	{
+	case spk::Controller::Trigger::ID::Left:
+		p_os << L"Left"; break;
+	case spk::Controller::Trigger::ID::Right:
 		p_os << L"Right"; break;
 	}
 	return (p_os);
