@@ -50,6 +50,9 @@ namespace spk
 		ControllerInputThread _controllerInputThread;
 
 		HWND _hwnd;
+		HDC _hdc;
+		HGLRC _hglrc;
+
 		MouseModule mouseModule;
 		KeyboardModule keyboardModule;
 		SystemModule systemModule;
@@ -63,6 +66,8 @@ namespace spk
 		void _initialize(const std::function<void(spk::SafePointer<spk::Window>)>& p_onClosureCallback);
 		static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 		void _createContext();
+		void _createOpenGLContext();
+		void _destroyOpenGLContext();
 
 		bool _receiveEvent(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -74,9 +79,6 @@ namespace spk
 		void close();
 		void clear();
 		void swap();
-
-		void requestRepaint() const;
-		void requestUpdate() const;
 
 		void pullEvents();
 		void bindModule(spk::IModule* p_module);

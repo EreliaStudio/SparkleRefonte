@@ -6,7 +6,9 @@ namespace spk
 {
 	void PaintModule::_treatEvent(spk::PaintEvent&& p_event)
 	{
+		p_event.window->clear();
 		_rootWidget->onPaintEvent(p_event);
+		p_event.window->swap();
 	}
 
 	spk::PaintEvent PaintModule::_convertEventToEventType(spk::Event&& p_event)

@@ -3,6 +3,8 @@
 #include "application/spk_graphical_application.hpp"
 
 #include "spk_debug_macro.hpp"
+#include <gl/GL.h>
+#include <gl/GLU.h>
 
 namespace spk
 {
@@ -61,11 +63,73 @@ namespace spk
 		}
 
 		_controllerInputThread.bind(_hwnd);
+		_createOpenGLContext();
 		
 		ShowWindow(_hwnd, SW_SHOW);
 		UpdateWindow(_hwnd);
 	}
 
+	void Window::_createOpenGLContext()
+	{
+		_hdc = GetDC(_hwnd);
+		PIXELFORMATDESCRIPTOR pfd =
+		{
+			sizeof(PIXELFORMATDESCRIPTOR),
+			1,
+			PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
+			PFD_TYPE_RGBA,
+			32,
+			0, 0, 0, 0, 0, 0,
+			0,
+			0,
+			0,
+			0, 0, 0, 0,
+			24,
+			8,
+			0,
+			PFD_MAIN_PLANE,
+			0,
+			0, 0, 0
+		};
+
+		int pixelFormat = ChoosePixelFormat(_hdc, &pfd);
+		if (pixelFormat == 0)
+		{
+			throw std::runtime_error("Failed to choose pixel format.");
+		}
+
+		if (SetPixelFormat(_hdc, pixelFormat, &pfd) == FALSE)
+		{
+			throw std::runtime_error("Failed to set pixel format.");
+		}
+
+		_hglrc = wglCreateContext(_hdc);
+		if (_hglrc == nullptr)
+		{
+			throw std::runtime_error("Failed to create OpenGL context.");
+		}
+
+		if (wglMakeCurrent(_hdc, _hglrc) == FALSE)
+		{
+			throw std::runtime_error("Failed to activate OpenGL context.");
+		}
+	}
+
+	void Window::_destroyOpenGLContext()
+	{
+		if (_hglrc)
+		{
+			wglMakeCurrent(nullptr, nullptr);
+			wglDeleteContext(_hglrc);
+			_hglrc = nullptr;
+		}
+
+		if (_hwnd && _hdc)
+		{
+			ReleaseDC(_hwnd, _hdc);
+			_hdc = nullptr;
+		}
+	}
 
 	Window::Window(const std::wstring& p_title, const spk::Geometry2DInt& p_geometry) :
 		_rootWidget(std::make_unique<Widget>(p_title + L" - CentralWidget")),
@@ -130,6 +194,7 @@ namespace spk
 			DestroyWindow(_hwnd);
 			_hwnd = nullptr;
 		}
+		_destroyOpenGLContext();
 
 		if (_onClosureCallback != nullptr)
 			_onClosureCallback(this);
@@ -137,22 +202,13 @@ namespace spk
 
 	void Window::clear()
 	{
-
-	}
-
-	void Window::requestRepaint() const
-	{
-		PostMessageA(_hwnd, WM_PAINT, 0, 0);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	void Window::swap()
 	{
-
-	}
-
-	void Window::requestUpdate() const
-	{
-		PostMessageA(_hwnd, WM_UPDATE, 0, 0);
+		SwapBuffers(_hdc);
 	}
 
 	void Window::pullEvents()
