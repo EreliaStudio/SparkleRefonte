@@ -137,7 +137,7 @@ namespace spk
 			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 				p_event->mouseEvent.type = MouseEvent::Type::Motion;
-				p_event->mouseEvent.position = spk::Vector2Int{ LOWORD(wParam), HIWORD(lParam) };
+				p_event->mouseEvent.position = spk::Vector2Int{ LOWORD(lParam), HIWORD(lParam) };
 			}
 		},
 		{

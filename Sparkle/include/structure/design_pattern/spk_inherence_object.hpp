@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <stdexcept>
+#include "structure/spk_safe_pointer.hpp"
 
 namespace spk
 {
@@ -11,7 +12,7 @@ namespace spk
 	public:
 		using Parent = InherenceObject<TType>*;
 		using Child = InherenceObject<TType>*;
-		using ChildObject = TType*;
+		using ChildObject = spk::SafePointer<TType>;
 		using ChildArray = std::vector<ChildObject>;
 
 	private:
@@ -26,16 +27,16 @@ namespace spk
 	public:
 		virtual ~InherenceObject()
 		{
-			for (Child child : _children)
+			for (ChildObject child : _children)
 			{
-				child->_parent = nullptr;
+				static_cast<Child>(child.get())->_parent = nullptr;
 			}
 		}
 
 		virtual void addChild(ChildObject p_child)
 		{
 			_children.push_back(p_child);
-			static_cast<Child>(p_child)->_parent = static_cast<Child>(this);
+			static_cast<Child>(p_child.get())->_parent = static_cast<Child>(this);
 		}
 
 		virtual void removeChild(ChildObject p_child)
@@ -46,7 +47,7 @@ namespace spk
 				throw std::runtime_error("Child not found in children array");
 			}
 			_children.erase(it);
-			static_cast<Child>(p_child)->_parent = nullptr;
+			static_cast<Child>(p_child.get())->_parent = nullptr;
 		}
 
 		void transferChildren(Parent p_newParent)

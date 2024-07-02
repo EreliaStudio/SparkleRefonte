@@ -10,6 +10,8 @@ namespace spk
 		{
 			if (p_event.key != spk::Keyboard::Key::Unknow)
 			{
+				if (_keyboard.state[static_cast<int>(p_event.key)] == spk::InputState::Down)
+					return;
 				_keyboard.state[static_cast<int>(p_event.key)] = spk::InputState::Down;
 			}
 			break;
@@ -18,6 +20,8 @@ namespace spk
 		{
 			if (p_event.key != spk::Keyboard::Key::Unknow)
 			{
+				if (_keyboard.state[static_cast<int>(p_event.key)] == spk::InputState::Up)
+					return;
 				_keyboard.state[static_cast<int>(p_event.key)] = spk::InputState::Up;
 			}
 			break;

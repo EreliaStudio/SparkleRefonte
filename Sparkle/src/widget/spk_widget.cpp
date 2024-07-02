@@ -13,7 +13,7 @@ namespace spk
 
 	}
 
-	Widget::Widget(const std::wstring& p_name, Widget* p_parent) :
+	Widget::Widget(const std::wstring& p_name, spk::SafePointer<Widget> p_parent) :
 		Widget(p_name)
 	{
 		if (p_parent != nullptr)
@@ -36,7 +36,7 @@ namespace spk
 		return (_name);
 	}
 
-	void Widget::addChild(Widget* p_child)
+	void Widget::addChild(spk::SafePointer<Widget> p_child)
 	{
 		spk::InherenceObject<Widget>::addChild(p_child);
 		p_child->setDepth(depth() + 1);

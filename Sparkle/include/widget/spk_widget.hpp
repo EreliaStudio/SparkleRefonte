@@ -17,7 +17,7 @@ namespace spk
 	{
 	private:
 		std::wstring _name;
-		Widget* _parent;
+		spk::SafePointer<Widget> _parent;
 
 		std::vector<Widget*> _managedChildren;
 
@@ -34,13 +34,13 @@ namespace spk
 
 	public:
 		Widget(const std::wstring& p_name);
-		Widget(const std::wstring& p_name, Widget* p_parent);
+		Widget(const std::wstring& p_name, spk::SafePointer<Widget> p_parent);
 
 		~Widget();
 
 		const std::wstring& name() const;
 
-		void addChild(Widget* p_child) override;
+		void addChild(spk::SafePointer<Widget> p_child) override;
 
 		template<typename TChildType, typename... TArgs>
 		spk::SafePointer<TChildType> makeChild(TArgs&&... p_args)

@@ -103,6 +103,8 @@ namespace spk
 		updateModule.linkToController(&(controllerModule.controller()));
 		updateModule.linkToMouse(&(mouseModule.mouse()));
 		updateModule.linkToKeyboard(&(keyboardModule.keyboard()));
+
+		_rootWidget->activate();
 	}
 
 	void Window::move(const spk::Geometry2DInt::Position& p_newPosition)

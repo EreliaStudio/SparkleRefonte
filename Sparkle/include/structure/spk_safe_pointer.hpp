@@ -14,16 +14,31 @@ namespace spk
 		SafePointer(const SafePointer&) = default;
 		SafePointer& operator=(const SafePointer&) = default;
 
+		operator TType* () const
+		{
+			return (_ptr);
+		}
+
 		TType& operator*() const { return (*_ptr); }
 		TType* operator->() const { return (_ptr); }
 		TType* get() const { return (_ptr); }
 
-		bool operator == (const TType* p_other) const
+		bool operator == (SafePointer<TType> p_other) const
+		{
+			return (p_other.get() == _ptr);
+		}
+
+		bool operator != (SafePointer<TType> p_other) const
+		{
+			return (p_other.get() != _ptr);
+		}
+
+		bool operator == (TType* p_other) const
 		{
 			return (p_other == _ptr);
 		}
 
-		bool operator != (const TType* p_other) const
+		bool operator != (TType* p_other) const 
 		{
 			return (p_other != _ptr);
 		}
