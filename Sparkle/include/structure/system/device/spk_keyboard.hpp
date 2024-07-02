@@ -1,6 +1,7 @@
 #pragma once
 
 #include "structure/math/spk_vector2.hpp"
+#include "structure/system/spk_input_state.hpp"
 
 namespace spk
 {
@@ -143,7 +144,7 @@ namespace spk
 			MaxNbKey = 255
 		};
 
-		bool state[Key::MaxNbKey];
+		InputState state[Key::MaxNbKey];
 		wchar_t glyph;
 	};
 }

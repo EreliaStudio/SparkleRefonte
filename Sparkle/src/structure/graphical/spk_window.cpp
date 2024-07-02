@@ -99,6 +99,10 @@ namespace spk
 		controllerModule.linkToWidget(_rootWidget.get());
 		updateModule.linkToWidget(_rootWidget.get());
 		paintModule.linkToWidget(_rootWidget.get());
+
+		updateModule.linkToController(&(controllerModule.controller()));
+		updateModule.linkToMouse(&(mouseModule.mouse()));
+		updateModule.linkToKeyboard(&(keyboardModule.keyboard()));
 	}
 
 	void Window::move(const spk::Geometry2DInt::Position& p_newPosition)

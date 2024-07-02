@@ -10,12 +10,12 @@ namespace
 		int _updateCounter;
 
 	protected:
-		void _onRender() override
+		void _onPaintEvent(const spk::PaintEvent& p_event) override
 		{
 			++_renderCounter;
 		}
 
-		void _onUpdate() override
+		void _onUpdateEvent(const spk::UpdateEvent& p_event) override
 		{
 			++_updateCounter;
 			if (_renderCounter >= 100 && _updateCounter >= 100)
@@ -97,8 +97,8 @@ TEST_F(ConsoleApplicationTest, CustomWidgetBehavior)
 	spk::SafePointer<CustomWidget> customWidget = app.centralWidget()->makeChild<CustomWidget>(&app, L"CustomWidget");
 	customWidget->activate();
 
-	app.addExecutionStep([&]() { app.centralWidget()->render(); }).relinquish();
-	app.addExecutionStep([&]() { app.centralWidget()->update(); }).relinquish();
+	app.addExecutionStep([&]() { app.centralWidget()->onPaintEvent(spk::PaintEvent(NULL)); }).relinquish();
+	app.addExecutionStep([&]() { app.centralWidget()->onUpdateEvent(spk::UpdateEvent(NULL)); }).relinquish();
 
 	int errorCode = app.run();
 	ASSERT_EQ(errorCode, 0) << "Application should quit with code 0 after 100 updates and 100 renders.";

@@ -13,6 +13,8 @@ namespace spk
 	private:
 		spk::Widget* _rootWidget;
 
+		spk::Keyboard _keyboard;
+
 		void _treatEvent(spk::KeyboardEvent&& p_event) override;
 		spk::KeyboardEvent _convertEventToEventType(spk::Event&& p_event) override;
 
@@ -20,5 +22,7 @@ namespace spk
 		KeyboardModule();
 
 		void linkToWidget(spk::Widget* p_rootWidget);
+
+		const spk::Keyboard& keyboard() const;
 	};
 }

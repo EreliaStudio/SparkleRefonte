@@ -45,7 +45,7 @@
     <ClCompile Include="src\structure\graphical\spk_window.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\structure\structure\event\spk_event.cpp">
+    <ClCompile Include="src\structure\structure\system\event\spk_event.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="src\application\module\spk_controller_module.cpp">
@@ -69,13 +69,13 @@
     <ClCompile Include="src\application\module\spk_update_module.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\structure\structure\device\spk_controller.cpp">
+    <ClCompile Include="src\structure\structure\system\device\spk_controller.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\structure\structure\device\spk_keyboard.cpp">
+    <ClCompile Include="src\structure\structure\system\device\spk_keyboard.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\structure\structure\device\spk_mouse.cpp">
+    <ClCompile Include="src\structure\structure\system\device\spk_mouse.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -198,6 +198,9 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="include\structure\system\device\spk_controller_input_thread.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\structure\system\spk_input_state.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>

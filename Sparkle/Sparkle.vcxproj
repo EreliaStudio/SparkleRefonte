@@ -35,10 +35,10 @@
     <ClCompile Include="src\structure\container\spk_data_buffer.cpp" />
     <ClCompile Include="src\structure\design_pattern\spk_activable_object.cpp" />
     <ClCompile Include="src\structure\spk_iostream.cpp" />
-    <ClCompile Include="src\structure\structure\device\spk_controller.cpp" />
-    <ClCompile Include="src\structure\structure\device\spk_keyboard.cpp" />
-    <ClCompile Include="src\structure\structure\device\spk_mouse.cpp" />
-    <ClCompile Include="src\structure\structure\event\spk_event.cpp" />
+    <ClCompile Include="src\structure\structure\system\device\spk_controller.cpp" />
+    <ClCompile Include="src\structure\structure\system\device\spk_keyboard.cpp" />
+    <ClCompile Include="src\structure\structure\system\device\spk_mouse.cpp" />
+    <ClCompile Include="src\structure\structure\system\event\spk_event.cpp" />
     <ClCompile Include="src\widget\spk_widget.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -79,6 +79,7 @@
     <ClInclude Include="include\structure\system\device\spk_keyboard.hpp" />
     <ClInclude Include="include\structure\system\device\spk_mouse.hpp" />
     <ClInclude Include="include\structure\system\event\spk_event.hpp" />
+    <ClInclude Include="include\structure\system\spk_input_state.hpp" />
     <ClInclude Include="include\structure\thread\spk_persistant_worker.hpp" />
     <ClInclude Include="include\structure\thread\spk_thread.hpp" />
     <ClInclude Include="include\widget\spk_widget.hpp" />

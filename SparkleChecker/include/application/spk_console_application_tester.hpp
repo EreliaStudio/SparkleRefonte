@@ -6,7 +6,7 @@
 class ConsoleApplicationTest : public ::testing::Test
 {
 protected:
-	spk::ConsoleApplication app;
+	spk::ConsoleApplication app = spk::ConsoleApplication(L"ConsoleApplication");
 
 	void SetUp() override
 	{

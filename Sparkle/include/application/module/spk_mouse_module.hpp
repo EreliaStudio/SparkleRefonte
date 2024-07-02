@@ -12,6 +12,7 @@ namespace spk
 	{
 	private:
 		spk::Widget* _rootWidget;
+		spk::Mouse _mouse;
 
 		void _treatEvent(spk::MouseEvent&& p_event) override;
 		spk::MouseEvent _convertEventToEventType(spk::Event&& p_event) override;
@@ -20,5 +21,7 @@ namespace spk
 		MouseModule();
 
 		void linkToWidget(spk::Widget* p_rootWidget);
+
+		const spk::Mouse& mouse() const;
 	};
 }

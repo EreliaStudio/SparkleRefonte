@@ -1,6 +1,7 @@
 #pragma once
 
 #include "structure/math/spk_vector2.hpp"
+#include "structure/system/spk_input_state.hpp"
 
 namespace spk
 {
@@ -10,10 +11,14 @@ namespace spk
 		{
 			Left,
 			Middle,
-			Right
+			Right,
+			Unknow
 		};
 
 		Vector2Int position;
+		Vector2Int deltaPosition;
+		InputState buttons[3];
+		float wheel;
 	};
 }
 

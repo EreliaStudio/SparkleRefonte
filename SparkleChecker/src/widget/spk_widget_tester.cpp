@@ -20,12 +20,12 @@ namespace
 			_geometryChangeCounter++;
 		}
 
-		void _onRender() override
+		void _onPaintEvent(const spk::PaintEvent& p_event) override
 		{
 			_renderCounter++;
 		}
 
-		void _onUpdate() override
+		void _onUpdateEvent(const spk::UpdateEvent& p_event) override
 		{
 			_updateCounter++;
 		}
@@ -73,7 +73,7 @@ TEST_F(WidgetTest, RenderInactive)
 
 	EXPECT_EQ(widget.renderCounter(), 0) << "Render counter should be 0 at the start of the test";
 
-	widget.render();
+	widget.onPaintEvent(spk::PaintEvent(NULL));
 
 	EXPECT_EQ(widget.renderCounter(), 0) << "Render counter should still be 0 after calling render() on an inactive widget";
 }
@@ -84,7 +84,7 @@ TEST_F(WidgetTest, UpdateInactive)
 
 	EXPECT_EQ(widget.updateCounter(), 0) << "Update counter should be 0 at the start of the test";
 
-	widget.update();
+	widget.onUpdateEvent(spk::UpdateEvent(NULL));
 
 	EXPECT_EQ(widget.updateCounter(), 0) << "Update counter should still be 0 after calling update() on an inactive widget";
 }
@@ -96,7 +96,7 @@ TEST_F(WidgetTest, RenderActive)
 	EXPECT_EQ(widget.renderCounter(), 0) << "Render counter should be 0 at the start of the test";
 
 	widget.activate(); // Activate the widget before rendering
-	widget.render();
+	widget.onPaintEvent(spk::PaintEvent(NULL));
 
 	EXPECT_EQ(widget.renderCounter(), 1) << "Render counter should be 1 after calling render() on an active widget";
 }
@@ -108,7 +108,8 @@ TEST_F(WidgetTest, UpdateActive)
 	EXPECT_EQ(widget.updateCounter(), 0) << "Update counter should be 0 at the start of the test";
 
 	widget.activate(); // Activate the widget before updating
-	widget.update();
+
+	widget.onUpdateEvent(spk::UpdateEvent(NULL));
 
 	EXPECT_EQ(widget.updateCounter(), 1) << "Update counter should be 1 after calling update() on an active widget";
 }
@@ -125,11 +126,11 @@ TEST_F(WidgetTest, GeometryChangeOnRender)
 	EXPECT_EQ(widget.geometryChangeCounter(), 0) << "Geometry change counter should still be 0 after setting geometry but before rendering";
 
 	widget.activate();
-	widget.render();
+	widget.onPaintEvent(spk::PaintEvent(NULL));
 
 	EXPECT_EQ(widget.geometryChangeCounter(), 1) << "Geometry change counter should be 1 after rendering with new geometry";
 
-	widget.render();
+	widget.onPaintEvent(spk::PaintEvent(NULL));
 
 	EXPECT_EQ(widget.geometryChangeCounter(), 1) << "Geometry change counter should still be 1 after a second render call";
 
@@ -197,7 +198,7 @@ TEST_F(WidgetTest, RenderWithChildren)
 	EXPECT_EQ(childWidget1.renderCounter(), 0) << "Child1 render counter should be 0 at the start of the test";
 	EXPECT_EQ(childWidget2.renderCounter(), 0) << "Child2 render counter should be 0 at the start of the test";
 
-	parentWidget.render();
+	parentWidget.onPaintEvent(spk::PaintEvent(NULL));
 
 	EXPECT_EQ(parentWidget.renderCounter(), 1) << "Parent render counter should be 1 after calling render()";
 	EXPECT_EQ(childWidget1.renderCounter(), 1) << "Child1 render counter should be 1 after parent calling render()";
@@ -221,7 +222,7 @@ TEST_F(WidgetTest, UpdateWithChildren)
 	EXPECT_EQ(childWidget1.updateCounter(), 0) << "Child1 update counter should be 0 at the start of the test";
 	EXPECT_EQ(childWidget2.updateCounter(), 0) << "Child2 update counter should be 0 at the start of the test";
 
-	parentWidget.update();
+	parentWidget.onUpdateEvent(spk::UpdateEvent(NULL));
 
 	EXPECT_EQ(parentWidget.updateCounter(), 1) << "Parent update counter should be 1 after calling update()";
 	EXPECT_EQ(childWidget1.updateCounter(), 1) << "Child1 update counter should be 1 after parent calling update()";

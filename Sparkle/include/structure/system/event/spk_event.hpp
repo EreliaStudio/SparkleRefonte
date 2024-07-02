@@ -77,6 +77,9 @@ namespace spk
 		};
 		Type type;
 		long long time;
+		const spk::Mouse* mouse = nullptr;
+		const spk::Keyboard* keyboard = nullptr;
+		const spk::Controller* controller = nullptr;
 
 		UpdateEvent(HWND p_hwnd) :
 			IEvent(p_hwnd),
@@ -104,6 +107,7 @@ namespace spk
 			Wheel
 		};
 		Type type;
+		const spk::Mouse* mouse;
 		union
 		{
 			spk::Mouse::Button button;
@@ -130,6 +134,7 @@ namespace spk
 			Glyph
 		};
 		Type type;
+		const spk::Keyboard* keyboard;
 		union
 		{
 			spk::Keyboard::Key key;
@@ -160,6 +165,7 @@ namespace spk
 		static Controller::Button apiValueToControllerButton(int value);
 
 		Type type;
+		const spk::Controller* controller;
 		union
 		{
 			spk::Controller::Button button;

@@ -23,7 +23,9 @@ TEST_F(PersistantWorkerTest, WorkerStop)
 	worker.start();
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	worker.stop();
-	ASSERT_FALSE(worker.isJoinable()) << "Worker should not be joinable after stop.";
+	ASSERT_TRUE(worker.isJoinable()) << "Worker should be joinable after stop.";
+	worker.join();
+	ASSERT_FALSE(worker.isJoinable()) << "Worker should not be joinable after joining them.";
 	int finalCount = counter.load();
 	ASSERT_GE(finalCount, 4) << "Callback should have been executed multiple times.";
 }
@@ -44,6 +46,7 @@ TEST_F(PersistantWorkerTest, WorkerStartStopStart)
 	worker.start();
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	worker.stop();
+	worker.join();
 	ASSERT_FALSE(worker.isJoinable()) << "Worker should not be joinable after first stop.";
 	int firstCount = counter.load();
 	ASSERT_GE(firstCount, 4) << "Callback should have been executed multiple times before first stop.";
@@ -51,6 +54,7 @@ TEST_F(PersistantWorkerTest, WorkerStartStopStart)
 	worker.start();
 	std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	worker.stop();
+	worker.join();
 	ASSERT_FALSE(worker.isJoinable()) << "Worker should not be joinable after second stop.";
 	int secondCount = counter.load();
 	ASSERT_GE(secondCount, firstCount) << "Callback should have been executed additional times after second start.";

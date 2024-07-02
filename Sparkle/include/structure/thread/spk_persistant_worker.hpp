@@ -18,8 +18,6 @@ namespace spk
 		spk::ContractProvider _preparationJobs;
 		spk::ContractProvider _executionJobs;
 
-		using spk::Thread::join;
-
 	public:
 		PersistantWorker(const std::wstring& p_name) :
 			spk::Thread(p_name, [&]()
@@ -39,15 +37,20 @@ namespace spk
 		{
 			if (this->_running.load() == true)
 				stop();
+			if (isJoinable() == true)
+				join();
 		}
 
 		void stop()
 		{
 			this->_running = false;
-			/*if (isJoinable())
-			{
-				join();
-			}*/
+		}
+
+		void join()
+		{
+			if (this->_running.load() == true)
+				stop();
+			Thread::join();
 		}
 
 		Contract addPreparationStep(const Job& p_job)
