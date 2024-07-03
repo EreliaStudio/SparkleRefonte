@@ -379,6 +379,7 @@ namespace spk
 		}
 	};
 
+	using Matrix2x2 = IMatrix<3, 3>;
 	using Matrix3x3 = IMatrix<3, 3>;
 	using Matrix4x4 = IMatrix<4, 4>;
 }

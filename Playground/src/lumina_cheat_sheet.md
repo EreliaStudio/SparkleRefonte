@@ -49,19 +49,6 @@ vec4 myFunction(float inputVariable)
 }
 ```
 
-### Texture
-- Define a texture with methods for manipulation and querying.
-```cpp
-Texture textureName;
-```
-- Methods:
-    - `int textureName.size.width`
-    - `int textureName.size.height`
-    - `vec2 textureName.convertUVToPixel(ivec2 pixelCoord)`
-    - `ivec2 textureName.convertUVToPixel(vec2 uvCoord)`
-    - `Color textureName.pixel(vec2 coord)`
-    - `Color textureName.fetch(ivec2 coord)`
-
 ### Attribute Blocks
 - Define uniform blocks for information shared by every triangle in a single call.
 ```cpp
@@ -115,6 +102,32 @@ namespace NamespaceName
   - `NamespaceName::namespaceFunction`
   - `NamespaceName::NestedNamespace::InnerStruct`
   - `NamespaceName::NestedNamespace::nestedFunction`
+  
+### Commenting
+
+Lumina supports both single-line and multi-line comments for documenting your code, explaining complex logic, or temporarily disabling code.
+
+#### Single-Line Comments
+- Use `//` for single-line comments. Everything following `//` on the same line is considered a comment.
+
+```cpp
+// This is a single-line comment
+vec3 color = vec3(1.0, 0.0, 0.0); // This comment is on the same line as code
+```
+
+#### Multi-Line Comments
+- Use `/*` to start a multi-line comment and `*/` to end it. This allows you to comment out multiple lines of code or write longer explanations.
+
+```cpp
+/*
+This is a multi-line comment.
+It spans multiple lines.
+Useful for detailed explanations or
+temporarily disabling large blocks of code.
+*/
+vec3 color = vec3(1.0, 0.0, 0.0); /* Multi-line comments can also be 
+                                    used to comment on parts of code */
+```
 
 ### Shader Stages
 
@@ -143,40 +156,6 @@ FragmentPass()
     vec4 finalPixelColor = vec4(0, 1, 0, 1);
     pixelColor = finalPixelColor;
 }
-```
-
-## Error Handling
-- Use `raiseException` to throw exceptions with custom error messages.
-- You can customize your error message using values from the shader
-```cpp
-raiseException("Error message");
-raiseException("Error : myValue(" + myValue + ") != myExpectedValue(" + myExpectedValue + ")");
-```
-
-## Commenting
-
-Lumina supports both single-line and multi-line comments for documenting your code, explaining complex logic, or temporarily disabling code.
-
-### Single-Line Comments
-- Use `//` for single-line comments. Everything following `//` on the same line is considered a comment.
-
-```cpp
-// This is a single-line comment
-vec3 color = vec3(1.0, 0.0, 0.0); // This comment is on the same line as code
-```
-
-### Multi-Line Comments
-- Use `/*` to start a multi-line comment and `*/` to end it. This allows you to comment out multiple lines of code or write longer explanations.
-
-```cpp
-/*
-This is a multi-line comment.
-It spans multiple lines.
-Useful for detailed explanations or
-temporarily disabling large blocks of code.
-*/
-vec3 color = vec3(1.0, 0.0, 0.0); /* Multi-line comments can also be 
-                                    used to comment on parts of code */
 ```
 
 ## Example Code
@@ -239,6 +218,24 @@ namespace Lighting
     }
 }
 
+/*
+Pipeline Description:
+This pipeline is designed to render a 3D object by processing its vertex data and applying lighting calculations.
+
+Vertex Shader (VertexPass):
+- Transforms the input vertex positions using a model matrix to position the object correctly in the world space.
+- Transforms the normals using the normal matrix for accurate lighting calculations.
+- Passes UV coordinates, transformed positions, and normals to the fragment shader.
+
+Fragment Shader (FragmentPass):
+- Performs lighting calculations using ambient, diffuse, and specular components.
+- Combines these lighting components with a texture sampled from the UV coordinates.
+- Discards fragments where the texture's alpha value is zero.
+- Sets the final pixel color based on the combined lighting and texture information.
+
+The vertex and fragment shaders work together to accurately render the 3D object with realistic lighting and texturing.
+*/
+
 // Define the vertex shader stage
 VertexPass()
 {
@@ -247,7 +244,7 @@ VertexPass()
     fragNormal = mat3(modelAttributes.normalMatrix) * vertexNormal;
     fragUV = vertexUV;
 
-    vec4 clipSpacePosition = screenConstants.canvasMVP * worldPosition;
+    vec4 clipSpacePosition = worldPosition;
     pixelPosition = clipSpacePosition;
 }
 
