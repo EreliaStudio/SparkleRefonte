@@ -189,7 +189,11 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="src\lumina_cheat_sheet.md" />
     <None Include="vcpkg.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\lumina_note.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
