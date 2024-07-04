@@ -378,7 +378,7 @@ namespace Lumina
 			{
 				if (isspace(ch))
 				{
-					while (isspace(lineStream.peek()) == true)
+					while (isspace(lineStream.peek()) != 0)
 						lineStream.get(ch);
 					if (word.size() != 0)
 						break; // A word has been read, stop reading further
@@ -462,6 +462,7 @@ namespace Lumina
 						tokens.push_back(token);
 						token = handleSingleLineComment(lineStream, lineNumber);
 						tokens.push_back(token);
+						tokens.push_back({ Token::Type::SingleLineCommentClosure, "", lineNumber });
 						break;
 					}
 					else if (token.type == Token::Type::MultilineComment)
@@ -502,7 +503,6 @@ namespace Lumina
 	};
 }
 
-
 namespace Lumina
 {
 	class Lexer
@@ -522,47 +522,96 @@ namespace Lumina
 
 	private:
 		using TokenType = Tokenizer::Token::Type;
-		using Rule = std::vector<TokenType>;
 
-		struct SyntaxRule
-		{
-			Rule rule;
-			std::wstring description;
-		};
-
-		static inline std::unordered_map<std::string, SyntaxRule> rules = {
+		/*
+		enum class Type
 			{
-				"IncludeStatement",
+				Include,
+				IncludePath,
+				IncludeClosure,
+				PipelineFlow,
+				PipelineFlowSeparator,
+				NamespaceSeparator,
+				Keyword,
+				Identifier,
+				Number,
+				StringLiteral,
+				Assignator,
+				Operator,
+				Separator,
+				BodyOpener,
+				BodyCloser,
+				ParenthesisOpener,
+				ParenthesisCloser,
+				InstructionEnd,
+				Accessor,
+				Comment,
+				SingleLineComment,
+				SingleLineCommentClosure,
+				MultilineComment,
+				MultilineCommentClosure,
+				Unknown
+			};
+		*/
+		using Rule = std::vector<TokenType>;
+		using RuleList = std::vector<Rule>;
+		static inline std::unordered_map< TokenType, RuleList> rules = {
+			{
+				TokenType::Include,
 				{
-					{ TokenType::Include, TokenType::IncludePath, TokenType::IncludeClosure },
-					L"An include statement should follow the pattern: #include <path> or #include \"path\""
+					{TokenType::Include, TokenType::IncludePath, TokenType::IncludeClosure}
 				}
 			},
 			{
-				"PipelineFlow",
+				TokenType::SingleLineComment,
 				{
-					{ TokenType::PipelineFlow, TokenType::Operator, TokenType::PipelineFlow, TokenType::Separator, TokenType::Identifier, TokenType::Identifier, TokenType::InstructionEnd },
-					L"A pipeline flow statement should follow the pattern: Input -> VertexPass : Type name;"
+					{TokenType::SingleLineComment, TokenType::Comment, TokenType::SingleLineCommentClosure}
+				}
+			},
+			{
+				TokenType::MultilineComment,
+				{
+					{TokenType::MultilineComment, TokenType::Comment, TokenType::MultilineCommentClosure}
 				}
 			}
 		};
 
-		static bool matchRule(const std::vector<Tokenizer::Token>& tokens, const Rule& rule, size_t& index, Error& error)
+	private:
+		static bool matchRule(const std::vector<Tokenizer::Token>& tokens, const Rule& rule, size_t& index)
 		{
-			if (index + rule.size() > tokens.size())
-				return false;
+			if (tokens.size() < index + rule.size())
+				return (false);
 
-			for (size_t i = 0; i < rule.size(); ++i)
+			for (size_t i = 0; i < rule.size(); i++)
 			{
-				if (tokens[index + i].type != rule[i])
+				if (tokens[i + index].type != rule[i])
 				{
-					error = { tokens[index + i].line, L"Expected " + Lumina::Tokenizer::Token::to_wstring(rule[i]) + L" but found " + Lumina::Tokenizer::Token::to_wstring(tokens[index + i].type) };
-					return false;
+					return (false);
 				}
 			}
 
-			index += rule.size();
 			return true;
+		}
+
+		static std::string getTokenLine(const std::string& p_inputCode, const Tokenizer::Token& targetToken)
+		{
+			std::istringstream codeStream(p_inputCode);
+			std::string line;
+			int currentLine = 1;
+
+			// Read lines until we reach the target line
+			while (currentLine < targetToken.line && std::getline(codeStream, line))
+			{
+				currentLine++;
+			}
+
+			// Read the line where the token is supposed to appear
+			if (std::getline(codeStream, line))
+			{
+				return line;
+			}
+
+			return "";
 		}
 
 	public:
@@ -576,25 +625,42 @@ namespace Lumina
 				std::cout << token << std::endl;
 			}
 
-			size_t index = 0;
-			while (index < tokens.size())
+			for (size_t index = 0; index < tokens.size(); index++)
 			{
-				bool matched = false;
-				for (const auto& [ruleName, syntaxRule] : rules)
+				std::cout << " --- Checking rule for token : " << tokens[index].type << " ---" << std::endl;
+				
+				if (rules.contains(tokens[index].type) == false)
 				{
-					Error error;
-					if (matchRule(tokens, syntaxRule.rule, index, error))
+					std::cout << "No rules for token [" << tokens[index].type << "] at line [" << tokens[index].line << "] : " << getTokenLine(p_inputCode, tokens[index]) << std::endl;
+					int currentLine = tokens[index].line;
+					while (index < tokens.size() && tokens[index].line <= currentLine)
+						index++;
+				}
+				else
+				{
+					const auto& ruleList = rules.at(tokens[index].type);
+
+					bool matched = false;
+
+					for (const auto& rule : ruleList)
 					{
-						matched = true;
-						break;
+						if (matchRule(tokens, rule, index) == true)
+						{
+							index += rule.size() - 1;
+							matched = true;
+							continue;
+						}
+					}
+
+					if (matched == false)
+					{
+						std::cout << "No rules matches tokens at line [" << tokens[index].line << "] : " << getTokenLine(p_inputCode, tokens[index]) << std::endl;
+						int currentLine = tokens[index].line;
+						while (index < tokens.size() && tokens[index].line <= currentLine)
+							index++;
 					}
 				}
-
-				if (!matched)
-				{
-					result.push_back({ tokens[index].line, L"Unexpected token: " + std::wstring(tokens[index].content.begin(), tokens[index].content.end()) });
-					index++;
-				}
+				std::cout << std::endl;
 			}
 
 			return result;
