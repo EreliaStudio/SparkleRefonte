@@ -47,92 +47,145 @@ namespace Lumina
 				Unknown
 			};
 
-			friend std::ostream& operator << (std::ostream& p_os, const Type& p_type)
+			static std::string to_string(Type p_type)
 			{
 				switch (p_type)
 				{
 				case Type::Include:
-					p_os << "Include";
-					break;
+					return "Include";
 				case Type::IncludePath:
-					p_os << "IncludePath";
-					break;
+					return "IncludePath";
 				case Type::IncludeClosure:
-					p_os << "IncludeClosure";
-					break;
+					return "IncludeClosure";
 				case Type::PipelineFlow:
-					p_os << "PipelineFlow";
-					break;
+					return "PipelineFlow";
 				case Type::PipelineFlowSeparator:
-					p_os << "PipelineFlowSeparator";
-					break;
+					return "PipelineFlowSeparator";
 				case Type::NamespaceSeparator:
-					p_os << "NamespaceSeparator";
-					break;
+					return "NamespaceSeparator";
 				case Type::Keyword:
-					p_os << "Keyword";
-					break;
+					return "Keyword";
 				case Type::Identifier:
-					p_os << "Identifier";
-					break;
+					return "Identifier";
 				case Type::Number:
-					p_os << "Number";
-					break;
+					return "Number";
 				case Type::StringLiteral:
-					p_os << "StringLiteral";
-					break;
+					return "StringLiteral";
 				case Type::Assignator:
-					p_os << "Assignator";
-					break;
+					return "Assignator";
 				case Type::Operator:
-					p_os << "Operator";
-					break;
+					return "Operator";
 				case Type::Separator:
-					p_os << "Separator";
-					break;
+					return "Separator";
 				case Type::BodyOpener:
-					p_os << "BodyOpener";
-					break;
+					return "BodyOpener";
 				case Type::BodyCloser:
-					p_os << "BodyCloser";
-					break;
+					return "BodyCloser";
 				case Type::ParenthesisOpener:
-					p_os << "ParenthesisOpener";
-					break;
+					return "ParenthesisOpener";
 				case Type::ParenthesisCloser:
-					p_os << "ParenthesisCloser";
-					break;
+					return "ParenthesisCloser";
 				case Type::InstructionEnd:
-					p_os << "InstructionEnd";
-					break;
+					return "InstructionEnd";
 				case Type::Accessor:
-					p_os << "Accessor";
-					break;
+					return "Accessor";
 				case Type::Comment:
-					p_os << "Comment";
-					break;
+					return "Comment";
 				case Type::SingleLineComment:
-					p_os << "SingleLineComment";
-					break;
+					return "SingleLineComment";
 				case Type::SingleLineCommentClosure:
-					p_os << "SingleLineCommentClosure";
-					break;
+					return "SingleLineCommentClosure";
 				case Type::MultilineComment:
-					p_os << "MultilineComment";
-					break;
+					return "MultilineComment";
 				case Type::MultilineCommentClosure:
-					p_os << "MultilineCommentClosure";
-					break;
+					return "MultilineCommentClosure";
 				case Type::Unknown:
-					p_os << "Unknown";
-					break;
+					return "Unknown";
+				default:
+					return "InvalidType";
 				}
+			}
+
+			static std::wstring to_wstring(Type p_type)
+			{
+				switch (p_type)
+				{
+				case Type::Include:
+					return L"Include";
+				case Type::IncludePath:
+					return L"IncludePath";
+				case Type::IncludeClosure:
+					return L"IncludeClosure";
+				case Type::PipelineFlow:
+					return L"PipelineFlow";
+				case Type::PipelineFlowSeparator:
+					return L"PipelineFlowSeparator";
+				case Type::NamespaceSeparator:
+					return L"NamespaceSeparator";
+				case Type::Keyword:
+					return L"Keyword";
+				case Type::Identifier:
+					return L"Identifier";
+				case Type::Number:
+					return L"Number";
+				case Type::StringLiteral:
+					return L"StringLiteral";
+				case Type::Assignator:
+					return L"Assignator";
+				case Type::Operator:
+					return L"Operator";
+				case Type::Separator:
+					return L"Separator";
+				case Type::BodyOpener:
+					return L"BodyOpener";
+				case Type::BodyCloser:
+					return L"BodyCloser";
+				case Type::ParenthesisOpener:
+					return L"ParenthesisOpener";
+				case Type::ParenthesisCloser:
+					return L"ParenthesisCloser";
+				case Type::InstructionEnd:
+					return L"InstructionEnd";
+				case Type::Accessor:
+					return L"Accessor";
+				case Type::Comment:
+					return L"Comment";
+				case Type::SingleLineComment:
+					return L"SingleLineComment";
+				case Type::SingleLineCommentClosure:
+					return L"SingleLineCommentClosure";
+				case Type::MultilineComment:
+					return L"MultilineComment";
+				case Type::MultilineCommentClosure:
+					return L"MultilineCommentClosure";
+				case Type::Unknown:
+					return L"Unknown";
+				default:
+					return L"InvalidType";
+				}
+			}
+
+			friend std::ostream& operator << (std::ostream& p_os, const Type& p_type)
+			{
+				p_os << to_string(p_type);
+				return (p_os);
+			}
+
+			friend std::wostream& operator << (std::wostream& p_os, const Type& p_type)
+			{
+				p_os << to_wstring(p_type);
 				return (p_os);
 			}
 
 			Type type;
 			std::string content;
 			int line;
+
+			friend std::ostream& operator << (std::ostream& p_os, const Token& p_token)
+			{
+				p_os << "[" << std::setw(25) << p_token.type << "] - Line [" << std::setw(4) << p_token.line << "] - " << p_token.content;
+				return (p_os);
+			}
 		};
 
 		static Token::Type identifyTokenType(const std::string& word)
@@ -335,27 +388,36 @@ namespace Lumina
 					if (word.size() == 0)
 					{
 						word += ch;
-						if (ch == '(' || ch == ')' || ch == '{' || ch == '}' || ch == '-' || ch == '+' || ch == '.' || ch == '"')
+						if (ch == '(' || ch == ')' || ch == '{' || ch == '}' || ch == '+' || ch == '.' || ch == '"')
 							break;
 					}
 					else
 					{
-						if (word[0] == '/' && (ch == '/' || ch == '*'))
+						if (word[0] == '-' && ch == '>')
 						{
 							word += ch;
 							break;
 						}
-						if (word[0] == '*' && ch == '/')
+						else if (word[0] == '/' && (ch == '/' || ch == '*'))
 						{
 							word += ch;
 							break;
 						}
-						if (word[0] == ':' && ch == ':')
+						else if (word[0] == '*' && ch == '/')
 						{
 							word += ch;
 							break;
 						}
-						if ((std::isalnum(word[0]) != 0 || word[0] == '_') && //First char if an identifier
+						else if (word[0] == ':' && ch == ':')
+						{
+							word += ch;
+							break;
+						}
+						else if (std::isdigit(word[0]) != 0 && ch == '.' && word.find('.') == std::string::npos)
+						{
+							word += ch;
+						}
+						else if ((std::isalnum(word[0]) != 0 || word[0] == '_') && //First char if an identifier
 							(std::isalnum(ch) == 0 && ch != '_')) // The current char isn't a valid identifier char
 						{
 							lineStream.unget();
@@ -451,7 +513,7 @@ namespace Lumina
 			int line;
 			std::wstring msg;
 
-			friend std::wostream& operator << (std::wostream& p_os, const Error& p_error)
+			friend std::wostream& operator<<(std::wostream& p_os, const Error& p_error)
 			{
 				p_os << L"Syntax error - Line [" << p_error.line << L"] : " << p_error.msg;
 				return (p_os);
@@ -459,6 +521,49 @@ namespace Lumina
 		};
 
 	private:
+		using TokenType = Tokenizer::Token::Type;
+		using Rule = std::vector<TokenType>;
+
+		struct SyntaxRule
+		{
+			Rule rule;
+			std::wstring description;
+		};
+
+		static inline std::unordered_map<std::string, SyntaxRule> rules = {
+			{
+				"IncludeStatement",
+				{
+					{ TokenType::Include, TokenType::IncludePath, TokenType::IncludeClosure },
+					L"An include statement should follow the pattern: #include <path> or #include \"path\""
+				}
+			},
+			{
+				"PipelineFlow",
+				{
+					{ TokenType::PipelineFlow, TokenType::Operator, TokenType::PipelineFlow, TokenType::Separator, TokenType::Identifier, TokenType::Identifier, TokenType::InstructionEnd },
+					L"A pipeline flow statement should follow the pattern: Input -> VertexPass : Type name;"
+				}
+			}
+		};
+
+		static bool matchRule(const std::vector<Tokenizer::Token>& tokens, const Rule& rule, size_t& index, Error& error)
+		{
+			if (index + rule.size() > tokens.size())
+				return false;
+
+			for (size_t i = 0; i < rule.size(); ++i)
+			{
+				if (tokens[index + i].type != rule[i])
+				{
+					error = { tokens[index + i].line, L"Expected " + Lumina::Tokenizer::Token::to_wstring(rule[i]) + L" but found " + Lumina::Tokenizer::Token::to_wstring(tokens[index + i].type) };
+					return false;
+				}
+			}
+
+			index += rule.size();
+			return true;
+		}
 
 	public:
 		static std::vector<Error> checkSyntax(const std::string& p_inputCode)
@@ -466,14 +571,30 @@ namespace Lumina
 			std::vector<Error> result;
 			auto tokens = Tokenizer::tokenize(p_inputCode);
 
-			// Debug: Print the tokens
 			for (const auto& token : tokens)
 			{
-				if (token.type == Tokenizer::Token::Type::Unknown)
+				std::cout << token << std::endl;
+			}
+
+			size_t index = 0;
+			while (index < tokens.size())
+			{
+				bool matched = false;
+				for (const auto& [ruleName, syntaxRule] : rules)
 				{
-					result.push_back({ token.line, L"Unknown token: " + std::wstring(token.content.begin(), token.content.end()) });
+					Error error;
+					if (matchRule(tokens, syntaxRule.rule, index, error))
+					{
+						matched = true;
+						break;
+					}
 				}
-				std::cout << "Line " << std::setw(4) << token.line << " - Type [" << std::setw(25) << token.type << "] - " << token.content << std::endl;
+
+				if (!matched)
+				{
+					result.push_back({ tokens[index].line, L"Unexpected token: " + std::wstring(tokens[index].content.begin(), tokens[index].content.end()) });
+					index++;
+				}
 			}
 
 			return result;
