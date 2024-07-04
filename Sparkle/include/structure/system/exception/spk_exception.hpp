@@ -4,42 +4,25 @@
 #include <string>
 #include <sstream>
 
-class PipelineException : public std::exception
+namespace spk
 {
-public:
-	PipelineException(int line, const std::string& functionName, const std::string& message) :
-		_line(line),
-		_functionName(functionName),
-		_message(message)
+	class CompilationError : public std::exception
 	{
-		std::ostringstream oss;
-		oss << _functionName << "::" << _line << " - " << _message;
-		_fullMessage = oss.str();
-	}
+	private:
+		int _lineIndex;
+		std::wstring _line;
+		size_t _column;
+		size_t _tokenSize;
+		std::wstring _message;
+		std::wstring _what;
 
-	int getLine() const
-	{
-		return _line;
-	}
-
-	const std::string& getFunctionName() const
-	{
-		return _functionName;
-	}
-
-	const std::string& getMessage() const
-	{
-		return _message;
-	}
-
-	const char* what() const noexcept override
-	{
-		return _fullMessage.c_str();
-	}
-
-private:
-	int _line;
-	std::string _functionName;
-	std::string _message;
-	std::string _fullMessage;
-};
+	public:
+		CompilationError(const std::wstring& p_message, int p_lineIndex, const std::wstring& p_line, size_t p_column, size_t p_tokenSize);
+		int lineIndex() const;
+		const std::wstring& line() const;
+		size_t column() const;
+		size_t tokenSize() const;
+		const std::wstring& message() const;
+		const char * what() const;
+	};
+}

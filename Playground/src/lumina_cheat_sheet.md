@@ -17,7 +17,7 @@ Lumina is a wrapper around GLSL behavior, designed to simplify the creation of s
 - Data passed thought flow must remain native data, such as vec2, ivec2, float, int, etc
 ```cpp
 Input -> VertexPass: float variableNameA;
-VertexPass -> FragmentPass: vec3 variableNameB;
+VertexPass -> FragmentPass: Vector3 variableNameB;
 ```
 
 ### Structures
@@ -26,8 +26,8 @@ VertexPass -> FragmentPass: vec3 variableNameB;
 struct StructName
 {
     float variableA = 1.0;
-    vec3 variableB = vec3(0.0, 1.0, 0.0);
-    vec4 variableC;
+    Vector3 variableB = Vector3(0.0, 1.0, 0.0);
+    Vector4 variableC;
 };
 ```
 
@@ -42,9 +42,9 @@ returnType functionName(type inputVariableName)
 ```
 - Example:
 ```cpp
-vec4 myFunction(float inputVariable)
+Vector4 myFunction(float inputVariable)
 {
-    vec4 result = vec4(inputVariable);
+    Vector4 result = Vector4(inputVariable);
     return result;
 }
 ```
@@ -77,9 +77,9 @@ namespace NamespaceName
         float value;
     };
 
-    vec4 namespaceFunction(float input)
+    Vector4 namespaceFunction(float input)
     {
-        vec4 result = vec4(input);
+        Vector4 result = Vector4(input);
         return result;
     }
 
@@ -112,7 +112,7 @@ Lumina supports both single-line and multi-line comments for documenting your co
 
 ```cpp
 // This is a single-line comment
-vec3 color = vec3(1.0, 0.0, 0.0); // This comment is on the same line as code
+Vector3 color = Vector3(1.0, 0.0, 0.0); // This comment is on the same line as code
 ```
 
 #### Multi-Line Comments
@@ -125,7 +125,7 @@ It spans multiple lines.
 Useful for detailed explanations or
 temporarily disabling large blocks of code.
 */
-vec3 color = vec3(1.0, 0.0, 0.0); /* Multi-line comments can also be 
+Vector3 color = Vector3(1.0, 0.0, 0.0); /* Multi-line comments can also be 
                                     used to comment on parts of code */
 ```
 
@@ -136,12 +136,12 @@ vec3 color = vec3(1.0, 0.0, 0.0); /* Multi-line comments can also be
 ```cpp
 VertexPass()
 {
-    vec4 finalPixelPosition = vec4(0, 0, 0, 1);
-    variableNameB = vec3(10);
+    Vector4 finalPixelPosition = Vector4(0, 0, 0, 1);
+    variableNameB = Vector3(10);
 
     if (variableNameB.x == 5.0)
     {
-        raiseException("Custom pipeline failed with variable B == " + variableNameB + "!");
+        raiseException("Custom pipeline failed with variable B == %d!", variableNameB);
     }
 
     pixelPosition = finalPixelPosition;
@@ -153,7 +153,7 @@ VertexPass()
 ```cpp
 FragmentPass()
 {
-    vec4 finalPixelColor = vec4(0, 1, 0, 1);
+    Vector4 finalPixelColor = Vector4(0, 1, 0, 1);
     pixelColor = finalPixelColor;
 }
 ```
@@ -168,18 +168,18 @@ Here is an example of a complete Lumina pipeline code:
 #include "shader/customInclude.lum"
 
 // Define the pipeline flow
-Input -> VertexPass: vec3 vertexPosition;
-Input -> VertexPass: vec3 vertexNormal;
+Input -> VertexPass: Vector3 vertexPosition;
+Input -> VertexPass: Vector3 vertexNormal;
 Input -> VertexPass: vec2 vertexUV;
-VertexPass -> FragmentPass: vec3 fragPosition;
-VertexPass -> FragmentPass: vec3 fragNormal;
+VertexPass -> FragmentPass: Vector3 fragPosition;
+VertexPass -> FragmentPass: Vector3 fragNormal;
 VertexPass -> FragmentPass: vec2 fragUV;
 
 // Define custom structures
 struct Material
 {
-    vec3 diffuseColor = vec3(1.0, 0.5, 0.3);
-    vec3 specularColor = vec3(1.0);
+    Vector3 diffuseColor = Vector3(1.0, 0.5, 0.3);
+    Vector3 specularColor = Vector3(1.0);
     float shininess = 32.0;
 };
 
@@ -189,30 +189,30 @@ Texture diffuseTexture;
 // Define attribute blocks
 AttributeBlock modelAttributes
 {
-    mat4 modelMatrix;
-    mat4 normalMatrix;
+    Matrix4x4 modelMatrix;
+    Matrix4x4 normalMatrix;
 };
 
 // Define constant blocks
 ConstantBlock lightingConstants
 {
-    vec3 lightPosition = vec3(10.0, 10.0, 10.0);
-    vec3 lightColor = vec3(1.0);
+    Vector3 lightPosition = Vector3(10.0, 10.0, 10.0);
+    Vector3 lightColor = Vector3(1.0);
     float ambientIntensity = 0.1;
 };
 
 // Create namespaces
 namespace Lighting
 {
-    vec3 calculateDiffuse(vec3 normal, vec3 lightDir, vec3 lightColor)
+    Vector3 calculateDiffuse(Vector3 normal, Vector3 lightDir, Vector3 lightColor)
     {
         float diff = max(dot(normal, lightDir), 0.0);
         return diff * lightColor;
     }
 
-    vec3 calculateSpecular(vec3 normal, vec3 lightDir, vec3 viewDir, float shininess, vec3 lightColor)
+    Vector3 calculateSpecular(Vector3 normal, Vector3 lightDir, Vector3 viewDir, float shininess, Vector3 lightColor)
     {
-        vec3 reflectDir = reflect(-lightDir, normal);
+        Vector3 reflectDir = reflect(-lightDir, normal);
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
         return spec * lightColor;
     }
@@ -239,12 +239,12 @@ The vertex and fragment shaders work together to accurately render the 3D object
 // Define the vertex shader stage
 VertexPass()
 {
-    vec4 worldPosition = modelAttributes.modelMatrix * vec4(vertexPosition, 1.0);
+    Vector4 worldPosition = modelAttributes.modelMatrix * Vector4(vertexPosition, 1.0);
     fragPosition = worldPosition.xyz;
     fragNormal = mat3(modelAttributes.normalMatrix) * vertexNormal;
     fragUV = vertexUV;
 
-    vec4 clipSpacePosition = worldPosition;
+    Vector4 clipSpacePosition = worldPosition;
     pixelPosition = clipSpacePosition;
 }
 
@@ -257,20 +257,20 @@ FragmentPass()
         raiseException("Ambient intensity must be between 0 and 1. Current value: " + lightingConstants.ambientIntensity);
     }
 
-    vec3 normal = normalize(fragNormal);
-    vec3 lightDir = normalize(lightingConstants.lightPosition - fragPosition);
-    vec3 viewDir = normalize(-fragPosition);
+    Vector3 normal = normalize(fragNormal);
+    Vector3 lightDir = normalize(lightingConstants.lightPosition - fragPosition);
+    Vector3 viewDir = normalize(-fragPosition);
 
-    vec3 ambient = lightingConstants.ambientIntensity * lightingConstants.lightColor;
+    Vector3 ambient = lightingConstants.ambientIntensity * lightingConstants.lightColor;
 
-    vec3 diffuse = Lighting::calculateDiffuse(normal, lightDir, lightingConstants.lightColor);
+    Vector3 diffuse = Lighting::calculateDiffuse(normal, lightDir, lightingConstants.lightColor);
 
     Material material;
-    vec3 specular = Lighting::calculateSpecular(normal, lightDir, viewDir, material.shininess, lightingConstants.lightColor);
+    Vector3 specular = Lighting::calculateSpecular(normal, lightDir, viewDir, material.shininess, lightingConstants.lightColor);
 
-    vec3 finalColor = ambient + diffuse * material.diffuseColor + specular * material.specularColor;
+    Vector3 finalColor = ambient + diffuse * material.diffuseColor + specular * material.specularColor;
 
-    vec4 textureColor = diffuseTexture.pixel(fragUV);
+    Vector4 textureColor = diffuseTexture.pixel(fragUV);
     finalColor *= textureColor.rgb;
 
     if (textureColor.a == 0)
@@ -278,7 +278,7 @@ FragmentPass()
         discard;
     }
 
-    pixelColor = vec4(finalColor, textureColor.a);
+    pixelColor = Vector4(finalColor, textureColor.a);
 }
 
 

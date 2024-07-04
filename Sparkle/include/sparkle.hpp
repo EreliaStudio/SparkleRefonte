@@ -16,3 +16,5 @@
 
 #include "application/spk_console_application.hpp"
 #include "application/spk_graphical_application.hpp"
+
+#include "structure/graphical/pipeline/spk_pipeline.hpp"

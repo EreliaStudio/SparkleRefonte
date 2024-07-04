@@ -26,6 +26,11 @@
     <ClCompile Include="src\application\module\spk_paint_module.cpp" />
     <ClCompile Include="src\application\module\spk_system_module.cpp" />
     <ClCompile Include="src\application\module\spk_update_module.cpp" />
+    <ClCompile Include="src\structure\graphical\lumina\spk_lumina_compiler.cpp" />
+    <ClCompile Include="src\structure\graphical\lumina\spk_lumina_lexer.cpp" />
+    <ClCompile Include="src\structure\graphical\lumina\spk_lumina_token.cpp" />
+    <ClCompile Include="src\structure\graphical\lumina\spk_lumina_tokenizer.cpp" />
+    <ClCompile Include="src\structure\graphical\pipeline\spk_pipeline.cpp" />
     <ClCompile Include="src\structure\graphical\spk_window.cpp" />
     <ClCompile Include="src\structure\math\spk_math.cpp" />
     <ClCompile Include="src\structure\math\spk_matrix4x4.cpp" />
@@ -40,9 +45,16 @@
     <ClCompile Include="src\structure\system\device\spk_mouse.cpp" />
     <ClCompile Include="src\structure\system\event\spk_event.cpp" />
     <ClCompile Include="src\structure\system\event\spk_event_output_operator.cpp" />
+    <ClCompile Include="src\structure\system\exception\spk_exception.cpp" />
+    <ClCompile Include="src\utils\spk_file_utils.cpp" />
+    <ClCompile Include="src\utils\spk_string_utils.cpp" />
     <ClCompile Include="src\widget\spk_widget.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\structure\graphical\lumina\spk_lumina_compiler.hpp" />
+    <ClInclude Include="include\structure\graphical\lumina\spk_lumina_lexer.hpp" />
+    <ClInclude Include="include\structure\graphical\lumina\spk_lumina_tokenizer.hpp" />
+    <ClInclude Include="include\structure\graphical\pipeline\spk_pipeline.hpp" />
     <ClInclude Include="include\structure\system\device\spk_controller_input_thread.hpp" />
     <ClInclude Include="include\application\module\spk_controller_module.hpp" />
     <ClInclude Include="include\application\module\spk_keyboard_module.hpp" />
@@ -54,7 +66,7 @@
     <ClInclude Include="include\application\spk_application.hpp" />
     <ClInclude Include="include\application\spk_console_application.hpp" />
     <ClInclude Include="include\application\spk_graphical_application.hpp" />
-    <ClInclude Include="include\spk_file_functions.hpp" />
+    <ClInclude Include="include\utils\spk_file_utils.hpp" />
     <ClInclude Include="include\spk_sfinae.hpp" />
     <ClInclude Include="include\sparkle.hpp" />
     <ClInclude Include="include\spk_debug_macro.hpp" />
@@ -84,6 +96,7 @@
     <ClInclude Include="include\structure\system\spk_input_state.hpp" />
     <ClInclude Include="include\structure\thread\spk_persistant_worker.hpp" />
     <ClInclude Include="include\structure\thread\spk_thread.hpp" />
+    <ClInclude Include="include\utils\spk_string_utils.hpp" />
     <ClInclude Include="include\widget\spk_widget.hpp" />
   </ItemGroup>
   <ItemGroup>
