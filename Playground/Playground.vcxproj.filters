@@ -28,6 +28,8 @@
     <None Include="vcpkg.json" />
     <None Include="src\lumina_cheat_sheet.md" />
     <None Include="src\lumina_build_in.md" />
+    <None Include="shader\customInclude.lum" />
+    <None Include="shader\shader.lum" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\lumina_note.txt" />

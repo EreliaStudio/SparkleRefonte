@@ -189,6 +189,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="shader\customInclude.lum" />
+    <None Include="shader\shader.lum" />
     <None Include="src\lumina_build_in.md" />
     <None Include="src\lumina_cheat_sheet.md" />
     <None Include="vcpkg.json" />
