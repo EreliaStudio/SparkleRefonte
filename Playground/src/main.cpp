@@ -13,22 +13,9 @@
 
 namespace Lumina
 {
-	class Lexer
+	class Tokenizer
 	{
 	public:
-		struct Error
-		{
-			int line;
-			std::wstring msg;
-
-			friend std::wostream& operator << (std::wostream& p_os, const Error& p_error)
-			{
-				p_os << L"Syntax error - Line [" << p_error.line << L"] : " << p_error.msg;
-				return (p_os);
-			}
-		};
-
-	private:
 		struct Token
 		{
 			enum class Type
@@ -286,7 +273,7 @@ namespace Lumina
 						additional += " ";
 					additional += tmp;
 				}
-				
+
 				token.content = path;
 
 				if (additional.size() >= 2 && (additional.substr(0, 2) != "/*" || additional.substr(0, 2) != "//"))
@@ -386,7 +373,7 @@ namespace Lumina
 				return (true);
 			return (false);
 		}
-
+	public:
 		static std::vector<Token> tokenize(const std::string& code)
 		{
 			std::vector<Token> tokens;
@@ -450,17 +437,39 @@ namespace Lumina
 			}
 			return tokens;
 		}
+	};
+}
+
+
+namespace Lumina
+{
+	class Lexer
+	{
+	public:
+		struct Error
+		{
+			int line;
+			std::wstring msg;
+
+			friend std::wostream& operator << (std::wostream& p_os, const Error& p_error)
+			{
+				p_os << L"Syntax error - Line [" << p_error.line << L"] : " << p_error.msg;
+				return (p_os);
+			}
+		};
+
+	private:
 
 	public:
 		static std::vector<Error> checkSyntax(const std::string& p_inputCode)
 		{
 			std::vector<Error> result;
-			auto tokens = tokenize(p_inputCode);
+			auto tokens = Tokenizer::tokenize(p_inputCode);
 
 			// Debug: Print the tokens
 			for (const auto& token : tokens)
 			{
-				if (token.type == Token::Type::Unknown)
+				if (token.type == Tokenizer::Token::Type::Unknown)
 				{
 					result.push_back({ token.line, L"Unknown token: " + std::wstring(token.content.begin(), token.content.end()) });
 				}
