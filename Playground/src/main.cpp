@@ -1,4 +1,4 @@
-#include "spk_debug_macro.hpp"
+﻿#include "spk_debug_macro.hpp"
 
 #include "structure/spk_iostream.hpp"
 #include <iostream>
@@ -10,6 +10,9 @@
 #include <unordered_map>
 #include <regex>
 #include <functional>
+
+#include <locale>
+#include <codecvt>
 
 namespace Lumina
 {
@@ -180,6 +183,7 @@ namespace Lumina
 			Type type;
 			std::string content;
 			int line;
+			size_t column;
 
 			friend std::ostream& operator << (std::ostream& p_os, const Token& p_token)
 			{
@@ -448,13 +452,18 @@ namespace Lumina
 				std::istringstream lineStream(line);
 				std::string word;
 				int wordIndex = 0;
+				size_t column = 0;
 				while (getWord(lineStream, word))
 				{
+					std::cout << "Current line : " << line << std::endl;
+					std::cout << "Line stream position : " << static_cast<size_t>(lineStream.tellg()) << std::endl;
+
 					wordIndex++;
 
 					Token token;
 					token.content = word;
 					token.line = lineNumber;
+					token.column = static_cast<size_t>(lineStream.tellg());
 					token.type = identifyTokenType(word);
 
 					if (token.type == Token::Type::SingleLineComment)
@@ -495,6 +504,7 @@ namespace Lumina
 					{
 						tokens.push_back(token);
 					}
+
 				}
 				lineNumber++;
 			}
@@ -523,36 +533,6 @@ namespace Lumina
 	private:
 		using TokenType = Tokenizer::Token::Type;
 
-		/*
-		enum class Type
-			{
-				Include,
-				IncludePath,
-				IncludeClosure,
-				PipelineFlow,
-				PipelineFlowSeparator,
-				NamespaceSeparator,
-				Keyword,
-				Identifier,
-				Number,
-				StringLiteral,
-				Assignator,
-				Operator,
-				Separator,
-				BodyOpener,
-				BodyCloser,
-				ParenthesisOpener,
-				ParenthesisCloser,
-				InstructionEnd,
-				Accessor,
-				Comment,
-				SingleLineComment,
-				SingleLineCommentClosure,
-				MultilineComment,
-				MultilineCommentClosure,
-				Unknown
-			};
-		*/
 		using Rule = std::vector<TokenType>;
 		using RuleList = std::vector<Rule>;
 		static inline std::unordered_map< TokenType, RuleList> rules = {
@@ -614,6 +594,24 @@ namespace Lumina
 			return "";
 		}
 
+		static std::wstring stringToWString(const std::string& str)
+		{
+			return std::wstring(str.begin(), str.end());
+		}
+
+		static std::wstring createError(const std::string& code, const Tokenizer::Token& token, const std::wstring& errorType)
+		{
+			std::wstring result = L"";
+			result += errorType;
+			result += L"\n";
+			result += stringToWString(getTokenLine(code, token));
+			result += L"\n";
+			std::cout << "Column = " << token.column << std::endl;
+			result += std::wstring(token.column, ' ');
+			//result += std::wstring(L'A', token.content.size());
+			return (result);
+		}
+
 	public:
 		static std::vector<Error> checkSyntax(const std::string& p_inputCode)
 		{
@@ -627,11 +625,9 @@ namespace Lumina
 
 			for (size_t index = 0; index < tokens.size(); index++)
 			{
-				std::cout << " --- Checking rule for token : " << tokens[index].type << " ---" << std::endl;
-				
 				if (rules.contains(tokens[index].type) == false)
 				{
-					std::cout << "No rules for token [" << tokens[index].type << "] at line [" << tokens[index].line << "] : " << getTokenLine(p_inputCode, tokens[index]) << std::endl;
+					result.push_back({ tokens[index].line, createError(p_inputCode, tokens[index], L"Not a valid token")});
 					int currentLine = tokens[index].line;
 					while (index < tokens.size() && tokens[index].line <= currentLine)
 						index++;
@@ -654,13 +650,12 @@ namespace Lumina
 
 					if (matched == false)
 					{
-						std::cout << "No rules matches tokens at line [" << tokens[index].line << "] : " << getTokenLine(p_inputCode, tokens[index]) << std::endl;
+						result.push_back({ tokens[index].line, createError(p_inputCode, tokens[index], L"Invalid token") });
 						int currentLine = tokens[index].line;
 						while (index < tokens.size() && tokens[index].line <= currentLine)
 							index++;
 					}
 				}
-				std::cout << std::endl;
 			}
 
 			return result;
