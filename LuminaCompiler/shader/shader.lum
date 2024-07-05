@@ -1,6 +1,5 @@
 // Include predefined and user-provided files
-#include <screenConstants>      /*invalid
-*/
+#include <screenConstants> /* invalid */
 #include "shader/customInclude.lum"
 
 // Define the pipeline flow
@@ -14,9 +13,9 @@ VertexPass -> FragmentPass: Vector2 fragUV;
 // Define custom structures
 struct Material
 {
-    Vector3 _diffuseColor = Vector3(1.0, 0.5, 0.3);
-    Vector3 _specularColor = Vector3(1.0);
-    float _shininess = 32.0;
+    Vector3 _diffuseColor;
+    Vector3 _specularColor;
+    float _shininess;
 };
 
 // Define a texture

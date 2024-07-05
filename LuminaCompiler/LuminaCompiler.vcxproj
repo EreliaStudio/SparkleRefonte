@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\luimna_error.cpp" />
     <ClCompile Include="src\lumina_utils.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\lumina_compiler.cpp" />
@@ -156,6 +157,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\lumina_compiler.hpp" />
+    <ClInclude Include="include\lumina_error.hpp" />
     <ClInclude Include="include\lumina_lexer.hpp" />
     <ClInclude Include="include\lumina_tokenizer.hpp" />
     <ClInclude Include="include\lumina_utils.hpp" />

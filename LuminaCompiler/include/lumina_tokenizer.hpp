@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 
 namespace Lumina
 {
@@ -23,6 +24,7 @@ namespace Lumina
 				Assignator,
 				Operator,
 				Separator,
+				Comma,
 				BodyOpener,
 				BodyCloser,
 				ParenthesisOpener,
@@ -34,16 +36,17 @@ namespace Lumina
 				MultilineComment,
 				EndOfMultilineComment,
 				EndOfSentence,
-				Unknown
+				Unknown,
+				MetaToken
 			};
 
 			friend std::ostream& operator << (std::ostream& p_os, const Type& p_type);
-			friend std::wostream& operator << (std::wostream& p_os, const Type& p_type);
 
 			Type type = Type::Unknown;
 			std::string content = "";
-			int line = 0;
+			size_t line = 0;
 			size_t column = 0;
+			std::string fullLine = "";
 
 			friend std::ostream& operator << (std::ostream& p_os, const Token& p_token);
 		};
@@ -54,4 +57,3 @@ namespace Lumina
 }
 
 std::string to_string(Lumina::Tokenizer::Token::Type p_type);
-std::wstring to_wstring(Lumina::Tokenizer::Token::Type p_type);

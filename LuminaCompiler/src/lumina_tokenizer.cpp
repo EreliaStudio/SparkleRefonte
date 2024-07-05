@@ -93,6 +93,7 @@ namespace Lumina
             {
                 if (!word.empty())
                 {
+                    lineStream.unget();
                     return true;
                 }
             }
@@ -134,7 +135,7 @@ namespace Lumina
         return !word.empty();
 	}
 
-	void parseLine(const std::string& line, std::vector<Tokenizer::Token>& tokens, int lineNumber)
+	void parseLine(const std::string& line, std::vector<Tokenizer::Token>& tokens, size_t lineNumber)
 	{
 		std::stringstream lineStream(line);
 
@@ -144,6 +145,7 @@ namespace Lumina
             Lumina::Tokenizer::Token token;
             token.content = word;
             token.line = lineNumber;
+            token.fullLine = line;
             if (lineStream.peek() == EOF)
                 token.column = line.size() - word.length();
             else
@@ -154,9 +156,13 @@ namespace Lumina
             {
                 token.type = Lumina::Tokenizer::Token::Type::Include;
             }
-            if (word == "Input" || word == "VertexPass" || word == "FragmentPass")
+            else if (word == "Input" || word == "VertexPass" || word == "FragmentPass")
             {
                 token.type = Lumina::Tokenizer::Token::Type::PipelineFlow;
+            }
+            else if (word == "struct" || word == "AttributeBlock" || word == "ConstantBlock" || word == "Texture")
+            {
+                token.type = Lumina::Tokenizer::Token::Type::Keyword;
             }
             else if (word == "->")
             {
@@ -192,7 +198,7 @@ namespace Lumina
             }
             else if (word == ",")
             {
-                token.type = Lumina::Tokenizer::Token::Type::Separator;
+                token.type = Lumina::Tokenizer::Token::Type::Comma;
             }
             else if (word == ".")
             {
