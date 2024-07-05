@@ -75,6 +75,11 @@ namespace Lumina
 		return (p_os);
 	}
 
+	void skipWord(const std::vector<Tokenizer::Token>& tokens, size_t& index)
+	{
+		index++;
+	}
+
 	void skipLine(const std::vector<Tokenizer::Token>& tokens, size_t& index)
 	{
 		size_t currentLine = tokens[index].line;
@@ -99,7 +104,6 @@ namespace Lumina
 			}
 			index++;
 		}
-		
 	}
 
 	void insertError(Lexer::Result& result, const std::string& errorMessage, const Tokenizer::Token& token)
@@ -122,6 +126,35 @@ namespace Lumina
 		if (tokens[index].type != type)
 		{
 			insertError(result, errorMessage, tokens[index]);
+			skipLine(tokens, index);
+			throw std::runtime_error("Invalid grammar detected");
+		}
+		newInstruction.tokens.push_back(tokens[index]);
+		index++;
+	}
+
+	void consume(Lexer::Result& result, Lexer::Instruction& newInstruction, const std::vector<Tokenizer::Token>& tokens, size_t& index, Tokenizer::Token::Type type, std::vector<std::string> possibleValues, const std::string& errorMessage)
+	{
+		if (tokens[index].type != type)
+		{
+			insertError(result, errorMessage, tokens[index]);
+			skipLine(tokens, index);
+			throw std::runtime_error("Invalid grammar detected");
+		}
+		bool found = false;
+		for (const auto& tmp : possibleValues)
+		{
+			if (tmp == tokens[index].content)
+				found = true;
+		}
+		if (found == false)
+		{
+			std::string invalidValueMessage = "Unexpected value. Accepted values : ";
+			for (const auto& tmp : possibleValues)
+			{
+				invalidValueMessage += "[" + tmp + "]";
+			}
+			insertError(result, invalidValueMessage, tokens[index]);
 			skipLine(tokens, index);
 			throw std::runtime_error("Invalid grammar detected");
 		}
@@ -178,23 +211,6 @@ namespace Lumina
 		}
 	}
 
-	void parsePipelineFlow(Lexer::Result& result, Lexer::Instruction& instruction, const std::vector<Tokenizer::Token>& tokens, size_t& index)
-	{
-		instruction.type = Lexer::Instruction::Type::PipelineFlow;
-
-		consume(result, instruction, tokens, index, Tokenizer::Token::Type::PipelineFlow, "Expected a PipelineFlow");
-		consume(result, instruction, tokens, index, Tokenizer::Token::Type::PipelineFlowSeparator, "Expected a pipeline separator");
-		consume(result, instruction, tokens, index, Tokenizer::Token::Type::PipelineFlow, "Expected a PipelineFlow");
-		consume(result, instruction, tokens, index, Tokenizer::Token::Type::Separator, "Expected a ':'");
-		consume(result, instruction, tokens, index, Tokenizer::Token::Type::Identifier, "Unexpected type");
-		consume(result, instruction, tokens, index, Tokenizer::Token::Type::Identifier, "Unexpected name");
-
-		skipComment(tokens, index);
-
-		consume(result, instruction, tokens, index, Tokenizer::Token::Type::EndOfSentence, "Expected a ';'");
-
-	}
-
 	Lexer::Instruction parseVariableDeclaration(Lexer::Result& result, const std::vector<Tokenizer::Token>& tokens, size_t& index)
 	{
 		Lexer::Instruction instruction;
@@ -215,7 +231,7 @@ namespace Lumina
 	{
 		instruction.type = Lexer::Instruction::Type::Structure;
 
-		consume(result, instruction, tokens, index, Tokenizer::Token::Type::Keyword, "Expected a \"struct\" Keyword ");
+		consume(result, instruction, tokens, index, Tokenizer::Token::Type::Keyword, {"struct"}, "Expected a \"struct\" Keyword ");
 		consume(result, instruction, tokens, index, Tokenizer::Token::Type::Identifier, "Unexpected name");
 		skipComment(tokens, index);
 
@@ -295,7 +311,7 @@ namespace Lumina
 	{
 		instruction.type = type;
 
-		consume(result, instruction, tokens, index, Tokenizer::Token::Type::Keyword, "Expected a Keyword \"struct\", \"AttributeBlock\" or \"ConstantBlock\"");
+		consume(result, instruction, tokens, index, Tokenizer::Token::Type::Keyword, { "AttributeBlock", "ConstantBlock"}, "Expected a Keyword \"AttributeBlock\" or \"ConstantBlock\"");
 		consume(result, instruction, tokens, index, Tokenizer::Token::Type::Identifier, "Expected block name");
 		skipComment(tokens, index);
 
@@ -324,12 +340,148 @@ namespace Lumina
 	{
 		instruction.type = Lexer::Instruction::Type::Texture;
 		skipComment(tokens, index);
-		consume(result, instruction, tokens, index, Tokenizer::Token::Type::Keyword, "Expected \"Texture\" keyword");
+		consume(result, instruction, tokens, index, Tokenizer::Token::Type::Keyword, { "Texture" }, "Expected \"Texture\" keyword");
 		consume(result, instruction, tokens, index, Tokenizer::Token::Type::Identifier, "Expected a texture name");
 
 		skipComment(tokens, index);
 		consume(result, instruction, tokens, index, Tokenizer::Token::Type::EndOfSentence, "Expected a ';'");
 		skipComment(tokens, index);
+	}
+
+	void parseParameters(Lexer::Result& result, Lexer::Instruction& instruction, const std::vector<Tokenizer::Token>& tokens, size_t& index)
+	{
+		if (tokens[index].type == Tokenizer::Token::Type::ParenthesisCloser)
+			return;
+
+		do
+		{
+			consume(result, instruction, tokens, index, Tokenizer::Token::Type::Identifier, "Expected a parameter type");
+			consume(result, instruction, tokens, index, Tokenizer::Token::Type::Identifier, "Expected a parameter name");
+
+			if (tokens[index].type != Tokenizer::Token::Type::ParenthesisCloser)
+				consume(result, instruction, tokens, index, Tokenizer::Token::Type::Comma, "Expected a ',' before the next parameter");
+
+		} while (tokens[index].type != Tokenizer::Token::Type::ParenthesisCloser);
+	}
+
+	void parseFunctionBody(Lexer::Result& result, const std::vector<Tokenizer::Token>& tokens, size_t& index)
+	{
+		int nbParenthesis = 1;
+		do
+		{
+			skipWord(tokens, index);
+
+			if (tokens[index].type == Tokenizer::Token::Type::BodyOpener)
+				nbParenthesis++;
+			if (tokens[index].type == Tokenizer::Token::Type::BodyCloser)
+				nbParenthesis--;
+
+		} while (tokens[index].type != Tokenizer::Token::Type::BodyCloser || nbParenthesis != 0);
+	}
+
+	void parseFunction(Lexer::Result& result, Lexer::Instruction& instruction, const std::vector<Tokenizer::Token>& tokens, size_t& index)
+	{
+		instruction.type = Lexer::Instruction::Type::Function;
+
+		consume(result, instruction, tokens, index, Tokenizer::Token::Type::Identifier, "Expected a return type");
+		consume(result, instruction, tokens, index, Tokenizer::Token::Type::Identifier, "Expected a function name");
+		consume(result, instruction, tokens, index, Tokenizer::Token::Type::ParenthesisOpener, "Expected '('");
+		parseParameters(result, instruction, tokens, index);
+		consume(result, instruction, tokens, index, Tokenizer::Token::Type::ParenthesisCloser, "Expected ')'");
+		skipComment(tokens, index);
+		consume(result, instruction, tokens, index, Tokenizer::Token::Type::BodyOpener, "Expected '{'");
+		parseFunctionBody(result, tokens, index);
+		consume(result, instruction, tokens, index, Tokenizer::Token::Type::BodyCloser, "Expected '}'");
+	}
+
+	void parseNamespace(Lexer::Result& result, Lexer::Instruction& instruction, const std::vector<Tokenizer::Token>& tokens, size_t& index)
+	{
+		instruction.type = Lexer::Instruction::Type::Namespace;
+
+		consume(result, instruction, tokens, index, Tokenizer::Token::Type::Keyword, { "namespace" }, "Expected a Keyword \"namespace\"");
+		consume(result, instruction, tokens, index, Tokenizer::Token::Type::Identifier, "Expected namespace name");
+		skipComment(tokens, index);
+
+		consume(result, instruction, tokens, index, Tokenizer::Token::Type::BodyOpener, "Expected a '{'");
+
+		while (tokens[index].type != Tokenizer::Token::Type::BodyCloser)
+		{
+			skipComment(tokens, index);
+			Lexer::Instruction newInstruction;
+
+			if (tokens[index].type == Tokenizer::Token::Type::Keyword)
+			{
+
+				if (tokens[index].content == "struct")
+				{
+					parseStructure(result, newInstruction, tokens, index);
+				}
+				else if (tokens[index].content == "AttributeBlock")
+				{
+					parseBlock(result, newInstruction, Lexer::Instruction::Type::AttributeBlock, tokens, index);
+				}
+				else if (tokens[index].content == "ConstantBlock")
+				{
+					parseBlock(result, newInstruction, Lexer::Instruction::Type::ConstantBlock, tokens, index);
+				}
+				else if (tokens[index].content == "Texture")
+				{
+					parseTexture(result, newInstruction, tokens, index);
+				}
+				else
+				{
+					insertError(result, "Unexpected token", tokens[index]);
+					skipLine(tokens, index);
+					throw std::runtime_error("Invalid grammar detected");
+				}
+			}
+			else if (tokens[index].type == Tokenizer::Token::Type::Identifier)
+			{
+				parseFunction(result, newInstruction, tokens, index);
+			}
+			else
+			{
+				insertError(result, "Token [" + tokens[index].content + "](" + to_string(tokens[index].type) + ") not recognized", tokens[index]);
+				skipLine(tokens, index);
+				throw std::runtime_error("Invalid grammar detected");
+			}
+
+			createNestedInstruction(instruction, newInstruction);
+		}
+
+		consume(result, instruction, tokens, index, Tokenizer::Token::Type::BodyCloser, "Expected a '}'");
+	}
+
+
+
+	void parsePipelineFlow(Lexer::Result& result, Lexer::Instruction& instruction, const std::vector<Tokenizer::Token>& tokens, size_t& index)
+	{
+		instruction.type = Lexer::Instruction::Type::PipelineFlow;
+
+		consume(result, instruction, tokens, index, Tokenizer::Token::Type::PipelineFlow, "Expected a PipelineFlow");
+
+		if (tokens[index].type == Tokenizer::Token::Type::PipelineFlowSeparator)
+		{
+			consume(result, instruction, tokens, index, Tokenizer::Token::Type::PipelineFlowSeparator, "Expected a pipeline separator");
+			consume(result, instruction, tokens, index, Tokenizer::Token::Type::PipelineFlow, "Expected a PipelineFlow");
+			consume(result, instruction, tokens, index, Tokenizer::Token::Type::Separator, "Expected a ':'");
+			consume(result, instruction, tokens, index, Tokenizer::Token::Type::Identifier, "Unexpected type");
+			consume(result, instruction, tokens, index, Tokenizer::Token::Type::Identifier, "Unexpected name");
+
+			skipComment(tokens, index);
+
+			consume(result, instruction, tokens, index, Tokenizer::Token::Type::EndOfSentence, "Expected a ';'");
+		}
+		else
+		{
+			consume(result, instruction, tokens, index, Tokenizer::Token::Type::ParenthesisOpener, "Expected '('");
+			consume(result, instruction, tokens, index, Tokenizer::Token::Type::ParenthesisCloser, "Expected ')'");
+			consume(result, instruction, tokens, index, Tokenizer::Token::Type::BodyOpener, "Expected '{'");
+			parseFunctionBody(result, tokens, index);
+			consume(result, instruction, tokens, index, Tokenizer::Token::Type::BodyCloser, "Expected '}'");
+		}
+		
+
 	}
 
 	Lexer::Result Lexer::checkGrammar(const std::vector<Tokenizer::Token>& tokens)
@@ -373,6 +525,10 @@ namespace Lumina
 					if (tokens[index].content == "struct")
 					{
 						parseStructure(result, newInstruction, tokens, index);
+					}
+					else if (tokens[index].content == "namespace")
+					{
+						parseNamespace(result, newInstruction, tokens, index);
 					}
 					else if (tokens[index].content == "AttributeBlock")
 					{

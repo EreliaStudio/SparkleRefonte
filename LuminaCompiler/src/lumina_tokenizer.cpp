@@ -160,7 +160,7 @@ namespace Lumina
             {
                 token.type = Lumina::Tokenizer::Token::Type::PipelineFlow;
             }
-            else if (word == "struct" || word == "AttributeBlock" || word == "ConstantBlock" || word == "Texture")
+            else if (word == "struct" || word == "AttributeBlock" || word == "ConstantBlock" || word == "Texture" || word == "namespace")
             {
                 token.type = Lumina::Tokenizer::Token::Type::Keyword;
             }

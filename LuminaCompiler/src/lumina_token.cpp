@@ -27,8 +27,6 @@ std::string to_string(Lumina::Tokenizer::Token::Type p_type)
 		return "PipelineFlow";
 	case Lumina::Tokenizer::Token::Type::PipelineFlowSeparator:
 		return "PipelineFlowSeparator";
-	case Lumina::Tokenizer::Token::Type::NamespaceSeparator:
-		return "NamespaceSeparator";
 	case Lumina::Tokenizer::Token::Type::Keyword:
 		return "Keyword";
 	case Lumina::Tokenizer::Token::Type::Identifier:
@@ -43,6 +41,8 @@ std::string to_string(Lumina::Tokenizer::Token::Type p_type)
 		return "Operator";
 	case Lumina::Tokenizer::Token::Type::Separator:
 		return "Separator";
+	case Lumina::Tokenizer::Token::Type::NamespaceSeparator:
+		return "NamespaceSeparator";
 	case Lumina::Tokenizer::Token::Type::Comma:
 		return "Comma";
 	case Lumina::Tokenizer::Token::Type::BodyOpener:

@@ -34,12 +34,12 @@ int main(int argc, char** argv)
 
 	std::vector<Tokenizer::Token> tokens = Tokenizer::tokenize(readFileAsString(argv[1]));
 
-	/*size_t tokenID = 0;
-	for (const auto& token : tokens)
-	{
-		std::cout << std::setw(4) << tokenID << " - " << token << std::endl;
-		tokenID++;
-	}*/
+	//size_t tokenID = 0;
+	//for (const auto& token : tokens)
+	//{
+	//	std::cout << std::setw(4) << tokenID << " - " << token << std::endl;
+	//	tokenID++;
+	//}
 
 	Lexer::Result grammarResult = Lexer::checkGrammar(tokens);
 
