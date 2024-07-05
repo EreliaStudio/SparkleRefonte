@@ -26,10 +26,6 @@
     <ClCompile Include="src\application\module\spk_paint_module.cpp" />
     <ClCompile Include="src\application\module\spk_system_module.cpp" />
     <ClCompile Include="src\application\module\spk_update_module.cpp" />
-    <ClCompile Include="src\structure\graphical\lumina\spk_lumina_compiler.cpp" />
-    <ClCompile Include="src\structure\graphical\lumina\spk_lumina_lexer.cpp" />
-    <ClCompile Include="src\structure\graphical\lumina\spk_lumina_token.cpp" />
-    <ClCompile Include="src\structure\graphical\lumina\spk_lumina_tokenizer.cpp" />
     <ClCompile Include="src\structure\graphical\pipeline\spk_pipeline.cpp" />
     <ClCompile Include="src\structure\graphical\spk_window.cpp" />
     <ClCompile Include="src\structure\math\spk_math.cpp" />
@@ -51,9 +47,6 @@
     <ClCompile Include="src\widget\spk_widget.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\structure\graphical\lumina\spk_lumina_compiler.hpp" />
-    <ClInclude Include="include\structure\graphical\lumina\spk_lumina_lexer.hpp" />
-    <ClInclude Include="include\structure\graphical\lumina\spk_lumina_tokenizer.hpp" />
     <ClInclude Include="include\structure\graphical\pipeline\spk_pipeline.hpp" />
     <ClInclude Include="include\structure\system\device\spk_controller_input_thread.hpp" />
     <ClInclude Include="include\application\module\spk_controller_module.hpp" />

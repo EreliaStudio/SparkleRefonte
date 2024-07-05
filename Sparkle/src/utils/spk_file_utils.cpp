@@ -1,5 +1,7 @@
 #include "utils/spk_file_utils.hpp"
 
+#include <fstream>
+
 namespace spk
 {
 	namespace FileUtils
@@ -22,6 +24,40 @@ namespace spk
 			}
 
 			return fileList;
+		}
+
+		std::wstring readFileAsWString(const std::filesystem::path& p_path)
+		{
+			std::wfstream inputFile;
+			inputFile.open(p_path, std::ios_base::in);
+
+			std::wstring line;
+			std::wstring result = L"";
+			while (std::getline(inputFile, line))
+			{
+				result += line + L"\n";
+			}
+
+			inputFile.close();
+
+			return (result);
+		}
+
+		std::string readFileAsString(const std::filesystem::path& p_path)
+		{
+			std::fstream inputFile;
+			inputFile.open(p_path, std::ios_base::in);
+
+			std::string line;
+			std::string result = "";
+			while (std::getline(inputFile, line))
+			{
+				result += line + "\n";
+			}
+
+			inputFile.close();
+
+			return (result);
 		}
 	}
 }
