@@ -12,7 +12,7 @@ namespace Lumina
     const std::unordered_set<std::string> keywords = {
         "#include", "Input", "VertexPass", "FragmentPass", "struct", "namespace",
         "AttributeBlock", "ConstantBlock", "raiseException", "discard",
-        "->", "::", ";", "{", "}", "(", ")", "=", ".", ",", "+", "||", "<", ">", "if", "//", "/*", "*/"
+        "->", "::", ":", ";", "{", "}", "(", ")", "=", ".", ",", "||", "if", "//", "/*", "*/"
     };
     
     bool startsWith(std::string_view str, std::string_view prefix)
@@ -134,17 +134,101 @@ namespace Lumina
         return !word.empty();
 	}
 
-	void parseLine(const std::string& line, std::vector<Tokenizer::Token>& tokens)
+	void parseLine(const std::string& line, std::vector<Tokenizer::Token>& tokens, int lineNumber)
 	{
 		std::stringstream lineStream(line);
 
 		std::string word;
-        std::cout << "    Words : ";
         while (getword(lineStream, word))
-		{
-            std::cout << "[" << word << "] ";
-		}
-        std::cout << std::endl;
+        {
+            Lumina::Tokenizer::Token token;
+            token.content = word;
+            token.line = lineNumber;
+            if (lineStream.peek() == EOF)
+                token.column = line.size() - word.length();
+            else
+                token.column = static_cast<size_t>(lineStream.tellg()) - word.length();
+
+            // Determine token type based on the word content
+            if (word == "#include")
+            {
+                token.type = Lumina::Tokenizer::Token::Type::Include;
+            }
+            if (word == "Input" || word == "VertexPass" || word == "FragmentPass")
+            {
+                token.type = Lumina::Tokenizer::Token::Type::PipelineFlow;
+            }
+            else if (word == "->")
+            {
+                token.type = Lumina::Tokenizer::Token::Type::PipelineFlowSeparator;
+            }
+            else if (std::isdigit(word[0]))
+            {
+                token.type = Lumina::Tokenizer::Token::Type::Number;
+            }
+            else if (word[0] == '\"')
+            {
+                token.type = Lumina::Tokenizer::Token::Type::StringLiteral;
+            }
+            else if (word == "=")
+            {
+                token.type = Lumina::Tokenizer::Token::Type::Assignator;
+            }
+            else if (word == ";")
+            {
+                token.type = Lumina::Tokenizer::Token::Type::EndOfSentence;
+            }
+            else if (word == ":")
+            {
+                token.type = Lumina::Tokenizer::Token::Type::Separator;
+            }
+            else if (word == "+" || word == "-" || word == "*" || word == "/" ||
+                word == "!=" || word == "==" || word == "&&" || word == "||" ||
+                word == "<" || word == "<=" || word == ">" || word == ">=" ||
+                word == "%" || word == "&" || word == "|" || word == "^" ||
+                word == "!" || word == "~")
+            {
+                token.type = Lumina::Tokenizer::Token::Type::Operator;
+            }
+            else if (word == ",")
+            {
+                token.type = Lumina::Tokenizer::Token::Type::Separator;
+            }
+            else if (word == ".")
+            {
+                token.type = Lumina::Tokenizer::Token::Type::Accessor;
+            }
+            else if (word == "{" || word == "}")
+            {
+                token.type = (word == "{") ? Lumina::Tokenizer::Token::Type::BodyOpener : Lumina::Tokenizer::Token::Type::BodyCloser;
+            }
+            else if (word == "(" || word == ")")
+            {
+                token.type = (word == "(") ? Lumina::Tokenizer::Token::Type::ParenthesisOpener : Lumina::Tokenizer::Token::Type::ParenthesisCloser;
+            }
+            else if (word == "::")
+            {
+                token.type = Lumina::Tokenizer::Token::Type::NamespaceSeparator;
+            }
+            else if (word == "//")
+            {
+                token.type = Lumina::Tokenizer::Token::Type::SingleLineComment;
+            }
+            else if (word == "/*")
+            {
+                token.type = Lumina::Tokenizer::Token::Type::MultilineComment;
+            }
+            else if (word == "*/")
+            {
+                token.type = Lumina::Tokenizer::Token::Type::EndOfMultilineComment;
+            }
+            else
+            {
+                token.type = Lumina::Tokenizer::Token::Type::Identifier;
+            }
+
+            tokens.push_back(token);
+        }
 	}
 
 	std::vector<Tokenizer::Token> Tokenizer::tokenize(const std::string& p_code)
@@ -154,13 +238,11 @@ namespace Lumina
 		std::stringstream codeStream(p_code);
 
 		std::string line;
+        size_t lineNumber = 0;
 		while (getline(codeStream, line))
 		{
-			std::cout << "Line : " << line << std::endl;
-
-			parseLine(line, tokens);
-
-            std::cout << std::endl;
+			parseLine(line, tokens, lineNumber);
+            lineNumber++;
 		}
 
 		return tokens;

@@ -13,7 +13,6 @@ namespace Lumina
 			enum class Type
 			{
 				Include,
-				IncludePath,
 				PipelineFlow,
 				PipelineFlowSeparator,
 				NamespaceSeparator,

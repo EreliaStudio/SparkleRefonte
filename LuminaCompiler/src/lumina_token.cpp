@@ -29,8 +29,6 @@ std::string to_string(Lumina::Tokenizer::Token::Type p_type)
 	{
 	case Lumina::Tokenizer::Token::Type::Include:
 		return "Include";
-	case Lumina::Tokenizer::Token::Type::IncludePath:
-		return "IncludePath";
 	case Lumina::Tokenizer::Token::Type::PipelineFlow:
 		return "PipelineFlow";
 	case Lumina::Tokenizer::Token::Type::PipelineFlowSeparator:
@@ -86,8 +84,6 @@ std::wstring to_wstring(Lumina::Tokenizer::Token::Type p_type)
 	{
 	case Lumina::Tokenizer::Token::Type::Include:
 		return L"Include";
-	case Lumina::Tokenizer::Token::Type::IncludePath:
-		return L"IncludePath";
 	case Lumina::Tokenizer::Token::Type::PipelineFlow:
 		return L"PipelineFlow";
 	case Lumina::Tokenizer::Token::Type::PipelineFlowSeparator:

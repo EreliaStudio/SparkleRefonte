@@ -14,5 +14,10 @@ int main(int argc, char** argv)
 
 	std::vector<Tokenizer::Token> tokens = Tokenizer::tokenize(readFileAsString(argv[1]));
 
+	for (const auto& token : tokens)
+	{
+		std::cout << token << std::endl;
+	}
+
 	return (0);
 }
