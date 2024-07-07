@@ -29,10 +29,10 @@ namespace Lumina
 				PipelinePass, // VertexPass()
 				Body,
 				Member,
-				RValue,
-				Expression,
 				Symbol,
-				Parameter
+				Parameter,
+				Expression,
+				Element
 			};
 
 			friend std::ostream& operator << (std::ostream& p_os, const Type& p_type);
@@ -84,15 +84,15 @@ namespace Lumina
 		void advance();
 		void appendInstruction(const Lexer::Instruction& p_instruction);
 
+		Instruction parseExpressionElement();
 		Instruction parseExpression();
-
-		Instruction parseRValue();
 
 		Instruction parseMember();
 
 		Instruction parseParameter();
 		Instruction parseSymbol();
-		Lexer::Instruction parseFunctionBody();
+
+		Instruction parseFunctionBody();
 
 		void parseBlockBody(Instruction& p_instruction, bool p_canAssign);
 

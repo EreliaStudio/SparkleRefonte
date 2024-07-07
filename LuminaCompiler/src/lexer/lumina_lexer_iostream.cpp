@@ -64,15 +64,14 @@ std::string to_string(Lumina::Lexer::Instruction::Type p_type)
 		return "Body";
 	case Lumina::Lexer::Instruction::Type::Member:
 		return "Member";
-	case Lumina::Lexer::Instruction::Type::RValue:
-		return "RValue";
-	case Lumina::Lexer::Instruction::Type::Expression:
-		return "Expression";
 	case Lumina::Lexer::Instruction::Type::Symbol:
 		return "Symbol";
 	case Lumina::Lexer::Instruction::Type::Parameter:
 		return "Parameter";
-		
+	case Lumina::Lexer::Instruction::Type::Expression:
+		return "Expression";
+	case Lumina::Lexer::Instruction::Type::Element:
+		return "Element";
 	default:
 		return "Unknown";
 	}

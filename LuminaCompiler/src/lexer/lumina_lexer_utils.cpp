@@ -87,7 +87,7 @@ namespace Lumina
 
 		if (currentToken().type != p_type)
 		{
-			insertError(p_errorMessage);
+			insertError(p_errorMessage + " - Detected type [" + to_string(currentToken().type) + "] vs type [" + to_string(p_type) + "]");
 			throw std::runtime_error("Invalid grammar detected");
 		}
 	}

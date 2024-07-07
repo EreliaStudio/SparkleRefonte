@@ -21,7 +21,8 @@ namespace Lumina
 		{
 			consumeOnSameLineAndCheckValue(result, TokenType::Operator, "<", "Expected a \"<\"");
 
-			while (currentToken().type != TokenType::Operator || currentToken().content != ">")
+			while ((currentToken().type == TokenType::Identifier) ||
+				   (currentToken().type == TokenType::Operator && currentToken().content == "/"))
 			{
 				consumeOnSameLine(result);
 			}
@@ -56,64 +57,52 @@ namespace Lumina
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parseExpression()
+	Lexer::Instruction Lexer::parseExpressionElement()
 	{
 		Lexer::Instruction result;
 
-		result.type = Lexer::Instruction::Type::Expression;
+		result.type = Lexer::Instruction::Type::Element;
 
-		if (currentToken().type == TokenType::Number)
+		switch (currentToken().type)
 		{
-			consume(result, TokenType::Number, "Expected a valid RValue expression");
-		}
-		else
-		{
-			consume(result, TokenType::Identifier, "Expected a variable name");
-			switch (currentToken().type)
+			case TokenType::Number:
 			{
-				case TokenType::Accessor:
+				consume(result);
+				break;
+			}
+			case TokenType::Identifier:
+			{
+				consume(result);
+				if (currentToken().type == TokenType::ParenthesisOpener)
 				{
-					while (currentToken().type == TokenType::Accessor)
-					{
-						consume(result, TokenType::Accessor, "Expected an accessor operator \".\"");
-						consume(result, TokenType::Identifier, "Expected a member name");
-					}
-					break;
-				}
-				case TokenType::ParenthesisOpener:
-				{
-					consume(result, TokenType::ParenthesisOpener, "Expected a \"(\" operator");
-
+					consume(result, TokenType::ParenthesisOpener, "Expected \"(\"");
 					while (currentToken().type != TokenType::ParenthesisCloser)
 					{
-						result.addNestedInstruction(parseExpression());
+						result.addNestedInstruction(parseExpressionElement());
 						if (currentToken().type != TokenType::ParenthesisCloser)
-							consume(result, TokenType::Comma, "Expected an comma separator \",\"");
+							consume(result, TokenType::Comma, "Expected \",\"");
 					}
-
-					consume(result, TokenType::ParenthesisCloser, "Expected a \")\" operator");
-					break;
+					consume(result, TokenType::ParenthesisCloser, "Expected \")\"");
 				}
+				break;
 			}
 		}
 
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parseRValue()
+	Lexer::Instruction Lexer::parseExpression()
 	{
 		Lexer::Instruction result;
 
-		result.type = Lexer::Instruction::Type::RValue;
+		result.type = Lexer::Instruction::Type::Expression;
 
-		while (currentToken().type != TokenType::EndOfSentence)
+		result.addNestedInstruction(parseExpressionElement());
+
+		while (currentToken().type == TokenType::Operator)
 		{
-			result.addNestedInstruction(parseExpression());
-
-			if (currentToken().type != TokenType::EndOfSentence)
-			{
-				consumeAndCheckValues(result, TokenType::Operator, {"+", "-", "*", "/", "%"}, "Expected a valid RValue operator");
-			}
+			consume(result, TokenType::Operator, "Expected a valid expression operator");
+			result.addNestedInstruction(parseExpressionElement());
 		}
 
 		return (result);
@@ -127,11 +116,14 @@ namespace Lumina
 
 		consume(result, TokenType::Identifier, "Expected a variable type");
 		consume(result, TokenType::Identifier, "Expected a variable name");
-		if (currentToken().type != TokenType::EndOfSentence)
+
+		if (currentToken().type == TokenType::Assignator)
 		{
-			consume(result, TokenType::Assignator, "Expected an assignement operator \"=\" after a variable declaration");
-			result.addNestedInstruction(parseRValue());
+			consume(result);
+			
+			result.addNestedInstruction(parseExpression());
 		}
+
 		consume(result, TokenType::EndOfSentence, "Expected a \";\"");
 		
 		return (result);
@@ -147,8 +139,6 @@ namespace Lumina
 		while (currentToken().type != TokenType::BodyCloser)
 		{
 			bodyInstruction.addNestedInstruction(parseMember());
-
-			
 		}
 		consume(bodyInstruction, TokenType::BodyCloser, "Expected \"}\"");
 		consume(bodyInstruction, TokenType::EndOfSentence, "Expected \";\"");
@@ -236,10 +226,8 @@ namespace Lumina
 
 		result.type = Instruction::Type::Body;
 
-		while (currentToken().type != TokenType::BodyCloser)
-		{
-			skipWord();
-		}
+		insertError(__FUNCTION__ + std::string(" not implemented"));
+		throw std::runtime_error(__FUNCTION__ + std::string(" not completed"));
 
 		return (result);
 	}
@@ -262,9 +250,6 @@ namespace Lumina
 			result.addNestedInstruction(parseFunctionBody());
 			consume(result, TokenType::BodyCloser, "Expected \"}\"");
 		}
-
-		//insertError(__FUNCTION__ + std::string(" not implemented - Token type [" + to_string(currentToken().type) + "]"));
-		//throw std::runtime_error(__FUNCTION__ + std::string(" not completed"));
 
 		return (result);
 	}
@@ -341,8 +326,13 @@ namespace Lumina
 
 		result.type = Lexer::Instruction::Type::PipelinePass;
 
-		insertError(__FUNCTION__ + std::string(" not implemented"));
-		throw std::runtime_error(__FUNCTION__ + std::string(" not completed"));
+		consume(result, TokenType::PipelineFlow, "Expected a pipeline pass name");
+		consume(result, TokenType::ParenthesisOpener, "Expected \"(\"");
+		consume(result, TokenType::ParenthesisCloser, "Expected \")\"");
+
+		consume(result, TokenType::BodyOpener, "Expected \"{\"");
+		result.addNestedInstruction(parseFunctionBody());
+		consume(result, TokenType::BodyCloser, "Expected \"}\"");
 
 		return (result);
 	}

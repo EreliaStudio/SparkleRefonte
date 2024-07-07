@@ -7,6 +7,8 @@
 
 #include <unordered_set>
 
+#include <algorithm>
+
 namespace Lumina
 {
 
@@ -24,7 +26,8 @@ namespace Lumina
     const std::unordered_set<std::string> keywords = {
         "#include", "Input", "VertexPass", "FragmentPass", "struct", "namespace",
         "AttributeBlock", "ConstantBlock", "raiseException", "discard", "return",
-        "->", "::", ":", ";", "{", "}", "(", ")", "=", ".", ",", "||", "if", "//", "/*", "*/"
+        "->", "::", ":", ";", "{", "}", "(", ")", ".", ",", "||", "//", "/*", "*/", 
+		"if", "else", "for", "while"
     };
     
     bool startsWith(std::string_view str, std::string_view prefix)
@@ -125,12 +128,24 @@ namespace Lumina
                     return true;
                 }
             }
-            else if (ch == '\"')
-            {
-                word += ch;
-                getStringLitteral(lineStream, word);
-                return (true);
-            }
+			else if (ch == '\"')
+			{
+				word += ch;
+				getStringLitteral(lineStream, word);
+				return (true);
+			}
+			else if (ch == '!')
+			{
+				word += ch;
+				if (lineStream.peek() != '=')
+					return (true);
+			}
+			else if (ch == '=')
+			{
+				word += ch;
+				if (lineStream.peek() != '=')
+					return (true);
+			}
             else if (std::ispunct(ch) && ch != '_')
             {
                 if (!word.empty())
@@ -148,6 +163,26 @@ namespace Lumina
         }
 
         return !word.empty();
+	}
+
+	std::string convertTabulationToSpace(const std::string& line)
+	{
+		std::string result;
+		result.reserve(line.size()); // Reserve enough space to avoid multiple reallocations
+
+		for (char c : line)
+		{
+			if (c == '\t')
+			{
+				result.append("    "); // Append four spaces
+			}
+			else
+			{
+				result.push_back(c); // Append the character itself
+			}
+		}
+
+		return result;
 	}
 
 	void parseLine(const std::string& line, std::vector<Tokenizer::Token>& tokens, size_t lineNumber)
@@ -171,11 +206,13 @@ namespace Lumina
             {
                 token.type = Lumina::Tokenizer::Token::Type::Include;
             }
-            else if (word == "Input" || word == "VertexPass" || word == "FragmentPass")
-            {
-                token.type = Lumina::Tokenizer::Token::Type::PipelineFlow;
-            }
-            else if (word == "struct" || word == "AttributeBlock" || word == "ConstantBlock" || word == "Texture" || word == "namespace" || word == "return" || word == "discard")
+			else if (word == "Input" || word == "VertexPass" || word == "FragmentPass")
+			{
+				token.type = Lumina::Tokenizer::Token::Type::PipelineFlow;
+			}
+            else if (word == "struct" || word == "AttributeBlock" || word == "ConstantBlock" || word == "Texture" ||
+					 word == "namespace" || word == "return" || word == "discard" ||
+					 word == "if" || word == "else" || word == "while" || word == "for")
             {
                 token.type = Lumina::Tokenizer::Token::Type::Keyword;
             }
@@ -256,7 +293,8 @@ namespace Lumina
 	{
 		std::vector<Tokenizer::Token> tokens;
 
-		std::stringstream codeStream(p_code);
+		std::string code = convertTabulationToSpace(p_code);
+		std::stringstream codeStream(code);
 
 		std::string line;
         size_t lineNumber = 0;

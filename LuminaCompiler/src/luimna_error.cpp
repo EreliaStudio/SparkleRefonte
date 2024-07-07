@@ -18,7 +18,7 @@ namespace Lumina
 		if (p_tokenSize > 2)
 			subTokenSize = p_tokenSize - 2;
 
-		ss << "Error on line [" << std::setw(5) << _lineIndex << "] : " << _message << std::endl;
+		ss << "Error on line [" << std::setw(5) << (_lineIndex + 1) << "] : " << _message << std::endl;
 		if (p_tokenSize == 0)
 		{
 

@@ -55,6 +55,8 @@ int main(int argc, char** argv)
 		printInstruction(instruction, 0);
 	}
 
+	std::cout << std::endl << std::endl;
+
 	if (grammarResult.errors.empty() == false)
 	{
 		for (const auto& error : grammarResult.errors)
