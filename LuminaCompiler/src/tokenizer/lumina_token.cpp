@@ -57,8 +57,6 @@ std::string to_string(Lumina::Tokenizer::Token::Type p_type)
 		return "InstructionEnd";
 	case Lumina::Tokenizer::Token::Type::Accessor:
 		return "Accessor";
-	case Lumina::Tokenizer::Token::Type::Comment:
-		return "Comment";
 	case Lumina::Tokenizer::Token::Type::SingleLineComment:
 		return "SingleLineComment";
 	case Lumina::Tokenizer::Token::Type::MultilineComment:

@@ -1,5 +1,5 @@
 // Include predefined and user-provided files
-#include <screenConstants> /* invalid */
+#include <lumina/screenConstants> /* invalid */
 #include "shader/customInclude.lum"
 
 // Define the pipeline flow
@@ -31,15 +31,32 @@ AttributeBlock modelAttributes
 // Define constant blocks
 ConstantBlock lightingConstants
 {
-    Vector3 lightPosition = Vector3(10.0, 10.0, 10.0);
+    Vector3 lightPosition = Vector3(test(10), 10.0, 10.0) + Vector3(10.0, 10.0, 10.0);
     Vector3 lightColor = Vector3(1.0);
-    float ambientIntensity = 0.1;
+    float ambientIntensity = 0.1 + 15.0;
 };
 
 /* Create namespaces
 with multiline comments */
 namespace Lighting
 {
+	struct Information
+	{
+		float test;
+	};
+
+	Texture default;
+
+	AttributeBlock RenderingInfo
+	{
+		float test;
+	};
+
+	ConstantBlock Intencity
+	{
+		Vector3 lightPosition = Vector3(10.0, 10.0, 10.0);
+	};
+
     Vector3 calculateDiffuse(Vector3 normal, Vector3 lightDir, Vector3 lightColor)
     {
         float diff = max(dot(normal, lightDir), 0.0);
@@ -80,6 +97,11 @@ FragmentPass()
     Vector3 viewDir = normalize(-fragPosition);
 
     Vector3 ambient = lightingConstants.ambientIntensity * lightingConstants.lightColor;
+
+	for (int i = 0; i < 4; i++)
+	{
+		Vector3 test = Vector3(10, 11, 12);
+	}
 
     Vector3 diffuse = Lighting::calculateDiffuse(normal, lightDir, lightingConstants.lightColor);
 

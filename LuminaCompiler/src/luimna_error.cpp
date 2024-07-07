@@ -19,13 +19,18 @@ namespace Lumina
 			subTokenSize = p_tokenSize - 2;
 
 		ss << "Error on line [" << std::setw(5) << _lineIndex << "] : " << _message << std::endl;
-		ss << std::string(10, ' ') << _line << std::endl;
-		if (p_tokenSize == 1)
+		if (p_tokenSize == 0)
 		{
+
+		}
+		else if (p_tokenSize == 1)
+		{
+			ss << std::string(10, ' ') << _line << std::endl;
 			ss << std::string(10, ' ') << std::string(_column, ' ') << '|';
 		}
 		else
 		{
+			ss << std::string(10, ' ') << _line << std::endl;
 			ss << std::string(10, ' ') << std::string(_column, ' ') << '|' << (subTokenSize != 0 ? std::string(subTokenSize, L'-') : "") << '|';
 		}
 

@@ -9,9 +9,21 @@
 
 namespace Lumina
 {
+
+
+	Tokenizer::Token Tokenizer::Token::createMetaToken(size_t metaTokenID)
+	{
+		Tokenizer::Token result;
+
+		result.type = Tokenizer::Token::Type::MetaToken;
+		result.line = metaTokenID;
+
+		return (result);
+	}
+
     const std::unordered_set<std::string> keywords = {
         "#include", "Input", "VertexPass", "FragmentPass", "struct", "namespace",
-        "AttributeBlock", "ConstantBlock", "raiseException", "discard",
+        "AttributeBlock", "ConstantBlock", "raiseException", "discard", "return",
         "->", "::", ":", ";", "{", "}", "(", ")", "=", ".", ",", "||", "if", "//", "/*", "*/"
     };
     
@@ -71,6 +83,9 @@ namespace Lumina
 
             lineStream.get(ch);
         }
+
+		if (lineStream.peek() == EOF)
+			return (false);
 
         std::string remainingLine = lineStream.str().substr(lineStream.tellg());
         std::string_view lineView(remainingLine);
@@ -160,7 +175,7 @@ namespace Lumina
             {
                 token.type = Lumina::Tokenizer::Token::Type::PipelineFlow;
             }
-            else if (word == "struct" || word == "AttributeBlock" || word == "ConstantBlock" || word == "Texture" || word == "namespace")
+            else if (word == "struct" || word == "AttributeBlock" || word == "ConstantBlock" || word == "Texture" || word == "namespace" || word == "return" || word == "discard")
             {
                 token.type = Lumina::Tokenizer::Token::Type::Keyword;
             }

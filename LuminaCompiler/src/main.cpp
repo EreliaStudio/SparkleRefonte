@@ -3,23 +3,25 @@
 #include "lumina_lexer.hpp"
 #include "lumina_utils.hpp"
 
+#include <fstream>
+
 using namespace Lumina;
 
 void printInstruction(const Lexer::Instruction& p_instruction, size_t tabulation)
 {
 	std::cout << std::string(tabulation, ' ') << "Type [" << p_instruction.type << "] - ";
 	
-	for (size_t i = 0; i < p_instruction.tokens.size(); i++)
+	for (size_t i = 0; i < p_instruction._tokens.size(); i++)
 	{
 		if (i != 0)
 			std::cout << " ";
-		if (p_instruction.tokens[i].type == Tokenizer::Token::Type::MetaToken)
+		if (p_instruction._tokens[i].type == Tokenizer::Token::Type::MetaToken)
 		{
 			std::cout << std::endl;
-			printInstruction(p_instruction.nestedInstruction[p_instruction.tokens[i].line], tabulation + 4);
+			printInstruction(p_instruction.nestedInstructions[p_instruction._tokens[i].line], tabulation + 4);
 		}
 		else
-			std::cout << p_instruction.tokens[i].content;
+			std::cout << p_instruction._tokens[i].content;
 	}
 	std::cout << std::endl;
 }
@@ -34,14 +36,24 @@ int main(int argc, char** argv)
 
 	std::vector<Tokenizer::Token> tokens = Tokenizer::tokenize(readFileAsString(argv[1]));
 
-	//size_t tokenID = 0;
-	//for (const auto& token : tokens)
-	//{
-	//	std::cout << std::setw(4) << tokenID << " - " << token << std::endl;
-	//	tokenID++;
-	//}
+	std::fstream ouputTokenFile;
+
+	ouputTokenFile.open("resultToken.txt", std::ios_base::out);
+
+	size_t tokenID = 0;
+	for (const auto& token : tokens)
+	{
+		ouputTokenFile << std::setw(4) << tokenID << " - " << token << std::endl;
+		tokenID++;
+	}
+	ouputTokenFile.close();
 
 	Lexer::Result grammarResult = Lexer::checkGrammar(tokens);
+
+	for (const auto& instruction : grammarResult.instructions)
+	{
+		printInstruction(instruction, 0);
+	}
 
 	if (grammarResult.errors.empty() == false)
 	{
@@ -50,11 +62,6 @@ int main(int argc, char** argv)
 			std::cout << error.what() << std::endl;
 			std::cout << std::endl;
 		}
-	}
-
-	for (const auto& instruction : grammarResult.instructions)
-	{
-		printInstruction(instruction, 0);
 	}
 
 	return (0);

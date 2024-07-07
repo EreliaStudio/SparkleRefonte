@@ -31,7 +31,6 @@ namespace Lumina
 				ParenthesisCloser,
 				InstructionEnd,
 				Accessor,
-				Comment,
 				SingleLineComment,
 				MultilineComment,
 				EndOfMultilineComment,
@@ -49,6 +48,8 @@ namespace Lumina
 			std::string fullLine = "";
 
 			friend std::ostream& operator << (std::ostream& p_os, const Token& p_token);
+
+			static Token createMetaToken(size_t metaTokenID);
 		};
 
 	public:
