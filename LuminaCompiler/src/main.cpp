@@ -50,10 +50,10 @@ int main(int argc, char** argv)
 
 	Lexer::Result grammarResult = Lexer::checkGrammar(tokens);
 
-	//for (const auto& instruction : grammarResult.instructions)
-	//{
-	//	printInstruction(instruction, 0);
-	//}
+	for (const auto& instruction : grammarResult.instructions)
+	{
+		printInstruction(instruction, 0);
+	}
 
 	//std::cout << std::endl << std::endl;
 

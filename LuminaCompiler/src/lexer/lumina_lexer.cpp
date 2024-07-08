@@ -100,7 +100,7 @@ namespace Lumina
 				consume(result, TokenType::ParenthesisOpener, "Expected \"(\"");
 				while (currentToken().type != TokenType::ParenthesisCloser)
 				{
-					result.addNestedInstruction(parseExpressionElement());
+					result.addNestedInstruction(parseExpression());
 					if (currentToken().type != TokenType::ParenthesisCloser)
 						consume(result, TokenType::Comma, "Expected \",\"");
 				}
