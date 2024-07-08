@@ -53,8 +53,8 @@ std::string to_string(Lumina::Tokenizer::Token::Type p_type)
 			return ("Accessor");
 		case Lumina::Tokenizer::Token::Type::Symbol:
 			return ("Symbol");
-		case Lumina::Tokenizer::Token::Type::OpenedParenthesis:
-			return ("OpenedParenthesis");
+		case Lumina::Tokenizer::Token::Type::OpenParenthesis:
+			return ("OpenParenthesis");
 		case Lumina::Tokenizer::Token::Type::ClosedParenthesis:
 			return ("ClosedParenthesis");
 		case Lumina::Tokenizer::Token::Type::Comma:
@@ -67,10 +67,10 @@ std::string to_string(Lumina::Tokenizer::Token::Type p_type)
 			return ("Number");
 		case Lumina::Tokenizer::Token::Type::Namespace:
 			return ("Namespace");
-		case Lumina::Tokenizer::Token::Type::BodyOpener:
-			return ("BodyOpener");
-		case Lumina::Tokenizer::Token::Type::BodyCloser:
-			return ("BodyCloser");
+		case Lumina::Tokenizer::Token::Type::OpenCurlyBracket:
+			return ("OpenCurlyBracket");
+		case Lumina::Tokenizer::Token::Type::CloseCurlyBracket:
+			return ("CloseCurlyBracket");
 		case Lumina::Tokenizer::Token::Type::IfStatement:
 			return ("IfStatement");
 		case Lumina::Tokenizer::Token::Type::WhileStatement:

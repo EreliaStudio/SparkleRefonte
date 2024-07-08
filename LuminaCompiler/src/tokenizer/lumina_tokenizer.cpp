@@ -176,7 +176,7 @@ namespace Lumina
 	void Tokenizer::mergeTokens(std::vector<Tokenizer::Token>& p_tokens)
 	{
 		std::vector<std::string> mergedValue = {
-			"//", "/*", "*/", "::", "<=", ">=", "&&", "||", "->"
+			"//", "/*", "*/", "::", "<=", ">=", "&&", "||", "->", "#include"
 		};
 
 		// Create a map to quickly check if a combination is in the mergedValue list
@@ -225,17 +225,20 @@ namespace Lumina
 			{"//", Token::Type::SingleLineComment},
 			{"/*", Token::Type::MultiLineCommentStart},
 			{"*/", Token::Type::MultiLineCommentStop},
-			{"#", Token::Type::Include},
+			{"#include", Token::Type::Include},
+			{"Input", Token::Type::PipelineFlow},
+			{"VertexPass", Token::Type::PipelineFlow},
+			{"FragmentPass", Token::Type::PipelineFlow},
 			{"->", Token::Type::PipelineSeparator},
 			{":", Token::Type::Separator},
 			{"struct", Token::Type::Structure},
 			{"::", Token::Type::Namespace},
-			{"(", Token::Type::OpenedParenthesis},
+			{"(", Token::Type::OpenParenthesis},
 			{")", Token::Type::ClosedParenthesis},
 			{",", Token::Type::Comma},
 			{";", Token::Type::EndOfSentence},
-			{"{", Token::Type::BodyOpener},
-			{"}", Token::Type::BodyCloser},
+			{"{", Token::Type::OpenCurlyBracket},
+			{"}", Token::Type::CloseCurlyBracket},
 			{"if", Token::Type::IfStatement},
 			{"while", Token::Type::WhileStatement},
 			{"for", Token::Type::ForStatement},
