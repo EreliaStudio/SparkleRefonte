@@ -22,14 +22,58 @@ namespace Lumina
 
 	bool is_number(const std::string& s)
 	{
-		return !s.empty() && std::find_if(s.begin(),
-			s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
+		if (s.empty())
+		{
+			return false;
+		}
+
+		bool decimal_point_seen = false;
+		bool digit_seen = false;
+		auto it = s.begin();
+
+		// Handle optional sign
+		if (*it == '+' || *it == '-')
+		{
+			++it;
+			if (it == s.end())
+			{
+				return false; // String was just a sign
+			}
+		}
+
+		for (; it != s.end(); ++it)
+		{
+			if (std::isdigit(*it))
+			{
+				digit_seen = true;
+			}
+			else if (*it == '.')
+			{
+				if (decimal_point_seen)
+				{
+					return false; // Multiple decimal points
+				}
+				decimal_point_seen = true;
+			}
+			else
+			{
+				return false; // Invalid character
+			}
+		}
+
+		return digit_seen;
 	}
 
 	bool is_alnum(const std::string& s)
 	{
 		return !s.empty() && std::find_if(s.begin(),
 			s.end(), [](unsigned char c) { return !std::isalnum(c); }) == s.end();
+	}
+
+	bool is_identifier(const std::string& s)
+	{
+		return !s.empty() && std::find_if(s.begin(), s.end(),
+			[](unsigned char c) { return !std::isalnum(c) && c != '_'; }) == s.end();
 	}
 
 	void skipSpace(std::stringstream& lineStream)
@@ -232,7 +276,7 @@ namespace Lumina
 			}
 
 			// Check if the token is an identifier (name)
-			if (is_alpha(token.content) || is_alnum(token.content))
+			if (is_identifier(token.content))
 			{
 				token.type = Token::Type::Identifier;
 				continue;
