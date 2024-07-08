@@ -12,7 +12,7 @@ namespace Lumina
 
 	std::ostream& operator << (std::ostream& p_os, const Tokenizer::Token& p_token)
 	{
-		p_os << "[" << std::setw(25) << p_token.type << "] - Line [" << std::setw(4) << p_token.line << "] - Column [" << std::setw(4) << p_token.column << "] - " << p_token.content;
+		p_os << "[" << std::setw(25) << p_token.type << "] - Line [" << std::setw(4) << p_token.line + 1 << "] - Column [" << std::setw(4) << p_token.column << "] - " << p_token.content;
 		return (p_os);
 	}
 }
@@ -65,6 +65,8 @@ std::string to_string(Lumina::Tokenizer::Token::Type p_type)
 		return "EndOfMultilineComment";
 	case Lumina::Tokenizer::Token::Type::EndOfSentence:
 		return "EndOfSentence";
+	case Lumina::Tokenizer::Token::Type::Incrementer:
+		return "Incrementer";
 	case Lumina::Tokenizer::Token::Type::Unknown:
 		return "Unknown";
 	case Lumina::Tokenizer::Token::Type::MetaToken:

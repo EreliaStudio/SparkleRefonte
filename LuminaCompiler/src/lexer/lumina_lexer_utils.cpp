@@ -8,9 +8,14 @@ namespace Lumina
 		nestedInstructions.push_back(p_instruction);
 	}
 
-	bool Lexer::hasTokenLeft() const
+	void Lexer::setTokenToIndex(size_t p_index)
 	{
-		return(_index < _tokens.size());
+		_index = p_index;
+	}
+
+	bool Lexer::hasTokenLeft(size_t p_offset) const
+	{
+		return((_index + p_offset) < _tokens.size());
 	}
 
 	const Tokenizer::Token& Lexer::currentToken() const
@@ -38,6 +43,15 @@ namespace Lumina
 		return (_tokens[_index + 1]);
 	}
 
+	const Tokenizer::Token& Lexer::tokenAtIndex(size_t p_offset) const
+	{
+		if (_index + p_offset >= _tokens.size())
+		{
+			throw std::runtime_error("Unexpected error");
+		}
+		return (_tokens[_index + p_offset]);
+	}
+
 	void Lexer::skipWord()
 	{
 		advance();
@@ -45,6 +59,9 @@ namespace Lumina
 
 	void Lexer::skipLine()
 	{
+		if (hasTokenLeft() == false)
+			return ;
+
 		size_t currentLine = currentToken().line;
 
 		while (_index < _tokens.size() && currentToken().line == currentLine)
@@ -74,21 +91,33 @@ namespace Lumina
 
 	void Lexer::insertError(const std::string& p_errorMessage)
 	{
-		_result.errors.push_back(CompilationError(p_errorMessage, currentToken().line, currentToken().fullLine, currentToken().column, currentToken().content.size()));
+		if (_errorActive == true)
+		{
+			if (hasTokenLeft() == false)
+			{
+				_result.errors.push_back(CompilationError(p_errorMessage, _tokens.back().line, _tokens.back().fullLine, _tokens.back().column, _tokens.back().content.size()));
+			}
+			else
+			{
+				_result.errors.push_back(CompilationError(p_errorMessage, currentToken().line, currentToken().fullLine, currentToken().column, currentToken().content.size()));
+			}
+		}
 	}
 
 	void Lexer::consumeCheck(Tokenizer::Token::Type p_type, const std::string& p_errorMessage)
 	{
 		if (_index >= _tokens.size())
 		{
-			_result.errors.push_back(CompilationError("Unexpected error detected", _tokens.back().line + 1, "", 0, 0));
-			throw std::runtime_error("Unexpected error");
+			if (_errorActive == true)
+				_result.errors.push_back(CompilationError("Unexpected error detected", _tokens.back().line + 1, "", 0, 0));
+			throw std::runtime_error("Unexpected error detected");
 		}
 
 		if (currentToken().type != p_type)
 		{
-			insertError(p_errorMessage + " - Detected type [" + to_string(currentToken().type) + "] vs type [" + to_string(p_type) + "]");
-			throw std::runtime_error("Invalid grammar detected");
+			if (_errorActive == true)
+				insertError(p_errorMessage + " - Detected type [" + to_string(currentToken().type) + "] vs type [" + to_string(p_type) + "]");
+			throw std::runtime_error(p_errorMessage + " - Detected type [" + to_string(currentToken().type) + "] vs type [" + to_string(p_type) + "]");
 		}
 	}
 
@@ -97,7 +126,7 @@ namespace Lumina
 		if (currentToken().line != p_line)
 		{
 			_result.errors.push_back(CompilationError("Unexpected new line", previousToken().line, previousToken().fullLine, previousToken().fullLine.size(), 1));
-			throw std::runtime_error("Unexpected error detected");
+			throw std::runtime_error("Unexpected new line");
 		}
 	}
 
@@ -157,8 +186,7 @@ namespace Lumina
 				invalidValueMessage += "[" + tmp + "]";
 			}
 			insertError(invalidValueMessage);
-			skipLine();
-			throw std::runtime_error("Invalid grammar detected");
+			throw std::runtime_error(invalidValueMessage);
 		}
 
 		consume(p_instruction);
@@ -173,6 +201,10 @@ namespace Lumina
 	void Lexer::advance()
 	{
 		_index++;
+		/*if (hasTokenLeft() == true)
+			std::cout << "Advence to token : " << currentToken() << std::endl;
+		else
+			std::cout << "No more token to parse" << std::endl;*/
 	}
 
 	void Lexer::appendInstruction(const Lexer::Instruction& p_instruction)

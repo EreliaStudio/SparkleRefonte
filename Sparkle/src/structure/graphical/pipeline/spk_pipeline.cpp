@@ -2,7 +2,6 @@
 
 #include <fstream>
 
-#include "structure/graphical/lumina/spk_lumina_tokenizer.hpp"
 
 namespace spk
 {
@@ -12,7 +11,7 @@ namespace spk
 
 	void Pipeline::loadFromString(const std::string& p_inputCode)
 	{
-		auto lexerResult = spk::Lumina::Tokenizer::tokenize(p_inputCode);
+
 	}
 
 	void Pipeline::load(const std::filesystem::path& p_path)

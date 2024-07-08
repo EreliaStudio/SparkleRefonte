@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <unordered_map>
+#include <unordered_set>
+#include <functional>
 
 #include "lumina_tokenizer.hpp"
 #include "lumina_error.hpp"
@@ -32,7 +34,8 @@ namespace Lumina
 				Symbol,
 				Parameter,
 				Expression,
-				Element
+				Element,
+				Instruction
 			};
 
 			friend std::ostream& operator << (std::ostream& p_os, const Type& p_type);
@@ -53,15 +56,25 @@ namespace Lumina
 		};
 
 	private:
+		using RuleFunction = std::function<void(Lexer::Instruction&)>;
+		
+		std::vector<RuleFunction> rules;
+		
+		Lexer::Instruction applyRule(const Lexer::RuleFunction& p_instructionLambda);
+
+		bool _errorActive = true;
 		std::vector<Tokenizer::Token> _tokens;
 		Instruction _instruction;
 		Result _result;
 		size_t _index;
 
-		bool hasTokenLeft() const;
+		void setTokenToIndex(size_t p_index);
+		bool hasTokenLeft(size_t p_offset = 0) const;
 		const Tokenizer::Token& previousToken();
 		const Tokenizer::Token& currentToken() const;
 		const Tokenizer::Token& nextToken();
+
+		const Tokenizer::Token& tokenAtIndex(size_t index) const;
 
 		void skipWord();
 		void skipLine();
@@ -84,6 +97,7 @@ namespace Lumina
 		void advance();
 		void appendInstruction(const Lexer::Instruction& p_instruction);
 
+		Lexer::Instruction parseVariable();
 		Instruction parseExpressionElement();
 		Instruction parseExpression();
 
@@ -92,7 +106,7 @@ namespace Lumina
 		Instruction parseParameter();
 		Instruction parseSymbol();
 
-		Instruction parseFunctionBody();
+		Instruction parseFunctionBody(bool p_isOneliner = false);
 
 		void parseBlockBody(Instruction& p_instruction, bool p_canAssign);
 
@@ -108,6 +122,7 @@ namespace Lumina
 		Instruction parseNamespace();
 
 	public:
+		Lexer();
 		void execute(const std::vector<Tokenizer::Token>& p_tokens);
 
 		const Result& result() const;

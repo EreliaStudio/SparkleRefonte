@@ -57,8 +57,6 @@ namespace Lighting
 		Vector3 lightPosition = Vector3(10.0, 10.0, 10.0);
 	};
 
-    Vector3 calculateDiffuse(Vector3 normal, Vector3 lightDir, Vector3 lightColor);
-
     Vector3 calculateDiffuse(Vector3 normal, Vector3 lightDir, Vector3 lightColor)
     {
         float diff = max(dot(normal, lightDir), 0.0);
@@ -102,28 +100,4 @@ FragmentPass()
     Vector3 normal = normalize(fragNormal);
     Vector3 lightDir = normalize(lightingConstants.lightPosition - fragPosition);
     Vector3 viewDir = normalize(-fragPosition);
-
-    Vector3 ambient = lightingConstants.ambientIntensity * lightingConstants.lightColor;
-
-	for (int i = 0; i < 4; i++)
-	{
-		Vector3 test = Vector3(10, 11, 12);
-	}
-
-    Vector3 diffuse = Lighting::calculateDiffuse(normal, lightDir, lightingConstants.lightColor);
-
-    Material material;
-    Vector3 specular = Lighting::calculateSpecular(normal, lightDir, viewDir, material._shininess, lightingConstants.lightColor);
-
-    Vector3 finalColor = ambient + diffuse * material._diffuseColor + specular * material._specularColor;
-
-    Vector4 textureColor = diffuseTexture.pixel(fragUV);
-    finalColor *= textureColor.rgb;
-
-    if (textureColor.a == 0)
-    {
-        discard;
-    }
-
-    pixelColor = Vector4(finalColor, textureColor.a);
 }

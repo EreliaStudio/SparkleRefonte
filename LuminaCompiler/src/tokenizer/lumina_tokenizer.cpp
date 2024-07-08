@@ -27,7 +27,7 @@ namespace Lumina
         "#include", "Input", "VertexPass", "FragmentPass", "struct", "namespace",
         "AttributeBlock", "ConstantBlock", "raiseException", "discard", "return",
         "->", "::", ":", ";", "{", "}", "(", ")", ".", ",", "||", "//", "/*", "*/", 
-		"if", "else", "for", "while"
+		"if", "else", "for", "while", "++", "--"
     };
     
     bool startsWith(std::string_view str, std::string_view prefix)
@@ -72,6 +72,12 @@ namespace Lumina
         return false;
     }
 
+	bool is_number(const std::string& s)
+	{
+		return !s.empty() && std::find_if(s.begin(),
+			s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
+	}
+
 	bool getword(std::stringstream& lineStream, std::string& word)
 	{
         word.clear();
@@ -115,7 +121,7 @@ namespace Lumina
                     return true;
                 }
             }
-            else if (std::isdigit(ch) || (ch == '.' && !word.empty() && std::isdigit(word.back())))
+			else if (is_number(word) == true && (std::isdigit(ch) || (ch == '.' && !word.empty() && std::isdigit(word.back()))))
             {
                 word += ch;
                 if (ch == '.')
@@ -236,10 +242,14 @@ namespace Lumina
             {
                 token.type = Lumina::Tokenizer::Token::Type::EndOfSentence;
             }
-            else if (word == ":")
-            {
-                token.type = Lumina::Tokenizer::Token::Type::Separator;
-            }
+			else if (word == ":")
+			{
+				token.type = Lumina::Tokenizer::Token::Type::Separator;
+			}
+			else if (word == "--" || word == "++")
+			{
+				token.type = Lumina::Tokenizer::Token::Type::Incrementer;
+			}
             else if (word == "+" || word == "-" || word == "*" || word == "/" ||
                 word == "!=" || word == "==" || word == "&&" || word == "||" ||
                 word == "<" || word == "<=" || word == ">" || word == ">=" ||

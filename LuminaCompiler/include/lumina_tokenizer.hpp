@@ -35,6 +35,7 @@ namespace Lumina
 				MultilineComment,
 				EndOfMultilineComment,
 				EndOfSentence,
+				Incrementer,
 				Unknown,
 				MetaToken
 			};

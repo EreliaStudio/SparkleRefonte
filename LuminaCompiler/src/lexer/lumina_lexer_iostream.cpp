@@ -72,6 +72,8 @@ std::string to_string(Lumina::Lexer::Instruction::Type p_type)
 		return "Expression";
 	case Lumina::Lexer::Instruction::Type::Element:
 		return "Element";
+	case Lumina::Lexer::Instruction::Type::Instruction:
+		return "Instruction";
 	default:
 		return "Unknown";
 	}
