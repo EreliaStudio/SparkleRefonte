@@ -78,7 +78,9 @@ std::string to_string(Lumina::Tokenizer::Token::Type p_type)
 		case Lumina::Tokenizer::Token::Type::ForStatement:
 			return ("ForStatement");
 		case Lumina::Tokenizer::Token::Type::Unknown:
-			return ("Unknown                  ");		
+			return ("Unknown");
+		case Lumina::Tokenizer::Token::Type::MetaToken:
+			return ("MetaToken");
 	
 	default:
 		return ("InvalidType");

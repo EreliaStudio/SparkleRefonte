@@ -147,6 +147,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\lexer\lumina_lexer.cpp" />
+    <ClCompile Include="src\lexer\lumina_lexer_utils.cpp" />
     <ClCompile Include="src\luimna_error.cpp" />
     <ClCompile Include="src\lumina_utils.cpp" />
     <ClCompile Include="src\main.cpp" />

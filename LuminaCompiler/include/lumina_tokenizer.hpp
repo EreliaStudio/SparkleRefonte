@@ -41,7 +41,8 @@ namespace Lumina
 				IfStatement,
 				WhileStatement,
 				ForStatement,
-				Unknown
+				Unknown,
+				MetaToken
 			};
 
 			friend std::ostream& operator << (std::ostream& p_os, const Type& p_type);
