@@ -55,13 +55,7 @@ namespace Lumina
 			std::vector<CompilationError> errors;
 		};
 
-	private:
-		using RuleFunction = std::function<void(Lexer::Instruction&)>;
-		
-		std::vector<RuleFunction> rules;
-		
-		Lexer::Instruction applyRule(const Lexer::RuleFunction& p_instructionLambda);
-
+	private:		
 		bool _errorActive = true;
 		std::vector<Tokenizer::Token> _tokens;
 		Instruction _instruction;

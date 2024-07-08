@@ -147,13 +147,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\lexer\lumina_lexer_iostream.cpp" />
-    <ClCompile Include="src\lexer\lumina_lexer_utils.cpp" />
     <ClCompile Include="src\luimna_error.cpp" />
     <ClCompile Include="src\lumina_utils.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\lumina_compiler.cpp" />
-    <ClCompile Include="src\lexer\lumina_lexer.cpp" />
     <ClCompile Include="src\tokenizer\lumina_token.cpp" />
     <ClCompile Include="src\tokenizer\lumina_tokenizer.cpp" />
   </ItemGroup>

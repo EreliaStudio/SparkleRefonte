@@ -13,31 +13,35 @@ namespace Lumina
 		{
 			enum class Type
 			{
+				SingleLineComment,
+				MultiLineCommentStart,
+				MultiLineCommentStop,
 				Include,
+				DoubleQuote,
 				PipelineFlow,
-				PipelineFlowSeparator,
-				Keyword,
-				Identifier,
-				Number,
-				StringLiteral,
-				Assignator,
-				Operator,
+				PipelineSeparator,
 				Separator,
+				Structure,
+				Identifier,
+				Texture,
+				AttributeBlock,
+				ConstantBlock,
+				Assignator,
+				Accessor,
+				Symbol,
+				OpenedParenthesis,
+				ClosedParenthesis,
 				Comma,
-				NamespaceSeparator,
+				Operator,
+				EndOfSentence,
+				Number,
+				Namespace,
 				BodyOpener,
 				BodyCloser,
-				ParenthesisOpener,
-				ParenthesisCloser,
-				InstructionEnd,
-				Accessor,
-				SingleLineComment,
-				MultilineComment,
-				EndOfMultilineComment,
-				EndOfSentence,
-				Incrementer,
-				Unknown,
-				MetaToken
+				IfStatement,
+				WhileStatement,
+				ForStatement,
+				Unknown
 			};
 
 			friend std::ostream& operator << (std::ostream& p_os, const Type& p_type);
@@ -49,9 +53,11 @@ namespace Lumina
 			std::string fullLine = "";
 
 			friend std::ostream& operator << (std::ostream& p_os, const Token& p_token);
-
-			static Token createMetaToken(size_t metaTokenID);
 		};
+
+		static void generateTokens(std::stringstream p_codeStream, std::vector<Token>& p_tokens);
+		static void mergeTokens(std::vector<Token>& p_tokens);
+		static void assignTokensType(std::vector<Token>& p_tokens);
 
 	public:
 		static std::vector<Token> tokenize(const std::string& p_code);

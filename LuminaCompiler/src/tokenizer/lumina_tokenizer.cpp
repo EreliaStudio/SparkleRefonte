@@ -6,71 +6,19 @@
 #include <iostream>
 
 #include <unordered_set>
+#include <unordered_map>
 
 #include <algorithm>
 
+#define DEBUG_LINE() std::cout << __FUNCTION__ << "::" << __LINE__ << std::endl
+
 namespace Lumina
 {
-
-
-	Tokenizer::Token Tokenizer::Token::createMetaToken(size_t metaTokenID)
+	bool is_alpha(const std::string& s)
 	{
-		Tokenizer::Token result;
-
-		result.type = Tokenizer::Token::Type::MetaToken;
-		result.line = metaTokenID;
-
-		return (result);
+		return !s.empty() && std::find_if(s.begin(),
+			s.end(), [](unsigned char c) { return !std::isalpha(c); }) == s.end();
 	}
-
-    const std::unordered_set<std::string> keywords = {
-        "#include", "Input", "VertexPass", "FragmentPass", "struct", "namespace",
-        "AttributeBlock", "ConstantBlock", "raiseException", "discard", "return",
-        "->", "::", ":", ";", "{", "}", "(", ")", ".", ",", "||", "//", "/*", "*/", 
-		"if", "else", "for", "while", "++", "--"
-    };
-    
-    bool startsWith(std::string_view str, std::string_view prefix)
-    {
-        if (str.size() < prefix.size())
-            return (false);
-        return str.substr(0, prefix.size()) == prefix;
-    }
-
-    bool getStringLitteral(std::stringstream& lineStream, std::string& word)
-    {
-        char ch;
-
-        while (lineStream.get(ch))
-        {
-            word += ch;
-
-            if (ch == '\"')
-            {
-                // Check if it's an escaped quote
-                if (word.length() > 1 && word[word.length() - 2] != '\\')
-                {
-                    return true;
-                }
-            }
-            else if (ch == '\\')
-            {
-                // Handle escaped characters
-                if (lineStream.get(ch))
-                {
-                    word += ch;
-                }
-                else
-                {
-                    // If there's a dangling backslash at the end, return false
-                    return false;
-                }
-            }
-        }
-
-        // If we reach here, it means we hit EOF without finding the closing quote
-        return false;
-    }
 
 	bool is_number(const std::string& s)
 	{
@@ -78,97 +26,76 @@ namespace Lumina
 			s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
 	}
 
+	bool is_alnum(const std::string& s)
+	{
+		return !s.empty() && std::find_if(s.begin(),
+			s.end(), [](unsigned char c) { return !std::isalnum(c); }) == s.end();
+	}
+
+	void skipSpace(std::stringstream& lineStream)
+	{
+		while (lineStream.peek() != EOF && isspace(lineStream.peek()))
+		{
+			char ch;
+
+			lineStream.get(ch);
+		}
+	}
+
 	bool getword(std::stringstream& lineStream, std::string& word)
 	{
         word.clear();
 
-        if (lineStream.peek() == EOF)
-            return (false);
-
-
-        while (lineStream.peek() != EOF && isspace(lineStream.peek()))
-        {
-            char ch;
-
-            lineStream.get(ch);
-        }
-
-		if (lineStream.peek() == EOF)
-			return (false);
-
-        std::string remainingLine = lineStream.str().substr(lineStream.tellg());
-        std::string_view lineView(remainingLine);
-
-        for (const auto& keyword : keywords)
-        {
-            if (startsWith(lineView, keyword))
-            {
-                word = keyword;
-                lineStream.seekg(lineStream.tellg() + std::streamoff(keyword.length()));
-                return true;
-            }
-        }
+		skipSpace(lineStream);
 
         char ch;
 
         while (lineStream.get(ch))
         {
-            if (std::isspace(ch))
-            {
-                if (!word.empty())
-                {
-                    lineStream.unget();
-                    return true;
-                }
-            }
-			else if (is_number(word) == true && (std::isdigit(ch) || (ch == '.' && !word.empty() && std::isdigit(word.back()))))
-            {
-                word += ch;
-                if (ch == '.')
-                {
-                    while (lineStream.get(ch) && std::isdigit(ch))
-                    {
-                        word += ch;
-                    }
-                    lineStream.unget();
-                    return true;
-                }
-            }
-			else if (ch == '\"')
+			if (ch == ' ')
 			{
-				word += ch;
-				getStringLitteral(lineStream, word);
 				return (true);
 			}
-			else if (ch == '!')
+			else if (word.empty() == false && isalnum(ch) == 0 && ch != '_')
+			{
+				if (ch != '.' || is_number(word) == false)
+				{
+					lineStream.unget();
+					return (true);
+				}
+			}
+			else if (isalnum(ch) == 0 && ch != '_')
 			{
 				word += ch;
-				if (lineStream.peek() != '=')
-					return (true);
+				return (true);
 			}
-			else if (ch == '=')
-			{
-				word += ch;
-				if (lineStream.peek() != '=')
-					return (true);
-			}
-            else if (std::ispunct(ch) && ch != '_')
-            {
-                if (!word.empty())
-                {
-                    lineStream.unget();
-                    return true;
-                }
-                word += ch;
-                return true;
-            }
-            else
-            {
-                word += ch;
-            }
+            word += ch;
         }
 
         return !word.empty();
+	}
+
+	void parseLine(const std::string& line, std::vector<Tokenizer::Token>& tokens, size_t lineNumber)
+	{
+		std::stringstream lineStream(line);
+
+		std::string word;
+        while (getword(lineStream, word))
+        {
+            Lumina::Tokenizer::Token token;
+
+            token.content = word;
+            token.line = lineNumber;
+            token.fullLine = line;
+            if (lineStream.peek() == EOF)
+                token.column = line.size() - word.length();
+            else
+                token.column = static_cast<size_t>(lineStream.tellg()) - word.length();
+
+            token.type = Tokenizer::Token::Type::Unknown;
+
+            tokens.push_back(token);
+        }
 	}
 
 	std::string convertTabulationToSpace(const std::string& line)
@@ -191,128 +118,139 @@ namespace Lumina
 		return result;
 	}
 
-	void parseLine(const std::string& line, std::vector<Tokenizer::Token>& tokens, size_t lineNumber)
+	void Tokenizer::generateTokens(std::stringstream p_codeStream, std::vector<Tokenizer::Token>& p_tokens)
 	{
-		std::stringstream lineStream(line);
+		std::string line;
+		size_t lineNumber = 0;
+		while (getline(p_codeStream, line))
+		{
+			parseLine(line, p_tokens, lineNumber);
+			lineNumber++;
+		}
+	}
 
-		std::string word;
-        while (getword(lineStream, word))
-        {
-            Lumina::Tokenizer::Token token;
-            token.content = word;
-            token.line = lineNumber;
-            token.fullLine = line;
-            if (lineStream.peek() == EOF)
-                token.column = line.size() - word.length();
-            else
-                token.column = static_cast<size_t>(lineStream.tellg()) - word.length();
+	void Tokenizer::mergeTokens(std::vector<Tokenizer::Token>& p_tokens)
+	{
+		std::vector<std::string> mergedValue = {
+			"//", "/*", "*/", "::", "<=", ">=", "&&", "||", "->"
+		};
 
-            // Determine token type based on the word content
-            if (word == "#include")
-            {
-                token.type = Lumina::Tokenizer::Token::Type::Include;
-            }
-			else if (word == "Input" || word == "VertexPass" || word == "FragmentPass")
-			{
-				token.type = Lumina::Tokenizer::Token::Type::PipelineFlow;
-			}
-            else if (word == "struct" || word == "AttributeBlock" || word == "ConstantBlock" || word == "Texture" ||
-					 word == "namespace" || word == "return" || word == "discard" ||
-					 word == "if" || word == "else" || word == "while" || word == "for")
-            {
-                token.type = Lumina::Tokenizer::Token::Type::Keyword;
-            }
-            else if (word == "->")
-            {
-                token.type = Lumina::Tokenizer::Token::Type::PipelineFlowSeparator;
-            }
-            else if (std::isdigit(word[0]))
-            {
-                token.type = Lumina::Tokenizer::Token::Type::Number;
-            }
-            else if (word[0] == '\"')
-            {
-                token.type = Lumina::Tokenizer::Token::Type::StringLiteral;
-            }
-            else if (word == "=")
-            {
-                token.type = Lumina::Tokenizer::Token::Type::Assignator;
-            }
-            else if (word == ";")
-            {
-                token.type = Lumina::Tokenizer::Token::Type::EndOfSentence;
-            }
-			else if (word == ":")
-			{
-				token.type = Lumina::Tokenizer::Token::Type::Separator;
-			}
-			else if (word == "--" || word == "++")
-			{
-				token.type = Lumina::Tokenizer::Token::Type::Incrementer;
-			}
-            else if (word == "+" || word == "-" || word == "*" || word == "/" ||
-                word == "!=" || word == "==" || word == "&&" || word == "||" ||
-                word == "<" || word == "<=" || word == ">" || word == ">=" ||
-                word == "%" || word == "&" || word == "|" || word == "^" ||
-                word == "!" || word == "~")
-            {
-                token.type = Lumina::Tokenizer::Token::Type::Operator;
-            }
-            else if (word == ",")
-            {
-                token.type = Lumina::Tokenizer::Token::Type::Comma;
-            }
-            else if (word == ".")
-            {
-                token.type = Lumina::Tokenizer::Token::Type::Accessor;
-            }
-            else if (word == "{" || word == "}")
-            {
-                token.type = (word == "{") ? Lumina::Tokenizer::Token::Type::BodyOpener : Lumina::Tokenizer::Token::Type::BodyCloser;
-            }
-            else if (word == "(" || word == ")")
-            {
-                token.type = (word == "(") ? Lumina::Tokenizer::Token::Type::ParenthesisOpener : Lumina::Tokenizer::Token::Type::ParenthesisCloser;
-            }
-            else if (word == "::")
-            {
-                token.type = Lumina::Tokenizer::Token::Type::NamespaceSeparator;
-            }
-            else if (word == "//")
-            {
-                token.type = Lumina::Tokenizer::Token::Type::SingleLineComment;
-            }
-            else if (word == "/*")
-            {
-                token.type = Lumina::Tokenizer::Token::Type::MultilineComment;
-            }
-            else if (word == "*/")
-            {
-                token.type = Lumina::Tokenizer::Token::Type::EndOfMultilineComment;
-            }
-            else
-            {
-                token.type = Lumina::Tokenizer::Token::Type::Identifier;
-            }
+		// Create a map to quickly check if a combination is in the mergedValue list
+		std::unordered_set<std::string> mergedSet(mergedValue.begin(), mergedValue.end());
 
-            tokens.push_back(token);
-        }
+		std::vector<Tokenizer::Token> mergedTokens;
+		size_t i = 0;
+
+		while (i < p_tokens.size())
+		{
+			std::string combinedContent = p_tokens[i].content;
+			size_t j = i + 1;
+
+			// Check if the next token forms a merged value with the current token
+			while (j < p_tokens.size() && mergedSet.find(combinedContent + p_tokens[j].content) != mergedSet.end())
+			{
+				combinedContent += p_tokens[j].content;
+				j++;
+			}
+
+			// If we found a combination, merge the tokens
+			if (combinedContent != p_tokens[i].content)
+			{
+				Tokenizer::Token mergedToken = p_tokens[i];
+				mergedToken.content = combinedContent;
+
+				// Adjust the column to the starting column of the first token in the sequence
+				mergedToken.column = p_tokens[i].column;
+
+				mergedTokens.push_back(mergedToken);
+				i = j; // Skip the merged tokens
+			}
+			else
+			{
+				mergedTokens.push_back(p_tokens[i]);
+				i++;
+			}
+		}
+
+		p_tokens = std::move(mergedTokens);
+	}
+
+	void Tokenizer::assignTokensType(std::vector<Tokenizer::Token>& p_tokens)
+	{
+		std::unordered_map<std::string, Tokenizer::Token::Type> tokenTypeMap = {
+			{"//", Token::Type::SingleLineComment},
+			{"/*", Token::Type::MultiLineCommentStart},
+			{"*/", Token::Type::MultiLineCommentStop},
+			{"#", Token::Type::Include},
+			{"->", Token::Type::PipelineSeparator},
+			{":", Token::Type::Separator},
+			{"struct", Token::Type::Structure},
+			{"::", Token::Type::Namespace},
+			{"(", Token::Type::OpenedParenthesis},
+			{")", Token::Type::ClosedParenthesis},
+			{",", Token::Type::Comma},
+			{";", Token::Type::EndOfSentence},
+			{"{", Token::Type::BodyOpener},
+			{"}", Token::Type::BodyCloser},
+			{"if", Token::Type::IfStatement},
+			{"while", Token::Type::WhileStatement},
+			{"for", Token::Type::ForStatement},
+			{"=", Token::Type::Assignator},
+			{"\"", Token::Type::DoubleQuote},
+			{".", Token::Type::Accessor},
+			{"<", Token::Type::Operator},
+			{">", Token::Type::Operator},
+			{"<=", Token::Type::Operator},
+			{">=", Token::Type::Operator},
+			{"&&", Token::Type::Operator},
+			{"||", Token::Type::Operator},
+			{"*", Token::Type::Operator},
+			{"+", Token::Type::Operator},
+			{"-", Token::Type::Operator},
+			{"/", Token::Type::Operator},
+			{"%", Token::Type::Operator},
+			{"struct", Token::Type::Structure},
+			{"AttributeBlock", Token::Type::AttributeBlock},
+			{"ConstantBlock", Token::Type::ConstantBlock}
+		};
+
+		for (auto& token : p_tokens)
+		{
+			// Check if the token content matches any predefined type
+			auto it = tokenTypeMap.find(token.content);
+			if (it != tokenTypeMap.end())
+			{
+				token.type = it->second;
+				continue;
+			}
+
+			// Check if the token is a number
+			if (is_number(token.content))
+			{
+				token.type = Token::Type::Number;
+				continue;
+			}
+
+			// Check if the token is an identifier (name)
+			if (is_alpha(token.content) || is_alnum(token.content))
+			{
+				token.type = Token::Type::Identifier;
+				continue;
+			}
+
+			// Default to unknown if no type is matched
+			token.type = Token::Type::Unknown;
+		}
+
 	}
 
 	std::vector<Tokenizer::Token> Tokenizer::tokenize(const std::string& p_code)
 	{
 		std::vector<Tokenizer::Token> tokens;
 
-		std::string code = convertTabulationToSpace(p_code);
-		std::stringstream codeStream(code);
-
-		std::string line;
-        size_t lineNumber = 0;
-		while (getline(codeStream, line))
-		{
-			parseLine(line, tokens, lineNumber);
-            lineNumber++;
-		}
+		generateTokens(std::stringstream(convertTabulationToSpace(p_code)), tokens);
+		mergeTokens(tokens);
+		assignTokensType(tokens);
 
 		return tokens;
 	}
