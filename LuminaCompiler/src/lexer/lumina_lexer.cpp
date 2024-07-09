@@ -34,6 +34,7 @@ namespace Lumina
 		consume(result, TokenType::Separator, "Expected a token \":\"");
 		consume(result, TokenType::Identifier, "Unexpected token found");
 		consume(result, TokenType::Identifier, "Unexpected token found");
+		consume(result, TokenType::EndOfSentence, "Expected a token \";\"");
 
 		return (result);
 	}
@@ -121,6 +122,17 @@ namespace Lumina
 		return (result);
 	}
 
+	Lexer::Instruction Lexer::parseStructure()
+	{
+		Lexer::Instruction result;
+
+		result.type = Instruction::Type::Structure;
+
+
+
+		return (result);
+	}
+
 	Lexer::Result Lexer::execute(const std::vector<Tokenizer::Token>& p_tokens)
 	{
 		_result = Result();
@@ -152,6 +164,11 @@ namespace Lumina
 						instruction = parsePipelineFlow();
 					else
 						instruction = parsePipelineDefinition();
+					break;
+				}
+				case TokenType::Structure:
+				{
+
 					break;
 				}
 				default:

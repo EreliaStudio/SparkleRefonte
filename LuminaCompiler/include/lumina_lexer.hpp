@@ -21,7 +21,8 @@ namespace Lumina
 			{
 				Include,
 				PipelineFlow,
-				PipelineDefinition
+				PipelineDefinition,
+				Structure
 			};
 
 			Type type;
@@ -69,6 +70,7 @@ namespace Lumina
 		Instruction parsePipelineFlow();
 		Instruction parsePipelineDefinition();
 		Instruction parseInclude();
+		Instruction parseStructure();
 
 	public:
 		Lexer();

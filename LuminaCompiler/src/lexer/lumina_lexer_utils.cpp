@@ -26,6 +26,8 @@ namespace Lumina
 			p_os << "PipelineFlow"; break;
 		case Lexer::Instruction::Type::PipelineDefinition:
 			p_os << "PipelineDefinition"; break;
+		case Lexer::Instruction::Type::Structure:
+			p_os << "Structure"; break;
 		default:
 			p_os << "Undefined type name"; break;
 		}
