@@ -98,6 +98,7 @@ namespace Lumina
         {
 			if (ch == ' ')
 			{
+				lineStream.unget();
 				return (true);
 			}
 			else if (word.empty() == false && isalnum(ch) == 0 && ch != '_')

@@ -1,5 +1,7 @@
 #include "lumina_lexer.hpp"
 
+#include <iomanip>
+
 namespace Lumina
 {
 	void Lexer::Instruction::insert(const Tokenizer::Token& p_token)
@@ -12,6 +14,45 @@ namespace Lumina
 		tokens.push_back(Tokenizer::Token{ Tokenizer::Token::Type::MetaToken, "", nestedInstructions.size(), 0, ""});
 
 		nestedInstructions.push_back(p_instruction);
+	}
+
+	std::ostream& operator << (std::ostream& p_os, const Lexer::Instruction::Type& p_type)
+	{
+		switch (p_type)
+		{
+		case Lexer::Instruction::Type::Include:
+			p_os << "Include"; break;
+		case Lexer::Instruction::Type::PipelineFlow:
+			p_os << "PipelineFlow"; break;
+		case Lexer::Instruction::Type::PipelineDefinition:
+			p_os << "PipelineDefinition"; break;
+		default:
+			p_os << "Undefined type name"; break;
+		}
+		return (p_os);
+	}
+
+	void Lexer::Instruction::print(size_t p_tabulation) const
+	{
+		std::string tabulation = std::string(p_tabulation, ' ');
+
+		size_t index = 0;
+		for (const auto& token : tokens)
+		{
+			if (token.type != Tokenizer::Token::Type::MetaToken)
+			{
+				if (index != 0)
+					std::cout << " ";
+				std::cout << token.content;
+				index++;
+			}
+			else
+			{
+				std::cout << std::endl;
+				nestedInstructions[token.line].print(p_tabulation + 4);
+				std::cout << tabulation;
+			}
+		}
 	}
 
 	Lexer::Lexer() :
@@ -61,7 +102,19 @@ namespace Lumina
 
 	void Lexer::insertError(const std::string& p_error)
 	{
-		_result._errors.push_back(CompilationError(p_error, currentToken().line, currentToken().fullLine, currentToken().column, currentToken().content.size());
+		_result.errors.push_back(CompilationError(p_error, currentToken().line, currentToken().fullLine, currentToken().column, currentToken().content.size()));
+	}
+
+	void Lexer::skipToken()
+	{
+		_index++;
+	}
+
+	void Lexer::skipLine()
+	{
+		size_t line = currentToken().line;
+		while (hasTokenLeft() == true && currentToken().line == line)
+			skipToken();
 	}
 
 	void Lexer::consume(Lexer::Instruction& p_instruction)
@@ -86,6 +139,48 @@ namespace Lumina
 		{
 			insertError(p_errorMessage);
 			throw std::runtime_error(p_errorMessage);
+		}
+		consume(p_instruction);
+	}
+
+	void Lexer::consume(Instruction& p_instruction, TokenType p_expectedTokenType, const std::string& p_expectedTokenContent, const std::string& p_errorMessage)
+	{
+		if (currentToken().type != p_expectedTokenType || currentToken().content != p_expectedTokenContent)
+		{
+			insertError(p_errorMessage);
+			throw std::runtime_error(p_errorMessage);
+		}
+		consume(p_instruction);
+	}
+
+	void Lexer::consumeMultiple(Instruction& p_instruction, TokenType p_expectedTokenType, const std::vector<std::string>& p_expectedTokenContents, const std::string& p_errorMessage)
+	{
+		if (currentToken().type != p_expectedTokenType)
+		{
+			insertError(p_errorMessage);
+			throw std::runtime_error(p_errorMessage);
+		}
+
+		bool found = false;
+		for (size_t i = 0; found == false && i < p_expectedTokenContents.size(); i++)
+		{
+			if (currentToken().content == p_expectedTokenContents[i])
+			{
+				found = true;
+			}
+		}
+
+		if (found == false)
+		{
+			std::string errorMessage = "Invalid token value. Expected : ";
+			for (size_t i = 0; i < p_expectedTokenContents.size(); i++)
+			{
+				if (i != 0)
+					errorMessage += " - ";
+				errorMessage += p_expectedTokenContents[i];
+			}
+			insertError(errorMessage);
+			throw std::runtime_error(errorMessage);
 		}
 		consume(p_instruction);
 	}

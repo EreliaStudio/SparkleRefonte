@@ -17,16 +17,28 @@ namespace Lumina
 
 		struct Instruction
 		{
+			enum class Type
+			{
+				Include,
+				PipelineFlow,
+				PipelineDefinition
+			};
+
+			Type type;
 			std::vector<Tokenizer::Token> tokens;
 			std::vector<Instruction> nestedInstructions;
 
 			void insert(const Tokenizer::Token& p_token);
 			void insertNestedInstruction(const Instruction& p_instruction);
+
+			friend std::ostream& operator << (std::ostream& p_os, const Instruction::Type& p_type);
+			void print(size_t p_tabulation = 0) const;
 		};
 
 		struct Result
 		{
-			std::vector<CompilationError> _errors;
+			std::vector<Instruction> instructions;
+			std::vector<CompilationError> errors;
 		};
 
 	private:		
@@ -44,10 +56,19 @@ namespace Lumina
 		const Tokenizer::Token& tokenAtIndex(size_t index) const;
 
 		void insertError(const std::string& p_error);
+		void skipToken();
+		void skipLine();
 		void consume(Instruction& p_instruction);
 		void consume(Instruction& p_instruction, TokenType p_expectedTokenType);
 		void consume(Instruction& p_instruction, TokenType p_expectedTokenType, const std::string& p_errorMessage);
+		void consume(Instruction& p_instruction, TokenType p_expectedTokenType, const std::string& p_expectedTokenContent, const std::string& p_errorMessage);
+		void consumeMultiple(Instruction& p_instruction, TokenType p_expectedTokenType, const std::vector<std::string>& p_expectedTokenContents, const std::string& p_errorMessage);
 
+		void skipComment();
+
+		Instruction parsePipelineFlow();
+		Instruction parsePipelineDefinition();
+		Instruction parseInclude();
 
 	public:
 		Lexer();

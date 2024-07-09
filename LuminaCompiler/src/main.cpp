@@ -26,10 +26,22 @@ int main(int argc, char** argv)
 	for (const auto& token : tokens)
 	{
 		ouputTokenFile << std::setw(4) << tokenID << " - " << token << std::endl;
-		std::cout << std::setw(4) << tokenID << " - " << token << std::endl;
 		tokenID++;
 	}
 	ouputTokenFile.close();
+
+	Lexer::Result lexerResult = Lexer::checkGrammar(tokens);
+
+	for (const auto& instruction : lexerResult.instructions)
+	{
+		instruction.print();
+		std::cout << std::endl;
+	}
+
+	for (const auto& error : lexerResult.errors)
+	{
+		std::cout << error.what() << std::endl << std::endl;
+	}
 
 	return (0);
 }
