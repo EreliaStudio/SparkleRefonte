@@ -1,5 +1,6 @@
 #include "lumina_lexer.hpp"
 
+#include <fstream>
 #include <iomanip>
 
 namespace Lumina
@@ -52,55 +53,41 @@ namespace Lumina
 			p_os << "WhileStatement"; break;
 		case Lexer::Instruction::Type::ForStatement:
 			p_os << "ForStatement"; break;
+		case Lexer::Instruction::Type::Return:
+			p_os << "Return"; break;
+		case Lexer::Instruction::Type::Discard:
+			p_os << "Discard"; break;
+		case Lexer::Instruction::Type::Instruction:
+			p_os << "Instruction"; break;
+		case Lexer::Instruction::Type::VariableDeclaration:
+			p_os << "VariableDeclaration"; break;
 		default:
 			p_os << "Undefined type name"; break;
 		}
 		return (p_os);
 	}
 
-	void Lexer::Instruction::print(size_t p_tabulation, size_t startingIndex) const
+	void Lexer::Instruction::print(std::fstream& p_outputStream, size_t p_tabulation, size_t p_startingLine) const
 	{
 		std::string tabulation = std::string(p_tabulation, ' ');
 
-		size_t index = startingIndex;
-		for (const auto& token : tokens)
+		size_t currentLine = p_startingLine;
+
+		for (size_t i = 0; i < tokens.size(); i++)
 		{
-			if (token.type == Tokenizer::Token::Type::OpenCurlyBracket ||
-				(token.type == Tokenizer::Token::Type::ClosedCurlyBracket && index != 0) ||
-				token.type == Tokenizer::Token::Type::IfStatement)
+			if (tokens[i].type == Tokenizer::Token::Type::MetaToken)
 			{
-				std::cout << std::endl;
-				index = 0;
-			}
-
-
-			if (token.type != Tokenizer::Token::Type::MetaToken)
-			{
-				if (index != 0)
-					std::cout << " ";
-				else
-					std::cout << tabulation;
-
-				std::cout << token.content;
-
-				index++;
-
-				if (token.type == Tokenizer::Token::Type::OpenCurlyBracket)
-				{
-					std::cout << std::endl;
-					index = 0;
-				}
-				if (index != 1 && token.type == Tokenizer::Token::Type::EndOfSentence)
-				{
-					std::cout << std::endl;
-					index = 0;
-				}
+				nestedInstructions[tokens[i].line].print(p_outputStream, p_tabulation + 4, currentLine);
 			}
 			else
 			{
-				nestedInstructions[token.line].print(p_tabulation + 4, index);
-				if (nestedInstructions[token.line].type == Lexer::Instruction::Type::Symbol)
-					std::cout << std::endl;
+				if (currentLine != tokens[i].line)
+				{
+					currentLine = tokens[i].line;
+					p_outputStream << std::endl << tabulation;
+				}
+
+				p_outputStream << tokens[i].content << " ";
 			}
 		}
 	}
@@ -132,6 +119,11 @@ namespace Lumina
 
 	const Tokenizer::Token& Lexer::currentToken() const
 	{
+		if (_index >= _tokens.size())
+		{
+			throw std::runtime_error("Invalid token index");
+		}
+		
 		return (_tokens[_index]);
 	}
 
@@ -172,6 +164,9 @@ namespace Lumina
 
 	void Lexer::skipLine()
 	{
+		if (hasTokenLeft() == false)
+			return ;
+
 		size_t line = currentToken().line;
 		while (hasTokenLeft() == true && currentToken().line == line)
 			skipToken();

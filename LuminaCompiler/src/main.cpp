@@ -37,11 +37,16 @@ int main(int argc, char** argv)
 		std::cout << error.what() << std::endl << std::endl;
 	}
 
+	std::fstream outputInstructionFile;
+
+	outputInstructionFile.open("resultInstruction.txt", std::ios_base::out);
+
 	for (const auto& instruction : lexerResult.instructions)
 	{
-		instruction.print();
-		std::cout << std::endl;
+		instruction.print(outputInstructionFile);
+		outputInstructionFile << std::endl;
 	}
+	outputInstructionFile.close();
 
 	return (0);
 }

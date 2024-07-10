@@ -35,10 +35,14 @@ namespace Lumina
 				IfStatement,
 				WhileStatement,
 				ForStatement,
-				Return
+				Return,
+				Discard,
+				Instruction,
+				VariableDeclaration,
+				Unknow
 			};
 
-			Type type;
+			Type type = Type::Unknow;
 			std::vector<Tokenizer::Token> tokens;
 			std::vector<Instruction> nestedInstructions;
 
@@ -46,7 +50,7 @@ namespace Lumina
 			void insertNestedInstruction(const Instruction& p_instruction);
 
 			friend std::ostream& operator << (std::ostream& p_os, const Instruction::Type& p_type);
-			void print(size_t p_tabulation = 0, size_t startingIndex = 0) const;
+			void print(std::fstream& p_outputStream, size_t p_tabulation = 0, size_t startingIndex = 0) const;
 		};
 
 		struct Result
@@ -88,6 +92,10 @@ namespace Lumina
 		Instruction parseIfStatement();
 		Instruction parseWhileStatement();
 		Instruction parseForStatement();
+
+		Instruction parseFunctionInstruction();
+		Instruction parseReturn();
+		Instruction parseDiscard();
 
 		Instruction parseBlockBody();
 		Instruction parseSymbolParameters();

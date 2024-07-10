@@ -1,0 +1,6 @@
+Vector3 calculateSpecular ( Vector3 normal , Vector3 lightDir , Vector3 viewDir , float shininess , Vector3 lightColor ) 
+{ 
+        if ( lightingConstants . ambientIntensity < 0.0 || lightingConstants . ambientIntensity > 1.0 ) 
+        { 
+        } 
+} 

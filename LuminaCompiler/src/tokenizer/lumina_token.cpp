@@ -67,6 +67,8 @@ std::string to_string(Lumina::Tokenizer::Token::Type p_type)
 			return ("Number");
 		case Lumina::Tokenizer::Token::Type::Namespace:
 			return ("Namespace");
+		case Lumina::Tokenizer::Token::Type::NamespaceSeparator:
+			return ("NamespaceSeparator");
 		case Lumina::Tokenizer::Token::Type::OpenCurlyBracket:
 			return ("OpenCurlyBracket");
 		case Lumina::Tokenizer::Token::Type::ClosedCurlyBracket:
@@ -83,6 +85,10 @@ std::string to_string(Lumina::Tokenizer::Token::Type p_type)
 			return ("Case");
 		case Lumina::Tokenizer::Token::Type::Break:
 			return ("Break");
+		case Lumina::Tokenizer::Token::Type::Return:
+			return ("Return");
+		case Lumina::Tokenizer::Token::Type::Discard:
+			return ("Discard");
 		case Lumina::Tokenizer::Token::Type::Unknown:
 			return ("Unknown");
 		case Lumina::Tokenizer::Token::Type::MetaToken:

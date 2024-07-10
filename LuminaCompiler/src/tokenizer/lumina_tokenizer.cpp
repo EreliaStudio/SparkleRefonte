@@ -302,7 +302,7 @@ namespace Lumina
 			{"FragmentPass", Token::Type::PipelineFlow},
 			{"->", Token::Type::PipelineSeparator},
 			{":", Token::Type::Separator},
-			{"::", Token::Type::Namespace},
+			{"::", Token::Type::NamespaceSeparator},
 			{"(", Token::Type::OpenParenthesis},
 			{")", Token::Type::ClosedParenthesis},
 			{",", Token::Type::Comma},
@@ -339,7 +339,8 @@ namespace Lumina
 			{"switch", Token::Type::SwitchStatement},
 			{"case", Token::Type::Case},
 			{"break", Token::Type::Break},
-			{"return", Token::Type::Return}
+			{"return", Token::Type::Return},
+			{"discard", Token::Type::Discard}
 		};
 
 		for (auto& token : p_tokens)
@@ -380,11 +381,31 @@ namespace Lumina
 
 	}
 
+	std::string convertTabulationToSpace(const std::string& line)
+	{
+		std::string result;
+		result.reserve(line.size()); // Reserve enough space to avoid multiple reallocations
+
+		for (char c : line)
+		{
+			if (c == '\t')
+			{
+				result.append("    "); // Append four spaces
+			}
+			else
+			{
+				result.push_back(c); // Append the character itself
+			}
+		}
+
+		return result;
+	}
+
 	std::vector<Tokenizer::Token> Tokenizer::tokenize(const std::string& p_code)
 	{
 		std::vector<Tokenizer::Token> tokens;
 
-		generateTokens(std::stringstream(p_code), tokens);
+		generateTokens(std::stringstream(convertTabulationToSpace(p_code)), tokens);
 		mergeTokens(tokens);
 		assignTokensType(tokens);
 

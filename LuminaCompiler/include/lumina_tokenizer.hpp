@@ -36,6 +36,7 @@ namespace Lumina
 				EndOfSentence,
 				Number,
 				Namespace,
+				NamespaceSeparator,
 				OpenCurlyBracket,
 				ClosedCurlyBracket,
 				IfStatement,
@@ -45,6 +46,7 @@ namespace Lumina
 				Case,
 				Break,
 				Return,
+				Discard,
 				Unknown,
 				MetaToken
 			};
