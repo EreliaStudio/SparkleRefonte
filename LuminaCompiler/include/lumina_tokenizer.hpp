@@ -37,7 +37,7 @@ namespace Lumina
 				Number,
 				Namespace,
 				OpenCurlyBracket,
-				CloseCurlyBracket,
+				ClosedCurlyBracket,
 				IfStatement,
 				WhileStatement,
 				ForStatement,

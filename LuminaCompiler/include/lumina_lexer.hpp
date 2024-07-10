@@ -22,7 +22,16 @@ namespace Lumina
 				Include,
 				PipelineFlow,
 				PipelineDefinition,
-				Structure
+				Structure,
+				Attribute,
+				Constant,
+				Body,
+				Expression,
+				CallParameters,
+				Texture,
+				Symbol,
+				SymbolParameters,
+				Namespace
 			};
 
 			Type type;
@@ -33,7 +42,7 @@ namespace Lumina
 			void insertNestedInstruction(const Instruction& p_instruction);
 
 			friend std::ostream& operator << (std::ostream& p_os, const Instruction::Type& p_type);
-			void print(size_t p_tabulation = 0) const;
+			void print(size_t p_tabulation = 0, size_t startingIndex = 0) const;
 		};
 
 		struct Result
@@ -67,10 +76,25 @@ namespace Lumina
 
 		void skipComment();
 
+		Instruction parseCallParameters();
+
+		void expendExpression(Instruction& p_instruction);
+		Instruction parseExpression();
+
+		Instruction parseBlockBody();
+		Instruction parseSymbolParameters();
+		Instruction parseSymbolBody();
+		Instruction parseNamespaceBody();
+
 		Instruction parsePipelineFlow();
 		Instruction parsePipelineDefinition();
 		Instruction parseInclude();
-		Instruction parseStructure();
+		Instruction parseStructureBlock();
+		Instruction parseAttributeBlock();
+		Instruction parseConstantBlock();
+		Instruction parseTexture();
+		Instruction parseSymbol();
+		Instruction parseNamespace();
 
 	public:
 		Lexer();

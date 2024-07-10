@@ -28,31 +28,72 @@ namespace Lumina
 			p_os << "PipelineDefinition"; break;
 		case Lexer::Instruction::Type::Structure:
 			p_os << "Structure"; break;
+		case Lexer::Instruction::Type::Attribute:
+			p_os << "Attribute"; break;
+		case Lexer::Instruction::Type::Constant:
+			p_os << "Constant"; break;
+		case Lexer::Instruction::Type::Body:
+			p_os << "Body"; break;
+		case Lexer::Instruction::Type::Expression:
+			p_os << "Expression"; break;
+		case Lexer::Instruction::Type::CallParameters:
+			p_os << "CallParameters"; break;
+		case Lexer::Instruction::Type::Texture:
+			p_os << "Texture"; break;
+		case Lexer::Instruction::Type::Symbol:
+			p_os << "Symbol"; break;
+		case Lexer::Instruction::Type::SymbolParameters:
+			p_os << "SymbolParameters"; break;
+		case Lexer::Instruction::Type::Namespace:
+			p_os << "Namespace"; break;
 		default:
 			p_os << "Undefined type name"; break;
 		}
 		return (p_os);
 	}
 
-	void Lexer::Instruction::print(size_t p_tabulation) const
+	void Lexer::Instruction::print(size_t p_tabulation, size_t startingIndex) const
 	{
 		std::string tabulation = std::string(p_tabulation, ' ');
 
-		size_t index = 0;
+		size_t index = startingIndex;
 		for (const auto& token : tokens)
 		{
+			if (token.type == Tokenizer::Token::Type::OpenCurlyBracket ||
+				(token.type == Tokenizer::Token::Type::ClosedCurlyBracket && index != 0))
+			{
+				std::cout << std::endl;
+				index = 0;
+			}
+
+
 			if (token.type != Tokenizer::Token::Type::MetaToken)
 			{
 				if (index != 0)
 					std::cout << " ";
+				else
+					std::cout << tabulation;
+
 				std::cout << token.content;
+
 				index++;
+
+				if (token.type == Tokenizer::Token::Type::OpenCurlyBracket)
+				{
+					std::cout << std::endl;
+					index = 0;
+				}
+				if (index != 1 && token.type == Tokenizer::Token::Type::EndOfSentence)
+				{
+					std::cout << std::endl;
+					index = 0;
+				}
 			}
 			else
 			{
-				std::cout << std::endl;
-				nestedInstructions[token.line].print(p_tabulation + 4);
-				std::cout << tabulation;
+				nestedInstructions[token.line].print(p_tabulation + 4, index);
+				if (nestedInstructions[token.line].type == Lexer::Instruction::Type::Symbol)
+					std::cout << std::endl;
 			}
 		}
 	}

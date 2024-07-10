@@ -33,8 +33,17 @@ ConstantBlock lightingConstants
 {
     Vector3 lightPosition = Vector3(test(10), 10.0, 10.0) + Vector3(10.0, 10.0, 10.0);
     Vector3 lightColor = Vector3(1.0);
-    float ambientIntensity = 0.1 + 15.0;
+    float ambientIntensity = 0b0001000 + 0x16F15;
 };
+
+vec3 flyingFunction(vec2 paramA, float paramB);
+
+vec3 flyingFunction(vec2 paramA, float paramB)
+{
+    vec2 merge = paramA / 2;
+
+    return (vec3(merge.x, merge.y, paramB));
+}
 
 /* Create namespaces
 with multiline comments */

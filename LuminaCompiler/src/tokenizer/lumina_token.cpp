@@ -69,8 +69,8 @@ std::string to_string(Lumina::Tokenizer::Token::Type p_type)
 			return ("Namespace");
 		case Lumina::Tokenizer::Token::Type::OpenCurlyBracket:
 			return ("OpenCurlyBracket");
-		case Lumina::Tokenizer::Token::Type::CloseCurlyBracket:
-			return ("CloseCurlyBracket");
+		case Lumina::Tokenizer::Token::Type::ClosedCurlyBracket:
+			return ("ClosedCurlyBracket");
 		case Lumina::Tokenizer::Token::Type::IfStatement:
 			return ("IfStatement");
 		case Lumina::Tokenizer::Token::Type::WhileStatement:

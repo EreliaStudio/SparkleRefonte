@@ -20,6 +20,42 @@ namespace Lumina
 			s.end(), [](unsigned char c) { return !std::isalpha(c); }) == s.end();
 	}
 
+	bool is_hex(const std::string& s)
+	{
+		if (s.size() < 3 || s[0] != '0' || s[1] != 'x')
+		{
+			return false;
+		}
+
+		for (auto it = s.begin() + 2; it != s.end(); ++it)
+		{
+			if (!std::isdigit(*it) && !(*it >= 'a' && *it <= 'f') && !(*it >= 'A' && *it <= 'F'))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	bool is_binary(const std::string& s)
+	{
+		if (s.size() < 3 || s[0] != '0' || s[1] != 'b')
+		{
+			return false;
+		}
+
+		for (auto it = s.begin() + 2; it != s.end(); ++it)
+		{
+			if (*it != '0' && *it != '1')
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	bool is_number(const std::string& s)
 	{
 		if (s.empty())
@@ -103,10 +139,13 @@ namespace Lumina
 			}
 			else if (word.empty() == false && isalnum(ch) == 0 && ch != '_')
 			{
-				if (ch != '.' || is_number(word) == false)
+				if ((ch != '.' && ch != 'x' && ch != 'b') ||
+					(ch == '.' && is_number(word) == false) ||
+					(ch == 'x' && is_hex(word) == false) ||
+					(ch == 'b' && is_binary(word) == false))
 				{
 					lineStream.unget();
-					return (true);
+					return true;
 				}
 			}
 			else if (isalnum(ch) == 0 && ch != '_')
@@ -232,14 +271,13 @@ namespace Lumina
 			{"FragmentPass", Token::Type::PipelineFlow},
 			{"->", Token::Type::PipelineSeparator},
 			{":", Token::Type::Separator},
-			{"struct", Token::Type::Structure},
 			{"::", Token::Type::Namespace},
 			{"(", Token::Type::OpenParenthesis},
 			{")", Token::Type::ClosedParenthesis},
 			{",", Token::Type::Comma},
 			{";", Token::Type::EndOfSentence},
 			{"{", Token::Type::OpenCurlyBracket},
-			{"}", Token::Type::CloseCurlyBracket},
+			{"}", Token::Type::ClosedCurlyBracket},
 			{"if", Token::Type::IfStatement},
 			{"while", Token::Type::WhileStatement},
 			{"for", Token::Type::ForStatement},
@@ -259,7 +297,9 @@ namespace Lumina
 			{"%", Token::Type::Operator},
 			{"struct", Token::Type::Structure},
 			{"AttributeBlock", Token::Type::AttributeBlock},
-			{"ConstantBlock", Token::Type::ConstantBlock}
+			{"ConstantBlock", Token::Type::ConstantBlock},
+			{"Texture", Token::Type::Texture},
+			{"namespace", Token::Type::Namespace}
 		};
 
 		for (auto& token : p_tokens)
@@ -273,7 +313,9 @@ namespace Lumina
 			}
 
 			// Check if the token is a number
-			if (is_number(token.content))
+			if (is_number(token.content) ||
+				is_hex(token.content) ||
+				is_binary(token.content))
 			{
 				token.type = Token::Type::Number;
 				continue;
