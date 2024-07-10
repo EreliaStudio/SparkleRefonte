@@ -26,7 +26,7 @@ namespace Lumina
 	{
 		Lexer::Instruction result;
 
-		result.type = Instruction::Type::Include;
+		result.type = Instruction::Type::PipelineFlow;
 
 		consumeMultiple(result, TokenType::PipelineFlow, { "VertexPass", "Input" }, "Expected a valid pipeline flow");
 		consume(result, TokenType::PipelineSeparator, "Expected a token \"->\"");
@@ -43,7 +43,7 @@ namespace Lumina
 	{
 		Lexer::Instruction result;
 
-		result.type = Instruction::Type::Include;
+		result.type = Instruction::Type::PipelineDefinition;
 
 		consumeMultiple(result, TokenType::PipelineFlow, {"VertexPass", "FragmentPass"}, "Expected a valid pipeline pass definition");
 		consume(result, TokenType::OpenParenthesis, "Expected a token \"(\"");
@@ -55,56 +55,14 @@ namespace Lumina
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parseInclude()
+	Lexer::Instruction Lexer::parseImport()
 	{
 		Lexer::Instruction result;
 
-		result.type = Instruction::Type::Include;
+		result.type = Instruction::Type::Import;
 
-		consume(result, TokenType::Include);
-
-		if (currentToken().content == "<")
-		{
-			size_t index = 0;
-
-			consume(result, TokenType::Operator, "<", "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
-			while (currentToken().content != ">")
-			{
-				if (index != 0)
-				{
-					consume(result, TokenType::Operator, "/", "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
-				}
-				consume(result, TokenType::Identifier, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
-				if (currentToken().type == TokenType::Accessor)
-				{
-					consume(result, TokenType::Accessor, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
-					consume(result, TokenType::Identifier, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
-				}
-				index++;
-			}
-			consume(result, TokenType::Operator, ">", "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
-		}
-		else if (currentToken().type == TokenType::DoubleQuote)
-		{
-			size_t index = 0;
-			
-			consume(result, TokenType::DoubleQuote, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
-			while (currentToken().type != TokenType::DoubleQuote)
-			{
-				if (index != 0)
-				{
-					consume(result, TokenType::Operator, "/", "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
-				}
-				consume(result, TokenType::Identifier, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
-				if (currentToken().type == TokenType::Accessor)
-				{
-					consume(result, TokenType::Accessor, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
-					consume(result, TokenType::Identifier, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
-				}
-				index++;
-			}
-			consume(result, TokenType::DoubleQuote, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
-		}
+		consume(result, TokenType::Import, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+		consume(result, TokenType::StringLitterals, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 
 		return (result);
 	}
@@ -263,6 +221,35 @@ namespace Lumina
 		return (result);
 	}
 
+	Lexer::Instruction Lexer::parseIfStatement()
+	{
+		Lexer::Instruction result;
+
+		result.type = Instruction::Type::IfStatement;
+
+
+
+		return (result);
+	}
+	
+	Lexer::Instruction Lexer::parseWhileStatement()
+	{
+		Lexer::Instruction result;
+
+		result.type = Instruction::Type::WhileStatement;
+
+		return (result);
+	}
+	
+	Lexer::Instruction Lexer::parseForStatement()
+	{
+		Lexer::Instruction result;
+
+		result.type = Instruction::Type::ForStatement;
+
+		return (result);
+	}
+
 	Lexer::Instruction Lexer::parseSymbolBody()
 	{
 		Lexer::Instruction result;
@@ -279,6 +266,28 @@ namespace Lumina
 			
 			switch (currentToken().type)
 			{
+			/*case TokenType::IfStatement:
+			{
+				result.insertNestedInstruction(parseIfStatement());
+				break;
+			}
+			case TokenType::WhileStatement:
+			{
+				result.insertNestedInstruction(parseWhileStatement());
+				break;
+			}
+			case TokenType::ForStatement:
+			{
+				result.insertNestedInstruction(parseForStatement());
+				break;
+			}
+			case TokenType::OpenCurlyBracket:
+			{
+				consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"");
+				result.insertNestedInstruction(parseSymbolBody());
+				consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\"");
+				break;
+			}*/
 			default:
 			{
 				skipToken();
@@ -413,9 +422,9 @@ namespace Lumina
 					skipComment();
 					break;
 				}
-				case TokenType::Include:
+				case TokenType::Import:
 				{
-					instruction = parseInclude();
+					instruction = parseImport();
 					break;
 				}
 				case TokenType::PipelineFlow:
@@ -464,12 +473,11 @@ namespace Lumina
 				}
 				_result.instructions.push_back(instruction);
 			}
-			catch (...)
+			catch (std::runtime_error e)
 			{
 				skipLine();
 			}
 		}
-
 		return (_result);
 	}
 }

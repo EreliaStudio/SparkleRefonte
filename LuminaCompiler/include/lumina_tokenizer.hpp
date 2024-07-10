@@ -16,8 +16,8 @@ namespace Lumina
 				SingleLineComment,
 				MultiLineCommentStart,
 				MultiLineCommentStop,
-				Include,
-				DoubleQuote,
+				Import,
+				StringLitterals,
 				PipelineFlow,
 				PipelineSeparator,
 				Separator,
@@ -41,6 +41,10 @@ namespace Lumina
 				IfStatement,
 				WhileStatement,
 				ForStatement,
+				SwitchStatement,
+				Case,
+				Break,
+				Return,
 				Unknown,
 				MetaToken
 			};

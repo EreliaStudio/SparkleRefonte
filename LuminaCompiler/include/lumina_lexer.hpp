@@ -19,7 +19,7 @@ namespace Lumina
 		{
 			enum class Type
 			{
-				Include,
+				Import,
 				PipelineFlow,
 				PipelineDefinition,
 				Structure,
@@ -31,7 +31,11 @@ namespace Lumina
 				Texture,
 				Symbol,
 				SymbolParameters,
-				Namespace
+				Namespace,
+				IfStatement,
+				WhileStatement,
+				ForStatement,
+				Return
 			};
 
 			Type type;
@@ -81,6 +85,10 @@ namespace Lumina
 		void expendExpression(Instruction& p_instruction);
 		Instruction parseExpression();
 
+		Instruction parseIfStatement();
+		Instruction parseWhileStatement();
+		Instruction parseForStatement();
+
 		Instruction parseBlockBody();
 		Instruction parseSymbolParameters();
 		Instruction parseSymbolBody();
@@ -88,7 +96,7 @@ namespace Lumina
 
 		Instruction parsePipelineFlow();
 		Instruction parsePipelineDefinition();
-		Instruction parseInclude();
+		Instruction parseImport();
 		Instruction parseStructureBlock();
 		Instruction parseAttributeBlock();
 		Instruction parseConstantBlock();

@@ -5,11 +5,11 @@ Lumina is a wrapper around GLSL behavior, designed to simplify the creation of s
 
 ## Syntax Elements
 
-### Includes
-- Include predefined or user-provided files.
+### Import
+- Import predefined section of code or user-provided files.
 ```cpp
-#include <predefinedInclude>
-#include "shader/userProvidedInclude.lum"
+import "predefinedInclude"
+import "shader/userProvidedInclude.lum"
 ```
 
 ### Pipeline Flow

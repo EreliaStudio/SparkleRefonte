@@ -27,10 +27,10 @@ std::string to_string(Lumina::Tokenizer::Token::Type p_type)
 			return ("MultiLineCommentStart");
 		case Lumina::Tokenizer::Token::Type::MultiLineCommentStop:
 			return ("MultiLineCommentStop");
-		case Lumina::Tokenizer::Token::Type::Include:
-			return ("Include");
-		case Lumina::Tokenizer::Token::Type::DoubleQuote:
-			return ("DoubleQuote");
+		case Lumina::Tokenizer::Token::Type::Import:
+			return ("Import");
+		case Lumina::Tokenizer::Token::Type::StringLitterals:
+			return ("StringLitterals");
 		case Lumina::Tokenizer::Token::Type::PipelineFlow:
 			return ("PipelineFlow");
 		case Lumina::Tokenizer::Token::Type::PipelineSeparator:
@@ -77,6 +77,12 @@ std::string to_string(Lumina::Tokenizer::Token::Type p_type)
 			return ("WhileStatement");
 		case Lumina::Tokenizer::Token::Type::ForStatement:
 			return ("ForStatement");
+		case Lumina::Tokenizer::Token::Type::SwitchStatement:
+			return ("SwitchStatement");
+		case Lumina::Tokenizer::Token::Type::Case:
+			return ("Case");
+		case Lumina::Tokenizer::Token::Type::Break:
+			return ("Break");
 		case Lumina::Tokenizer::Token::Type::Unknown:
 			return ("Unknown");
 		case Lumina::Tokenizer::Token::Type::MetaToken:

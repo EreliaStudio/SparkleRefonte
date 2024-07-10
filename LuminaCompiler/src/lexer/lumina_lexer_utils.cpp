@@ -20,8 +20,8 @@ namespace Lumina
 	{
 		switch (p_type)
 		{
-		case Lexer::Instruction::Type::Include:
-			p_os << "Include"; break;
+		case Lexer::Instruction::Type::Import:
+			p_os << "Import"; break;
 		case Lexer::Instruction::Type::PipelineFlow:
 			p_os << "PipelineFlow"; break;
 		case Lexer::Instruction::Type::PipelineDefinition:
@@ -46,6 +46,12 @@ namespace Lumina
 			p_os << "SymbolParameters"; break;
 		case Lexer::Instruction::Type::Namespace:
 			p_os << "Namespace"; break;
+		case Lexer::Instruction::Type::IfStatement:
+			p_os << "IfStatement"; break;
+		case Lexer::Instruction::Type::WhileStatement:
+			p_os << "WhileStatement"; break;
+		case Lexer::Instruction::Type::ForStatement:
+			p_os << "ForStatement"; break;
 		default:
 			p_os << "Undefined type name"; break;
 		}
