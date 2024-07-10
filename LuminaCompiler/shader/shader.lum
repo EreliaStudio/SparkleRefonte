@@ -96,9 +96,14 @@ VertexPass()
 FragmentPass()
 {
     // Error handling example
-    if (lightingConstants.ambientIntensity < 0.0 || lightingConstants.ambientIntensity > 1.0)
+    if (((lightingConstants.ambientIntensity) < 0.0) || lightingConstants.ambientIntensity > 1.0)
     {
         raiseException("Ambient intensity must be between 0 and 1. Current value: %d", lightingConstants.ambientIntensity);
+    }
+
+    if (vec2(0, 0).x == 1)
+    {
+        coucou;
     }
 
     Vector3 normal = normalize(fragNormal);

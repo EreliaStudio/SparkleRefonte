@@ -140,7 +140,6 @@ namespace Lumina
 				word += ch;
 				if (ch == '\"')
 				{
-					DEBUG_LINE();
 					return (true);
 				}
 			}
@@ -248,7 +247,7 @@ namespace Lumina
 	void Tokenizer::mergeTokens(std::vector<Tokenizer::Token>& p_tokens)
 	{
 		std::vector<std::string> mergedValue = {
-			"//", "/*", "*/", "::", "<=", ">=", "&&", "||", "->", "++", "--"
+			"//", "/*", "*/", "::", "==", "!=", "<=", ">=", "&&", "||", "->", "++", "--"
 		};
 
 		// Create a map to quickly check if a combination is in the mergedValue list
@@ -315,6 +314,8 @@ namespace Lumina
 			{"for", Token::Type::ForStatement},
 			{"=", Token::Type::Assignator},
 			{".", Token::Type::Accessor},
+			{"==", Token::Type::Operator},
+			{"!=", Token::Type::Operator},
 			{"<", Token::Type::Operator},
 			{">", Token::Type::Operator},
 			{"<=", Token::Type::Operator},
@@ -328,6 +329,8 @@ namespace Lumina
 			{"--", Token::Type::Operator},
 			{"/", Token::Type::Operator},
 			{"%", Token::Type::Operator},
+			{"&&", Token::Type::Operator},
+			{"||", Token::Type::Operator},
 			{"struct", Token::Type::Structure},
 			{"AttributeBlock", Token::Type::AttributeBlock},
 			{"ConstantBlock", Token::Type::ConstantBlock},

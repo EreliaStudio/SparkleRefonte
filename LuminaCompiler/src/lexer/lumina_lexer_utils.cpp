@@ -66,7 +66,8 @@ namespace Lumina
 		for (const auto& token : tokens)
 		{
 			if (token.type == Tokenizer::Token::Type::OpenCurlyBracket ||
-				(token.type == Tokenizer::Token::Type::ClosedCurlyBracket && index != 0))
+				(token.type == Tokenizer::Token::Type::ClosedCurlyBracket && index != 0) ||
+				token.type == Tokenizer::Token::Type::IfStatement)
 			{
 				std::cout << std::endl;
 				index = 0;
@@ -151,7 +152,17 @@ namespace Lumina
 
 	void Lexer::insertError(const std::string& p_error)
 	{
-		_result.errors.push_back(CompilationError(p_error, currentToken().line, currentToken().fullLine, currentToken().column, currentToken().content.size()));
+		if (currentToken().type != TokenType::StringLitterals)
+			_result.errors.push_back(CompilationError(p_error, currentToken().line, currentToken().fullLine, currentToken().column, currentToken().content.size()));
+		else
+		{
+			size_t stringLenght = 1;
+			while (currentToken().content[stringLenght] != '\n' && currentToken().content[stringLenght] != '\"')
+				stringLenght++;
+			if (currentToken().content[stringLenght] != '\"')
+				stringLenght++;
+			_result.errors.push_back(CompilationError(p_error, currentToken().line, currentToken().fullLine, currentToken().column, stringLenght));
+		}
 	}
 
 	void Lexer::skipToken()

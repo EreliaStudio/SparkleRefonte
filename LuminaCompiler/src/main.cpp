@@ -32,15 +32,15 @@ int main(int argc, char** argv)
 
 	Lexer::Result lexerResult = Lexer::checkGrammar(tokens);
 
+	for (const auto& error : lexerResult.errors)
+	{
+		std::cout << error.what() << std::endl << std::endl;
+	}
+
 	for (const auto& instruction : lexerResult.instructions)
 	{
 		instruction.print();
 		std::cout << std::endl;
-	}
-
-	for (const auto& error : lexerResult.errors)
-	{
-		std::cout << error.what() << std::endl << std::endl;
 	}
 
 	return (0);

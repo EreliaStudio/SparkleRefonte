@@ -28,13 +28,13 @@ namespace Lumina
 
 		result.type = Instruction::Type::PipelineFlow;
 
-		consumeMultiple(result, TokenType::PipelineFlow, { "VertexPass", "Input" }, "Expected a valid pipeline flow");
-		consume(result, TokenType::PipelineSeparator, "Expected a token \"->\"");
-		consumeMultiple(result, TokenType::PipelineFlow, { "VertexPass", "FragmentPass" }, "Expected a valid pipeline flow");
-		consume(result, TokenType::Separator, "Expected a token \":\"");
+		consumeMultiple(result, TokenType::PipelineFlow, { "VertexPass", "Input" }, "Expected a valid pipeline flow " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+		consume(result, TokenType::PipelineSeparator, "Expected a token \"->\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+		consumeMultiple(result, TokenType::PipelineFlow, { "VertexPass", "FragmentPass" }, "Expected a valid pipeline flow " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+		consume(result, TokenType::Separator, "Expected a token \":\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		consume(result, TokenType::Identifier, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		consume(result, TokenType::Identifier, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
-		consume(result, TokenType::EndOfSentence, "Expected a token \";\"");
+		consume(result, TokenType::EndOfSentence, "Expected a token \";\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 
 		return (result);
 	}
@@ -45,12 +45,12 @@ namespace Lumina
 
 		result.type = Instruction::Type::PipelineDefinition;
 
-		consumeMultiple(result, TokenType::PipelineFlow, {"VertexPass", "FragmentPass"}, "Expected a valid pipeline pass definition");
-		consume(result, TokenType::OpenParenthesis, "Expected a token \"(\"");
-		consume(result, TokenType::ClosedParenthesis, "Expected a token \")\"");
-		consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"");
+		consumeMultiple(result, TokenType::PipelineFlow, { "VertexPass", "FragmentPass" }, "Expected a valid pipeline pass definition");
+		consume(result, TokenType::OpenParenthesis, "Expected a token \"(\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+		consume(result, TokenType::ClosedParenthesis, "Expected a token \")\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+		consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		result.insertNestedInstruction(parseSymbolBody());
-		consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\"");
+		consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 
 		return (result);
 	}
@@ -77,7 +77,7 @@ namespace Lumina
 		{
 			result.insertNestedInstruction(parseExpression());
 			if (currentToken().type != TokenType::ClosedParenthesis)
-				consume(result, TokenType::Comma, "Expected parameter separator \",\"");
+				consume(result, TokenType::Comma, "Expected parameter separator \",\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		}
 
 		return (result);
@@ -97,9 +97,17 @@ namespace Lumina
 			consume(p_instruction, TokenType::Identifier, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 			if (currentToken().type == TokenType::OpenParenthesis)
 			{
-				consume(p_instruction, TokenType::OpenParenthesis, "Expected body opener token \"(\"");
+				consume(p_instruction, TokenType::OpenParenthesis, "Expected opened parenthesis token \"(\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 				p_instruction.insertNestedInstruction(parseCallParameters());
-				consume(p_instruction, TokenType::ClosedParenthesis, "Expected body opener token \")\"");
+				consume(p_instruction, TokenType::ClosedParenthesis, "Expected closed parenthesis token \")\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+			}
+			if (currentToken().type == TokenType::Accessor)
+			{
+				while (currentToken().type == TokenType::Accessor)
+				{
+					consume(p_instruction, TokenType::Accessor, "Expected an accessor token \".\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+					consume(p_instruction, TokenType::Identifier, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+				}
 			}
 			break;
 		}
@@ -112,12 +120,23 @@ namespace Lumina
 
 		result.type = Instruction::Type::Expression;
 
-		expendExpression(result);
+		if (currentToken().type == TokenType::OpenParenthesis)
+		{
+			consume(result, TokenType::OpenParenthesis, "Expected a \"(\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+			result.insertNestedInstruction(parseExpression());
+			consume(result, TokenType::ClosedParenthesis, "Expected a \")\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+		}
+		else
+		{
+			expendExpression(result);
+		}
+
 		while (currentToken().type == TokenType::Operator)
 		{
 			consume(result, TokenType::Operator, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 			expendExpression(result);
 		}
+		
 
 		return (result);
 	}
@@ -134,10 +153,10 @@ namespace Lumina
 			consume(result, TokenType::Identifier, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 			if (currentToken().type == TokenType::Assignator)
 			{
-				consume(result, TokenType::Assignator, "Expected an assignator token \"=\"");
+				consume(result, TokenType::Assignator, "Expected an assignator token \"=\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 				result.insertNestedInstruction(parseExpression());
 			}
-			consume(result, TokenType::EndOfSentence, "Expected a token \";\"");
+			consume(result, TokenType::EndOfSentence, "Expected a token \";\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		}
 
 		return (result);
@@ -151,14 +170,14 @@ namespace Lumina
 
 		consume(result, TokenType::Structure, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		consume(result, TokenType::Identifier, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
-		consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"");
+		consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		result.insertNestedInstruction(parseBlockBody());
-		consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\"");
-		consume(result, TokenType::EndOfSentence, "Expected a token \";\"");
+		consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+		consume(result, TokenType::EndOfSentence, "Expected a token \";\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 
 		return (result);
 	}
-	
+
 	Lexer::Instruction Lexer::parseAttributeBlock()
 	{
 		Lexer::Instruction result;
@@ -167,10 +186,10 @@ namespace Lumina
 
 		consume(result, TokenType::AttributeBlock, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		consume(result, TokenType::Identifier, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
-		consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"");
+		consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		result.insertNestedInstruction(parseBlockBody());
-		consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\"");
-		consume(result, TokenType::EndOfSentence, "Expected a token \";\"");
+		consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+		consume(result, TokenType::EndOfSentence, "Expected a token \";\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 
 		return (result);
 	}
@@ -183,10 +202,10 @@ namespace Lumina
 
 		consume(result, TokenType::ConstantBlock, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		consume(result, TokenType::Identifier, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
-		consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"");
+		consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		result.insertNestedInstruction(parseBlockBody());
-		consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\"");
-		consume(result, TokenType::EndOfSentence, "Expected a token \";\"");
+		consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+		consume(result, TokenType::EndOfSentence, "Expected a token \";\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 
 		return (result);
 	}
@@ -199,7 +218,7 @@ namespace Lumina
 
 		consume(result, TokenType::Texture, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		consume(result, TokenType::Identifier, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
-		consume(result, TokenType::EndOfSentence, "Expected a token \";\"");
+		consume(result, TokenType::EndOfSentence, "Expected a token \";\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 
 		return (result);
 	}
@@ -215,7 +234,7 @@ namespace Lumina
 			consume(result, TokenType::Identifier, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 			consume(result, TokenType::Identifier, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 			if (currentToken().type != TokenType::ClosedParenthesis)
-				consume(result, TokenType::Comma, "Expected a token \",\"");
+				consume(result, TokenType::Comma, "Expected a token \",\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		}
 
 		return (result);
@@ -227,11 +246,25 @@ namespace Lumina
 
 		result.type = Instruction::Type::IfStatement;
 
+		consume(result, TokenType::IfStatement, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+		consume(result, TokenType::OpenParenthesis, "Expected a \"(\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+		result.insertNestedInstruction(parseExpression());
+		consume(result, TokenType::ClosedParenthesis, "Expected a \")\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 
+		if (currentToken().type == TokenType::OpenCurlyBracket)
+		{
+			consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+			result.insertNestedInstruction(parseSymbolBody());
+			consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+		}
+		else
+		{
+			result.insertNestedInstruction(parseOnelinerSymbolBody());
+		}
 
 		return (result);
 	}
-	
+
 	Lexer::Instruction Lexer::parseWhileStatement()
 	{
 		Lexer::Instruction result;
@@ -240,12 +273,61 @@ namespace Lumina
 
 		return (result);
 	}
-	
+
 	Lexer::Instruction Lexer::parseForStatement()
 	{
 		Lexer::Instruction result;
 
 		result.type = Instruction::Type::ForStatement;
+
+		return (result);
+	}
+
+	Lexer::Instruction Lexer::parseOnelinerSymbolBody()
+	{
+		Lexer::Instruction result;
+
+		result.type = Instruction::Type::Body;
+
+		do
+		{
+			switch (currentToken().type)
+			{
+			case TokenType::EndOfSentence:
+			{
+
+				break;
+			}
+			case TokenType::IfStatement:
+			{
+				result.insertNestedInstruction(parseIfStatement());
+				break;
+			}
+			/*case TokenType::WhileStatement:
+			{
+				result.insertNestedInstruction(parseWhileStatement());
+				break;
+			}
+			case TokenType::ForStatement:
+			{
+				result.insertNestedInstruction(parseForStatement());
+				break;
+			}*/
+			case TokenType::OpenCurlyBracket:
+			{
+				consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+				result.insertNestedInstruction(parseSymbolBody());
+				consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
+				break;
+			}
+			default:
+			{
+				skipToken();
+				break;
+			}
+			}
+
+		} while (currentToken().type != TokenType::EndOfSentence);
 
 		return (result);
 	}
@@ -263,15 +345,15 @@ namespace Lumina
 			{
 				nbCurly++;
 			}
-			
+
 			switch (currentToken().type)
 			{
-			/*case TokenType::IfStatement:
+			case TokenType::IfStatement:
 			{
 				result.insertNestedInstruction(parseIfStatement());
 				break;
 			}
-			case TokenType::WhileStatement:
+			/*case TokenType::WhileStatement:
 			{
 				result.insertNestedInstruction(parseWhileStatement());
 				break;
@@ -280,28 +362,27 @@ namespace Lumina
 			{
 				result.insertNestedInstruction(parseForStatement());
 				break;
-			}
+			}*/
 			case TokenType::OpenCurlyBracket:
 			{
-				consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"");
+				consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 				result.insertNestedInstruction(parseSymbolBody());
-				consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\"");
+				consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 				break;
-			}*/
+			}
 			default:
 			{
 				skipToken();
 				break;
 			}
 			}
-			
+
 			if (currentToken().type == TokenType::ClosedCurlyBracket)
 			{
 				nbCurly--;
 			}
 
-		}
-		while (currentToken().type != TokenType::ClosedCurlyBracket || nbCurly != 0);
+		} while (currentToken().type != TokenType::ClosedCurlyBracket && nbCurly != 0);
 
 		return (result);
 	}
@@ -314,18 +395,18 @@ namespace Lumina
 
 		consume(result, TokenType::Identifier, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		consume(result, TokenType::Identifier, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
-		consume(result, TokenType::OpenParenthesis, "Expected body opener token \"(\"");
+		consume(result, TokenType::OpenParenthesis, "Expected opened parenthesis token \"(\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		result.insertNestedInstruction(parseSymbolParameters());
-		consume(result, TokenType::ClosedParenthesis, "Expected body opener token \")\"");
+		consume(result, TokenType::ClosedParenthesis, "Expected closed parenthesis token \")\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		if (currentToken().type == TokenType::EndOfSentence)
 		{
-			consume(result, TokenType::EndOfSentence, "Expected a token \";\"");
+			consume(result, TokenType::EndOfSentence, "Expected a token \";\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		}
 		else
 		{
-			consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"");
+			consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 			result.insertNestedInstruction(parseSymbolBody());
-			consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\"");
+			consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		}
 
 		return (result);
@@ -395,9 +476,9 @@ namespace Lumina
 
 		consume(result, TokenType::Namespace, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		consume(result, TokenType::Identifier, "Unexpected token found " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
-		consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"");
+		consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 		result.insertNestedInstruction(parseNamespaceBody());
-		consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\"");
+		consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\" " + std::string(__FUNCTION__) + "::" + std::to_string(__LINE__));
 
 		return (result);
 	}
