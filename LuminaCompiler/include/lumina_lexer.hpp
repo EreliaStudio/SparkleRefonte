@@ -97,7 +97,7 @@ namespace Lumina
 		Instruction parseReturn();
 		Instruction parseDiscard();
 
-		Instruction parseBlockBody();
+		Instruction parseBlockBody(bool p_parseAssignator);
 		Instruction parseSymbolParameters();
 		Instruction parseOnelinerSymbolBody();
 		Instruction parseSymbolBody();
