@@ -13,8 +13,7 @@ VertexPass -> FragmentPass: Vector2 fragUV;
 // Define custom structures
 struct Material
 {
-    Vector3
-    _diffuseColor;
+    Vector3 _diffuseColor;
     Vector3 /* Test */ _specularColor;
     float _shininess;
 };
