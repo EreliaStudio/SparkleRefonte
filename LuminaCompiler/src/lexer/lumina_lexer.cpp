@@ -341,6 +341,7 @@ namespace Lumina
 
 		Lexer::Instruction expression;
 
+		skipComment();
 		if (currentToken().type == TokenType::Identifier && nextToken().type == TokenType::Identifier)
 		{
 			expression.type = Instruction::Type::VariableDeclaration;
@@ -349,6 +350,7 @@ namespace Lumina
 			skipComment();
 			consume(expression, TokenType::Identifier, "Expected a variable name" + DEBUG_INFORMATION);
 
+			skipComment();
 			if (currentToken().type == TokenType::Assignator)
 			{
 				consume(expression, TokenType::Assignator, "Expected an assignator token \"=\"" + DEBUG_INFORMATION);
@@ -366,6 +368,7 @@ namespace Lumina
 			}
 		}
 
+		skipComment();
 		consume(expression, TokenType::EndOfSentence, "Expected a token \";\"" + DEBUG_INFORMATION);
 		result.insertNestedInstruction(expression);
 
