@@ -77,7 +77,7 @@ namespace Lumina
 		{
 			if (tokens[i].type == Tokenizer::Token::Type::MetaToken)
 			{
-				nestedInstructions[tokens[i].line].print(p_outputStream, p_tabulation + 4, currentLine);
+				nestedInstructions[tokens[i].line].print(p_outputStream, p_tabulation + (nestedInstructions.size() != tokens.size() ? 4 : 0), currentLine);
 			}
 			else
 			{
@@ -129,7 +129,14 @@ namespace Lumina
 
 	const Tokenizer::Token& Lexer::nextToken()
 	{
-		return (_tokens[_index + 1]);
+		size_t firstIndex = _index;
+		_index++;
+
+		skipComment();
+
+		size_t offset = _index - firstIndex;
+		_index = firstIndex;
+		return (_tokens[_index + offset]);
 	}
 
 	const Tokenizer::Token& Lexer::tokenAtIndex(size_t index) const

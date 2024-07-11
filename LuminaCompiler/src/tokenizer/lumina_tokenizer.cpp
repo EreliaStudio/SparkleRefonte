@@ -146,6 +146,52 @@ namespace Lumina
 			return (true);
 		}
 
+		if (lineStream.peek() == '/')
+		{
+			char ch1;
+			lineStream.get(ch1);
+			if (lineStream.peek() == '*')
+			{
+				lineStream.get(ch1);
+				word = "/*";
+				return (true);
+			}
+			else if (lineStream.peek() == '/')
+			{
+				lineStream.get(ch1);
+				word = "//";
+				return (true);
+			}
+			else
+			{
+				lineStream.unget();
+			}
+		}
+		else if (lineStream.peek() == '*')
+		{
+			char ch1; 
+			lineStream.get(ch1);
+			if (lineStream.peek() == '/')
+			{
+				char ch2;
+				lineStream.get(ch2);
+				if (lineStream.peek() != '/')
+				{
+					word = "*/";
+					return (true);
+				}
+				else
+				{
+					lineStream.unget();
+					lineStream.unget();
+				}
+			}
+			else
+			{
+				lineStream.unget();
+			}
+		}
+
 		skipSpace(lineStream);
 
         char ch;
@@ -247,7 +293,7 @@ namespace Lumina
 	void Tokenizer::mergeTokens(std::vector<Tokenizer::Token>& p_tokens)
 	{
 		std::vector<std::string> mergedValue = {
-			"//", "/*", "*/", "::", "==", "!=", "<=", ">=", "&&", "||", "->", "++", "--"
+			"::", "==", "!=", "<=", ">=", "&&", "||", "->", "++", "--"
 		};
 
 		// Create a map to quickly check if a combination is in the mergedValue list
