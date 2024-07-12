@@ -1,10 +1,7 @@
 
-
 import "lumina/screenConstants" 
 
-
 import "shader/customInclude.lum" 
-
 
 Input -> VertexPass : Vector3 vertexPosition ; 
 
@@ -18,7 +15,6 @@ VertexPass -> FragmentPass : Vector3 fragNormal ;
 
 VertexPass -> FragmentPass : Vector2 fragUV ; 
 
-
 struct Material 
 { 
     Vector3 _diffuseColor ; 
@@ -26,16 +22,13 @@ struct Material
     float _shininess ; 
 } ; 
 
-
 Texture diffuseTexture ; 
-
 
 AttributeBlock modelAttributes 
 { 
     Matrix4x4 modelMatrix = Matrix4x4 ( ) ; 
     Matrix4x4 normalMatrix ; 
 } ; 
-
 
 ConstantBlock lightingConstants 
 { 
@@ -54,7 +47,6 @@ Vector3 calculateDiffuse ( Vector3 normal , Vector3 lightDir , Vector3 lightColo
     float diff = max ( dot ( normal , lightDir ) , 0.0 ) ; 
     return diff * lightColor ; 
 } 
-
 
 namespace Lighting 
 { 
@@ -84,7 +76,6 @@ namespace Lighting
     } 
 } 
 
-
 VertexPass ( ) 
 { 
     Vector4 worldPosition = modelAttributes . modelMatrix * Vector4 ( vertexPosition , 1.0 ) ; 
@@ -94,7 +85,6 @@ VertexPass ( )
     Vector4 clipSpacePosition = screenConstants . canvasMVP * worldPosition ; 
     pixelPosition = clipSpacePosition ; 
 } 
-
 
 FragmentPass ( ) 
 { 

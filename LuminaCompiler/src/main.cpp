@@ -1,6 +1,7 @@
 #include <iostream>
 #include "lumina_tokenizer.hpp"
 #include "lumina_lexer.hpp"
+#include "lumina_parser.hpp"
 #include "lumina_utils.hpp"
 
 #include <fstream>
@@ -47,6 +48,13 @@ int main(int argc, char** argv)
 		outputInstructionFile << std::endl;
 	}
 	outputInstructionFile.close();
+
+	Lumina::Parser::Result parserResult = Lumina::Parser::validate(lexerResult.instructions);
+
+	for (const auto& error : parserResult.errors)
+	{
+		std::cout << error.what() << std::endl << std::endl;
+	}
 
 	return (0);
 }

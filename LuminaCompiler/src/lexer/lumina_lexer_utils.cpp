@@ -17,53 +17,57 @@ namespace Lumina
 		nestedInstructions.push_back(p_instruction);
 	}
 
-	std::ostream& operator << (std::ostream& p_os, const Lexer::Instruction::Type& p_type)
+	std::string to_string(const Lumina::Lexer::Instruction::Type& p_type)
 	{
 		switch (p_type)
 		{
 		case Lexer::Instruction::Type::Import:
-			p_os << "Import"; break;
+			return ("Import");
 		case Lexer::Instruction::Type::PipelineFlow:
-			p_os << "PipelineFlow"; break;
+			return ("PipelineFlow");
 		case Lexer::Instruction::Type::PipelineDefinition:
-			p_os << "PipelineDefinition"; break;
+			return ("PipelineDefinition");
 		case Lexer::Instruction::Type::Structure:
-			p_os << "Structure"; break;
+			return ("Structure");
 		case Lexer::Instruction::Type::Attribute:
-			p_os << "Attribute"; break;
+			return ("Attribute");
 		case Lexer::Instruction::Type::Constant:
-			p_os << "Constant"; break;
+			return ("Constant");
 		case Lexer::Instruction::Type::Body:
-			p_os << "Body"; break;
+			return ("Body");
 		case Lexer::Instruction::Type::Expression:
-			p_os << "Expression"; break;
+			return ("Expression");
 		case Lexer::Instruction::Type::CallParameters:
-			p_os << "CallParameters"; break;
+			return ("CallParameters");
 		case Lexer::Instruction::Type::Texture:
-			p_os << "Texture"; break;
+			return ("Texture");
 		case Lexer::Instruction::Type::Symbol:
-			p_os << "Symbol"; break;
+			return ("Symbol");
 		case Lexer::Instruction::Type::SymbolParameters:
-			p_os << "SymbolParameters"; break;
+			return ("SymbolParameters");
 		case Lexer::Instruction::Type::Namespace:
-			p_os << "Namespace"; break;
+			return ("Namespace");
 		case Lexer::Instruction::Type::IfStatement:
-			p_os << "IfStatement"; break;
+			return ("IfStatement");
 		case Lexer::Instruction::Type::WhileStatement:
-			p_os << "WhileStatement"; break;
+			return ("WhileStatement");
 		case Lexer::Instruction::Type::ForStatement:
-			p_os << "ForStatement"; break;
+			return ("ForStatement");
 		case Lexer::Instruction::Type::Return:
-			p_os << "Return"; break;
+			return ("Return");
 		case Lexer::Instruction::Type::Discard:
-			p_os << "Discard"; break;
+			return ("Discard");
 		case Lexer::Instruction::Type::Instruction:
-			p_os << "Instruction"; break;
+			return ("Instruction");
 		case Lexer::Instruction::Type::VariableDeclaration:
-			p_os << "VariableDeclaration"; break;
-		default:
-			p_os << "Undefined type name"; break;
+			return ("VariableDeclaration");
 		}
+		return ("Undefined type");
+	}
+
+	std::ostream& operator << (std::ostream& p_os, const Lexer::Instruction::Type& p_type)
+	{
+		p_os << to_string(p_type);
 		return (p_os);
 	}
 

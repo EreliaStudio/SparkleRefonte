@@ -120,3 +120,5 @@ namespace Lumina
 		static Result checkGrammar(const std::vector<Tokenizer::Token>& p_tokens);
 	};
 }
+
+std::string to_string(const Lumina::Lexer::Instruction::Type& p_type);

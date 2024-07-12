@@ -805,7 +805,10 @@ namespace Lumina
 					throw std::runtime_error("Unexpected token found" + DEBUG_INFORMATION);
 				}
 				}
-				_result.instructions.push_back(instruction);
+				if (instruction.tokens.size() != 0)
+				{
+					_result.instructions.push_back(instruction);
+				}
 			}
 			catch (std::runtime_error e)
 			{

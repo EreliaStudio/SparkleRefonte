@@ -147,12 +147,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="predefined_import\importB" />
     <ClCompile Include="src\lexer\lumina_lexer.cpp" />
     <ClCompile Include="src\lexer\lumina_lexer_utils.cpp" />
     <ClCompile Include="src\luimna_error.cpp" />
     <ClCompile Include="src\lumina_utils.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\lumina_compiler.cpp" />
+    <ClCompile Include="src\parser\lumina_parser.cpp" />
+    <ClCompile Include="src\parser\lumina_parser_utils.cpp" />
     <ClCompile Include="src\tokenizer\lumina_token.cpp" />
     <ClCompile Include="src\tokenizer\lumina_tokenizer.cpp" />
   </ItemGroup>
@@ -167,6 +170,13 @@
   <ItemGroup>
     <None Include="doc\lumina_build_in.md" />
     <None Include="doc\lumina_cheat_sheet.md" />
+    <None Include="predefined_import\attribute\attributeA.lum" />
+    <None Include="predefined_import\attribute\attributeB.lum" />
+    <None Include="predefined_import\constant\constantA.lum" />
+    <None Include="predefined_import\functions\functionA.lum" />
+    <None Include="predefined_import\functions\functionB.lum" />
+    <None Include="predefined_import\importA" />
+    <None Include="predefined_import\structure\structureA.lum" />
     <None Include="shader\shader.lum" />
   </ItemGroup>
   <ItemGroup>
