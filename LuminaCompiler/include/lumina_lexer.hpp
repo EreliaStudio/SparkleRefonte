@@ -15,7 +15,7 @@ namespace Lumina
 	public:
 		using TokenType = Tokenizer::Token::Type;
 
-		struct Instruction
+		struct Element
 		{
 			enum class Type
 			{
@@ -37,26 +37,29 @@ namespace Lumina
 				ForStatement,
 				Return,
 				Discard,
-				Instruction,
+				Element,
 				VariableDeclaration,
+				VariableAssignation,
 				Unknow
 			};
 
 			Type type = Type::Unknow;
 			std::vector<Tokenizer::Token> tokens;
-			std::vector<Instruction> nestedInstructions;
+			std::vector<Element> nestedElement;
 
 			void insert(const Tokenizer::Token& p_token);
-			void insertNestedInstruction(const Instruction& p_instruction);
+			void insertNestedElement(const Element& p_instruction);
 
-			friend std::ostream& operator << (std::ostream& p_os, const Instruction::Type& p_type);
+			friend std::ostream& operator << (std::ostream& p_os, const Element::Type& p_type);
 			void print(std::fstream& p_outputStream, size_t p_tabulation = 0, size_t p_startingLine = 0) const;
 			void print(size_t p_tabulation = 0, size_t p_startingLine = 0) const;
+
+			std::vector<Tokenizer::Token> tokenList() const;
 		};
 
 		struct Result
 		{
-			std::vector<Instruction> instructions;
+			std::vector<Element> elements;
 			std::vector<CompilationError> errors;
 		};
 
@@ -77,42 +80,49 @@ namespace Lumina
 		void insertError(const std::string& p_error);
 		void skipToken();
 		void skipLine();
-		void consume(Instruction& p_instruction);
-		void consume(Instruction& p_instruction, TokenType p_expectedTokenType);
-		void consume(Instruction& p_instruction, TokenType p_expectedTokenType, const std::string& p_errorMessage);
-		void consume(Instruction& p_instruction, TokenType p_expectedTokenType, const std::string& p_expectedTokenContent, const std::string& p_errorMessage);
-		void consumeMultiple(Instruction& p_instruction, TokenType p_expectedTokenType, const std::vector<std::string>& p_expectedTokenContents, const std::string& p_errorMessage);
+		void consume(Element& p_instruction);
+		void consume(Element& p_instruction, TokenType p_expectedTokenType);
+		void consume(Element& p_instruction, TokenType p_expectedTokenType, const std::string& p_errorMessage);
+		void consume(Element& p_instruction, TokenType p_expectedTokenType, const std::string& p_expectedTokenContent, const std::string& p_errorMessage);
+		void consumeMultiple(Element& p_instruction, TokenType p_expectedTokenType, const std::vector<std::string>& p_expectedTokenContents, const std::string& p_errorMessage);
+
+		void consumeAndReassign(Element& p_instruction, TokenType p_reassignedTokenType);
+		void consumeAndReassign(Element& p_instruction, TokenType p_expectedTokenType, TokenType p_reassignedTokenType);
+		void consumeAndReassign(Element& p_instruction, TokenType p_expectedTokenType, TokenType p_reassignedTokenType, const std::string& p_errorMessage);
+		void consumeAndReassign(Element& p_instruction, TokenType p_expectedTokenType, const std::string& p_expectedTokenContent, TokenType p_reassignedTokenType, const std::string& p_errorMessage);
+		void consumeMultipleAndReassign(Element& p_instruction, TokenType p_expectedTokenType, const std::vector<std::string>& p_expectedTokenContents, TokenType p_reassignedTokenType, const std::string& p_errorMessage);
+
 
 		void skipComment();
 
-		Instruction parseCallParameters();
+		Element parseCallParameters();
 
-		void expendExpression(Instruction& p_instruction);
-		Instruction parseExpression();
+		void expendExpression(Element& p_instruction);
+		Element parseExpression();
 
-		Instruction parseIfStatement();
-		Instruction parseWhileStatement();
-		Instruction parseForStatement();
+		Element parseIfStatement();
+		Element parseWhileStatement();
+		Element parseForStatement();
 
-		Instruction parseFunctionInstruction();
-		Instruction parseReturn();
-		Instruction parseDiscard();
+		Element parseFunctionInstruction();
+		Element parseReturn();
+		Element parseDiscard();
 
-		Instruction parseBlockBody(bool p_parseAssignator);
-		Instruction parseSymbolParameters();
-		Instruction parseOnelinerSymbolBody();
-		Instruction parseSymbolBody();
-		Instruction parseNamespaceBody();
+		Element parseBlockBody(bool p_parseAssignator);
+		Element parseSymbolParameters();
+		Element parseOnelinerSymbolBody();
+		Element parseSymbolBody();
+		Element parseNamespaceBody();
 
-		Instruction parsePipelineFlow();
-		Instruction parsePipelineDefinition();
-		Instruction parseImport();
-		Instruction parseStructureBlock();
-		Instruction parseAttributeBlock();
-		Instruction parseConstantBlock();
-		Instruction parseTexture();
-		Instruction parseSymbol();
-		Instruction parseNamespace();
+		Element parsePipelineFlow();
+		Element parsePipelineDefinition();
+		Element parseImport();
+		Element parseStructureBlock();
+		Element parseAttributeBlock();
+		Element parseConstantBlock();
+		Element parseTexture();
+		Element parseSymbol();
+		Element parseNamespace();
 
 	public:
 		Lexer();
@@ -122,4 +132,4 @@ namespace Lumina
 	};
 }
 
-std::string to_string(const Lumina::Lexer::Instruction::Type& p_type);
+std::string to_string(const Lumina::Lexer::Element::Type& p_type);

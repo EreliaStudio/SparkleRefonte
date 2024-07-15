@@ -42,9 +42,6 @@
     <ClCompile Include="src\parser\lumina_parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\parser\lumina_parser_utils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\lumina_compiler.hpp">

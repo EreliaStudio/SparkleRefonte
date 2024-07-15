@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <filesystem>
 
 namespace Lumina
 {
@@ -35,6 +36,7 @@ namespace Lumina
 				Operator,
 				EndOfSentence,
 				Number,
+				Bool,
 				Namespace,
 				NamespaceSeparator,
 				OpenCurlyBracket,
@@ -48,7 +50,10 @@ namespace Lumina
 				Return,
 				Discard,
 				Unknown,
-				MetaToken
+				MetaToken,
+				Type,
+				Name,
+				SymbolCall
 			};
 
 			friend std::ostream& operator << (std::ostream& p_os, const Type& p_type);
@@ -58,6 +63,7 @@ namespace Lumina
 			size_t line = 0;
 			size_t column = 0;
 			std::string fullLine = "";
+			std::string fileName = "";
 
 			friend std::ostream& operator << (std::ostream& p_os, const Token& p_token);
 		};
@@ -67,7 +73,7 @@ namespace Lumina
 		static void assignTokensType(std::vector<Token>& p_tokens);
 
 	public:
-		static std::vector<Token> tokenize(const std::string& p_code);
+		static std::vector<Token> tokenize(const std::filesystem::path& p_filePath);
 	};
 }
 

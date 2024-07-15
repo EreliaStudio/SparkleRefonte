@@ -2,12 +2,12 @@
 #include "lumina_tokenizer.hpp"
 #include "lumina_lexer.hpp"
 #include "lumina_parser.hpp"
-#include "lumina_utils.hpp"
 
 #include <fstream>
 
 using namespace Lumina;
 
+#include <iomanip>
 
 int main(int argc, char** argv)
 {
@@ -17,7 +17,7 @@ int main(int argc, char** argv)
 		return (0);
 	}
 
-	std::vector<Tokenizer::Token> tokens = Tokenizer::tokenize(readFileAsString(argv[1]));
+	std::vector<Tokenizer::Token> tokens = Tokenizer::tokenize(argv[1]);
 
 	std::fstream ouputTokenFile;
 
@@ -42,14 +42,14 @@ int main(int argc, char** argv)
 
 	outputInstructionFile.open("resultInstruction.txt", std::ios_base::out);
 
-	for (const auto& instruction : lexerResult.instructions)
+	for (const auto& instruction : lexerResult.elements)
 	{
 		instruction.print(outputInstructionFile);
 		outputInstructionFile << std::endl;
 	}
 	outputInstructionFile.close();
 
-	Lumina::Parser::Result parserResult = Lumina::Parser::validate(lexerResult.instructions);
+	Parser::Result parserResult = Parser::checkSemantic(lexerResult.elements);
 
 	for (const auto& error : parserResult.errors)
 	{

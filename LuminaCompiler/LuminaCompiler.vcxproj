@@ -154,7 +154,6 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\lumina_compiler.cpp" />
     <ClCompile Include="src\parser\lumina_parser.cpp" />
-    <ClCompile Include="src\parser\lumina_parser_utils.cpp" />
     <ClCompile Include="src\tokenizer\lumina_token.cpp" />
     <ClCompile Include="src\tokenizer\lumina_tokenizer.cpp" />
   </ItemGroup>

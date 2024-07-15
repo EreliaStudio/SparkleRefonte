@@ -2,183 +2,142 @@
 
 #include "lumina_utils.hpp"
 
+#include "lumina_lexer.hpp"
+
+#include <map>
+
 namespace Lumina
 {
-	void Parser::parseImport()
+	std::set<std::string> importedFiles = {};
+
+	Lexer::Result checkImportValidity(Lexer::Element& p_element)
 	{
-		std::string importName = currentInstruction().tokens[1].content;
+		std::string importName = p_element.tokens[1].content;
 
 		std::string importFilePath = composeFilePath(importName.substr(1, importName.size() - 2)).string();
 
-		if (importFilePath.size() == 0)
+		if (importedFiles.contains(importFilePath) == false)
 		{
-			insertError("Import file [" + currentInstruction().tokens[1].content + "] not found", currentInstruction().tokens[1]);
-			throw std::runtime_error("Invalid header file");
-		}
 
-		if (_alreadyLoadedImport.contains(importFilePath) == false)
-		{
-			std::vector<Tokenizer::Token> tokens = Tokenizer::tokenize(readFileAsString(importFilePath));
-
-			Lexer::Result lexerResult = Lexer::checkGrammar(tokens);
-
-			if (lexerResult.errors.size() != 0)
+			if (importFilePath.size() == 0)
 			{
-				for (auto& error : lexerResult.errors)
-				{
-					_result.errors.push_back(CompilationError("In file [" + importName.substr(1, importName.size() - 2) + "] - " + error.message(), error.lineIndex(), error.line(), error.column(), error.tokenSize()));
-				}
-
-				throw std::runtime_error("Error in header file");
-
+				throw TokenBasedError("Import file [" + importName + "] not found", p_element.tokens[1]);
 			}
 
-			_instructions.insert(_instructions.begin() + _index, lexerResult.instructions.begin(), lexerResult.instructions.end());
+			importedFiles.insert(importFilePath);
 
-			_alreadyLoadedImport.insert(importFilePath);
+			return (Lexer::checkGrammar(Tokenizer::tokenize(importFilePath)));
 		}
+		return {};
 	}
 
-	void Parser::parsePipelineFlow()
+	void parseStructure(Lexer::Element& p_element)
 	{
-		if (currentInstruction().tokens[0].content == "Input")
+
+	}
+
+	Parser::Result parseNamespace(std::vector<Lexer::Element> p_elements)
+	{
+		Parser::Result result;
+
+		for (size_t i = 0; i < p_elements.size(); i++)
 		{
-			if (currentInstruction().tokens[2].content != "VertexPass")
-			{
-				insertError("Invalid pipeline flow ouput : Input can only provide for VertexPass", currentInstruction().tokens[2]);
-				throw std::runtime_error("Error in header file");
-			}
-			_vertexInputs.push_back({ currentInstruction().tokens[4].content, currentInstruction().tokens[5].content });
-		}
-		else if (currentInstruction().tokens[0].content == "VertexPass")
-		{
-			if (currentInstruction().tokens[2].content != "FragmentPass")
-			{
-				insertError("Invalid pipeline flow ouput : VertexPass can only provide for FragmentPass", currentInstruction().tokens[2]);
-				throw std::runtime_error("Error in header file");
-			}
-			_fragmentInputs.push_back({ currentInstruction().tokens[4].content, currentInstruction().tokens[5].content });
-		}
-	}
+			Lexer::Element& element = p_elements[i];
 
-	Parser::Block::Element::Element(const Lexer::Instruction& p_elementInstruction)
-	{
-		type = p_elementInstruction.tokens[0].content;
-		name = p_elementInstruction.tokens[1].content;
-	}
-
-	Parser::Block::Block(const std::string& p_blockName, const Lexer::Instruction& p_blockBodyInstruction)
-	{
-		name = p_blockName;
-		for (const auto& elementInstruction : p_blockBodyInstruction.nestedInstructions)
-		{
-			elements.push_back(Block::Element(elementInstruction));
-		}
-	}
-
-	void Parser::parseStructure()
-	{
-		for (const auto& structure : _structures)
-		{
-			if (structure.name == currentInstruction().tokens[1].content)
-			{
-				insertError("Structure [" + currentInstruction().tokens[1].content + "] already defined", currentInstruction().tokens[1]);
-				throw std::runtime_error("Error in header file");
-			}
-		}
-
-		_structures.push_back(Block(currentInstruction().tokens[1].content, currentInstruction().nestedInstructions[0]));
-	}
-
-	void Parser::parseAttribute()
-	{
-
-	}
-
-	void Parser::parseConstant()
-	{
-
-	}
-
-	void Parser::parseTexture()
-	{
-
-	}
-
-	void Parser::parseSymbol()
-	{
-
-	}
-
-	Parser::Result Parser::execute(const std::vector<Lexer::Instruction>& p_instructions)
-	{
-		_result = Result();
-		_instructions = p_instructions;
-		_index = 0;
-
-		while (hasInstructionLeft() == true)
-		{
 			try
 			{
-			switch (currentInstruction().type)
-			{
-			case InstructionType::Import:
-			{
-				parseImport();
-				break;
-			}
-			case InstructionType::PipelineFlow:
-			{
-				parsePipelineFlow();
-				break;
-			}
-			case InstructionType::Structure:
-			{
-				parseStructure();
-				break;
-			}
-			/*case InstructionType::Attribute:
-			{
-				parseAttribute();
-				break;
-			}
-			case InstructionType::Constant:
-			{
-				parseConstant();
-				break;
-			}
-			case InstructionType::Texture:
-			{
-				parseTexture();
-				break;
-			}
-			case InstructionType::Symbol:
-			{
-				parseSymbol();
-				break;
-			}*/
-			default:
-			{
-				if (currentInstruction().tokens[0].type == Tokenizer::Token::Type::MetaToken)
+				switch (element.type)
 				{
-					insertError("Unexpected instruction detected", currentInstruction().nestedInstructions[currentInstruction().tokens[0].line].tokens[0]);
-				}
-				else
+				case Lexer::Element::Type::Import:
 				{
-					insertError("Unexpected instruction detected", currentInstruction().tokens[0]);
-				}
-				break;
-			}
-			}
+					Lexer::Result lexerResult = checkImportValidity(element);
 
+					for (const auto& error : lexerResult.errors)
+					{
+						result.errors.insert(result.errors.end(), lexerResult.errors.begin(), lexerResult.errors.end());
+					}
+
+					p_elements.insert(p_elements.begin() + i, lexerResult.elements.begin(), lexerResult.elements.end());
+
+
+					break;
+				}
+				default:
+				{
+					throw std::runtime_error("Unrecognized lexer element type [" + to_string(element.type) + "]");
+					break;
+				}
+				}
 			}
-			catch (...)
+			catch (std::runtime_error& e)
 			{
-				
+				std::vector<Tokenizer::Token> tokens = element.tokenList();
+
+				if (tokens.size() != 0)
+					result.errors.push_back(CompilationError(e.what(), tokens[0].fileName, 0, "", 0, 0));
+				else
+					result.errors.push_back(CompilationError(e.what(), "Unknow file", 0, "", 0, 0));
 			}
-			advance();
+			catch (TokenBasedError& e)
+			{
+				result.errors.push_back(CompilationError(e.what(), e.token().fileName, e.token().line, e.token().fullLine, e.token().column, e.token().content.size()));
+			}
 		}
 
-		return (_result);
+		return (result);
+	}
+
+	Parser::Result Parser::checkSemantic(std::vector<Lexer::Element> p_elements)
+	{
+		Parser::Result result;
+
+		for (size_t i = 0; i < p_elements.size(); i++)
+		{
+			Lexer::Element& element = p_elements[i];
+
+			try
+			{
+			switch (element.type)
+			{
+			case Lexer::Element::Type::Import:
+			{
+				Lexer::Result lexerResult = checkImportValidity(element);
+
+				result.errors.insert(result.errors.end(), lexerResult.errors.begin(), lexerResult.errors.end());
+				
+				p_elements.insert(p_elements.begin() + i, lexerResult.elements.begin(), lexerResult.elements.end());
+
+
+				break;
+			}
+			case Lexer::Element::Type::Namespace:
+			{
+				Parser::Result namespaceParserResult = parseNamespace(element.nestedElement);
+
+				result.errors.insert(result.errors.end(), namespaceParserResult.errors.begin(), namespaceParserResult.errors.end());
+			}
+			default :
+			{
+				throw std::runtime_error("Unrecognized lexer element type [" + to_string(element.type) + "]");
+				break;
+			}
+			}
+			}
+			catch (std::runtime_error& e)
+			{
+				std::vector<Tokenizer::Token> tokens = element.tokenList();
+
+				if (tokens.size() != 0)
+					result.errors.push_back(CompilationError(e.what(), tokens[0].fileName, 0, "", 0, 0));
+				else
+					result.errors.push_back(CompilationError(e.what(), "Unknow file", 0, "", 0, 0));
+			}
+			catch (TokenBasedError& e)
+			{
+				result.errors.push_back(CompilationError(e.what(), e.token().fileName, e.token().line, e.token().fullLine, e.token().column, e.token().content.size()));
+			}
+		}
+
+		return (result);
 	}
 }

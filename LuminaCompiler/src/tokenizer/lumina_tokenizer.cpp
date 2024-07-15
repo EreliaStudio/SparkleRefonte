@@ -10,7 +10,7 @@
 
 #include <algorithm>
 
-#define DEBUG_LINE() std::cout << __FUNCTION__ << "::" << __LINE__ << std::endl
+#include "lumina_utils.hpp"
 
 namespace Lumina
 {
@@ -242,6 +242,7 @@ namespace Lumina
 			parseLine(line, p_tokens, lineNumber);
 			lineNumber++;
 		}
+
 	}
 
 	void Tokenizer::mergeTokens(std::vector<Tokenizer::Token>& p_tokens)
@@ -351,7 +352,9 @@ namespace Lumina
 			{"case", Token::Type::Case},
 			{"break", Token::Type::Break},
 			{"return", Token::Type::Return},
-			{"discard", Token::Type::Discard}
+			{"discard", Token::Type::Discard},
+			{"true", Token::Type::Bool},
+			{"false", Token::Type::Bool}
 		};
 
 		for (auto& token : p_tokens)
@@ -412,13 +415,18 @@ namespace Lumina
 		return result;
 	}
 
-	std::vector<Tokenizer::Token> Tokenizer::tokenize(const std::string& p_code)
+	std::vector<Tokenizer::Token> Tokenizer::tokenize(const std::filesystem::path& p_filePath)
 	{
 		std::vector<Tokenizer::Token> tokens;
 
-		generateTokens(std::stringstream(convertTabulationToSpace(p_code)), tokens);
+		generateTokens(std::stringstream(convertTabulationToSpace(readFileAsString(p_filePath))), tokens);
 		mergeTokens(tokens);
 		assignTokensType(tokens);
+
+		for (auto& token : tokens)
+		{
+			token.fileName = p_filePath.string();
+		}
 
 		return tokens;
 	}

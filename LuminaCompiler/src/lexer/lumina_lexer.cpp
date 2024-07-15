@@ -1,14 +1,8 @@
 #include "lumina_lexer.hpp"
 
+#include "lumina_utils.hpp"
+
 #include <iomanip>
-
-#ifndef NDEBUG
-#define DEBUG_INFORMATION std::string(" ") + __FUNCTION__ + "::" + std::to_string(__LINE__)
-#else
-#define DEBUG_INFORMATION std::string()
-#endif
-
-#define DEBUG_LINE() std::cout << __FUNCTION__ << "::" << __LINE__ << std::endl
 
 namespace Lumina
 {
@@ -33,44 +27,44 @@ namespace Lumina
 		}
 	}
 
-	Lexer::Instruction Lexer::parsePipelineFlow()
+	Lexer::Element Lexer::parsePipelineFlow()
 	{
-		Lexer::Instruction result;
+		Lexer::Element result;
 
-		result.type = Instruction::Type::PipelineFlow;
+		result.type = Element::Type::PipelineFlow;
 
 		consumeMultiple(result, TokenType::PipelineFlow, { "VertexPass", "Input" }, "Entry pipeflow can only be Input toward VertexPass, or VertexPass toward FragmentPass" + DEBUG_INFORMATION);
 		consume(result, TokenType::PipelineSeparator, "Expected a token \"->\"" + DEBUG_INFORMATION);
 		consumeMultiple(result, TokenType::PipelineFlow, { "VertexPass", "FragmentPass" }, "Output pipeflow can only be VertexPass when coming from Input, or FragmentPass when coming from VertexPass" + DEBUG_INFORMATION);
 		consume(result, TokenType::Separator, "Expected a token \":\"" + DEBUG_INFORMATION);
-		consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
-		consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
+		consumeAndReassign(result, TokenType::Identifier, TokenType::Type, "Unexpected token found" + DEBUG_INFORMATION);
+		consumeAndReassign(result, TokenType::Identifier, TokenType::Name, "Unexpected token found" + DEBUG_INFORMATION);
 		consume(result, TokenType::EndOfSentence, "Expected a token \";\"" + DEBUG_INFORMATION);
 
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parsePipelineDefinition()
+	Lexer::Element Lexer::parsePipelineDefinition()
 	{
-		Lexer::Instruction result;
+		Lexer::Element result;
 
-		result.type = Instruction::Type::PipelineDefinition;
+		result.type = Element::Type::PipelineDefinition;
 
 		consumeMultiple(result, TokenType::PipelineFlow, { "VertexPass", "FragmentPass" }, "Expected a valid pipeline pass definition" + DEBUG_INFORMATION);
 		consume(result, TokenType::OpenParenthesis, "Expected a token \"(\"" + DEBUG_INFORMATION);
 		consume(result, TokenType::ClosedParenthesis, "Expected a token \")\"" + DEBUG_INFORMATION);
 		consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"" + DEBUG_INFORMATION);
-		result.insertNestedInstruction(parseSymbolBody());
+		result.insertNestedElement(parseSymbolBody());
 		consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\"" + DEBUG_INFORMATION);
 
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parseImport()
+	Lexer::Element Lexer::parseImport()
 	{
-		Lexer::Instruction result;
+		Lexer::Element result;
 
-		result.type = Instruction::Type::Import;
+		result.type = Element::Type::Import;
 
 		consume(result, TokenType::Import, "Unexpected token found" + DEBUG_INFORMATION);
 		consume(result, TokenType::StringLitterals, "Only \'\"\' is concidered as a valid import string litteral delimitor" + DEBUG_INFORMATION);
@@ -78,17 +72,17 @@ namespace Lumina
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parseCallParameters()
+	Lexer::Element Lexer::parseCallParameters()
 	{
-		Instruction result;
+		Element result;
 
-		result.type = Instruction::Type::CallParameters;
+		result.type = Element::Type::CallParameters;
 
 		while (currentToken().type != TokenType::ClosedParenthesis)
 		{
 			try
 			{
-				result.insertNestedInstruction(parseExpression());
+				result.insertNestedElement(parseExpression());
 				if (currentToken().type != TokenType::ClosedParenthesis)
 					consume(result, TokenType::Comma, "Expected parameter separator \",\"" + DEBUG_INFORMATION);
 			}
@@ -102,13 +96,18 @@ namespace Lumina
 		return (result);
 	}
 
-	void Lexer::expendExpression(Lexer::Instruction& p_instruction)
+	void Lexer::expendExpression(Lexer::Element& p_instruction)
 	{
 		switch (currentToken().type)
 		{
 		case TokenType::Number:
 		{
 			consume(p_instruction, TokenType::Number, "Unexpected token found" + DEBUG_INFORMATION);
+			break;
+		}
+		case TokenType::Bool:
+		{
+			consume(p_instruction, TokenType::Bool, "Unexpected token found" + DEBUG_INFORMATION);
 			break;
 		}
 		case TokenType::StringLitterals:
@@ -118,6 +117,7 @@ namespace Lumina
 		}
 		case TokenType::Identifier:
 		{
+			size_t startIdentifierIndex = p_instruction.tokens.size();
 			consume(p_instruction, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
 			if (currentToken().type == TokenType::NamespaceSeparator)
 			{
@@ -129,25 +129,41 @@ namespace Lumina
 			}
 			if (currentToken().type == TokenType::Accessor)
 			{
+				p_instruction.tokens.back().type = TokenType::Name;
 				while (currentToken().type == TokenType::Accessor)
 				{
 					consume(p_instruction, TokenType::Accessor, "Expected an accessor token \".\"" + DEBUG_INFORMATION);
 					consume(p_instruction, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
 				}
 			}
+			
 			if (currentToken().type == TokenType::OpenParenthesis)
 			{
+				for (size_t i = startIdentifierIndex; i < p_instruction.tokens.size(); i++)
+				{
+					if (p_instruction.tokens[i].type == TokenType::Identifier)
+						p_instruction.tokens[i].type = TokenType::SymbolCall;
+				}
 				consume(p_instruction, TokenType::OpenParenthesis, "Expected opened parenthesis token \"(\"" + DEBUG_INFORMATION);
-				p_instruction.insertNestedInstruction(parseCallParameters());
+				p_instruction.insertNestedElement(parseCallParameters());
 				consume(p_instruction, TokenType::ClosedParenthesis, "Expected closed parenthesis token \")\"" + DEBUG_INFORMATION);
+			}
+			else
+			{
+				for (size_t i = startIdentifierIndex; i < p_instruction.tokens.size(); i++)
+				{
+					if (p_instruction.tokens[i].type == TokenType::Identifier)
+						p_instruction.tokens[i].type = TokenType::Name;
+				}
 			}
 
 			if (currentToken().type == TokenType::Accessor)
 			{
+				p_instruction.tokens.back().type = TokenType::Name;
 				while (currentToken().type == TokenType::Accessor)
 				{
 					consume(p_instruction, TokenType::Accessor, "Expected an accessor token \".\"" + DEBUG_INFORMATION);
-					consume(p_instruction, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
+					consumeAndReassign(p_instruction, TokenType::Identifier, TokenType::Name, "Unexpected token found" + DEBUG_INFORMATION);
 				}
 			}
 			break;
@@ -155,18 +171,18 @@ namespace Lumina
 		}
 	}
 
-	Lexer::Instruction Lexer::parseExpression()
+	Lexer::Element Lexer::parseExpression()
 	{
-		Lexer::Instruction result;
+		Lexer::Element result;
 
-		result.type = Instruction::Type::Expression;
+		result.type = Element::Type::Expression;
 
 		skipComment();
 		if (currentToken().type == TokenType::OpenParenthesis)
 		{
 			consume(result, TokenType::OpenParenthesis, "Expected a \"(\"" + DEBUG_INFORMATION);
 			skipComment();
-			result.insertNestedInstruction(parseExpression());
+			result.insertNestedElement(parseExpression());
 			skipComment();
 			consume(result, TokenType::ClosedParenthesis, "Expected a \")\"" + DEBUG_INFORMATION);
 			skipComment();
@@ -192,11 +208,11 @@ namespace Lumina
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parseBlockBody(bool p_parseAssignator)
+	Lexer::Element Lexer::parseBlockBody(bool p_parseAssignator)
 	{
-		Lexer::Instruction result;
+		Lexer::Element result;
 
-		result.type = Instruction::Type::Body;
+		result.type = Element::Type::Body;
 
 		while (currentToken().type != TokenType::ClosedCurlyBracket)
 		{
@@ -208,7 +224,7 @@ namespace Lumina
 			if (p_parseAssignator == true && currentToken().type == TokenType::Assignator)
 			{
 				consume(result, TokenType::Assignator, "Expected an assignator token \"=\"" + DEBUG_INFORMATION);
-				result.insertNestedInstruction(parseExpression());
+				result.insertNestedElement(parseExpression());
 			}
 			consume(result, TokenType::EndOfSentence, "Expected a token \";\"" + DEBUG_INFORMATION);
 			skipComment();
@@ -217,18 +233,18 @@ namespace Lumina
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parseStructureBlock()
+	Lexer::Element Lexer::parseStructureBlock()
 	{
-		Lexer::Instruction result;
+		Lexer::Element result;
 
-		result.type = Instruction::Type::Structure;
+		result.type = Element::Type::Structure;
 
 		consume(result, TokenType::Structure, "Unexpected token found" + DEBUG_INFORMATION);
 		consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
 		consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"" + DEBUG_INFORMATION);
 		try
 		{
-			result.insertNestedInstruction(parseBlockBody(false));
+			result.insertNestedElement(parseBlockBody(false));
 		}
 		catch (...)
 		{
@@ -241,11 +257,11 @@ namespace Lumina
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parseAttributeBlock()
+	Lexer::Element Lexer::parseAttributeBlock()
 	{
-		Lexer::Instruction result;
+		Lexer::Element result;
 
-		result.type = Instruction::Type::Structure;
+		result.type = Element::Type::Structure;
 
 		consume(result, TokenType::AttributeBlock, "Unexpected token found" + DEBUG_INFORMATION);
 		skipComment();
@@ -254,7 +270,7 @@ namespace Lumina
 		consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"" + DEBUG_INFORMATION);
 		try
 		{
-			result.insertNestedInstruction(parseBlockBody(true));
+			result.insertNestedElement(parseBlockBody(true));
 		}
 		catch (...)
 		{
@@ -267,11 +283,11 @@ namespace Lumina
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parseConstantBlock()
+	Lexer::Element Lexer::parseConstantBlock()
 	{
-		Lexer::Instruction result;
+		Lexer::Element result;
 
-		result.type = Instruction::Type::Structure;
+		result.type = Element::Type::Structure;
 
 		consume(result, TokenType::ConstantBlock, "Unexpected token found" + DEBUG_INFORMATION);
 		skipComment();
@@ -280,7 +296,7 @@ namespace Lumina
 		consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"" + DEBUG_INFORMATION);
 		try
 		{
-			result.insertNestedInstruction(parseBlockBody(true));
+			result.insertNestedElement(parseBlockBody(true));
 		}
 		catch (...)
 		{
@@ -293,11 +309,11 @@ namespace Lumina
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parseTexture()
+	Lexer::Element Lexer::parseTexture()
 	{
-		Lexer::Instruction result;
+		Lexer::Element result;
 
-		result.type = Instruction::Type::Texture;
+		result.type = Element::Type::Texture;
 
 		consume(result, TokenType::Texture, "Unexpected token found" + DEBUG_INFORMATION);
 		skipComment();
@@ -308,11 +324,11 @@ namespace Lumina
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parseSymbolParameters()
+	Lexer::Element Lexer::parseSymbolParameters()
 	{
-		Lexer::Instruction result;
+		Lexer::Element result;
 
-		result.type = Instruction::Type::SymbolParameters;
+		result.type = Element::Type::SymbolParameters;
 
 		while (currentToken().type != TokenType::ClosedParenthesis)
 		{
@@ -336,57 +352,55 @@ namespace Lumina
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parseFunctionInstruction()
+	Lexer::Element Lexer::parseFunctionInstruction()
 	{
-		Lexer::Instruction result;
-		result.type = Instruction::Type::Instruction;
-
-		Lexer::Instruction expression;
+		Lexer::Element result;
+		result.type = Element::Type::Element;
 
 		skipComment();
 		if (currentToken().type == TokenType::Identifier && nextToken().type == TokenType::Identifier)
 		{
-			expression.type = Instruction::Type::VariableDeclaration;
+			result.type = Element::Type::VariableDeclaration;
 
-			consume(expression, TokenType::Identifier, "Expected a type identifier" + DEBUG_INFORMATION);
+			consumeAndReassign(result, TokenType::Identifier, TokenType::Type, "Expected a type identifier" + DEBUG_INFORMATION);
 			skipComment();
-			consume(expression, TokenType::Identifier, "Expected a variable name" + DEBUG_INFORMATION);
+			consumeAndReassign(result, TokenType::Identifier, TokenType::Name, "Expected a variable name" + DEBUG_INFORMATION);
 
 			skipComment();
 			if (currentToken().type == TokenType::Assignator)
 			{
-				consume(expression, TokenType::Assignator, "Expected an assignator token \"=\"" + DEBUG_INFORMATION);
-				expression.insertNestedInstruction(parseExpression());
+				consume(result, TokenType::Assignator, "Expected an assignator token \"=\"" + DEBUG_INFORMATION);
+				result.insertNestedElement(parseExpression());
 			}
 		}
 		else
 		{
-			expression = parseExpression();
+			result = parseExpression();
 
 			if (currentToken().type == TokenType::Assignator)
 			{
-				consume(expression, TokenType::Assignator, "Expected an assignator token \"=\"" + DEBUG_INFORMATION);
-				expression.insertNestedInstruction(parseExpression());
+				result.type = Element::Type::VariableAssignation;
+				consume(result, TokenType::Assignator, "Expected an assignator token \"=\"" + DEBUG_INFORMATION);
+				result.insertNestedElement(parseExpression());
 			}
 		}
 
 		skipComment();
-		consume(expression, TokenType::EndOfSentence, "Expected a token \";\"" + DEBUG_INFORMATION);
-		result.insertNestedInstruction(expression);
+		consume(result, TokenType::EndOfSentence, "Expected a token \";\"" + DEBUG_INFORMATION);
 
 		return result;
 	}
 
-	Lexer::Instruction Lexer::parseIfStatement()
+	Lexer::Element Lexer::parseIfStatement()
 	{
-		Lexer::Instruction result;
+		Lexer::Element result;
 
-		result.type = Instruction::Type::IfStatement;
+		result.type = Element::Type::IfStatement;
 
 		consume(result, TokenType::IfStatement, "Unexpected token found" + DEBUG_INFORMATION);
 		consume(result, TokenType::OpenParenthesis, "Expected a \"(\"" + DEBUG_INFORMATION);
 		skipComment();
-		result.insertNestedInstruction(parseExpression());
+		result.insertNestedElement(parseExpression());
 
 		if (currentToken().type != TokenType::ClosedParenthesis)
 		{
@@ -402,22 +416,22 @@ namespace Lumina
 		if (currentToken().type == TokenType::OpenCurlyBracket)
 		{
 			consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"" + DEBUG_INFORMATION);
-			result.insertNestedInstruction(parseSymbolBody());
+			result.insertNestedElement(parseSymbolBody());
 			consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\"" + DEBUG_INFORMATION);
 		}
 		else
 		{
-			result.insertNestedInstruction(parseOnelinerSymbolBody());
+			result.insertNestedElement(parseOnelinerSymbolBody());
 		}
 
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parseReturn()
+	Lexer::Element Lexer::parseReturn()
 	{
-		Lexer::Instruction result;
+		Lexer::Element result;
 
-		result.type = Instruction::Type::Return;
+		result.type = Element::Type::Return;
 
 		consume(result, TokenType::Return, "Expected a 'return' keyword" + DEBUG_INFORMATION);
 
@@ -425,7 +439,7 @@ namespace Lumina
 
 		if (currentToken().type != TokenType::EndOfSentence)
 		{
-			result.insertNestedInstruction(parseExpression());
+			result.insertNestedElement(parseExpression());
 		}
 
 		consume(result, TokenType::EndOfSentence, "Expected a token \";\"" + DEBUG_INFORMATION);
@@ -433,10 +447,10 @@ namespace Lumina
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parseDiscard()
+	Lexer::Element Lexer::parseDiscard()
 	{
-		Lexer::Instruction result;
-		result.type = Instruction::Type::Discard;
+		Lexer::Element result;
+		result.type = Element::Type::Discard;
 
 		consume(result, TokenType::Discard, "Expected a \"discard\" keyword" + DEBUG_INFORMATION);
 		consume(result, TokenType::EndOfSentence, "Expected a token \";\"" + DEBUG_INFORMATION);
@@ -444,66 +458,66 @@ namespace Lumina
 		return result;
 	}
 
-	Lexer::Instruction Lexer::parseWhileStatement()
+	Lexer::Element Lexer::parseWhileStatement()
 	{
-		Lexer::Instruction result;
+		Lexer::Element result;
 
-		result.type = Instruction::Type::WhileStatement;
+		result.type = Element::Type::WhileStatement;
 
 		consume(result, TokenType::WhileStatement, "Unexpected token found" + DEBUG_INFORMATION);
 		consume(result, TokenType::OpenParenthesis, "Expected a \"(\"" + DEBUG_INFORMATION);
-		result.insertNestedInstruction(parseExpression());
+		result.insertNestedElement(parseExpression());
 		consume(result, TokenType::ClosedParenthesis, "Expected a \")\"" + DEBUG_INFORMATION);
 
 		if (currentToken().type == TokenType::OpenCurlyBracket)
 		{
 			consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"" + DEBUG_INFORMATION);
-			result.insertNestedInstruction(parseSymbolBody());
+			result.insertNestedElement(parseSymbolBody());
 			consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\"" + DEBUG_INFORMATION);
 		}
 		else
 		{
-			result.insertNestedInstruction(parseOnelinerSymbolBody());
+			result.insertNestedElement(parseOnelinerSymbolBody());
 		}
 
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parseForStatement()
+	Lexer::Element Lexer::parseForStatement()
 	{
-		Lexer::Instruction result;
-		result.type = Instruction::Type::ForStatement;
+		Lexer::Element result;
+		result.type = Element::Type::ForStatement;
 
 		consume(result, TokenType::ForStatement, "Expected a 'for' keyword" + DEBUG_INFORMATION);
 
 		consume(result, TokenType::OpenParenthesis, "Expected a '('" + DEBUG_INFORMATION);
 
-		result.insertNestedInstruction(parseFunctionInstruction());
-		result.insertNestedInstruction(parseExpression());
+		result.insertNestedElement(parseFunctionInstruction());
+		result.insertNestedElement(parseExpression());
 		consume(result, TokenType::EndOfSentence, "Expected a ';' after condition" + DEBUG_INFORMATION);
-		result.insertNestedInstruction(parseExpression());
+		result.insertNestedElement(parseExpression());
 
 		consume(result, TokenType::ClosedParenthesis, "Expected a ')'" + DEBUG_INFORMATION);
 
 		if (currentToken().type == TokenType::OpenCurlyBracket)
 		{
 			consume(result, TokenType::OpenCurlyBracket, "Expected body opener token '{'" + DEBUG_INFORMATION);
-			result.insertNestedInstruction(parseSymbolBody());
+			result.insertNestedElement(parseSymbolBody());
 			consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token '}'" + DEBUG_INFORMATION);
 		}
 		else
 		{
-			result.insertNestedInstruction(parseFunctionInstruction());
+			result.insertNestedElement(parseFunctionInstruction());
 		}
 
 		return result;
 	}
 
-	Lexer::Instruction Lexer::parseOnelinerSymbolBody()
+	Lexer::Element Lexer::parseOnelinerSymbolBody()
 	{
-		Lexer::Instruction result;
+		Lexer::Element result;
 
-		result.type = Instruction::Type::Body;
+		result.type = Element::Type::Body;
 
 		do
 		{
@@ -522,39 +536,39 @@ namespace Lumina
 			}
 			case TokenType::IfStatement:
 			{
-				result.insertNestedInstruction(parseIfStatement());
+				result.insertNestedElement(parseIfStatement());
 				break;
 			}
 			case TokenType::WhileStatement:
 			{
-				result.insertNestedInstruction(parseWhileStatement());
+				result.insertNestedElement(parseWhileStatement());
 				break;
 			}
 			case TokenType::ForStatement:
 			{
-				result.insertNestedInstruction(parseForStatement());
+				result.insertNestedElement(parseForStatement());
 				break;
 			}
 			case TokenType::Return:
 			{
-				result.insertNestedInstruction(parseReturn());
+				result.insertNestedElement(parseReturn());
 				break;
 			}
 			case TokenType::Discard:
 			{
-				result.insertNestedInstruction(parseDiscard());
+				result.insertNestedElement(parseDiscard());
 				break;
 			}
 			case TokenType::OpenCurlyBracket:
 			{
 				consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"" + DEBUG_INFORMATION);
-				result.insertNestedInstruction(parseSymbolBody());
+				result.insertNestedElement(parseSymbolBody());
 				consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\"" + DEBUG_INFORMATION);
 				break;
 			}
 			default:
 			{
-				result.insertNestedInstruction(parseFunctionInstruction());
+				result.insertNestedElement(parseFunctionInstruction());
 				break;
 			}
 			}
@@ -564,11 +578,11 @@ namespace Lumina
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parseSymbolBody()
+	Lexer::Element Lexer::parseSymbolBody()
 	{
-		Lexer::Instruction result;
+		Lexer::Element result;
 
-		result.type = Instruction::Type::Body;
+		result.type = Element::Type::Body;
 
 		skipComment();
 		while (currentToken().type != TokenType::ClosedCurlyBracket)
@@ -581,7 +595,7 @@ namespace Lumina
 			case TokenType::OpenCurlyBracket:
 			{
 				consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"" + DEBUG_INFORMATION);
-				result.insertNestedInstruction(parseSymbolBody());
+				result.insertNestedElement(parseSymbolBody());
 				consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\"" + DEBUG_INFORMATION);
 				break;
 			}
@@ -594,32 +608,32 @@ namespace Lumina
 			}
 			case TokenType::IfStatement:
 			{
-				result.insertNestedInstruction(parseIfStatement());
+				result.insertNestedElement(parseIfStatement());
 				break;
 			}
 			case TokenType::WhileStatement:
 			{
-				result.insertNestedInstruction(parseWhileStatement());
+				result.insertNestedElement(parseWhileStatement());
 				break;
 			}
 			case TokenType::ForStatement:
 			{
-				result.insertNestedInstruction(parseForStatement());
+				result.insertNestedElement(parseForStatement());
 				break;
 			}
 			case TokenType::Return:
 			{
-				result.insertNestedInstruction(parseReturn());
+				result.insertNestedElement(parseReturn());
 				break;
 			}
 			case TokenType::Discard:
 			{
-				result.insertNestedInstruction(parseDiscard());
+				result.insertNestedElement(parseDiscard());
 				break;
 			}
 			default:
 			{
-				result.insertNestedInstruction(parseFunctionInstruction());
+				result.insertNestedElement(parseFunctionInstruction());
 				break;
 			}
 			}
@@ -635,18 +649,18 @@ namespace Lumina
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parseSymbol()
+	Lexer::Element Lexer::parseSymbol()
 	{
-		Lexer::Instruction result;
+		Lexer::Element result;
 
-		result.type = Instruction::Type::Symbol;
+		result.type = Element::Type::Symbol;
 
 		consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
 		skipComment();
 		consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
 		skipComment();
 		consume(result, TokenType::OpenParenthesis, "Expected opened parenthesis token \"(\"" + DEBUG_INFORMATION);
-		result.insertNestedInstruction(parseSymbolParameters());
+		result.insertNestedElement(parseSymbolParameters());
 		consume(result, TokenType::ClosedParenthesis, "Expected closed parenthesis token \")\"" + DEBUG_INFORMATION);
 		skipComment();
 		if (currentToken().type == TokenType::EndOfSentence)
@@ -656,22 +670,22 @@ namespace Lumina
 		else
 		{
 			consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"" + DEBUG_INFORMATION);
-			result.insertNestedInstruction(parseSymbolBody());
+			result.insertNestedElement(parseSymbolBody());
 			consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\"" + DEBUG_INFORMATION);
 		}
 
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parseNamespaceBody()
+	Lexer::Element Lexer::parseNamespaceBody()
 	{
-		Lexer::Instruction result;
+		Lexer::Element result;
 
-		result.type = Instruction::Type::Body;
+		result.type = Element::Type::Body;
 
 		while (currentToken().type != TokenType::ClosedCurlyBracket)
 		{
-			Instruction instruction;
+			Element instruction;
 
 			switch (currentToken().type)
 			{
@@ -713,22 +727,22 @@ namespace Lumina
 			}
 			}
 
-			result.insertNestedInstruction(instruction);
+			result.insertNestedElement(instruction);
 		}
 
 		return (result);
 	}
 
-	Lexer::Instruction Lexer::parseNamespace()
+	Lexer::Element Lexer::parseNamespace()
 	{
-		Lexer::Instruction result;
+		Lexer::Element result;
 
-		result.type = Instruction::Type::Namespace;
+		result.type = Element::Type::Namespace;
 
 		consume(result, TokenType::Namespace, "Unexpected token found" + DEBUG_INFORMATION);
 		consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
 		consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"" + DEBUG_INFORMATION);
-		result.insertNestedInstruction(parseNamespaceBody());
+		result.insertNestedElement(parseNamespaceBody());
 		consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\"" + DEBUG_INFORMATION);
 
 		return (result);
@@ -744,7 +758,7 @@ namespace Lumina
 		{
 			try
 			{
-				Instruction instruction;
+				Element instruction;
 
 				switch (currentToken().type)
 				{
@@ -803,13 +817,12 @@ namespace Lumina
 				}
 				default:
 				{
-					insertError("Unexpected token [" + to_string(currentToken().type) + "] found" + DEBUG_INFORMATION);
-					throw std::runtime_error("Unexpected token found" + DEBUG_INFORMATION);
+					throw std::runtime_error("Unexpected token [" + to_string(currentToken().type) + "] found" + DEBUG_INFORMATION);
 				}
 				}
 				if (instruction.tokens.size() != 0)
 				{
-					_result.instructions.push_back(instruction);
+					_result.elements.push_back(instruction);
 				}
 			}
 			catch (std::runtime_error& e)

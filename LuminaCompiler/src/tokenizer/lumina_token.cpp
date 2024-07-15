@@ -65,6 +65,8 @@ std::string to_string(Lumina::Tokenizer::Token::Type p_type)
 			return ("EndOfSentence");
 		case Lumina::Tokenizer::Token::Type::Number:
 			return ("Number");
+		case Lumina::Tokenizer::Token::Type::Bool:
+			return ("Bool");
 		case Lumina::Tokenizer::Token::Type::Namespace:
 			return ("Namespace");
 		case Lumina::Tokenizer::Token::Type::NamespaceSeparator:
@@ -91,6 +93,12 @@ std::string to_string(Lumina::Tokenizer::Token::Type p_type)
 			return ("Discard");
 		case Lumina::Tokenizer::Token::Type::Unknown:
 			return ("Unknown");
+		case Lumina::Tokenizer::Token::Type::Type:
+			return ("Type");
+		case Lumina::Tokenizer::Token::Type::Name:
+			return ("Name");
+		case Lumina::Tokenizer::Token::Type::SymbolCall:
+			return ("SymbolCall");
 		case Lumina::Tokenizer::Token::Type::MetaToken:
 			return ("MetaToken");
 	
