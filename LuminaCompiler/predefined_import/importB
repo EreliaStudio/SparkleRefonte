@@ -1,2 +1,2 @@
-import <function/functionB.lum>
-import <attribute/attributeB.lum>
+import "function/functionB.lum"
+import "attribute/attributeB.lum"

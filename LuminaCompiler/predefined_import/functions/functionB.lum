@@ -1,3 +1,3 @@
-import <function/functionA.lum>
+import "function/functionA.lum"
 
-function content B
+// function content B

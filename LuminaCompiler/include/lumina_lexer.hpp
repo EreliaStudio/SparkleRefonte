@@ -50,7 +50,8 @@ namespace Lumina
 			void insertNestedInstruction(const Instruction& p_instruction);
 
 			friend std::ostream& operator << (std::ostream& p_os, const Instruction::Type& p_type);
-			void print(std::fstream& p_outputStream, size_t p_tabulation = 0, size_t startingIndex = 0) const;
+			void print(std::fstream& p_outputStream, size_t p_tabulation = 0, size_t p_startingLine = 0) const;
+			void print(size_t p_tabulation = 0, size_t p_startingLine = 0) const;
 		};
 
 		struct Result

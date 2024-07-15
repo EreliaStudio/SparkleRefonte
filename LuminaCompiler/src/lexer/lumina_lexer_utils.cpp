@@ -96,6 +96,31 @@ namespace Lumina
 		}
 	}
 
+	void Lexer::Instruction::print(size_t p_tabulation, size_t p_startingLine) const
+	{
+		std::string tabulation = std::string(p_tabulation, ' ');
+
+		size_t currentLine = p_startingLine;
+
+		for (size_t i = 0; i < tokens.size(); i++)
+		{
+			if (tokens[i].type == Tokenizer::Token::Type::MetaToken)
+			{
+				nestedInstructions[tokens[i].line].print(p_tabulation + (nestedInstructions.size() != tokens.size() ? 4 : 0), currentLine);
+			}
+			else
+			{
+				if (currentLine != tokens[i].line)
+				{
+					currentLine = tokens[i].line;
+					std::cout << std::endl << tabulation;
+				}
+
+				std::cout << tokens[i].content << " ";
+			}
+		}
+	}
+
 	Lexer::Lexer() :
 		_index(0)
 	{
@@ -123,11 +148,6 @@ namespace Lumina
 
 	const Tokenizer::Token& Lexer::currentToken() const
 	{
-		if (_index >= _tokens.size())
-		{
-			throw std::runtime_error("Invalid token index");
-		}
-		
 		return (_tokens[_index]);
 	}
 
@@ -155,16 +175,23 @@ namespace Lumina
 
 	void Lexer::insertError(const std::string& p_error)
 	{
-		if (currentToken().type != TokenType::StringLitterals)
-			_result.errors.push_back(CompilationError(p_error, currentToken().line, currentToken().fullLine, currentToken().column, currentToken().content.size()));
+		if (hasTokenLeft() == false)
+		{
+			_result.errors.push_back(CompilationError(p_error, _tokens.back().line, _tokens.back().fullLine, _tokens.back().column, _tokens.back().content.size()));
+		}
 		else
 		{
-			size_t stringLenght = 1;
-			while (currentToken().content[stringLenght] != '\n' && currentToken().content[stringLenght] != '\"')
-				stringLenght++;
-			if (currentToken().content[stringLenght] != '\"')
-				stringLenght++;
-			_result.errors.push_back(CompilationError(p_error, currentToken().line, currentToken().fullLine, currentToken().column, stringLenght));
+			if (currentToken().type != TokenType::StringLitterals)
+				_result.errors.push_back(CompilationError(p_error, currentToken().line, currentToken().fullLine, currentToken().column, currentToken().content.size()));
+			else
+			{
+				size_t stringLenght = 1;
+				while (currentToken().content[stringLenght] != '\n' && currentToken().content[stringLenght] != '\"')
+					stringLenght++;
+				if (currentToken().content[stringLenght] != '\"')
+					stringLenght++;
+				_result.errors.push_back(CompilationError(p_error, currentToken().line, currentToken().fullLine, currentToken().column, stringLenght));
+			}
 		}
 	}
 
@@ -191,19 +218,19 @@ namespace Lumina
 
 	void Lexer::consume(Lexer::Instruction& p_instruction, Lexer::TokenType p_expectedTokenType)
 	{
-		if (currentToken().type != p_expectedTokenType)
+		if (hasTokenLeft() == false ||
+			currentToken().type != p_expectedTokenType)
 		{
-			insertError("Bad token found");
-			throw std::runtime_error("Bad token found");
+			throw std::runtime_error("Unexpected token type found");
 		}
 		consume(p_instruction);
 	}
 
 	void Lexer::consume(Lexer::Instruction& p_instruction, Lexer::TokenType p_expectedTokenType, const std::string& p_errorMessage)
 	{
-		if (currentToken().type != p_expectedTokenType)
+		if (hasTokenLeft() == false ||
+			currentToken().type != p_expectedTokenType)
 		{
-			insertError(p_errorMessage);
 			throw std::runtime_error(p_errorMessage);
 		}
 		consume(p_instruction);
@@ -211,9 +238,10 @@ namespace Lumina
 
 	void Lexer::consume(Instruction& p_instruction, TokenType p_expectedTokenType, const std::string& p_expectedTokenContent, const std::string& p_errorMessage)
 	{
-		if (currentToken().type != p_expectedTokenType || currentToken().content != p_expectedTokenContent)
+		if (hasTokenLeft() == false ||
+			currentToken().type != p_expectedTokenType ||
+			currentToken().content != p_expectedTokenContent)
 		{
-			insertError(p_errorMessage);
 			throw std::runtime_error(p_errorMessage);
 		}
 		consume(p_instruction);
@@ -221,9 +249,9 @@ namespace Lumina
 
 	void Lexer::consumeMultiple(Instruction& p_instruction, TokenType p_expectedTokenType, const std::vector<std::string>& p_expectedTokenContents, const std::string& p_errorMessage)
 	{
-		if (currentToken().type != p_expectedTokenType)
+		if (hasTokenLeft() == false ||
+			currentToken().type != p_expectedTokenType)
 		{
-			insertError(p_errorMessage);
 			throw std::runtime_error(p_errorMessage);
 		}
 
@@ -245,7 +273,7 @@ namespace Lumina
 					errorMessage += " - ";
 				errorMessage += p_expectedTokenContents[i];
 			}
-			insertError(errorMessage);
+
 			throw std::runtime_error(errorMessage);
 		}
 		consume(p_instruction);

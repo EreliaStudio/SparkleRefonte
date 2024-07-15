@@ -147,7 +147,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="predefined_import\importB" />
     <ClCompile Include="src\lexer\lumina_lexer.cpp" />
     <ClCompile Include="src\lexer\lumina_lexer_utils.cpp" />
     <ClCompile Include="src\luimna_error.cpp" />
@@ -170,13 +169,6 @@
   <ItemGroup>
     <None Include="doc\lumina_build_in.md" />
     <None Include="doc\lumina_cheat_sheet.md" />
-    <None Include="predefined_import\attribute\attributeA.lum" />
-    <None Include="predefined_import\attribute\attributeB.lum" />
-    <None Include="predefined_import\constant\constantA.lum" />
-    <None Include="predefined_import\functions\functionA.lum" />
-    <None Include="predefined_import\functions\functionB.lum" />
-    <None Include="predefined_import\importA" />
-    <None Include="predefined_import\structure\structureA.lum" />
     <None Include="shader\shader.lum" />
   </ItemGroup>
   <ItemGroup>

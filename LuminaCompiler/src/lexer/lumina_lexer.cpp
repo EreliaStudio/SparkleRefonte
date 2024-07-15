@@ -8,6 +8,8 @@
 #define DEBUG_INFORMATION std::string()
 #endif
 
+#define DEBUG_LINE() std::cout << __FUNCTION__ << "::" << __LINE__ << std::endl
+
 namespace Lumina
 {
 	void Lexer::skipComment()
@@ -18,7 +20,7 @@ namespace Lumina
 		if (currentToken().type == TokenType::SingleLineComment) 
 		{
 			size_t currentLine = currentToken().line;
-			while (currentToken().line == currentLine)
+			while (hasTokenLeft() == true && currentToken().line == currentLine)
 				skipToken();
 		}
 		else if (currentToken().type == TokenType::MultiLineCommentStart)
@@ -37,9 +39,9 @@ namespace Lumina
 
 		result.type = Instruction::Type::PipelineFlow;
 
-		consumeMultiple(result, TokenType::PipelineFlow, { "VertexPass", "Input" }, "Expected a valid pipeline flow" + DEBUG_INFORMATION);
+		consumeMultiple(result, TokenType::PipelineFlow, { "VertexPass", "Input" }, "Entry pipeflow can only be Input toward VertexPass, or VertexPass toward FragmentPass" + DEBUG_INFORMATION);
 		consume(result, TokenType::PipelineSeparator, "Expected a token \"->\"" + DEBUG_INFORMATION);
-		consumeMultiple(result, TokenType::PipelineFlow, { "VertexPass", "FragmentPass" }, "Expected a valid pipeline flow" + DEBUG_INFORMATION);
+		consumeMultiple(result, TokenType::PipelineFlow, { "VertexPass", "FragmentPass" }, "Output pipeflow can only be VertexPass when coming from Input, or FragmentPass when coming from VertexPass" + DEBUG_INFORMATION);
 		consume(result, TokenType::Separator, "Expected a token \":\"" + DEBUG_INFORMATION);
 		consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
 		consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
@@ -71,7 +73,7 @@ namespace Lumina
 		result.type = Instruction::Type::Import;
 
 		consume(result, TokenType::Import, "Unexpected token found" + DEBUG_INFORMATION);
-		consume(result, TokenType::StringLitterals, "Unexpected token found" + DEBUG_INFORMATION);
+		consume(result, TokenType::StringLitterals, "Only \'\"\' is concidered as a valid import string litteral delimitor" + DEBUG_INFORMATION);
 
 		return (result);
 	}
@@ -810,8 +812,9 @@ namespace Lumina
 					_result.instructions.push_back(instruction);
 				}
 			}
-			catch (std::runtime_error e)
+			catch (std::runtime_error& e)
 			{
+				insertError(e.what());
 				skipLine();
 			}
 		}
