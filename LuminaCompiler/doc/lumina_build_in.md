@@ -9,6 +9,7 @@ Each of the standard type respect the standard C++ data type for the scalar type
 - `bool`: Boolean type.
 
 ### Vector Types
+All those vectors support swizzability.
 - `Vector2`: Vector of 2 single precision floating-point numbers.
 - `Vector3`: Vector of 3 single precision floating-point numbers.
 - `Vector4`: Vector of 4 single precision floating-point numbers.
@@ -39,10 +40,22 @@ raiseException("Error : myValue(" + myValue + ") != myExpectedValue(" + myExpect
 ### Size
 - Define a size, represented by a width and a height
 - Attributes:
-    - `int mySize.width`
-    - `int mySize.height`
+    - `type mySize.width`
+    - `type mySize.height`
+- Instances:
+    - Size : a size with float as type
+    - SizeInt : a size with int as type
+    - SizeUInt : a size with uint as type
+
+### Color
+- Define a color, as a 4 components RGBA. This component support swizzability
+- Attributes:
+    - `float r` : A float representing the red component, express from 0 to 1
+    - `float g` : A float representing the blue component, express from 0 to 1
+    - `float b` : A float representing the green component, express from 0 to 1
+    - `float a` : A float representing the transparency component, express from 0 to 1
 
 ### Texture
 - Define a texture with methods for manipulation and querying.
 - Attributes:
-    - `Size textureName.size`
+    - `SizeInt textureName.size` : The size of the texture, in pixel

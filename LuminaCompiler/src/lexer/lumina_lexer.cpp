@@ -115,6 +115,10 @@ namespace Lumina
 			consume(p_instruction, TokenType::StringLitterals, "Unexpected token found" + DEBUG_INFORMATION);
 			break;
 		}
+		case TokenType::NamespaceSeparator:
+		{
+			consume(p_instruction, TokenType::NamespaceSeparator, "Unexpected token found" + DEBUG_INFORMATION);
+		}
 		case TokenType::Identifier:
 		{
 			size_t startIdentifierIndex = p_instruction.tokens.size();
@@ -123,7 +127,7 @@ namespace Lumina
 			{
 				while (currentToken().type == TokenType::NamespaceSeparator)
 				{
-					consume(p_instruction, TokenType::NamespaceSeparator, "Expected an accessor token \".\"" + DEBUG_INFORMATION);
+					consume(p_instruction, TokenType::NamespaceSeparator, "Expected an accessor token \"::\"" + DEBUG_INFORMATION);
 					consume(p_instruction, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
 				}
 			}
@@ -217,7 +221,15 @@ namespace Lumina
 		while (currentToken().type != TokenType::ClosedCurlyBracket)
 		{
 			skipComment();
+			if (currentToken().type == TokenType::NamespaceSeparator)
+				consume(result, TokenType::NamespaceSeparator, "Expected an accessor token \"::\"" + DEBUG_INFORMATION);
 			consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
+			while (currentToken().type == TokenType::NamespaceSeparator)
+			{
+				consume(result, TokenType::NamespaceSeparator, "Expected an accessor token \"::\"" + DEBUG_INFORMATION);
+				consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
+			}
+
 			skipComment();
 			consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
 			skipComment();
@@ -242,14 +254,7 @@ namespace Lumina
 		consume(result, TokenType::Structure, "Unexpected token found" + DEBUG_INFORMATION);
 		consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
 		consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"" + DEBUG_INFORMATION);
-		try
-		{
-			result.insertNestedElement(parseBlockBody(false));
-		}
-		catch (...)
-		{
-			skipLine();
-		}
+		result.insertNestedElement(parseBlockBody(false));
 		consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\"" + DEBUG_INFORMATION);
 		skipComment();
 		consume(result, TokenType::EndOfSentence, "Expected a token \";\"" + DEBUG_INFORMATION);
@@ -261,7 +266,7 @@ namespace Lumina
 	{
 		Lexer::Element result;
 
-		result.type = Element::Type::Structure;
+		result.type = Element::Type::Attribute;
 
 		consume(result, TokenType::AttributeBlock, "Unexpected token found" + DEBUG_INFORMATION);
 		skipComment();
@@ -287,7 +292,7 @@ namespace Lumina
 	{
 		Lexer::Element result;
 
-		result.type = Element::Type::Structure;
+		result.type = Element::Type::Constant;
 
 		consume(result, TokenType::ConstantBlock, "Unexpected token found" + DEBUG_INFORMATION);
 		skipComment();
@@ -718,6 +723,11 @@ namespace Lumina
 			case TokenType::Identifier:
 			{
 				instruction = parseSymbol();
+				break;
+			}
+			case TokenType::Namespace:
+			{
+				instruction = parseNamespace();
 				break;
 			}
 			default:

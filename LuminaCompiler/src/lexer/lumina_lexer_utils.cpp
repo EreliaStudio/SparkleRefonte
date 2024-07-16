@@ -68,7 +68,7 @@ namespace Lumina
 					std::cout << std::endl << tabulation;
 				}
 
-				std::cout << "[" << tokens[i].type << "]" << tokens[i].content << " ";
+				std::cout << "(" << i << ")" << tokens[i].content << " ";
 			}
 		}
 	}
