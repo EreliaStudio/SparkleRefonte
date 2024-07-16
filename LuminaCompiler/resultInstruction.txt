@@ -5,11 +5,27 @@ struct Material
     float _shininess ; 
 } ; 
 
-namespace Lighting2 
+namespace Lighting 
 { 
-    struct Information2 
+    struct Material 
     { 
+        Vector3 _diffuseColor ; 
+        Vector3 _specularColor ; 
+        float _shininess ; 
+    } ; 
+    struct Information 
+    { 
+        :: Material material ; 
+        Lighting :: Material material ; 
         float test ; 
         float test ; 
     } ; 
+    namespace Lighting2 
+    { 
+        struct Information2 
+        { 
+            float test ; 
+            float test ; 
+        } ; 
+    } 
 } 

@@ -212,6 +212,36 @@ namespace Lumina
 		return (result);
 	}
 
+	Lexer::Element Lexer::parseBlockElement(bool p_parseAssignator)
+	{
+		Lexer::Element result;
+
+		result.type = Element::Type::BlockElement;
+
+		skipComment();
+		if (currentToken().type == TokenType::NamespaceSeparator)
+			consume(result, TokenType::NamespaceSeparator, "Expected an accessor token \"::\"" + DEBUG_INFORMATION);
+		consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
+		while (currentToken().type == TokenType::NamespaceSeparator)
+		{
+			consume(result, TokenType::NamespaceSeparator, "Expected an accessor token \"::\"" + DEBUG_INFORMATION);
+			consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
+		}
+
+		skipComment();
+		consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
+		skipComment();
+		if (p_parseAssignator == true && currentToken().type == TokenType::Assignator)
+		{
+			consume(result, TokenType::Assignator, "Expected an assignator token \"=\"" + DEBUG_INFORMATION);
+			result.insertNestedElement(parseExpression());
+		}
+		consume(result, TokenType::EndOfSentence, "Expected a token \";\"" + DEBUG_INFORMATION);
+		skipComment();
+
+		return (result);
+	}
+
 	Lexer::Element Lexer::parseBlockBody(bool p_parseAssignator)
 	{
 		Lexer::Element result;
@@ -220,26 +250,15 @@ namespace Lumina
 
 		while (currentToken().type != TokenType::ClosedCurlyBracket)
 		{
-			skipComment();
-			if (currentToken().type == TokenType::NamespaceSeparator)
-				consume(result, TokenType::NamespaceSeparator, "Expected an accessor token \"::\"" + DEBUG_INFORMATION);
-			consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
-			while (currentToken().type == TokenType::NamespaceSeparator)
+			try
 			{
-				consume(result, TokenType::NamespaceSeparator, "Expected an accessor token \"::\"" + DEBUG_INFORMATION);
-				consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
+				result.insertNestedElement(parseBlockElement(p_parseAssignator));
 			}
-
-			skipComment();
-			consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
-			skipComment();
-			if (p_parseAssignator == true && currentToken().type == TokenType::Assignator)
+			catch (std::runtime_error& e)
 			{
-				consume(result, TokenType::Assignator, "Expected an assignator token \"=\"" + DEBUG_INFORMATION);
-				result.insertNestedElement(parseExpression());
+				insertError(e.what());
+				skipLine();
 			}
-			consume(result, TokenType::EndOfSentence, "Expected a token \";\"" + DEBUG_INFORMATION);
-			skipComment();
 		}
 
 		return (result);

@@ -301,6 +301,8 @@ std::string to_string(const Lumina::Lexer::Element::Type& p_type)
 		return ("Attribute");
 	case Lumina::Lexer::Element::Type::Constant:
 		return ("Constant");
+	case Lumina::Lexer::Element::Type::BlockElement:
+		return ("BlockElement");
 	case Lumina::Lexer::Element::Type::Body:
 		return ("Body");
 	case Lumina::Lexer::Element::Type::Expression:

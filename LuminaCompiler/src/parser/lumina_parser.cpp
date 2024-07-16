@@ -162,28 +162,32 @@ namespace Lumina
 		{
 			structureName = p_namespacePrefix + "::" + structureName;
 		}
-		
-		const std::vector<Tokenizer::Token>& bodyTokens = p_element.nestedElement[0].tokens;
 
 		Structure newStructure;
-
-		size_t index = 0;
-		while (index < bodyTokens.size())
+		
+		for (const auto& blockElement : p_element.nestedElement[0].nestedElement)
 		{
-			try
-			{
-				std::string type = composeStructureElementType(bodyTokens, index);
-				
-				std::string name = bodyTokens[index].content;
-				index += 2;
+			const std::vector<Tokenizer::Token>& bodyTokens = blockElement.tokens;
 
-				newStructure.elements.push_back(Structure::Element{ type, name });
-			}
-			catch (TokenBasedError& e)
+			size_t index = 0;
+			while (index < bodyTokens.size())
 			{
-				result.errors.push_back(CompilationError("In namespace " + p_namespacePrefix + " - In structure " + structureName + " - " + e.what(), e.token().fileName, e.token().line, e.token().fullLine, e.token().column, e.token().content.size()));
-				while (index < bodyTokens.size() && bodyTokens[index].line == e.token().line)
-					index++;
+
+				try
+				{
+					std::string type = composeStructureElementType(bodyTokens, index);
+				
+					std::string name = bodyTokens[index].content;
+					index += 2;
+
+					newStructure.elements.push_back(Structure::Element{ type, name });
+				}
+				catch (TokenBasedError& e)
+				{
+					result.errors.push_back(CompilationError("In namespace " + p_namespacePrefix + " - In structure " + structureName + " - " + e.what(), e.token().fileName, e.token().line, e.token().fullLine, e.token().column, e.token().content.size()));
+					while (index < bodyTokens.size() && bodyTokens[index].line == e.token().line)
+						index++;
+				}
 			}
 		}
 		structures["::" + structureName] = newStructure;

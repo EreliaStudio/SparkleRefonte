@@ -25,6 +25,7 @@ namespace Lumina
 				Structure,
 				Attribute,
 				Constant,
+				BlockElement,
 				Body,
 				Expression,
 				CallParameters,
@@ -108,6 +109,7 @@ namespace Lumina
 		Element parseReturn();
 		Element parseDiscard();
 
+		Element parseBlockElement(bool p_parseAssignator);
 		Element parseBlockBody(bool p_parseAssignator);
 		Element parseSymbolParameters();
 		Element parseOnelinerSymbolBody();
