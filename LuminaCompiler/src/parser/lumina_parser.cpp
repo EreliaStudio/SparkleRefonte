@@ -8,7 +8,7 @@
 
 namespace Lumina
 {
-	struct Structure
+	struct Block
 	{
 		enum class Swizzability
 		{
@@ -26,78 +26,80 @@ namespace Lumina
 	};
 
 	std::set<std::string> importedFiles = {};
-	std::map<std::string, Structure> structures = {
+	std::map<std::string, Block> structures = {
 		{
-			"bool", Structure{}
+			"bool", Block{}
 		},
 		{
-			"int", Structure{}
+			"int", Block{}
 		},
 		{
-			"float", Structure{}
+			"float", Block{}
 		},
 		{
-			"uint", Structure{}
-		},
-
-		{
-			"Vector2Int", Structure{{{"int", "x"}, {"int", "y"}, {"int", "u"}, {"int", "v"}}, Structure::Swizzability::Swizzable}
-		},
-		{
-			"Vector2", Structure{{{"float", "x"}, {"float", "y"}, {"float", "u"}, {"float", "v"}}, Structure::Swizzability::Swizzable}
-		},
-		{
-			"Vector2UInt", Structure{{{"uint", "x"}, {"uint", "y"}, {"uint", "u"}, {"uint", "v"}}, Structure::Swizzability::Swizzable}
+			"uint", Block{}
 		},
 
 		{
-			"Vector3Int", Structure{{{"int", "x"}, {"int", "y"}, {"int", "z"}}, Structure::Swizzability::Swizzable}
+			"Vector2Int", Block{{{"int", "x"}, {"int", "y"}, {"int", "u"}, {"int", "v"}}, Block::Swizzability::Swizzable}
 		},
 		{
-			"Vector3", Structure{{{"float", "x"}, {"float", "y"}, {"float", "z"}}, Structure::Swizzability::Swizzable}
+			"Vector2", Block{{{"float", "x"}, {"float", "y"}, {"float", "u"}, {"float", "v"}}, Block::Swizzability::Swizzable}
 		},
 		{
-			"Vector3UInt", Structure{{{"uint", "x"}, {"uint", "y"}, {"uint", "z"}}, Structure::Swizzability::Swizzable}
-		},
-
-		{
-			"Vector4Int", Structure{{{"int", "x"}, {"int", "y"}, {"int", "z"}, {"int", "w"}}, Structure::Swizzability::Swizzable}
-		},
-		{
-			"Vector4", Structure{{{"float", "x"}, {"float", "y"}, {"float", "z"}, {"float", "w"}}, Structure::Swizzability::Swizzable}
-		},
-		{
-			"Vector4UInt", Structure{{{"uint", "x"}, {"uint", "y"}, {"uint", "z"}, {"uint", "w"}}, Structure::Swizzability::Swizzable}
+			"Vector2UInt", Block{{{"uint", "x"}, {"uint", "y"}, {"uint", "u"}, {"uint", "v"}}, Block::Swizzability::Swizzable}
 		},
 
 		{
-			"Color", Structure{{{"float", "r"}, {"float", "g"}, {"float", "b"}, {"float", "a"}}, Structure::Swizzability::Swizzable}
+			"Vector3Int", Block{{{"int", "x"}, {"int", "y"}, {"int", "z"}}, Block::Swizzability::Swizzable}
+		},
+		{
+			"Vector3", Block{{{"float", "x"}, {"float", "y"}, {"float", "z"}}, Block::Swizzability::Swizzable}
+		},
+		{
+			"Vector3UInt", Block{{{"uint", "x"}, {"uint", "y"}, {"uint", "z"}}, Block::Swizzability::Swizzable}
 		},
 
 		{
-			"Size", Structure{{{"float", "height"}, {"float", "width"}}, Structure::Swizzability::NotSwizzable}
+			"Vector4Int", Block{{{"int", "x"}, {"int", "y"}, {"int", "z"}, {"int", "w"}}, Block::Swizzability::Swizzable}
 		},
 		{
-			"SizeInt", Structure{{{"int", "height"}, {"int", "width"}}, Structure::Swizzability::NotSwizzable}
+			"Vector4", Block{{{"float", "x"}, {"float", "y"}, {"float", "z"}, {"float", "w"}}, Block::Swizzability::Swizzable}
 		},
 		{
-			"SizeUInt", Structure{{{"uint", "height"}, {"uint", "width"}}, Structure::Swizzability::NotSwizzable}
-		},
-
-		{
-			"Matrix2x2", Structure{}
-		},
-		{
-			"Matrix3x3", Structure{}
-		},
-		{
-			"Matrix4x4", Structure{}
+			"Vector4UInt", Block{{{"uint", "x"}, {"uint", "y"}, {"uint", "z"}, {"uint", "w"}}, Block::Swizzability::Swizzable}
 		},
 
 		{
-			"Texture", Structure{{{"SizeInt", "size"}}, Structure::Swizzability::NotSwizzable}
+			"Color", Block{{{"float", "r"}, {"float", "g"}, {"float", "b"}, {"float", "a"}}, Block::Swizzability::Swizzable}
+		},
+
+		{
+			"Size", Block{{{"float", "height"}, {"float", "width"}}, Block::Swizzability::NotSwizzable}
+		},
+		{
+			"SizeInt", Block{{{"int", "height"}, {"int", "width"}}, Block::Swizzability::NotSwizzable}
+		},
+		{
+			"SizeUInt", Block{{{"uint", "height"}, {"uint", "width"}}, Block::Swizzability::NotSwizzable}
+		},
+
+		{
+			"Matrix2x2", Block{}
+		},
+		{
+			"Matrix3x3", Block{}
+		},
+		{
+			"Matrix4x4", Block{}
+		},
+
+		{
+			"Texture", Block{{{"SizeInt", "size"}}, Block::Swizzability::NotSwizzable}
 		}
 	};
+	std::map<std::string, Block> attributeBlocks;
+	std::map<std::string, Block> constantBlocks;
 
 	Lexer::Result checkImportValidity(Lexer::Element& p_element)
 	{
@@ -125,7 +127,8 @@ namespace Lumina
 
 		size_t baseIndex = p_index;
 
-		while (p_bodyTokens[p_index + 1].type != Tokenizer::Token::Type::EndOfSentence)
+		while (p_bodyTokens[p_index + 1].type != Tokenizer::Token::Type::EndOfSentence &&
+			   p_bodyTokens[p_index + 1].type != Tokenizer::Token::Type::Assignator)
 		{
 			result += p_bodyTokens[p_index].content;
 			p_index++;
@@ -153,8 +156,17 @@ namespace Lumina
 
 		return (result);
 	}
+	
+	std::string composeAssignatorElementType(const Lexer::Element& assignatorElement)
+	{
+		std::string result;
 
-	Parser::Result parseStructure(std::string p_namespacePrefix, const Lexer::Element& p_element)
+		assignatorElement.print();
+
+		return (result);
+	}
+
+	Parser::Result parseBlock(std::map<std::string, Block>& blockmap, std::string p_namespacePrefix, const Lexer::Element& p_element, bool p_parseAssignator)
 	{
 		Parser::Result result;
 		std::string structureName = p_element.tokens[1].content;
@@ -163,7 +175,7 @@ namespace Lumina
 			structureName = p_namespacePrefix + "::" + structureName;
 		}
 
-		Structure newStructure;
+		Block newStructure;
 		
 		for (const auto& blockElement : p_element.nestedElement[0].nestedElement)
 		{
@@ -178,20 +190,37 @@ namespace Lumina
 					std::string type = composeStructureElementType(bodyTokens, index);
 				
 					std::string name = bodyTokens[index].content;
-					index += 2;
+					index++;
 
-					newStructure.elements.push_back(Structure::Element{ type, name });
+					if (p_parseAssignator == true && bodyTokens[index].type == Tokenizer::Token::Type::Assignator)
+					{
+						index++;
+						std::string assignatorType = composeAssignatorElementType(blockElement.nestedElement[bodyTokens[index].line]);
+						index++;
+					}
+					index++;
+
+					for (const auto& element : newStructure.elements)
+					{
+						if (element.name == name)
+						{
+							throw TokenBasedError("Duplicate component name [" + name + "] in [" + structureName + "]", bodyTokens[index - 2]);
+						}
+					}
+
+					newStructure.elements.push_back(Block::Element{ type, name });
 				}
 				catch (TokenBasedError& e)
 				{
-					result.errors.push_back(CompilationError("In namespace " + p_namespacePrefix + " - In structure " + structureName + " - " + e.what(), e.token().fileName, e.token().line, e.token().fullLine, e.token().column, e.token().content.size()));
+					result.errors.push_back(CompilationError("In namespace " + p_namespacePrefix + " - In " + structureName + " - " + e.what(), e.token().fileName, e.token().line, e.token().fullLine, e.token().column, e.token().content.size()));
 					while (index < bodyTokens.size() && bodyTokens[index].line == e.token().line)
 						index++;
 				}
 			}
 		}
-		structures["::" + structureName] = newStructure;
-		structures[structureName] = newStructure;
+
+		blockmap["::" + structureName] = newStructure;
+		blockmap[structureName] = newStructure;
 
 		return (result);
 	}
@@ -223,9 +252,23 @@ namespace Lumina
 				}
 				case Lexer::Element::Type::Structure:
 				{
-					Parser::Result structureParserResult = parseStructure(p_namespacePrefix, element);
+					Parser::Result structureParserResult = parseBlock(structures, p_namespacePrefix, element, false);
 
 					result.errors.insert(result.errors.end(), structureParserResult.errors.begin(), structureParserResult.errors.end());
+					break;
+				}
+				case Lexer::Element::Type::Attribute:
+				{
+					Parser::Result attributeBlockParserResult = parseBlock(attributeBlocks, p_namespacePrefix, element, true);
+
+					result.errors.insert(result.errors.end(), attributeBlockParserResult.errors.begin(), attributeBlockParserResult.errors.end());
+					break;
+				}
+				case Lexer::Element::Type::Constant:
+				{
+					Parser::Result constantBlockParserResult = parseBlock(constantBlocks, p_namespacePrefix, element, true);
+
+					result.errors.insert(result.errors.end(), constantBlockParserResult.errors.begin(), constantBlockParserResult.errors.end());
 					break;
 				}
 				default:
@@ -284,9 +327,23 @@ namespace Lumina
 			}
 			case Lexer::Element::Type::Structure:
 			{
-				Parser::Result structureParserResult = parseStructure("", element);
+				Parser::Result structureParserResult = parseBlock(structures, "", element, false);
 
 				result.errors.insert(result.errors.end(), structureParserResult.errors.begin(), structureParserResult.errors.end());
+				break;
+			}
+			case Lexer::Element::Type::Attribute:
+			{
+				Parser::Result attributeBlockParserResult = parseBlock(attributeBlocks, "", element, true);
+
+				result.errors.insert(result.errors.end(), attributeBlockParserResult.errors.begin(), attributeBlockParserResult.errors.end());
+				break;
+			}
+			case Lexer::Element::Type::Constant:
+			{
+				Parser::Result constantBlockParserResult = parseBlock(constantBlocks, "", element, true);
+
+				result.errors.insert(result.errors.end(), constantBlockParserResult.errors.begin(), constantBlockParserResult.errors.end());
 				break;
 			}
 			default :

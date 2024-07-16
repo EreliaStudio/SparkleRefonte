@@ -1,31 +1,4 @@
-struct Material 
+AttributeBlock attributeBlockName 
 { 
-    Vector3 _diffuseColor ; 
-    Vector3 _specularColor ; 
-    float _shininess ; 
+    int variableName = 5 ; 
 } ; 
-
-namespace Lighting 
-{ 
-    struct Material 
-    { 
-        Vector3 _diffuseColor ; 
-        Vector3 _specularColor ; 
-        float _shininess ; 
-    } ; 
-    struct Information 
-    { 
-        :: Material material ; 
-        Lighting :: Material material ; 
-        float test ; 
-        float test ; 
-    } ; 
-    namespace Lighting2 
-    { 
-        struct Information2 
-        { 
-            float test ; 
-            float test ; 
-        } ; 
-    } 
-} 

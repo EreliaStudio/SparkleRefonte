@@ -25,8 +25,8 @@ VertexPass -> FragmentPass: Vector3 variableNameB;
 ```cpp
 struct StructName
 {
-    float variableA = 1.0;
-    Vector3 variableB = Vector3(0.0, 1.0, 0.0);
+    float variableA;
+    Vector3 variableB;
     Vector4 variableC;
 };
 ```
