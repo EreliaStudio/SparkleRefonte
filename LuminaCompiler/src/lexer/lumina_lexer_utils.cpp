@@ -58,7 +58,9 @@ namespace Lumina
 		{
 			if (tokens[i].type == Tokenizer::Token::Type::MetaToken)
 			{
+				std::cout << " #Nested begin# ";
 				nestedElement[tokens[i].line].print(p_tabulation + (nestedElement.size() != tokens.size() ? 4 : 0), currentLine);
+				std::cout << " #Nested end# ";
 			}
 			else
 			{
@@ -68,7 +70,7 @@ namespace Lumina
 					std::cout << std::endl << tabulation;
 				}
 
-				std::cout << "(" << i << ")" << tokens[i].content << " ";
+				std::cout << "(" << i << ")[" << tokens[i].type << "]" << tokens[i].content << " ";
 			}
 		}
 	}

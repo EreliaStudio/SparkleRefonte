@@ -1,4 +1,12 @@
+struct Test
+{
+
+};
+
 AttributeBlock attributeBlockName
 {
-    int variableName = 5;
+    int variableName;
+    int variableName2;
+    int variableName3;
+    Test myTets;
 };

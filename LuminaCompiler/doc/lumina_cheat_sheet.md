@@ -54,7 +54,7 @@ Vector4 myFunction(float inputVariable)
 ```cpp
 AttributeBlock attributeBlockName
 {
-    int variableName = 5;
+    int variableName;
 };
 ```
 

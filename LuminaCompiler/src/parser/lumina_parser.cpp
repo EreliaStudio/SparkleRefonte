@@ -98,6 +98,14 @@ namespace Lumina
 			"Texture", Block{{{"SizeInt", "size"}}, Block::Swizzability::NotSwizzable}
 		}
 	};
+	std::vector<std::string> buildInTypes = {
+		"int", "uint", "float", "bool",
+		"Vector2", "Vector2Int", "Vector2UInt",
+		"Vector3", "Vector3Int", "Vector3UInt",
+		"Vector4", "Vector4Int", "Vector4UInt",
+		"Size", "SizeInt", "SizeUInt",
+		"Matrix2x2", "Matrix3x3", "Matrix4x4"
+	};
 	std::map<std::string, Block> attributeBlocks;
 	std::map<std::string, Block> constantBlocks;
 
@@ -156,23 +164,29 @@ namespace Lumina
 
 		return (result);
 	}
-	
-	std::string composeAssignatorElementType(const Lexer::Element& assignatorElement)
-	{
-		std::string result;
 
-		assignatorElement.print();
-
-		return (result);
-	}
-
-	Parser::Result parseBlock(std::map<std::string, Block>& blockmap, std::string p_namespacePrefix, const Lexer::Element& p_element, bool p_parseAssignator)
+	Parser::Result parseBlock(std::map<std::string, Block>& p_blockmap, std::string p_namespacePrefix, const Lexer::Element& p_element, bool p_parseAssignator)
 	{
 		Parser::Result result;
 		std::string structureName = p_element.tokens[1].content;
 		if (p_namespacePrefix != "")
 		{
 			structureName = p_namespacePrefix + "::" + structureName;
+		}
+
+		if (structures.contains(structureName) == true)
+		{
+			throw TokenBasedError(p_element.tokens[0].content + " named [" + p_element.tokens[1].content + "] already defined as a Structure", p_element.tokens[1]);
+		}
+
+		if (attributeBlocks.contains(structureName) == true)
+		{
+			throw TokenBasedError(p_element.tokens[0].content + " named [" + p_element.tokens[1].content + "] already defined as Attribute", p_element.tokens[1]);
+		}
+
+		if (constantBlocks.contains(structureName) == true)
+		{
+			throw TokenBasedError(p_element.tokens[0].content + " named [" + p_element.tokens[1].content + "] already defined as Constant", p_element.tokens[1]);
 		}
 
 		Block newStructure;
@@ -188,17 +202,8 @@ namespace Lumina
 				try
 				{
 					std::string type = composeStructureElementType(bodyTokens, index);
-				
 					std::string name = bodyTokens[index].content;
-					index++;
-
-					if (p_parseAssignator == true && bodyTokens[index].type == Tokenizer::Token::Type::Assignator)
-					{
-						index++;
-						std::string assignatorType = composeAssignatorElementType(blockElement.nestedElement[bodyTokens[index].line]);
-						index++;
-					}
-					index++;
+					index += 2;
 
 					for (const auto& element : newStructure.elements)
 					{
@@ -219,8 +224,8 @@ namespace Lumina
 			}
 		}
 
-		blockmap["::" + structureName] = newStructure;
-		blockmap[structureName] = newStructure;
+		p_blockmap["::" + structureName] = newStructure;
+		p_blockmap[structureName] = newStructure;
 
 		return (result);
 	}

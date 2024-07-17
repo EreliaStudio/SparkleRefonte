@@ -109,8 +109,8 @@ namespace Lumina
 		Element parseReturn();
 		Element parseDiscard();
 
-		Element parseBlockElement(bool p_parseAssignator);
-		Element parseBlockBody(bool p_parseAssignator);
+		Element parseBlockElement();
+		Element parseBlockBody();
 		Element parseSymbolParameters();
 		Element parseOnelinerSymbolBody();
 		Element parseSymbolBody();

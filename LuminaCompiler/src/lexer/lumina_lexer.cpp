@@ -212,7 +212,7 @@ namespace Lumina
 		return (result);
 	}
 
-	Lexer::Element Lexer::parseBlockElement(bool p_parseAssignator)
+	Lexer::Element Lexer::parseBlockElement()
 	{
 		Lexer::Element result;
 
@@ -231,18 +231,13 @@ namespace Lumina
 		skipComment();
 		consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
 		skipComment();
-		if (p_parseAssignator == true && currentToken().type == TokenType::Assignator)
-		{
-			consume(result, TokenType::Assignator, "Expected an assignator token \"=\"" + DEBUG_INFORMATION);
-			result.insertNestedElement(parseExpression());
-		}
 		consume(result, TokenType::EndOfSentence, "Expected a token \";\"" + DEBUG_INFORMATION);
 		skipComment();
 
 		return (result);
 	}
 
-	Lexer::Element Lexer::parseBlockBody(bool p_parseAssignator)
+	Lexer::Element Lexer::parseBlockBody()
 	{
 		Lexer::Element result;
 
@@ -252,7 +247,7 @@ namespace Lumina
 		{
 			try
 			{
-				result.insertNestedElement(parseBlockElement(p_parseAssignator));
+				result.insertNestedElement(parseBlockElement());
 			}
 			catch (std::runtime_error& e)
 			{
@@ -273,7 +268,7 @@ namespace Lumina
 		consume(result, TokenType::Structure, "Unexpected token found" + DEBUG_INFORMATION);
 		consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
 		consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"" + DEBUG_INFORMATION);
-		result.insertNestedElement(parseBlockBody(false));
+		result.insertNestedElement(parseBlockBody());
 		consume(result, TokenType::ClosedCurlyBracket, "Expected body closer token \"}\"" + DEBUG_INFORMATION);
 		skipComment();
 		consume(result, TokenType::EndOfSentence, "Expected a token \";\"" + DEBUG_INFORMATION);
@@ -294,7 +289,7 @@ namespace Lumina
 		consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"" + DEBUG_INFORMATION);
 		try
 		{
-			result.insertNestedElement(parseBlockBody(true));
+			result.insertNestedElement(parseBlockBody());
 		}
 		catch (...)
 		{
@@ -320,7 +315,7 @@ namespace Lumina
 		consume(result, TokenType::OpenCurlyBracket, "Expected body opener token \"{\"" + DEBUG_INFORMATION);
 		try
 		{
-			result.insertNestedElement(parseBlockBody(true));
+			result.insertNestedElement(parseBlockBody());
 		}
 		catch (...)
 		{
