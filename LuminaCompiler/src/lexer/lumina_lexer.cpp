@@ -122,15 +122,9 @@ namespace Lumina
 		case TokenType::Identifier:
 		{
 			size_t startIdentifierIndex = p_instruction.tokens.size();
-			consume(p_instruction, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
-			if (currentToken().type == TokenType::NamespaceSeparator)
-			{
-				while (currentToken().type == TokenType::NamespaceSeparator)
-				{
-					consume(p_instruction, TokenType::NamespaceSeparator, "Expected an accessor token \"::\"" + DEBUG_INFORMATION);
-					consume(p_instruction, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
-				}
-			}
+
+			expendTypeIdentifier(p_instruction, DEBUG_INFORMATION);
+
 			if (currentToken().type == TokenType::Accessor)
 			{
 				p_instruction.tokens.back().type = TokenType::Name;
@@ -172,6 +166,16 @@ namespace Lumina
 			}
 			break;
 		}
+		}
+	}
+
+	void Lexer::expendTypeIdentifier(Lexer::Element& p_instruction, const std::string& debugInformation)
+	{
+		consume(p_instruction, TokenType::Identifier, "Unexpected token found" + debugInformation);
+		while (currentToken().type == TokenType::NamespaceSeparator)
+		{
+			consume(p_instruction, TokenType::NamespaceSeparator, "Expected an accessor token \"::\"" + debugInformation);
+			consume(p_instruction, TokenType::Identifier, "Unexpected token found" + debugInformation);
 		}
 	}
 
@@ -219,14 +223,7 @@ namespace Lumina
 		result.type = Element::Type::BlockElement;
 
 		skipComment();
-		if (currentToken().type == TokenType::NamespaceSeparator)
-			consume(result, TokenType::NamespaceSeparator, "Expected an accessor token \"::\"" + DEBUG_INFORMATION);
-		consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
-		while (currentToken().type == TokenType::NamespaceSeparator)
-		{
-			consume(result, TokenType::NamespaceSeparator, "Expected an accessor token \"::\"" + DEBUG_INFORMATION);
-			consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
-		}
+		expendTypeIdentifier(result, DEBUG_INFORMATION);
 
 		skipComment();
 		consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
@@ -354,7 +351,7 @@ namespace Lumina
 			try
 			{
 				skipComment();
-				consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
+				expendTypeIdentifier(result, DEBUG_INFORMATION);
 				skipComment();
 				consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
 				skipComment();
@@ -381,7 +378,7 @@ namespace Lumina
 		{
 			result.type = Element::Type::VariableDeclaration;
 
-			consumeAndReassign(result, TokenType::Identifier, TokenType::Type, "Expected a type identifier" + DEBUG_INFORMATION);
+			expendTypeIdentifier(result, DEBUG_INFORMATION);
 			skipComment();
 			consumeAndReassign(result, TokenType::Identifier, TokenType::Name, "Expected a variable name" + DEBUG_INFORMATION);
 

@@ -101,6 +101,8 @@ namespace Lumina
 		void expendExpression(Element& p_instruction);
 		Element parseExpression();
 
+		void expendTypeIdentifier(Element& p_instruction, const std::string& debugInformation);
+
 		Element parseIfStatement();
 		Element parseWhileStatement();
 		Element parseForStatement();
