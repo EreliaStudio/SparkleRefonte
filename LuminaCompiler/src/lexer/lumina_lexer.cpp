@@ -843,6 +843,20 @@ namespace Lumina
 					instruction = parseNamespace();
 					break;
 				}
+				case TokenType::OpenCurlyBracket:
+				{
+					size_t nbCurlyBracket = 0;
+					while (currentToken().type != TokenType::ClosedCurlyBracket || nbCurlyBracket > 1)
+					{
+						if (currentToken().type == TokenType::OpenCurlyBracket)
+							nbCurlyBracket++;
+						else if (currentToken().type == TokenType::ClosedCurlyBracket)
+							nbCurlyBracket--;
+						_index++;
+					}
+					_index++;
+					break;
+				}
 				default:
 				{
 					throw std::runtime_error("Unexpected token [" + to_string(currentToken().type) + "] found" + DEBUG_INFORMATION);
