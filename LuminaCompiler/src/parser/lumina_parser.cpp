@@ -25,6 +25,108 @@ namespace Lumina
 		Swizzability swizzable = Swizzability::NotSwizzable;
 	};
 
+	struct Function
+	{
+		struct Parameter
+		{
+			std::string type;
+			std::string name;
+		};
+
+		std::string returnType;
+		std::string name;
+		std::vector<Parameter> parameters;
+
+		bool operator<(const Function& other) const
+		{
+			return name < other.name;
+		}
+	};
+
+	std::set<Function> createdFunctions = {
+		{
+			"float", "length", {{"Vector2", "x"}}
+		},
+		{
+			"float", "length", {{"Vector3", "x"}}
+		},
+		{
+			"float", "length", {{"Vector4", "x"}}
+		},
+		{
+			"float", "dot", {{"Vector3", "x"}, {"Vector3", "y"}}
+		},
+		{
+			"Vector3", "cross", {{"Vector3", "x"}, {"Vector3", "y"}}
+		},
+		{
+			"float", "distance", {{"Vector3", "p0"}, {"Vector3", "p1"}}
+		},
+		{
+			"Vector4", "mix", {{"Vector4", "x"}, {"Vector4", "y"}, {"float", "a"}}
+		},
+		{
+			"Vector4", "normalize", {{"Vector4", "x"}}
+		},
+		{
+			"float", "clamp", {{"float", "x"}, {"float", "minVal"}, {"float", "maxVal"}}
+		},
+		{
+			"Vector4", "clamp", {{"Vector4", "x"}, {"Vector4", "minVal"}, {"Vector4", "maxVal"}}
+		},
+		{
+			"Matrix4x4", "transpose", {{"Matrix4x4", "m"}}
+		},
+		{
+			"float", "sin", {{"float", "angle"}}
+		},
+		{
+			"Vector4", "sin", {{"Vector4", "angle"}}
+		},
+		{
+			"float", "cos", {{"float", "angle"}}
+		},
+		{
+			"Vector4", "cos", {{"Vector4", "angle"}}
+		},
+		{
+			"float", "tan", {{"float", "angle"}}
+		},
+		{
+			"Vector4", "tan", {{"Vector4", "angle"}}
+		},
+		{
+			"float", "exp", {{"float", "x"}}
+		},
+		{
+			"Vector4", "exp", {{"Vector4", "x"}}
+		},
+		{
+			"float", "log", {{"float", "x"}}
+		},
+		{
+			"Vector4", "log", {{"Vector4", "x"}}
+		},
+		{
+			"float", "sqrt", {{"float", "x"}}
+		},
+		{
+			"Vector4", "sqrt", {{"Vector4", "x"}}
+		},
+		{
+			"float", "abs", {{"float", "x"}}
+		},
+		{
+			"Vector4", "abs", {{"Vector4", "x"}}
+		},
+		{
+			"float", "pow", {{"float", "x"}, {"float", "y"}}
+		},
+		{
+			"Vector4", "pow", {{"Vector4", "x"}, {"Vector4", "y"}}
+		}
+	};
+
 	std::set<std::string> importedFiles = {};
 	std::map<std::string, Block> structures = {
 		{
@@ -255,24 +357,51 @@ namespace Lumina
 		return (result);
 	}
 
+	std::vector<Function::Parameter> composeSymbolParameters(const std::vector<Tokenizer::Token>& p_symbolTokens, size_t& p_index)
+	{
+		std::vector<Function::Parameter> result;
+
+		p_index++;
+		while (p_symbolTokens[p_index].type != Tokenizer::Token::Type::ClosedParenthesis)
+		{
+			Function::Parameter newParameter;
+
+			newParameter.type = p_symbolTokens[p_index].content;
+			p_index++;
+			while (p_symbolTokens[p_index].type == Tokenizer::Token::Type::NamespaceSeparator)
+			{
+				newParameter.type += "::" + p_symbolTokens[p_index + 1].content;
+				p_index += 2;			
+			}
+			newParameter.name = p_symbolTokens[p_index].content;
+
+			if (p_symbolTokens[p_index].type != Tokenizer::Token::Type::ClosedParenthesis)
+				p_index++;
+
+			result.push_back(newParameter);
+		}
+		p_index++;
+
+		return (result);
+	}
+
 	Parser::Result parseSymbol(std::string p_namespacePrefix, const Lexer::Element& p_element)
 	{
 		Parser::Result result;
 
 		std::vector<Tokenizer::Token> symbolTokens = p_element.tokenList();
-
-		for (size_t i = 0; i < symbolTokens.size(); i++)
-		{
-			std::cout << "Token [" << std::setw(4) << i << "] - " << symbolTokens[i] << std::endl;
-		}
-
 		size_t nbTokenRead = 0;
 
 		std::string symbolReturnType = composeSymbolReturnType(p_element.tokens, nbTokenRead);
 		std::string symbolName = composeSymbolName(p_element.tokens, nbTokenRead);
+		std::vector<Function::Parameter> symbolParameters = composeSymbolParameters(p_element.tokens, nbTokenRead);
 
 		std::cout << "Symbol return type : " << symbolReturnType << std::endl;
 		std::cout << "Symbol name : " << symbolName << std::endl;
+		for (const auto& parameter : symbolParameters)
+		{
+			std::cout << parameter.type << " " << parameter.name << std::endl;
+		}
 
 		return (result);
 	}
