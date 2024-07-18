@@ -129,7 +129,7 @@ namespace Lumina
 		return {};
 	}
 
-	std::string composeStructureElementType(const std::vector<Tokenizer::Token>& p_bodyTokens, size_t& p_index)
+	std::string composeBlockElementType(const std::vector<Tokenizer::Token>& p_bodyTokens, size_t& p_index)
 	{
 		std::string result;
 
@@ -165,7 +165,7 @@ namespace Lumina
 		return (result);
 	}
 
-	Parser::Result parseBlock(std::map<std::string, Block>& p_blockmap, std::string p_namespacePrefix, const Lexer::Element& p_element, bool p_parseAssignator)
+	Parser::Result parseBlock(std::map<std::string, Block>& p_blockmap, std::string p_namespacePrefix, const Lexer::Element& p_element)
 	{
 		Parser::Result result;
 		std::string structureName = p_element.tokens[1].content;
@@ -201,7 +201,7 @@ namespace Lumina
 
 				try
 				{
-					std::string type = composeStructureElementType(bodyTokens, index);
+					std::string type = composeBlockElementType(bodyTokens, index);
 					std::string name = bodyTokens[index].content;
 					index += 2;
 
@@ -226,6 +226,40 @@ namespace Lumina
 
 		p_blockmap["::" + structureName] = newStructure;
 		p_blockmap[structureName] = newStructure;
+
+		return (result);
+	}
+
+	std::string composeSymbolReturnType(const std::vector<Tokenizer::Token>& p_bodyTokens, size_t& p_index)
+	{
+		std::string result;
+
+		return (result);
+	}
+
+	std::string composeSymbolName(const std::vector<Tokenizer::Token>& p_bodyTokens, size_t& p_index)
+	{
+		std::string result;
+
+		return (result);
+	}
+
+	std::string composeSymbolParameters(const std::vector<Tokenizer::Token>& p_bodyTokens, size_t& p_index)
+	{
+		std::string result;
+
+		return (result);
+	}
+
+	Parser::Result parseSymbol(std::string p_namespacePrefix, const Lexer::Element& p_element)
+	{
+		Parser::Result result;
+
+		size_t nbTokenRead = 0;
+
+		std::string symbolReturnType = composeSymbolReturnType(p_element.tokens, nbTokenRead);
+
+		p_element.print();
 
 		return (result);
 	}
@@ -257,23 +291,30 @@ namespace Lumina
 				}
 				case Lexer::Element::Type::Structure:
 				{
-					Parser::Result structureParserResult = parseBlock(structures, p_namespacePrefix, element, false);
+					Parser::Result structureParserResult = parseBlock(structures, p_namespacePrefix, element);
 
 					result.errors.insert(result.errors.end(), structureParserResult.errors.begin(), structureParserResult.errors.end());
 					break;
 				}
 				case Lexer::Element::Type::Attribute:
 				{
-					Parser::Result attributeBlockParserResult = parseBlock(attributeBlocks, p_namespacePrefix, element, true);
+					Parser::Result attributeBlockParserResult = parseBlock(attributeBlocks, p_namespacePrefix, element);
 
 					result.errors.insert(result.errors.end(), attributeBlockParserResult.errors.begin(), attributeBlockParserResult.errors.end());
 					break;
 				}
 				case Lexer::Element::Type::Constant:
 				{
-					Parser::Result constantBlockParserResult = parseBlock(constantBlocks, p_namespacePrefix, element, true);
+					Parser::Result constantBlockParserResult = parseBlock(constantBlocks, p_namespacePrefix, element);
 
 					result.errors.insert(result.errors.end(), constantBlockParserResult.errors.begin(), constantBlockParserResult.errors.end());
+					break;
+				}
+				case Lexer::Element::Type::Symbol:
+				{
+					Parser::Result symbolParserResult = parseSymbol(p_namespacePrefix, element);
+
+					result.errors.insert(result.errors.end(), symbolParserResult.errors.begin(), symbolParserResult.errors.end());
 					break;
 				}
 				default:
@@ -332,23 +373,30 @@ namespace Lumina
 			}
 			case Lexer::Element::Type::Structure:
 			{
-				Parser::Result structureParserResult = parseBlock(structures, "", element, false);
+				Parser::Result structureParserResult = parseBlock(structures, "", element);
 
 				result.errors.insert(result.errors.end(), structureParserResult.errors.begin(), structureParserResult.errors.end());
 				break;
 			}
 			case Lexer::Element::Type::Attribute:
 			{
-				Parser::Result attributeBlockParserResult = parseBlock(attributeBlocks, "", element, true);
+				Parser::Result attributeBlockParserResult = parseBlock(attributeBlocks, "", element);
 
 				result.errors.insert(result.errors.end(), attributeBlockParserResult.errors.begin(), attributeBlockParserResult.errors.end());
 				break;
 			}
 			case Lexer::Element::Type::Constant:
 			{
-				Parser::Result constantBlockParserResult = parseBlock(constantBlocks, "", element, true);
+				Parser::Result constantBlockParserResult = parseBlock(constantBlocks, "", element);
 
 				result.errors.insert(result.errors.end(), constantBlockParserResult.errors.begin(), constantBlockParserResult.errors.end());
+				break;
+			}
+			case Lexer::Element::Type::Symbol:
+			{
+				Parser::Result symbolParserResult = parseSymbol("", element);
+
+				result.errors.insert(result.errors.end(), symbolParserResult.errors.begin(), symbolParserResult.errors.end());
 				break;
 			}
 			default :

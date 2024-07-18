@@ -675,6 +675,14 @@ namespace Lumina
 		result.type = Element::Type::Symbol;
 
 		consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
+		if (currentToken().type == TokenType::NamespaceSeparator)
+		{
+			while (currentToken().type == TokenType::NamespaceSeparator)
+			{
+				consume(result, TokenType::NamespaceSeparator, "Expected an accessor token \"::\"" + DEBUG_INFORMATION);
+				consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
+			}
+		}
 		skipComment();
 		consume(result, TokenType::Identifier, "Unexpected token found" + DEBUG_INFORMATION);
 		skipComment();
@@ -838,6 +846,7 @@ namespace Lumina
 				case TokenType::OpenCurlyBracket:
 				{
 					instruction = parseSymbolBody();
+					break;
 				}
 				default:
 				{
