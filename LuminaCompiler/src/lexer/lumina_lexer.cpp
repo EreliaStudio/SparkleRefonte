@@ -843,11 +843,6 @@ namespace Lumina
 					instruction = parseNamespace();
 					break;
 				}
-				case TokenType::OpenCurlyBracket:
-				{
-					instruction = parseSymbolBody();
-					break;
-				}
 				default:
 				{
 					throw std::runtime_error("Unexpected token [" + to_string(currentToken().type) + "] found" + DEBUG_INFORMATION);

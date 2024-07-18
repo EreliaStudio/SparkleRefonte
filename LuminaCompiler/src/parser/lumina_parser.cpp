@@ -230,23 +230,27 @@ namespace Lumina
 		return (result);
 	}
 
-	std::string composeSymbolReturnType(const std::vector<Tokenizer::Token>& p_bodyTokens, size_t& p_index)
+	std::string composeSymbolReturnType(const std::vector<Tokenizer::Token>& p_symbolTokens, size_t& p_index)
 	{
 		std::string result;
+
+		result = p_symbolTokens[p_index].content;
+		p_index++;
+		while (p_symbolTokens[p_index].type == Tokenizer::Token::Type::NamespaceSeparator)
+		{
+			result += "::" + p_symbolTokens[p_index + 1].content;
+			p_index += 2;
+		}
 
 		return (result);
 	}
 
-	std::string composeSymbolName(const std::vector<Tokenizer::Token>& p_bodyTokens, size_t& p_index)
+	std::string composeSymbolName(const std::vector<Tokenizer::Token>& p_symbolTokens, size_t& p_index)
 	{
 		std::string result;
 
-		return (result);
-	}
-
-	std::string composeSymbolParameters(const std::vector<Tokenizer::Token>& p_bodyTokens, size_t& p_index)
-	{
-		std::string result;
+		result = p_symbolTokens[p_index].content;
+		p_index++;
 
 		return (result);
 	}
@@ -255,11 +259,20 @@ namespace Lumina
 	{
 		Parser::Result result;
 
+		std::vector<Tokenizer::Token> symbolTokens = p_element.tokenList();
+
+		for (size_t i = 0; i < symbolTokens.size(); i++)
+		{
+			std::cout << "Token [" << std::setw(4) << i << "] - " << symbolTokens[i] << std::endl;
+		}
+
 		size_t nbTokenRead = 0;
 
 		std::string symbolReturnType = composeSymbolReturnType(p_element.tokens, nbTokenRead);
+		std::string symbolName = composeSymbolName(p_element.tokens, nbTokenRead);
 
-		p_element.print();
+		std::cout << "Symbol return type : " << symbolReturnType << std::endl;
+		std::cout << "Symbol name : " << symbolName << std::endl;
 
 		return (result);
 	}
