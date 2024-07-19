@@ -5,97 +5,6 @@
 
 namespace Lumina
 {
-	void Lexer::Element::insert(const Tokenizer::Token& p_token)
-	{
-		tokens.push_back(p_token);
-	}
-
-	void Lexer::Element::insertNestedElement(const Element& p_instruction)
-	{
-		tokens.push_back(Tokenizer::Token{ Tokenizer::Token::Type::MetaToken, "", nestedElement.size(), 0, ""});
-
-		nestedElement.push_back(p_instruction);
-	}
-
-	std::ostream& operator << (std::ostream& p_os, const Lexer::Element::Type& p_type)
-	{
-		p_os << to_string(p_type);
-		return (p_os);
-	}
-
-	void Lexer::Element::print(std::fstream& p_outputStream, size_t p_tabulation, size_t p_startingLine) const
-	{
-		std::string tabulation = std::string(p_tabulation, ' ');
-
-		size_t currentLine = p_startingLine;
-
-		for (size_t i = 0; i < tokens.size(); i++)
-		{
-			if (tokens[i].type == Tokenizer::Token::Type::MetaToken)
-			{
-				nestedElement[tokens[i].line].print(p_outputStream, p_tabulation + (nestedElement.size() != tokens.size() ? 4 : 0), currentLine);
-			}
-			else
-			{
-				if (currentLine != tokens[i].line)
-				{
-					currentLine = tokens[i].line;
-					p_outputStream << std::endl << tabulation;
-				}
-
-				p_outputStream << tokens[i].content << " ";
-			}
-		}
-	}
-
-	void Lexer::Element::print(size_t p_tabulation, size_t p_startingLine) const
-	{
-		std::string tabulation = std::string(p_tabulation, ' ');
-
-		size_t currentLine = p_startingLine;
-
-		for (size_t i = 0; i < tokens.size(); i++)
-		{
-			if (tokens[i].type == Tokenizer::Token::Type::MetaToken)
-			{
-				std::cout << " #Nested begin# ";
-				nestedElement[tokens[i].line].print(p_tabulation + (nestedElement.size() != tokens.size() ? 4 : 0), currentLine);
-				std::cout << " #Nested end# ";
-			}
-			else
-			{
-				if (currentLine != tokens[i].line)
-				{
-					currentLine = tokens[i].line;
-					std::cout << std::endl << tabulation;
-				}
-
-				std::cout << "(" << i << ")[" << tokens[i].type << "]" << tokens[i].content << " ";
-			}
-		}
-	}
-
-	std::vector<Tokenizer::Token> Lexer::Element::tokenList() const
-	{
-		std::vector<Tokenizer::Token> result;
-
-		for (const auto& token : tokens)
-		{
-			if (token.type == TokenType::MetaToken)
-			{
-				std::vector<Tokenizer::Token> nestedTokens = nestedElement[token.line].tokenList();
-			
-				result.insert(result.end(), nestedTokens.begin(), nestedTokens.end());
-			}
-			else
-			{
-				result.push_back(token);
-			}
-		}
-
-		return (result);
-	}
-
 	Lexer::Lexer() :
 		_index(0)
 	{
@@ -178,163 +87,31 @@ namespace Lumina
 	void Lexer::skipLine()
 	{
 		if (hasTokenLeft() == false)
-			return ;
+			return;
 
 		size_t line = currentToken().line;
 		while (hasTokenLeft() == true && currentToken().line == line)
 			skipToken();
 	}
 
-	void Lexer::consume(Lexer::Element& p_instruction)
-	{	
-		p_instruction.insert(_tokens[_index]);
-		_index++;
-	}
-
-	void Lexer::consume(Lexer::Element& p_instruction, Lexer::TokenType p_expectedTokenType)
+	void Lexer::skipComment()
 	{
-		if (hasTokenLeft() == false ||
-			currentToken().type != p_expectedTokenType)
-		{
-			throw std::runtime_error("Unexpected token type found");
-		}
-		consume(p_instruction);
-	}
+		if (hasTokenLeft() == false)
+			return;
 
-	void Lexer::consume(Lexer::Element& p_instruction, Lexer::TokenType p_expectedTokenType, const std::string& p_errorMessage)
-	{
-		if (hasTokenLeft() == false ||
-			currentToken().type != p_expectedTokenType)
+		if (currentToken().type == TokenType::SingleLineComment)
 		{
-			throw std::runtime_error(p_errorMessage);
+			size_t currentLine = currentToken().line;
+			while (hasTokenLeft() == true && currentToken().line == currentLine)
+				skipToken();
 		}
-		consume(p_instruction);
-	}
-
-	void Lexer::consume(Element& p_instruction, TokenType p_expectedTokenType, const std::string& p_expectedTokenContent, const std::string& p_errorMessage)
-	{
-		if (hasTokenLeft() == false ||
-			currentToken().type != p_expectedTokenType ||
-			currentToken().content != p_expectedTokenContent)
+		else if (currentToken().type == TokenType::MultiLineCommentStart)
 		{
-			throw std::runtime_error(p_errorMessage);
-		}
-		consume(p_instruction);
-	}
-
-	void Lexer::consumeMultiple(Element& p_instruction, TokenType p_expectedTokenType, const std::vector<std::string>& p_expectedTokenContents, const std::string& p_errorMessage)
-	{
-		if (hasTokenLeft() == false ||
-			currentToken().type != p_expectedTokenType)
-		{
-			throw std::runtime_error(p_errorMessage);
-		}
-
-		bool found = false;
-		for (size_t i = 0; found == false && i < p_expectedTokenContents.size(); i++)
-		{
-			if (currentToken().content == p_expectedTokenContents[i])
+			while (currentToken().type != TokenType::MultiLineCommentStop)
 			{
-				found = true;
+				skipToken();
 			}
+			skipToken();
 		}
-
-		if (found == false)
-		{
-			std::string errorMessage = "Invalid token value. Expected : ";
-			for (size_t i = 0; i < p_expectedTokenContents.size(); i++)
-			{
-				if (i != 0)
-					errorMessage += " - ";
-				errorMessage += p_expectedTokenContents[i];
-			}
-
-			throw std::runtime_error(errorMessage);
-		}
-		consume(p_instruction);
 	}
-
-
-
-	void Lexer::consumeAndReassign(Element& p_instruction, TokenType p_reassignedTokenType)
-	{
-		consume(p_instruction);
-		_tokens.back().type = p_reassignedTokenType;
-	}
-
-	void Lexer::consumeAndReassign(Element& p_instruction, TokenType p_expectedTokenType, TokenType p_reassignedTokenType)
-	{
-		consume(p_instruction, p_expectedTokenType);
-		_tokens.back().type = p_reassignedTokenType;
-	}
-
-	void Lexer::consumeAndReassign(Element& p_instruction, TokenType p_expectedTokenType, TokenType p_reassignedTokenType, const std::string& p_errorMessage)
-	{
-		consume(p_instruction, p_expectedTokenType, p_errorMessage);
-		p_instruction.tokens.back().type = p_reassignedTokenType;
-	}
-
-	void Lexer::consumeAndReassign(Element& p_instruction, TokenType p_expectedTokenType, const std::string& p_expectedTokenContent, TokenType p_reassignedTokenType, const std::string& p_errorMessage)
-	{
-		consume(p_instruction, p_expectedTokenType, p_expectedTokenContent, p_errorMessage);
-		_tokens.back().type = p_reassignedTokenType;
-	}
-
-	void Lexer::consumeMultipleAndReassign(Element& p_instruction, TokenType p_expectedTokenType, const std::vector<std::string>& p_expectedTokenContents, TokenType p_reassignedTokenType, const std::string& p_errorMessage)
-	{
-		consumeMultiple(p_instruction, p_expectedTokenType, p_expectedTokenContents, p_errorMessage);
-		_tokens.back().type = p_reassignedTokenType;
-	}
-}
-
-std::string to_string(const Lumina::Lexer::Element::Type& p_type)
-{
-	switch (p_type)
-	{
-	case Lumina::Lexer::Element::Type::Import:
-		return ("Import");
-	case Lumina::Lexer::Element::Type::PipelineFlow:
-		return ("PipelineFlow");
-	case Lumina::Lexer::Element::Type::PipelineDefinition:
-		return ("PipelineDefinition");
-	case Lumina::Lexer::Element::Type::Structure:
-		return ("Structure");
-	case Lumina::Lexer::Element::Type::Attribute:
-		return ("Attribute");
-	case Lumina::Lexer::Element::Type::Constant:
-		return ("Constant");
-	case Lumina::Lexer::Element::Type::BlockElement:
-		return ("BlockElement");
-	case Lumina::Lexer::Element::Type::Body:
-		return ("Body");
-	case Lumina::Lexer::Element::Type::Expression:
-		return ("Expression");
-	case Lumina::Lexer::Element::Type::CallParameters:
-		return ("CallParameters");
-	case Lumina::Lexer::Element::Type::Texture:
-		return ("Texture");
-	case Lumina::Lexer::Element::Type::Symbol:
-		return ("Symbol");
-	case Lumina::Lexer::Element::Type::SymbolParameters:
-		return ("SymbolParameters");
-	case Lumina::Lexer::Element::Type::Namespace:
-		return ("Namespace");
-	case Lumina::Lexer::Element::Type::IfStatement:
-		return ("IfStatement");
-	case Lumina::Lexer::Element::Type::WhileStatement:
-		return ("WhileStatement");
-	case Lumina::Lexer::Element::Type::ForStatement:
-		return ("ForStatement");
-	case Lumina::Lexer::Element::Type::Return:
-		return ("Return");
-	case Lumina::Lexer::Element::Type::Discard:
-		return ("Discard");
-	case Lumina::Lexer::Element::Type::Element:
-		return ("Element");
-	case Lumina::Lexer::Element::Type::VariableDeclaration:
-		return ("VariableDeclaration");
-	case Lumina::Lexer::Element::Type::VariableAssignation:
-		return ("VariableAssignation");
-	}
-	return ("Undefined type");
 }

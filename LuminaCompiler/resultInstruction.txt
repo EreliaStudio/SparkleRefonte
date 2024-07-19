@@ -1,5 +1,0 @@
-Result :: Test calculateDiffuse ( Vector3 :: Test normal , Vector3 lightDir , Vector3 lightColor ) 
-{ 
-    float diff = max ( dot ( normal , lightDir ) , 0.0 ) ; 
-    return diff * lightColor ; 
-} 

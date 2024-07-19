@@ -153,7 +153,6 @@
     <ClCompile Include="src\lumina_utils.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\lumina_compiler.cpp" />
-    <ClCompile Include="src\parser\lumina_parser.cpp" />
     <ClCompile Include="src\tokenizer\lumina_token.cpp" />
     <ClCompile Include="src\tokenizer\lumina_tokenizer.cpp" />
   </ItemGroup>
@@ -161,7 +160,6 @@
     <ClInclude Include="include\lumina_compiler.hpp" />
     <ClInclude Include="include\lumina_error.hpp" />
     <ClInclude Include="include\lumina_lexer.hpp" />
-    <ClInclude Include="include\lumina_parser.hpp" />
     <ClInclude Include="include\lumina_tokenizer.hpp" />
     <ClInclude Include="include\lumina_utils.hpp" />
   </ItemGroup>

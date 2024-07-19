@@ -1,7 +1,6 @@
 #include <iostream>
 #include "lumina_tokenizer.hpp"
 #include "lumina_lexer.hpp"
-#include "lumina_parser.hpp"
 
 #include <fstream>
 
@@ -42,19 +41,7 @@ int main(int argc, char** argv)
 
 	outputInstructionFile.open("resultInstruction.txt", std::ios_base::out);
 
-	for (const auto& instruction : lexerResult.elements)
-	{
-		instruction.print(outputInstructionFile);
-		outputInstructionFile << std::endl;
-	}
 	outputInstructionFile.close();
-
-	Parser::Result parserResult = Parser::checkSemantic(lexerResult.elements);
-
-	for (const auto& error : parserResult.errors)
-	{
-		std::cout << error.what() << std::endl << std::endl;
-	}
 
 	return (0);
 }

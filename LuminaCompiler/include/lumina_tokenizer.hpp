@@ -49,11 +49,7 @@ namespace Lumina
 				Break,
 				Return,
 				Discard,
-				Unknown,
-				MetaToken,
-				Type,
-				Name,
-				SymbolCall
+				Unknown
 			};
 
 			friend std::ostream& operator << (std::ostream& p_os, const Type& p_type);
