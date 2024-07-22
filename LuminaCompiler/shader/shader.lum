@@ -114,4 +114,10 @@ FragmentPass()
     }
 
     pixelColor = Vector4(finalColor, textureColor.a);
+
+    10;
+    10.0;
+    10.0f;
+    .0;
+    .0f;
 }
