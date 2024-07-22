@@ -8,8 +8,8 @@ Lumina is a wrapper around GLSL behavior, designed to simplify the creation of s
 ### Import
 - Import predefined section of code or user-provided files.
 ```cpp
-import "predefinedInclude"
-import "shader/userProvidedInclude.lum"
+#include "<predefinedInclude>"
+#include "shader/userProvidedInclude.lum"
 ```
 
 ### Pipeline Flow
@@ -254,7 +254,7 @@ FragmentPass()
     // Error handling example
     if (lightingConstants.ambientIntensity < 0.0 || lightingConstants.ambientIntensity > 1.0)
     {
-        raiseException("Ambient intensity must be between 0 and 1. Current value: " + lightingConstants.ambientIntensity);
+        raiseException("Ambient intensity must be between 0 and 1. Current value: %d", lightingConstants.ambientIntensity);
     }
 
     Vector3 normal = normalize(fragNormal);
