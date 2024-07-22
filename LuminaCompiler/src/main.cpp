@@ -1,12 +1,76 @@
 #include <iostream>
-#include "lumina_tokenizer.hpp"
-#include "lumina_lexer.hpp"
-
-#include <fstream>
-
-using namespace Lumina;
-
 #include <iomanip>
+
+#include "lumina_utils.hpp"
+
+struct Token
+{
+	struct Position
+	{
+		size_t line;
+		size_t column;
+	};
+
+	enum class Type
+	{
+		Unknow
+	};
+
+	Type type;
+
+	std::string content;
+	
+	Position position;
+
+	friend std::ostream& operator << (std::ostream& p_os, const Token::Type& p_type)
+	{
+		switch (p_type)
+		{
+		case Token::Type::Unknow:
+			p_os << "Unknow";
+		}
+
+		return (p_os);
+	}
+
+	friend std::ostream& operator << (std::ostream& p_os, const Token& p_token)
+	{
+		p_os << std::setw(10) << p_token.type << " - " << p_token.content;
+
+		return (p_os);
+	}	
+};
+
+struct Tokenizer
+{
+	static std::vector<Token> generateRawToken(const std::string& p_rawCode)
+	{
+		std::vector<Token> result;
+
+		return (result);
+	}
+
+	static std::vector<Token> mergeTokens(const std::vector<Token>& p_rawTokens)
+	{
+		std::vector<Token> result;
+
+		return (result);
+	}
+
+	static void defineTokensType(std::vector<Token>& p_tokens)
+	{
+		
+	}
+
+	static std::vector<Token> tokenize(const std::string& p_rawCode)
+	{
+		std::vector<Token> rawTokens = generateRawToken(p_rawCode);
+		std::vector<Token> mergedTokens = mergeTokens(rawTokens);
+		defineTokensType(mergedTokens);
+
+		return (mergedTokens);
+	}
+};
 
 int main(int argc, char** argv)
 {
@@ -16,32 +80,14 @@ int main(int argc, char** argv)
 		return (0);
 	}
 
-	std::vector<Tokenizer::Token> tokens = Tokenizer::tokenize(argv[1]);
+	std::string rawInput = Lumina::readFileAsString(argv[1]);
 
-	std::fstream ouputTokenFile;
+	std::vector<Token> tokens = Tokenizer::tokenize(rawInput);
 
-	ouputTokenFile.open("resultToken.txt", std::ios_base::out);
-
-	size_t tokenID = 0;
 	for (const auto& token : tokens)
 	{
-		ouputTokenFile << std::setw(4) << tokenID << " - " << token << std::endl;
-		tokenID++;
+		std::cout << token << std::endl;
 	}
-	ouputTokenFile.close();
-
-	Lexer::Result lexerResult = Lexer::checkGrammar(tokens);
-
-	for (const auto& error : lexerResult.errors)
-	{
-		std::cout << error.what() << std::endl << std::endl;
-	}
-
-	std::fstream outputInstructionFile;
-
-	outputInstructionFile.open("resultInstruction.txt", std::ios_base::out);
-
-	outputInstructionFile.close();
 
 	return (0);
 }
