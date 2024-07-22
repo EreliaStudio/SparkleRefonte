@@ -154,7 +154,7 @@ struct Tokenizer
 		std::vector<Token> result;
 
 		// Updated regex pattern to include floating point suffix 'f' for numbers
-		std::regex tokenRegex(R"((#include)|(\"(?:[^\"]|\\\")*\")|(<[^ >]+>)|(\b(Input|VertexPass|FragmentPass)\b)|(->)|(::)|(:)|(\bstruct\b)|(\bAttributeBlock\b)|(\bConstantBlock\b)|(\bTexture\b)|(\bnamespace\b)|(\bif\b)|(\bwhile\b)|(\bfor\b)|([a-zA-Z_][a-zA-Z_0-9]*)|([0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?|0[xX][0-9a-fA-F]+f?)|(\{)|(\})|(\()|(\))|(\.)|(//.*?$)|(/\*[\s\S]*?\*/)|(==|!=|<=|>=|\|\||&&|[+\-*/%<>!&|^]=?|[~?])|(\breturn\b)|(\bdiscard\b)|(;)|(=)|(\,))");
+		std::regex tokenRegex(R"((#include)|(\"(?:[^\"]|\\\")*\")|(<[^ >]+>)|(\b(Input|VertexPass|FragmentPass)\b)|(->)|(::)|(:)|(\bstruct\b)|(\bAttributeBlock\b)|(\bConstantBlock\b)|(\bTexture\b)|(\bnamespace\b)|(\bif\b)|(\bwhile\b)|(\bfor\b)|([a-zA-Z_][a-zA-Z_0-9]*)|([0-9]*\.?[0-9]f)|([0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?|0[xX][0-9a-fA-F]+f?)|(\{)|(\})|(\()|(\))|(\.)|(//.*?$)|(/\*[\s\S]*?\*/)|(==|!=|<=|>=|\|\||&&|[+\-*/%<>!&|^]=?|[~?])|(\breturn\b)|(\bdiscard\b)|(;)|(=)|(\,))");
 		std::smatch match;
 
 		auto searchStart = p_rawCode.cbegin();
@@ -184,19 +184,19 @@ struct Tokenizer
 			else if (match[15].matched) tokenType = Token::Type::WhileStatement;
 			else if (match[16].matched) tokenType = Token::Type::ForStatement;
 			else if (match[17].matched) tokenType = Token::Type::Identifier;
-			else if (match[18].matched || match[19].matched) tokenType = Token::Type::Number;
-			else if (match[20].matched) tokenType = Token::Type::OpenCurlyBracket;
-			else if (match[21].matched) tokenType = Token::Type::CloseCurlyBracket;
-			else if (match[22].matched) tokenType = Token::Type::OpenParenthesis;
-			else if (match[23].matched) tokenType = Token::Type::CloseParenthesis;
-			else if (match[24].matched) tokenType = Token::Type::Accessor;
-			else if (match[25].matched || match[26].matched) tokenType = Token::Type::Comment;
-			else if (match[27].matched) tokenType = Token::Type::Operator;
-			else if (match[28].matched) tokenType = Token::Type::Return;
-			else if (match[29].matched) tokenType = Token::Type::Discard;
-			else if (match[30].matched) tokenType = Token::Type::EndOfSentence;
-			else if (match[31].matched) tokenType = Token::Type::Assignator;
-			else if (match[32].matched) tokenType = Token::Type::Comma;
+			else if (match[18].matched || match[19].matched || match[20].matched) tokenType = Token::Type::Number;
+			else if (match[21].matched) tokenType = Token::Type::OpenCurlyBracket;
+			else if (match[22].matched) tokenType = Token::Type::CloseCurlyBracket;
+			else if (match[23].matched) tokenType = Token::Type::OpenParenthesis;
+			else if (match[24].matched) tokenType = Token::Type::CloseParenthesis;
+			else if (match[25].matched) tokenType = Token::Type::Accessor;
+			else if (match[26].matched || match[27].matched) tokenType = Token::Type::Comment;
+			else if (match[28].matched) tokenType = Token::Type::Operator;
+			else if (match[29].matched) tokenType = Token::Type::Return;
+			else if (match[30].matched) tokenType = Token::Type::Discard;
+			else if (match[31].matched) tokenType = Token::Type::EndOfSentence;
+			else if (match[32].matched) tokenType = Token::Type::Assignator;
+			else if (match[33].matched) tokenType = Token::Type::Comma;
 
 			// Calculate the line and column numbers
 			auto prefix = std::string(searchStart, match[0].first);

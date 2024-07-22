@@ -426,12 +426,10 @@ The vertex and fragment shaders work together to accurately render the 3D object
 [            EndOfSentence] | [118::6  ] | ;
 [                   Number] | [119::4  ] | 10.0
 [            EndOfSentence] | [119::8  ] | ;
-[                   Number] | [120::4  ] | 10.0
-[               Identifier] | [120::8  ] | f
+[                   Number] | [120::4  ] | 10.0f
 [            EndOfSentence] | [120::9  ] | ;
 [                   Number] | [121::4  ] | .0
 [            EndOfSentence] | [121::6  ] | ;
-[                   Number] | [122::4  ] | .0
-[               Identifier] | [122::6  ] | f
+[                   Number] | [122::4  ] | .0f
 [            EndOfSentence] | [122::7  ] | ;
 [        CloseCurlyBracket] | [123::0  ] | }
