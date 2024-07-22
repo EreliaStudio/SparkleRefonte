@@ -147,10 +147,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\lumina_token.cpp" />
+    <ClCompile Include="src\lumina_tokenizer.cpp" />
+    <ClCompile Include="src\lumina_token_based_exception.cpp" />
     <ClCompile Include="src\lumina_utils.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\lumina_exception.hpp" />
+    <ClInclude Include="include\lumina_token.hpp" />
+    <ClInclude Include="include\lumina_tokenizer.hpp" />
     <ClInclude Include="include\lumina_utils.hpp" />
   </ItemGroup>
   <ItemGroup>
