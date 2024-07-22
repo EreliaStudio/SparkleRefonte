@@ -13,9 +13,9 @@ VertexPass -> FragmentPass: vec2 fragUV;
 // Define custom structures
 struct Material
 {
-    Vector3 diffuseColor = Vector3(1.0, 0.5, 0.3);
-    Vector3 specularColor = Vector3(1.0);
-    float shininess = 32.0;
+    Vector3 diffuseColor;
+    Vector3 specularColor;
+    float shininess;
 };
 
 // Define a texture
@@ -31,9 +31,9 @@ AttributeBlock modelAttributes
 // Define constant blocks
 ConstantBlock lightingConstants
 {
-    Vector3 lightPosition = Vector3(10.0, 10.0, 10.0);
-    Vector3 lightColor = Vector3(1.0);
-    float ambientIntensity = 0.1;
+    Vector3 lightPosition;
+    Vector3 lightColor;
+    float ambientIntensity;
 };
 
 // Create namespaces

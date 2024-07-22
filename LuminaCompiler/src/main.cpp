@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <regex>
+#include <fstream>
 
 #include "lumina_utils.hpp"
 
@@ -15,35 +16,36 @@ struct Token
 
 	enum class Type
 	{
-		Unknow = 0,
-		Include = 1, // "#include"
-		StringLitteral = 2, // String contained inside a '"' on both sides
-		IncludeLitteral = 3, // String contained between '<' and '>'
-		PipelineFlow = 4, // "Input", "VertexPass", or "FragmentPass"
-		PipelineFlowSeparator = 5, // '->'
-		NamespaceSeparator = 6, // "::"
-		Separator = 7, // ':'
-		Identifier = 8, // Alphanumeric string
-		Number = 9, // Numeric value
-		StructureBlock = 10, // "struct"
-		AttributeBlock = 11, // "AttributeBlock"
-		ConstantBlock = 12, // "ConstantBlock"
-		Texture = 13, // "Texture"
-		Namespace = 14, // "namespace"
-		OpenCurlyBracket = 15, // '{'
-		CloseCurlyBracket = 16, // '}'
-		OpenParenthesis = 17, // '('
-		CloseParenthesis = 18, // ')'
-		Accessor = 19, // '.'
-		Comment = 20, // Comments: "//" until end of line or "/* */"
-		Operator = 21, // Operators: +, -, *, /, etc.
-		Return = 22, // "return"
-		Discard = 23, // "discard"
-		IfStatement = 24, // "if"
-		WhileStatement = 25, // "while"
-		ForStatement = 26, // "for"
-		EndOfSentence = 27, // ';'
-		Assignator = 28 // '='
+		Unknow,
+		Include, // "#include"
+		StringLitteral, // String contained inside a '"' on both sides
+		IncludeLitteral, // String contained between '<' and '>'
+		PipelineFlow, // "Input", "VertexPass", or "FragmentPass"
+		PipelineFlowSeparator, // '->'
+		NamespaceSeparator, // "::"
+		Separator, // ':'
+		Identifier, // Alphanumeric string
+		Number, // Numeric value
+		StructureBlock, // "struct"
+		AttributeBlock, // "AttributeBlock"
+		ConstantBlock, // "ConstantBlock"
+		Texture, // "Texture"
+		Namespace, // "namespace"
+		OpenCurlyBracket, // '{'
+		CloseCurlyBracket, // '}'
+		OpenParenthesis, // '('
+		CloseParenthesis, // ')'
+		Accessor, // '.'
+		Comment, // Comments: "//" until end of line or "/* */"
+		Operator, // Operators: +, -, *, /, etc.
+		Return, // "return"
+		Discard, // "discard"
+		IfStatement, // "if"
+		WhileStatement, // "while"
+		ForStatement, // "for"
+		EndOfSentence, // ';'
+		Assignator, // '='
+		Comma
 	};
 
 	Type type = Type::Unknow;
@@ -92,6 +94,7 @@ struct Token
 		case Token::Type::ForStatement: p_os << "ForStatement"; break;
 		case Token::Type::EndOfSentence: p_os << "EndOfSentence"; break;
 		case Token::Type::Assignator: p_os << "Assignator"; break;
+		case Token::Type::Comma: p_os << "Comma"; break;
 		default: p_os << "Invalid token type"; break;
 		}
 		return p_os;
@@ -150,8 +153,8 @@ struct Tokenizer
 	{
 		std::vector<Token> result;
 
-		// Updated regex pattern to capture comments correctly
-		std::regex tokenRegex(R"((#include)|(\"(?:[^\"]|\\\")*\")|(<[^ >]+>)|(\b(Input|VertexPass|FragmentPass)\b)|(->)|(::)|(:)|(\bif\b)|(\bwhile\b)|(\bfor\b)|([a-zA-Z_][a-zA-Z_0-9]*)|([0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?|0[xX][0-9a-fA-F]+)|(\bstruct\b)|(\bAttributeBlock\b)|(\bConstantBlock\b)|(\bTexture\b)|(\bnamespace\b)|(\{)|(\})|(\()|(\))|(\.)|(//.*?$)|(/\*[\s\S]*?\*/)|(==|!=|<=|>=|\|\||&&|[+\-*/%<>!&|^]=?|[~?])|(\breturn\b)|(\bdiscard\b)|(;)|(=))");
+		// Updated regex pattern with correct ordering
+		std::regex tokenRegex(R"((#include)|(\"(?:[^\"]|\\\")*\")|(<[^ >]+>)|(\b(Input|VertexPass|FragmentPass)\b)|(->)|(::)|(:)|(\bstruct\b)|(\bAttributeBlock\b)|(\bConstantBlock\b)|(\bTexture\b)|(\bnamespace\b)|(\bif\b)|(\bwhile\b)|(\bfor\b)|([a-zA-Z_][a-zA-Z_0-9]*)|([0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?|0[xX][0-9a-fA-F]+)|(\{)|(\})|(\()|(\))|(\.)|(//.*?$)|(/\*[\s\S]*?\*/)|(==|!=|<=|>=|\|\||&&|[+\-*/%<>!&|^]=?|[~?])|(\breturn\b)|(\bdiscard\b)|(;)|(=)|(\,))");
 		std::smatch match;
 
 		auto searchStart = p_rawCode.cbegin();
@@ -172,16 +175,16 @@ struct Tokenizer
 			else if (match[6].matched) tokenType = Token::Type::PipelineFlowSeparator;
 			else if (match[7].matched) tokenType = Token::Type::NamespaceSeparator;
 			else if (match[8].matched) tokenType = Token::Type::Separator;
-			else if (match[9].matched) tokenType = Token::Type::IfStatement;
-			else if (match[10].matched) tokenType = Token::Type::WhileStatement;
-			else if (match[11].matched) tokenType = Token::Type::ForStatement;
-			else if (match[12].matched) tokenType = Token::Type::Identifier;
-			else if (match[13].matched || match[14].matched) tokenType = Token::Type::Number;
-			else if (match[15].matched) tokenType = Token::Type::StructureBlock;
-			else if (match[16].matched) tokenType = Token::Type::AttributeBlock;
-			else if (match[17].matched) tokenType = Token::Type::ConstantBlock;
-			else if (match[18].matched) tokenType = Token::Type::Texture;
-			else if (match[19].matched) tokenType = Token::Type::Namespace;
+			else if (match[9].matched) tokenType = Token::Type::StructureBlock;
+			else if (match[10].matched) tokenType = Token::Type::AttributeBlock;
+			else if (match[11].matched) tokenType = Token::Type::ConstantBlock;
+			else if (match[12].matched) tokenType = Token::Type::Texture;
+			else if (match[13].matched) tokenType = Token::Type::Namespace;
+			else if (match[14].matched) tokenType = Token::Type::IfStatement;
+			else if (match[15].matched) tokenType = Token::Type::WhileStatement;
+			else if (match[16].matched) tokenType = Token::Type::ForStatement;
+			else if (match[17].matched) tokenType = Token::Type::Identifier;
+			else if (match[18].matched || match[19].matched) tokenType = Token::Type::Number;
 			else if (match[20].matched) tokenType = Token::Type::OpenCurlyBracket;
 			else if (match[21].matched) tokenType = Token::Type::CloseCurlyBracket;
 			else if (match[22].matched) tokenType = Token::Type::OpenParenthesis;
@@ -193,6 +196,7 @@ struct Tokenizer
 			else if (match[29].matched) tokenType = Token::Type::Discard;
 			else if (match[30].matched) tokenType = Token::Type::EndOfSentence;
 			else if (match[31].matched) tokenType = Token::Type::Assignator;
+			else if (match[32].matched) tokenType = Token::Type::Comma;
 
 			// Calculate the line and column numbers
 			auto prefix = std::string(searchStart, match[0].first);
@@ -243,6 +247,7 @@ struct Tokenizer
 
 		return result;
 	}
+
 	static std::vector<Token> tokenize(const std::string& p_rawCode)
 	{
 		return (generateRawToken(p_rawCode));
@@ -261,10 +266,16 @@ int main(int argc, char** argv)
 
 	std::vector<Token> tokens = Tokenizer::tokenize(rawInput);
 
+	std::fstream ouputStream;
+
+	ouputStream.open("resultToken.txt", std::ios_base::out);
+
 	for (const auto& token : tokens)
 	{
-		std::cout << token << std::endl;
+		ouputStream << token << std::endl;
 	}
+
+	ouputStream.close();
 
 	return (0);
 }
