@@ -11,40 +11,7 @@ namespace Lumina
 
 	std::ostream& operator << (std::ostream& p_os, const Token::Type& p_type)
 	{
-		switch (p_type)
-		{
-		case Token::Type::Unknow: p_os << "Unknow    "; break;
-		case Token::Type::Include: p_os << "Include"; break;
-		case Token::Type::StringLitteral: p_os << "StringLitteral"; break;
-		case Token::Type::IncludeLitteral: p_os << "IncludeLitteral"; break;
-		case Token::Type::PipelineFlow: p_os << "PipelineFlow"; break;
-		case Token::Type::PipelineFlowSeparator: p_os << "PipelineFlowSeparator"; break;
-		case Token::Type::Separator: p_os << "Separator"; break;
-		case Token::Type::Identifier: p_os << "Identifier"; break;
-		case Token::Type::Number: p_os << "Number"; break;
-		case Token::Type::StructureBlock: p_os << "StructureBlock"; break;
-		case Token::Type::AttributeBlock: p_os << "AttributeBlock"; break;
-		case Token::Type::ConstantBlock: p_os << "ConstantBlock"; break;
-		case Token::Type::Texture: p_os << "Texture"; break;
-		case Token::Type::Namespace: p_os << "Namespace"; break;
-		case Token::Type::NamespaceSeparator: p_os << "NamespaceSeparator"; break;
-		case Token::Type::OpenCurlyBracket: p_os << "OpenCurlyBracket"; break;
-		case Token::Type::CloseCurlyBracket: p_os << "CloseCurlyBracket"; break;
-		case Token::Type::OpenParenthesis: p_os << "OpenParenthesis"; break;
-		case Token::Type::CloseParenthesis: p_os << "CloseParenthesis"; break;
-		case Token::Type::Accessor: p_os << "Accessor"; break;
-		case Token::Type::Comment: p_os << "Comment"; break;
-		case Token::Type::Operator: p_os << "Operator"; break;
-		case Token::Type::Return: p_os << "Return"; break;
-		case Token::Type::Discard: p_os << "Discard"; break;
-		case Token::Type::IfStatement: p_os << "IfStatement"; break;
-		case Token::Type::WhileStatement: p_os << "WhileStatement"; break;
-		case Token::Type::ForStatement: p_os << "ForStatement"; break;
-		case Token::Type::EndOfSentence: p_os << "EndOfSentence"; break;
-		case Token::Type::Assignator: p_os << "Assignator"; break;
-		case Token::Type::Comma: p_os << "Comma"; break;
-		default: p_os << "Invalid token type"; break;
-		}
+		p_os << to_string(p_type);
 		return p_os;
 	}
 
@@ -53,5 +20,43 @@ namespace Lumina
 		p_os << "[" << std::setw(25) << p_token.type << "] | [" << std::setw(3) << p_token.context.line << "::" << std::left << std::setw(3) << p_token.context.column << std::right << "] | " << p_token.content;
 
 		return (p_os);
+	}
+
+	std::string to_string(Token::Type p_type)
+	{
+		switch (p_type)
+		{
+		case Token::Type::Unknow: return "Unknow";
+		case Token::Type::Include: return "#include";
+		case Token::Type::StringLitteral: return "StringLitteral";
+		case Token::Type::IncludeLitteral: return "IncludeLitteral";
+		case Token::Type::PipelineFlow: return "PipelineFlow";
+		case Token::Type::PipelineFlowSeparator: return "PipelineFlowSeparator";
+		case Token::Type::NamespaceSeparator: return "NamespaceSeparator";
+		case Token::Type::Separator: return "Separator";
+		case Token::Type::Identifier: return "Identifier";
+		case Token::Type::Number: return "Number";
+		case Token::Type::StructureBlock: return "StructureBlock";
+		case Token::Type::AttributeBlock: return "AttributeBlock";
+		case Token::Type::ConstantBlock: return "ConstantBlock";
+		case Token::Type::Texture: return "Texture";
+		case Token::Type::Namespace: return "Namespace";
+		case Token::Type::OpenCurlyBracket: return "OpenCurlyBracket";
+		case Token::Type::CloseCurlyBracket: return "CloseCurlyBracket";
+		case Token::Type::OpenParenthesis: return "OpenParenthesis";
+		case Token::Type::CloseParenthesis: return "CloseParenthesis";
+		case Token::Type::Accessor: return "Accessor";
+		case Token::Type::Comment: return "Comment";
+		case Token::Type::Operator: return "Operator";
+		case Token::Type::Return: return "Return";
+		case Token::Type::Discard: return "Discard";
+		case Token::Type::IfStatement: return "IfStatement";
+		case Token::Type::WhileStatement: return "WhileStatement";
+		case Token::Type::ForStatement: return "ForStatement";
+		case Token::Type::EndOfSentence: return "EndOfSentence";
+		case Token::Type::Assignator: return "Assignator";
+		case Token::Type::Comma: return "Comma";
+		default: return "Unknown";
+		}
 	}
 }

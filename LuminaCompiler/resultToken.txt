@@ -1,7 +1,7 @@
 [                  Comment] | [  1::0  ] | // Include predefined and user-provided files
-[                  Include] | [  2::0  ] | #include
+[                 #include] | [  2::0  ] | #include
 [          IncludeLitteral] | [  2::9  ] | <screenConstants>
-[                  Include] | [  3::0  ] | #include
+[                 #include] | [  3::0  ] | #include
 [           StringLitteral] | [  3::9  ] | "shader/customInclude.lum"
 [                  Comment] | [  5::0  ] | // Define the pipeline flow
 [             PipelineFlow] | [  6::0  ] | Input

@@ -60,4 +60,6 @@ namespace Lumina
 		friend std::ostream& operator << (std::ostream& p_os, const Token::Type& p_type);
 		friend std::ostream& operator << (std::ostream& p_os, const Token& p_token);
 	};
+	
+	std::string to_string(Token::Type p_type);
 }
