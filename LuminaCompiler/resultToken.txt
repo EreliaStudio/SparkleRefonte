@@ -124,7 +124,7 @@
 [                   Number] | [ 44::48 ] | 0.0
 [         CloseParenthesis] | [ 44::51 ] | )
 [            EndOfSentence] | [ 44::52 ] | ;
-[               Identifier] | [ 45::8  ] | return
+[                   Return] | [ 45::8  ] | return
 [               Identifier] | [ 45::15 ] | diff
 [                 Operator] | [ 45::20 ] | *
 [               Identifier] | [ 45::22 ] | lightColor
@@ -180,7 +180,7 @@
 [               Identifier] | [ 51::61 ] | shininess
 [         CloseParenthesis] | [ 51::70 ] | )
 [            EndOfSentence] | [ 51::71 ] | ;
-[               Identifier] | [ 52::8  ] | return
+[                   Return] | [ 52::8  ] | return
 [               Identifier] | [ 52::15 ] | spec
 [                 Operator] | [ 52::20 ] | *
 [               Identifier] | [ 52::22 ] | lightColor
@@ -408,7 +408,7 @@ The vertex and fragment shaders work together to accurately render the 3D object
 [                   Number] | [111::26 ] | 0
 [         CloseParenthesis] | [111::27 ] | )
 [         OpenCurlyBracket] | [112::4  ] | {
-[               Identifier] | [113::8  ] | discard
+[                  Discard] | [113::8  ] | discard
 [            EndOfSentence] | [113::15 ] | ;
 [        CloseCurlyBracket] | [114::4  ] | }
 [               Identifier] | [116::4  ] | pixelColor

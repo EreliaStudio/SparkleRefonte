@@ -1,63 +1,140 @@
 #include "lumina_tokenizer.hpp"
 
-#include <regex>
+#include <cctype>
+#include <string>
 
 namespace Lumina
 {
+	namespace
+	{
+		bool isIdentifierStart(char ch)
+		{
+			return std::isalpha(ch) || ch == '_';
+		}
+
+		bool isIdentifierChar(char ch)
+		{
+			return std::isalnum(ch) || ch == '_';
+		}
+
+		bool isDigit(char ch)
+		{
+			return std::isdigit(ch);
+		}
+
+		bool isHexDigit(char ch)
+		{
+			return std::isxdigit(ch);
+		}
+
+		std::string parseIdentifier(const std::string& code, size_t& index)
+		{
+			size_t start = index;
+			while (index < code.size() && isIdentifierChar(code[index]))
+			{
+				index++;
+			}
+			return code.substr(start, index - start);
+		}
+
+		std::string parseNumber(const std::string& code, size_t& index)
+		{
+			size_t start = index;
+			while (index < code.size() && (isDigit(code[index]) || code[index] == '.'))
+			{
+				index++;
+			}
+			if (index < code.size() && (code[index] == 'e' || code[index] == 'E'))
+			{
+				index++;
+				if (code[index] == '+' || code[index] == '-')
+				{
+					index++;
+				}
+				while (index < code.size() && isDigit(code[index]))
+				{
+					index++;
+				}
+			}
+			if (index < code.size() && code[index] == 'f')
+			{
+				index++;
+			}
+			return code.substr(start, index - start);
+		}
+
+		std::string parseStringLiteral(const std::string& code, size_t& index)
+		{
+			size_t start = index;
+			index++; // Skip initial quote
+			while (index < code.size() && (code[index] != '\"' || (index > 0 && code[index - 1] == '\\')))
+			{
+				index++;
+			}
+			index++; // Skip closing quote
+			return code.substr(start, index - start);
+		}
+
+		std::string parseIncludeLiterals(const std::string& code, size_t& index)
+		{
+			size_t start = index;
+			index++; // Skip initial '<'
+			while (index < code.size() && code[index] != '>')
+			{
+				if (std::isspace(code[index]))
+				{
+					// If we encounter a space, this is not a valid input literal
+					return "";
+				}
+				index++;
+			}
+			index++; // Skip closing '>'
+			return code.substr(start, index - start);
+		}
+
+		std::string parseComment(const std::string& code, size_t& index)
+		{
+			size_t start = index;
+			if (code[index + 1] == '/')
+			{
+				index += 2;
+				while (index < code.size() && code[index] != '\n')
+				{
+					index++;
+				}
+			}
+			else
+			{
+				index += 2;
+				while (index + 1 < code.size() && !(code[index] == '*' && code[index + 1] == '/'))
+				{
+					index++;
+				}
+				index += 2;
+			}
+			return code.substr(start, index - start);
+		}
+
+		std::string parseSpecialToken(const std::string& code, size_t& index, const std::string& token)
+		{
+			index += token.size();
+			return token;
+		}
+	}
+
 	std::vector<Token> Tokenizer::tokenize(const std::string& p_rawCode)
 	{
 		std::vector<Token> result;
-
-		// Updated regex pattern to include floating point suffix 'f' for numbers
-		std::regex tokenRegex(R"((#include)|(\"(?:[^\"]|\\\")*\")|(<[^ >]+>)|(\b(Input|VertexPass|FragmentPass)\b)|(->)|(::)|(:)|(\bstruct\b)|(\bAttributeBlock\b)|(\bConstantBlock\b)|(\bTexture\b)|(\bnamespace\b)|(\bif\b)|(\bwhile\b)|(\bfor\b)|([a-zA-Z_][a-zA-Z_0-9]*)|([0-9]*\.?[0-9]f)|([0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?|0[xX][0-9a-fA-F]+f?)|(\{)|(\})|(\()|(\))|(\.)|(//.*?$)|(/\*[\s\S]*?\*/)|(==|!=|<=|>=|\|\||&&|[+\-*/%<>!&|^]=?|[~?])|(\breturn\b)|(\bdiscard\b)|(;)|(=)|(\,))");
-		std::smatch match;
-
-		auto searchStart = p_rawCode.cbegin();
+		size_t index = 0;
 		int lineNumber = 1;
 		int columnNumber = 0;
 		std::string currentLine;
 
-		while (std::regex_search(searchStart, p_rawCode.cend(), match, tokenRegex))
+		while (index < p_rawCode.size())
 		{
-			std::string tokenStr = match[0];
-			int tokenStartPos = match.position(0);
-
-			Token::Type tokenType = Token::Type::Unknow;
-			if (match[1].matched) tokenType = Token::Type::Include;
-			else if (match[2].matched) tokenType = Token::Type::StringLitteral;
-			else if (match[3].matched) tokenType = Token::Type::IncludeLitteral;
-			else if (match[4].matched || match[5].matched) tokenType = Token::Type::PipelineFlow;
-			else if (match[6].matched) tokenType = Token::Type::PipelineFlowSeparator;
-			else if (match[7].matched) tokenType = Token::Type::NamespaceSeparator;
-			else if (match[8].matched) tokenType = Token::Type::Separator;
-			else if (match[9].matched) tokenType = Token::Type::StructureBlock;
-			else if (match[10].matched) tokenType = Token::Type::AttributeBlock;
-			else if (match[11].matched) tokenType = Token::Type::ConstantBlock;
-			else if (match[12].matched) tokenType = Token::Type::Texture;
-			else if (match[13].matched) tokenType = Token::Type::Namespace;
-			else if (match[14].matched) tokenType = Token::Type::IfStatement;
-			else if (match[15].matched) tokenType = Token::Type::WhileStatement;
-			else if (match[16].matched) tokenType = Token::Type::ForStatement;
-			else if (match[17].matched) tokenType = Token::Type::Identifier;
-			else if (match[18].matched || match[19].matched || match[20].matched) tokenType = Token::Type::Number;
-			else if (match[21].matched) tokenType = Token::Type::OpenCurlyBracket;
-			else if (match[22].matched) tokenType = Token::Type::CloseCurlyBracket;
-			else if (match[23].matched) tokenType = Token::Type::OpenParenthesis;
-			else if (match[24].matched) tokenType = Token::Type::CloseParenthesis;
-			else if (match[25].matched) tokenType = Token::Type::Accessor;
-			else if (match[26].matched || match[27].matched) tokenType = Token::Type::Comment;
-			else if (match[28].matched) tokenType = Token::Type::Operator;
-			else if (match[29].matched) tokenType = Token::Type::Return;
-			else if (match[30].matched) tokenType = Token::Type::Discard;
-			else if (match[31].matched) tokenType = Token::Type::EndOfSentence;
-			else if (match[32].matched) tokenType = Token::Type::Assignator;
-			else if (match[33].matched) tokenType = Token::Type::Comma;
-
-			// Calculate the line and column numbers
-			auto prefix = std::string(searchStart, match[0].first);
-			for (char ch : prefix)
+			if (std::isspace(p_rawCode[index]))
 			{
-				if (ch == '\n')
+				if (p_rawCode[index] == '\n')
 				{
 					lineNumber++;
 					columnNumber = 0;
@@ -66,24 +143,194 @@ namespace Lumina
 				else
 				{
 					columnNumber++;
-					currentLine += ch;
+					currentLine += p_rawCode[index];
+				}
+				index++;
+				continue;
+			}
+
+			std::string tokenStr;
+			Token::Type tokenType = Token::Type::Unknow;
+			int beginColumnNumber = columnNumber;
+			int beginLineNumber = lineNumber;
+
+			if (p_rawCode.substr(index, 8) == "#include")
+			{
+				tokenStr = parseSpecialToken(p_rawCode, index, "#include");
+				tokenType = Token::Type::Include;
+			}
+			else if (p_rawCode[index] == '\"')
+			{
+				tokenStr = parseStringLiteral(p_rawCode, index);
+				tokenType = Token::Type::StringLitteral;
+			}
+			else if (p_rawCode[index] == '/' && (p_rawCode[index + 1] == '/' || p_rawCode[index + 1] == '*'))
+			{
+				tokenStr = parseComment(p_rawCode, index);
+				tokenType = Token::Type::Comment;
+			}
+			else if (p_rawCode[index] == '<')
+			{
+				int beginIndex = index;
+				tokenStr = parseIncludeLiterals(p_rawCode, index);
+				if (!tokenStr.empty())
+				{
+					tokenType = Token::Type::IncludeLitteral;
+				}
+				else
+				{
+					index = beginIndex;
+					tokenStr = parseSpecialToken(p_rawCode, index, std::string(1, p_rawCode[index]));
+					tokenType = Token::Type::Operator;
+				}
+			}
+			else if (isIdentifierStart(p_rawCode[index]))
+			{
+				tokenStr = parseIdentifier(p_rawCode, index);
+				if (tokenStr == "Input" || tokenStr == "VertexPass" || tokenStr == "FragmentPass")
+				{
+					tokenType = Token::Type::PipelineFlow;
+				}
+				else if (tokenStr == "struct")
+				{
+					tokenType = Token::Type::StructureBlock;
+				}
+				else if (tokenStr == "AttributeBlock")
+				{
+					tokenType = Token::Type::AttributeBlock;
+				}
+				else if (tokenStr == "ConstantBlock")
+				{
+					tokenType = Token::Type::ConstantBlock;
+				}
+				else if (tokenStr == "Texture")
+				{
+					tokenType = Token::Type::Texture;
+				}
+				else if (tokenStr == "namespace")
+				{
+					tokenType = Token::Type::Namespace;
+				}
+				else if (tokenStr == "if")
+				{
+					tokenType = Token::Type::IfStatement;
+				}
+				else if (tokenStr == "while")
+				{
+					tokenType = Token::Type::WhileStatement;
+				}
+				else if (tokenStr == "for")
+				{
+					tokenType = Token::Type::ForStatement;
+				}
+				else if (tokenStr == "return")
+				{
+					tokenType = Token::Type::Return;
+				}
+				else if (tokenStr == "discard")
+				{
+					tokenType = Token::Type::Discard;
+				}
+				else
+				{
+					tokenType = Token::Type::Identifier;
+				}
+			}
+			else if (isDigit(p_rawCode[index]) || (p_rawCode[index] == '.' && isDigit(p_rawCode[index + 1])))
+			{
+				tokenStr = parseNumber(p_rawCode, index);
+				tokenType = Token::Type::Number;
+			}
+			else if (p_rawCode.substr(index, 2) == "->")
+			{
+				tokenStr = parseSpecialToken(p_rawCode, index, "->");
+				tokenType = Token::Type::PipelineFlowSeparator;
+			}
+			else if (p_rawCode.substr(index, 2) == "::")
+			{
+				tokenStr = parseSpecialToken(p_rawCode, index, "::");
+				tokenType = Token::Type::NamespaceSeparator;
+			}
+			else
+			{
+				// Handle operators and other tokens
+				std::string operators[] = { "==", "!=", "<=", ">=", "||", "&&", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=" };
+				bool foundOperator = false;
+				for (const std::string& op : operators)
+				{
+					if (p_rawCode.substr(index, op.size()) == op)
+					{
+						tokenStr = parseSpecialToken(p_rawCode, index, op);
+						tokenType = Token::Type::Operator;
+						foundOperator = true;
+						break;
+					}
+				}
+				if (!foundOperator)
+				{
+					switch (p_rawCode[index])
+					{
+					case '=':
+						tokenStr = parseSpecialToken(p_rawCode, index, "=");
+						tokenType = Token::Type::Assignator;
+						break;
+					case '{':
+						tokenStr = parseSpecialToken(p_rawCode, index, "{");
+						tokenType = Token::Type::OpenCurlyBracket;
+						break;
+					case '}':
+						tokenStr = parseSpecialToken(p_rawCode, index, "}");
+						tokenType = Token::Type::CloseCurlyBracket;
+						break;
+					case '(':
+						tokenStr = parseSpecialToken(p_rawCode, index, "(");
+						tokenType = Token::Type::OpenParenthesis;
+						break;
+					case ')':
+						tokenStr = parseSpecialToken(p_rawCode, index, ")");
+						tokenType = Token::Type::CloseParenthesis;
+						break;
+					case '.':
+						tokenStr = parseSpecialToken(p_rawCode, index, ".");
+						tokenType = Token::Type::Accessor;
+						break;
+					case ';':
+						tokenStr = parseSpecialToken(p_rawCode, index, ";");
+						tokenType = Token::Type::EndOfSentence;
+						break;
+					case ':':
+						tokenStr = parseSpecialToken(p_rawCode, index, ":");
+						tokenType = Token::Type::Separator;
+						break;
+					case ',':
+						tokenStr = parseSpecialToken(p_rawCode, index, ",");
+						tokenType = Token::Type::Comma;
+						break;
+					case '+':
+					case '-':
+					case '*':
+					case '/':
+					case '%':
+					case '<':
+					case '>':
+					case '!':
+					case '&':
+					case '|':
+					case '^':
+					case '~':
+					case '?':
+						tokenStr = parseSpecialToken(p_rawCode, index, std::string(1, p_rawCode[index]));
+						tokenType = Token::Type::Operator;
+						break;
+					default:
+						tokenStr = p_rawCode.substr(index, 1);
+						index++;
+						break;
+					}
 				}
 			}
 
-			// Extract the input line containing the token
-			if (currentLine.empty())
-			{
-				size_t lineStartPos = p_rawCode.rfind('\n', searchStart - p_rawCode.cbegin() + tokenStartPos);
-				size_t lineEndPos = p_rawCode.find('\n', searchStart - p_rawCode.cbegin() + tokenStartPos + tokenStr.size());
-				currentLine = p_rawCode.substr(lineStartPos + 1, lineEndPos - lineStartPos - 1);
-			}
-
-			result.emplace_back(tokenStr, tokenType, lineNumber, columnNumber, currentLine);
-
-			// Update searchStart to the end of the matched token
-			searchStart = match.suffix().first;
-
-			// Adjust line and column numbers for tokens that contain newlines
+			// Calculate the line and column numbers
 			for (char ch : tokenStr)
 			{
 				if (ch == '\n')
@@ -98,6 +345,10 @@ namespace Lumina
 					currentLine += ch;
 				}
 			}
+
+			result.emplace_back(tokenStr, tokenType, beginLineNumber, beginColumnNumber, currentLine);
+			beginColumnNumber = columnNumber;
+			beginLineNumber = lineNumber;
 		}
 
 		return result;
