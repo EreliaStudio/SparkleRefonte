@@ -23,6 +23,11 @@ private:
 	{
 		return (_index < _tokens->size());
 	}
+	
+	void advance()
+	{
+		_index++;
+	}
 
 	const Lumina::Token& currentToken() const
 	{
@@ -37,8 +42,11 @@ private:
 	void skipLine()
 	{
 		int currentLine = currentToken().context.line;
-		while (currentLine == currentToken().context.line)
+		while (hasTokenLeft() == true &&
+			currentLine == currentToken().context.line)
+		{
 			skipToken();
+		}
 	}
 
 	void expect(Lumina::Token::Type p_expectedType, const std::string& p_errorMessage = "Unexpected token type.")
@@ -56,7 +64,11 @@ private:
 		_tokens = &p_tokens;
 		_index = 6;
 
-		result.errors.push_back(Lumina::TokenBasedError(_file, "p_errorMessage", currentToken()));
+		while (hasTokenLeft() == true)
+		{
+			result.errors.push_back(Lumina::TokenBasedError(_file, "p_errorMessage", currentToken()));
+			skipLine();
+		}
 
 		return (result);
 	}

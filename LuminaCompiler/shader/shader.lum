@@ -53,8 +53,7 @@ namespace Lighting
     }
 }
 
-/*
-Pipeline Description:
+/* Pipeline Description:
 This pipeline is designed to render a 3D object by processing its vertex data and applying lighting calculations.
 
 Vertex Shader (VertexPass):
