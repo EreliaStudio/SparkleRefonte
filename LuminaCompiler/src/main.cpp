@@ -4,6 +4,72 @@
 #include "lumina_token.hpp"
 #include "lumina_tokenizer.hpp"
 
+#include "lumina_exception.hpp"
+
+class Lexer
+{
+public:
+	struct Result
+	{
+		std::vector<Lumina::TokenBasedError> errors;
+	};
+	
+private:
+	std::filesystem::path _file;
+	const std::vector<Lumina::Token>* _tokens;
+	size_t _index = 0;
+
+	bool hasTokenLeft() const
+	{
+		return (_index < _tokens->size());
+	}
+
+	const Lumina::Token& currentToken() const
+	{
+		return (_tokens->operator[](_index));
+	}
+
+	void skipToken()
+	{
+		_index++;
+	}
+
+	void skipLine()
+	{
+		int currentLine = currentToken().context.line;
+		while (currentLine == currentToken().context.line)
+			skipToken();
+	}
+
+	void expect(Lumina::Token::Type p_expectedType, const std::string& p_errorMessage = "Unexpected token type.")
+	{
+		if (currentToken().type != p_expectedType)
+		{
+			throw Lumina::TokenBasedError(_file, p_errorMessage, currentToken());
+		}
+	}
+
+	Result parse(const std::filesystem::path& p_file, const std::vector<Lumina::Token>& p_tokens)
+	{
+		Result result;
+		_file = p_file;
+		_tokens = &p_tokens;
+		_index = 6;
+
+		result.errors.push_back(Lumina::TokenBasedError(_file, "p_errorMessage", currentToken()));
+
+		return (result);
+	}
+
+public:
+	Lexer() = default;
+
+	static Result checkSyntax(const std::filesystem::path& p_file, const std::vector<Lumina::Token>& p_tokens)
+	{
+		return (Lexer().parse(p_file, p_tokens));
+	}
+};
+
 int main(int argc, char** argv)
 {
 	if (argc == 1)
@@ -26,6 +92,13 @@ int main(int argc, char** argv)
 	}
 
 	ouputStream.close();
+
+	Lexer::Result lexerResult = Lexer::checkSyntax(argv[1], tokens);
+
+	for (const auto& error : lexerResult.errors)
+	{
+		std::cout << error.what() << std::endl;
+	}
 
 	return (0);
 }

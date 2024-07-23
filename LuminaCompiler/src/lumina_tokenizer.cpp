@@ -122,28 +122,51 @@ namespace Lumina
 		}
 	}
 
+	std::string getLine(const std::string& p_rawCode, const size_t& p_index)
+	{
+		size_t startIndex = p_index;
+		size_t endIndex = p_index;
+		while (startIndex > 0 && p_rawCode[startIndex - 1] != '\n')
+		{
+			startIndex--;
+		}
+		while (endIndex < p_rawCode.size() && p_rawCode[endIndex] != '\n')
+		{
+			endIndex++;
+		}
+
+		return (p_rawCode.substr(startIndex, endIndex - startIndex));
+	}
+
 	std::vector<Token> Tokenizer::tokenize(const std::string& p_rawCode)
 	{
 		std::vector<Token> result;
 		size_t index = 0;
+		int currentLineNumber = 0;
 		int lineNumber = 1;
 		int columnNumber = 0;
 		std::string currentLine;
 
 		while (index < p_rawCode.size())
 		{
+			if (currentLineNumber != lineNumber)
+			{
+				currentLine = getLine(p_rawCode, index);
+				currentLineNumber = lineNumber;
+			}
+
 			if (std::isspace(p_rawCode[index]))
 			{
 				if (p_rawCode[index] == '\n')
 				{
 					lineNumber++;
 					columnNumber = 0;
-					currentLine.clear();
+					//currentLine.clear();
 				}
 				else
 				{
 					columnNumber++;
-					currentLine += p_rawCode[index];
+					//currentLine += p_rawCode[index];
 				}
 				index++;
 				continue;
@@ -337,12 +360,12 @@ namespace Lumina
 				{
 					lineNumber++;
 					columnNumber = 0;
-					currentLine.clear();
+					//currentLine.clear();
 				}
 				else
 				{
 					columnNumber++;
-					currentLine += ch;
+					//currentLine += ch;
 				}
 			}
 
