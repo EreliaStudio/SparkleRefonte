@@ -139,11 +139,67 @@ struct NamespaceInstruction : public AbstractInstruction
 
 	std::string string() const
 	{
-		std::string result = "Namespace contain\n";
+		std::string result = "Namespace contain [" + std::to_string(instructions.size()) + "] instructions :\n";
 		for (const auto& instruction : instructions)
 		{
 			result += "    " + instruction->string() + "\n";
 		}
+		return (result);
+	}
+};
+
+struct FunctionParameterInstruction
+{
+	std::shared_ptr<TypeInstruction> type;
+	std::shared_ptr<IdentifierInstruction> name;
+
+	std::string string() const
+	{
+		return ("Type [" + type->string() + "] and name [" + name->string() + "]");
+	}
+};
+
+struct FunctionElementInstruction : public AbstractInstruction
+{
+	
+};
+
+struct FunctionBodyInstruction : public AbstractInstruction
+{
+	std::vector<std::shared_ptr<FunctionElementInstruction>> elements;
+
+	std::string string() const
+	{
+		std::string result = "";
+
+		for (const auto& element : elements)
+		{
+			result += element->string() + "\n";
+		}
+
+		return (result);
+	}
+};
+
+struct FunctionInstruction : public AbstractInstruction
+{
+	std::shared_ptr<TypeInstruction> returnType;
+	std::shared_ptr<IdentifierInstruction> name;
+	std::vector<std::shared_ptr<FunctionParameterInstruction>> parameters;
+	std::shared_ptr< FunctionBodyInstruction> body;
+
+	std::string string() const
+	{
+		std::string result = "Function [" + name->string() + "] return [" + returnType->string() + "] and take [";
+		for (size_t i = 0; i < parameters.size(); i++)
+		{
+			if (i != 0)
+				result += " / ";
+			result += parameters[i]->string();
+		}
+		result += "] as parameters and contain body :\n";
+		result += body->string();
+
 		return (result);
 	}
 };
@@ -225,7 +281,7 @@ private:
 		return (result);
 	}
 
-	std::shared_ptr<Instruction> parseIncludeInstruction()
+	std::shared_ptr<IncludeInstruction> parseIncludeInstruction()
 	{
 		std::shared_ptr<IncludeInstruction> result = std::make_shared<IncludeInstruction>();
 
@@ -235,7 +291,7 @@ private:
 		return (result);
 	}
 
-	std::shared_ptr<Instruction> parseTypeInstruction()
+	std::shared_ptr<TypeInstruction> parseTypeInstruction()
 	{
 		std::shared_ptr<TypeInstruction> result = std::make_shared<TypeInstruction>();
 
@@ -249,7 +305,7 @@ private:
 		return (result);
 	}
 
-	std::shared_ptr<Instruction> parseIdentifierInstruction()
+	std::shared_ptr<IdentifierInstruction> parseIdentifierInstruction()
 	{
 		std::shared_ptr<IdentifierInstruction> result = std::make_shared<IdentifierInstruction>();
 
@@ -258,7 +314,7 @@ private:
 		return (result);
 	}
 
-	std::shared_ptr<Instruction> parsePipelineFlowInstruction()
+	std::shared_ptr<PipelineFlowInstruction> parsePipelineFlowInstruction()
 	{
 		std::shared_ptr<PipelineFlowInstruction> result = std::make_shared<PipelineFlowInstruction>();
 
@@ -273,7 +329,7 @@ private:
 		return (result);
 	}
 
-	std::shared_ptr<Instruction> parseBlockElementInstruction()
+	std::shared_ptr<BlockElementInstruction> parseBlockElementInstruction()
 	{
 		std::shared_ptr<BlockElementInstruction> result = std::make_shared<BlockElementInstruction>();
 
@@ -284,7 +340,7 @@ private:
 		return (result);
 	}
 
-	std::shared_ptr<Instruction> parseStructureBlockInstruction()
+	std::shared_ptr<StructureBlockInstruction> parseStructureBlockInstruction()
 	{
 		std::shared_ptr<StructureBlockInstruction> result = std::make_shared<StructureBlockInstruction>();
 
@@ -301,7 +357,7 @@ private:
 		return (result);
 	}
 
-	std::shared_ptr<Instruction> parseAttributeBlockInstruction()
+	std::shared_ptr<AttributeBlockInstruction> parseAttributeBlockInstruction()
 	{
 		std::shared_ptr<AttributeBlockInstruction> result = std::make_shared<AttributeBlockInstruction>();
 
@@ -318,7 +374,7 @@ private:
 		return (result);
 	}
 
-	std::shared_ptr<Instruction> parseConstantBlockInstruction()
+	std::shared_ptr<ConstantBlockInstruction> parseConstantBlockInstruction()
 	{
 		std::shared_ptr<ConstantBlockInstruction> result = std::make_shared<ConstantBlockInstruction>();
 
@@ -344,7 +400,7 @@ private:
 		return (result);
 	}
 
-	std::shared_ptr<Instruction> parseTextureInstruction()
+	std::shared_ptr<TextureInstruction> parseTextureInstruction()
 	{
 		std::shared_ptr<TextureInstruction> result = std::make_shared<TextureInstruction>();
 
@@ -355,7 +411,59 @@ private:
 		return (result);
 	}
 
-	std::shared_ptr<Instruction> parseNamespaceInstruction()
+	std::shared_ptr<FunctionParameterInstruction> parseFunctionParameterInstruction()
+	{
+		std::shared_ptr<FunctionParameterInstruction> result = std::make_shared<FunctionParameterInstruction>();
+
+		result->type = parseTypeInstruction();
+		result->name = parseIdentifierInstruction();
+
+		return (result);
+	}
+
+	std::shared_ptr<FunctionElementInstruction> parseFunctionElementInstruction()
+	{
+		std::shared_ptr<FunctionElementInstruction> result = std::make_shared<FunctionElementInstruction>();
+
+		skipLine();
+
+		return (result);
+	}
+
+	std::shared_ptr<FunctionBodyInstruction> parseFunctionBodyInstruction()
+	{
+		std::shared_ptr<FunctionBodyInstruction> result = std::make_shared<FunctionBodyInstruction>();
+
+		expect(Lumina::Token::Type::OpenCurlyBracket);
+		while (currentToken().type != Lumina::Token::Type::CloseParenthesis)
+		{
+			result->elements.push_back(parseFunctionElementInstruction());
+		}
+		expect(Lumina::Token::Type::CloseCurlyBracket);
+
+		return (result);
+	}
+
+	std::shared_ptr<FunctionInstruction> parseFunctionInstruction()
+	{
+		std::shared_ptr<FunctionInstruction> result = std::make_shared<FunctionInstruction>();
+
+		result->returnType = parseTypeInstruction();
+		result->name = parseIdentifierInstruction();
+		expect(Lumina::Token::Type::OpenParenthesis);
+		while (currentToken().type != Lumina::Token::Type::CloseParenthesis)
+		{
+			result->parameters.push_back(parseFunctionParameterInstruction());
+			if (currentToken().type != Lumina::Token::Type::CloseParenthesis)
+				expect(Lumina::Token::Type::Comma);
+		}
+		expect(Lumina::Token::Type::CloseParenthesis);
+		result->body = parseFunctionBodyInstruction();
+
+		return (result);
+	}
+
+	std::shared_ptr<NamespaceInstruction> parseNamespaceInstruction()
 	{
 		std::shared_ptr<NamespaceInstruction> result = std::make_shared<NamespaceInstruction>();
 
@@ -397,6 +505,10 @@ private:
 				{
 					result->instructions.push_back(parseNamespaceInstruction());
 					break;
+				}
+				case Lumina::Token::Type::Identifier:
+				{
+					result->instructions.push_back(parseFunctionInstruction());
 				}
 				default:
 				{
@@ -469,6 +581,10 @@ private:
 				{
 					_result.instructions.push_back(parseNamespaceInstruction());
 					break;
+				}
+				case Lumina::Token::Type::Identifier:
+				{
+					_result.instructions.push_back(parseFunctionInstruction());
 				}
 				default:
 				{
