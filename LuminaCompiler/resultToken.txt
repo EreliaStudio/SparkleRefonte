@@ -82,8 +82,9 @@
 [               Identifier] | [ 32::14 ] | lightingConstants
 [         OpenCurlyBracket] | [ 33::0  ] | {
 [               Identifier] | [ 34::4  ] | Vector3
-[               Identifier] | [ 34::12 ] | lightPosition
-[            EndOfSentence] | [ 34::25 ] | ;
+[               Identifier] | [ 34::12 ] | test
+[               Identifier] | [ 34::17 ] | lightPosition
+[            EndOfSentence] | [ 34::30 ] | ;
 [               Identifier] | [ 35::4  ] | Vector3
 [               Identifier] | [ 35::12 ] | lightColor
 [            EndOfSentence] | [ 35::22 ] | ;

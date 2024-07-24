@@ -46,7 +46,105 @@ struct IncludeInstruction : public AbstractInstruction
 
 	std::string string() const
 	{
-		return (includeFile.content.substr(1, includeFile.content.size() - 2));
+		return ("Include file : " + includeFile.content.substr(1, includeFile.content.size() - 2));
+	}
+};
+
+struct PipelineFlowInstruction : public AbstractInstruction
+{
+	Lumina::Token inputPipeline;
+	Lumina::Token outputPipeline;
+	std::shared_ptr<TypeInstruction> type;
+	std::shared_ptr<IdentifierInstruction> name;
+
+	std::string string() const
+	{
+		return ("Pipeline from [" + inputPipeline.content + "] to [" + outputPipeline.content + "] -> type [" + type->string() + "] and name [" + name->string() + "]");
+	}
+};
+
+struct BlockElementInstruction : public AbstractInstruction
+{
+	std::shared_ptr<TypeInstruction> type;
+	std::shared_ptr<IdentifierInstruction> name;
+
+	std::string string() const
+	{
+		return ("Type [" + type->string() + "] and name [" + name->string() + "]");
+	}
+};
+
+struct StructureBlockInstruction : public AbstractInstruction
+{
+	std::shared_ptr<Instruction> name;
+	std::vector<std::shared_ptr<Instruction>> elements;
+
+	std::string string() const
+	{
+		std::string result = "Structure named [" + name->string() + "] contain : \n";
+		for (const auto& element : elements)
+		{
+			result += "    " + element->string() + "\n";
+		}
+		return (result);
+	}
+};
+
+struct AttributeBlockInstruction : public AbstractInstruction
+{
+	std::shared_ptr<Instruction> name;
+	std::vector<std::shared_ptr<Instruction>> elements;
+
+	std::string string() const
+	{
+		std::string result = "Attribute named [" + name->string() + "] contain : \n";
+		for (const auto& element : elements)
+		{
+			result += "    " + element->string() + "\n";
+		}
+		return (result);
+	}
+};
+
+struct ConstantBlockInstruction : public AbstractInstruction
+{
+	std::shared_ptr<Instruction> name;
+	std::vector<std::shared_ptr<Instruction>> elements;
+
+	std::string string() const
+	{
+		std::string result = "Constant named [" + name->string() + "] contain : \n";
+		for (const auto& element : elements)
+		{
+			result += "    " + element->string() + "\n";
+		}
+		return (result);
+	}
+};
+
+struct TextureInstruction : public AbstractInstruction
+{
+	std::shared_ptr<Instruction> name;
+
+	std::string string() const
+	{
+		return ("Texture named [" + name->string() + "]");
+	}
+};
+
+struct NamespaceInstruction : public AbstractInstruction
+{
+	std::shared_ptr<Instruction> name;
+	std::vector<std::shared_ptr<Instruction>> instructions;
+
+	std::string string() const
+	{
+		std::string result = "Namespace contain\n";
+		for (const auto& instruction : instructions)
+		{
+			result += "    " + instruction->string() + "\n";
+		}
+		return (result);
 	}
 };
 
@@ -61,6 +159,7 @@ public:
 	
 private:
 	std::filesystem::path _file;
+	Result _result;
 	const std::vector<Lumina::Token>* _tokens;
 	size_t _index = 0;
 
@@ -94,15 +193,18 @@ private:
 		}
 	}
 
-	void expect(Lumina::Token::Type p_expectedType, const std::string& p_errorMessage = "Unexpected token type.")
+	const Lumina::Token& expect(Lumina::Token::Type p_expectedType, const std::string& p_errorMessage = "Unexpected token type.")
 	{
 		if (currentToken().type != p_expectedType)
 		{
 			throw Lumina::TokenBasedError(_file, p_errorMessage, currentToken());
 		}
+		const Lumina::Token& result = currentToken();
+		advance();
+		return (result);
 	}
 
-	void expect(std::vector<Lumina::Token::Type> p_expectedTypes, const std::string& p_errorMessage = "Unexpected token type.")
+	const Lumina::Token& expect(std::vector<Lumina::Token::Type> p_expectedTypes, const std::string& p_errorMessage = "Unexpected token type.")
 	{
 		bool found = false;
 
@@ -118,6 +220,9 @@ private:
 		{
 			throw Lumina::TokenBasedError(_file, p_errorMessage, currentToken());
 		}
+		const Lumina::Token& result = currentToken();
+		advance();
+		return (result);
 	}
 
 	std::shared_ptr<Instruction> parseIncludeInstruction()
@@ -125,14 +230,196 @@ private:
 		std::shared_ptr<IncludeInstruction> result = std::make_shared<IncludeInstruction>();
 
 		expect(Lumina::Token::Type::Include);
-		expect({ Lumina::Token::Type::StringLitteral, Lumina::Token::Type::IncludeLitteral }, "Expected a valid include file token.");
+		result->includeFile = expect({ Lumina::Token::Type::StringLitteral, Lumina::Token::Type::IncludeLitteral }, "Expected a valid include file token.");
+
+		return (result);
+	}
+
+	std::shared_ptr<Instruction> parseTypeInstruction()
+	{
+		std::shared_ptr<TypeInstruction> result = std::make_shared<TypeInstruction>();
+
+		result->tokens.push_back(expect(Lumina::Token::Type::Identifier));
+		while (currentToken().type == Lumina::Token::Type::NamespaceSeparator)
+		{
+			result->tokens.push_back(expect(Lumina::Token::Type::NamespaceSeparator));
+			result->tokens.push_back(expect(Lumina::Token::Type::Identifier));
+		}
+
+		return (result);
+	}
+
+	std::shared_ptr<Instruction> parseIdentifierInstruction()
+	{
+		std::shared_ptr<IdentifierInstruction> result = std::make_shared<IdentifierInstruction>();
+
+		result->token = expect(Lumina::Token::Type::Identifier);
+
+		return (result);
+	}
+
+	std::shared_ptr<Instruction> parsePipelineFlowInstruction()
+	{
+		std::shared_ptr<PipelineFlowInstruction> result = std::make_shared<PipelineFlowInstruction>();
+
+		result->inputPipeline = expect(Lumina::Token::Type::PipelineFlow);
+		expect(Lumina::Token::Type::PipelineFlowSeparator);
+		result->outputPipeline = expect(Lumina::Token::Type::PipelineFlow);
+		expect(Lumina::Token::Type::Separator);
+		result->type = parseTypeInstruction();
+		result->name = parseIdentifierInstruction();
+		expect(Lumina::Token::Type::EndOfSentence);
+
+		return (result);
+	}
+
+	std::shared_ptr<Instruction> parseBlockElementInstruction()
+	{
+		std::shared_ptr<BlockElementInstruction> result = std::make_shared<BlockElementInstruction>();
+
+		result->type = parseTypeInstruction();
+		result->name = parseIdentifierInstruction();
+		expect(Lumina::Token::Type::EndOfSentence);
+
+		return (result);
+	}
+
+	std::shared_ptr<Instruction> parseStructureBlockInstruction()
+	{
+		std::shared_ptr<StructureBlockInstruction> result = std::make_shared<StructureBlockInstruction>();
+
+		expect(Lumina::Token::Type::StructureBlock);
+		result->name = parseIdentifierInstruction();
+		expect(Lumina::Token::Type::OpenCurlyBracket);
+		while (currentToken().type != Lumina::Token::Type::CloseCurlyBracket)
+		{
+			result->elements.push_back(parseBlockElementInstruction());
+		}
+		expect(Lumina::Token::Type::CloseCurlyBracket);
+		expect(Lumina::Token::Type::EndOfSentence);
+
+		return (result);
+	}
+
+	std::shared_ptr<Instruction> parseAttributeBlockInstruction()
+	{
+		std::shared_ptr<AttributeBlockInstruction> result = std::make_shared<AttributeBlockInstruction>();
+
+		expect(Lumina::Token::Type::AttributeBlock);
+		result->name = parseIdentifierInstruction();
+		expect(Lumina::Token::Type::OpenCurlyBracket);
+		while (currentToken().type != Lumina::Token::Type::CloseCurlyBracket)
+		{
+			result->elements.push_back(parseBlockElementInstruction());
+		}
+		expect(Lumina::Token::Type::CloseCurlyBracket);
+		expect(Lumina::Token::Type::EndOfSentence);
+
+		return (result);
+	}
+
+	std::shared_ptr<Instruction> parseConstantBlockInstruction()
+	{
+		std::shared_ptr<ConstantBlockInstruction> result = std::make_shared<ConstantBlockInstruction>();
+
+		expect(Lumina::Token::Type::ConstantBlock);
+		result->name = parseIdentifierInstruction();
+		expect(Lumina::Token::Type::OpenCurlyBracket);
+		while (currentToken().type != Lumina::Token::Type::CloseCurlyBracket)
+		{
+			try
+			{
+				result->elements.push_back(parseBlockElementInstruction());
+			}
+			catch (const Lumina::TokenBasedError& e)
+			{
+				_result.errors.push_back(e);
+
+				skipLine();
+			}
+		}
+		expect(Lumina::Token::Type::CloseCurlyBracket);
+		expect(Lumina::Token::Type::EndOfSentence);
+
+		return (result);
+	}
+
+	std::shared_ptr<Instruction> parseTextureInstruction()
+	{
+		std::shared_ptr<TextureInstruction> result = std::make_shared<TextureInstruction>();
+
+		expect(Lumina::Token::Type::Texture);
+		result->name = parseIdentifierInstruction();
+		expect(Lumina::Token::Type::EndOfSentence);
+
+		return (result);
+	}
+
+	std::shared_ptr<Instruction> parseNamespaceInstruction()
+	{
+		std::shared_ptr<NamespaceInstruction> result = std::make_shared<NamespaceInstruction>();
+
+		expect(Lumina::Token::Type::Namespace);
+		result->name = parseIdentifierInstruction();
+		expect(Lumina::Token::Type::OpenCurlyBracket);
+		while (currentToken().type != Lumina::Token::Type::CloseCurlyBracket)
+		{
+			try
+			{
+				switch (currentToken().type)
+				{
+				case Lumina::Token::Type::Comment:
+				{
+					skipToken();
+					break;
+				}
+				case Lumina::Token::Type::StructureBlock:
+				{
+					result->instructions.push_back(parseStructureBlockInstruction());
+					break;
+				}
+				case Lumina::Token::Type::AttributeBlock:
+				{
+					result->instructions.push_back(parseAttributeBlockInstruction());
+					break;
+				}
+				case Lumina::Token::Type::ConstantBlock:
+				{
+					result->instructions.push_back(parseConstantBlockInstruction());
+					break;
+				}
+				case Lumina::Token::Type::Texture:
+				{
+					result->instructions.push_back(parseTextureInstruction());
+					break;
+				}
+				case Lumina::Token::Type::Namespace:
+				{
+					result->instructions.push_back(parseNamespaceInstruction());
+					break;
+				}
+				default:
+				{
+					throw Lumina::TokenBasedError(_file, "Unexpected token type : " + to_string(currentToken().type), currentToken());
+					break;
+				}
+				}
+			}
+			catch (const Lumina::TokenBasedError& e)
+			{
+				_result.errors.push_back(e);
+
+				skipLine();
+			}
+		}
+		expect(Lumina::Token::Type::CloseCurlyBracket);
 
 		return (result);
 	}
 
 	Result parse(const std::filesystem::path& p_file, const std::vector<Lumina::Token>& p_tokens)
 	{
-		Result result;
+		_result = Result();
 		_file = p_file;
 		_tokens = &p_tokens;
 		_index = 0;
@@ -150,7 +437,38 @@ private:
 				}
 				case Lumina::Token::Type::Include:
 				{
-					result.instructions.push_back(parseIncludeInstruction());
+					_result.instructions.push_back(parseIncludeInstruction());
+					break;
+				}
+				case Lumina::Token::Type::PipelineFlow:
+				{
+					_result.instructions.push_back(parsePipelineFlowInstruction());
+					break;
+				}
+				case Lumina::Token::Type::StructureBlock:
+				{
+					_result.instructions.push_back(parseStructureBlockInstruction());
+					break;
+				}
+				case Lumina::Token::Type::AttributeBlock:
+				{
+					_result.instructions.push_back(parseAttributeBlockInstruction());
+					break;
+				}
+				case Lumina::Token::Type::ConstantBlock:
+				{
+					_result.instructions.push_back(parseConstantBlockInstruction());
+					break;
+				}
+				case Lumina::Token::Type::Texture:
+				{
+					_result.instructions.push_back(parseTextureInstruction());
+					break;
+				}
+				case Lumina::Token::Type::Namespace:
+				{
+					_result.instructions.push_back(parseNamespaceInstruction());
+					break;
 				}
 				default:
 				{
@@ -161,13 +479,13 @@ private:
 			}
 			catch (const Lumina::TokenBasedError& e)
 			{
-				result.errors.push_back(e);
+				_result.errors.push_back(e);
 
 				skipLine();
 			}
 		}
 
-		return (result);
+		return (_result);
 	}
 
 public:
@@ -207,6 +525,11 @@ int main(int argc, char** argv)
 	for (const auto& error : lexerResult.errors)
 	{
 		std::cout << error.what() << std::endl;
+	}
+
+	for (const auto& instruction : lexerResult.instructions)
+	{
+		std::cout << instruction->string() << std::endl;
 	}
 
 	return (0);
