@@ -148,7 +148,7 @@ struct NamespaceInstruction : public AbstractInstruction
 	}
 };
 
-struct FunctionParameterInstruction
+struct SymbolParameterInstruction : public AbstractInstruction
 {
 	std::shared_ptr<TypeInstruction> type;
 	std::shared_ptr<IdentifierInstruction> name;
@@ -159,8 +159,87 @@ struct FunctionParameterInstruction
 	}
 };
 
+struct NumberExpressionValueInstruction : public AbstractInstruction
+{
+	const Lumina::Token& token;
 
-struct FunctionBodyInstruction : public AbstractInstruction
+	std::string string() const
+	{
+		return (token.content);
+	}
+};
+
+struct VariableExpressionValueInstruction : public AbstractInstruction
+{
+	std::vector<Lumina::Token> tokens;
+
+	std::string string() const
+	{
+		std::string result = "";
+
+		for (const auto& token : tokens)
+		{
+			result += token.content;
+		}
+
+		return (result);
+	}
+};
+
+struct ExpressionInstruction : public AbstractInstruction
+{
+	std::vector<std::shared_ptr<Instruction>> elements;
+	
+	std::string string() const override
+	{
+		std::string result;
+
+		for (size_t i = 0; i < elements.size(); i++)
+		{
+			if (i != 0)
+				result += " ";
+			result += elements[i]->string();
+		}
+
+		return (result);
+	}
+};
+
+struct VariableDeclarationInstruction : public AbstractInstruction
+{
+	std::shared_ptr<TypeInstruction> type;
+	std::shared_ptr<IdentifierInstruction> name;
+	std::shared_ptr<ExpressionInstruction> initializer;
+
+	std::string string() const override
+	{
+		std::string result = "Variable Declaration: " + type->string() + " " + name->string();
+		if (initializer)
+		{
+			result += " = " + initializer->string();
+		}
+		return result;
+	}
+};
+
+struct SymbolNameInstruction : public AbstractInstruction
+{
+	std::vector<Lumina::Token> tokens;
+
+	std::string string() const
+	{
+		std::string result = "";
+
+		for (const auto& token : tokens)
+		{
+			result += token.content;
+		}
+
+		return (result);
+	}
+};
+
+struct SymbolBodyInstruction : public AbstractInstruction
 {
 	std::vector<std::shared_ptr<Instruction>> elements;
 
@@ -177,16 +256,115 @@ struct FunctionBodyInstruction : public AbstractInstruction
 	}
 };
 
-struct FunctionInstruction : public AbstractInstruction
+struct SymbolCallInstruction : public AbstractInstruction
+{
+	std::shared_ptr<SymbolNameInstruction> name;
+	std::vector<std::shared_ptr<ExpressionInstruction>> arguments;
+
+	std::string string() const override
+	{
+		std::string result = "Symbol Call: " + name->string() + "(";
+		for (size_t i = 0; i < arguments.size(); ++i)
+		{
+			if (i != 0)
+			{
+				result += ", ";
+			}
+			result += arguments[i]->string();
+		}
+		result += ")";
+		return result;
+	}
+};
+
+struct ConditionInstruction : public AbstractInstruction
+{
+	std::vector<std::shared_ptr<ExpressionInstruction>> elements;
+
+	std::string string() const override
+	{
+		std::string result;
+
+		for (size_t i = 0; i < elements.size(); i++)
+		{
+			if (i != 0)
+				result += " ";
+			result += elements[i]->string();
+		}
+
+		return (result);
+	}
+};
+
+struct ElseInstruction : public AbstractInstruction
+{
+	std::shared_ptr<ConditionInstruction> condition;
+	std::shared_ptr<SymbolBodyInstruction> body;
+
+	std::string string() const override
+	{
+		if (condition)
+		{
+			return "Else If (" + condition->string() + ") " + body->string();
+		}
+		else
+		{
+			return "Else " + body->string();
+		}
+	}
+};
+
+struct IfStatementInstruction : public AbstractInstruction
+{
+	std::shared_ptr<ConditionInstruction> condition;
+	std::shared_ptr<SymbolBodyInstruction> body;
+	std::vector<std::shared_ptr<ElseInstruction>> elseBlocks;
+
+	std::string string() const override
+	{
+		std::string result = "If (" + condition->string() + ") " + body->string();
+		for (const auto& elseBlock : elseBlocks)
+		{
+			result += "\n" + elseBlock->string();
+		}
+		return result;
+	}
+};
+
+struct WhileLoopInstruction : public AbstractInstruction
+{
+	std::shared_ptr<ConditionInstruction> condition;
+	std::shared_ptr<SymbolBodyInstruction> body;
+
+	std::string string() const override
+	{
+		return "While (" + condition->string() + ") " + body->string();
+	}
+};
+
+struct ForLoopInstruction : public AbstractInstruction
+{
+	std::shared_ptr<AbstractInstruction> initializer;
+	std::shared_ptr<ConditionInstruction> condition;
+	std::shared_ptr<ExpressionInstruction> increment;
+	std::shared_ptr<SymbolBodyInstruction> body;
+
+	std::string string() const override
+	{
+		return "For (" + initializer->string() + "; " + condition->string() + "; " + increment->string() + ") " + body->string();
+	}
+};
+
+struct SymbolInstruction : public AbstractInstruction
 {
 	std::shared_ptr<TypeInstruction> returnType;
 	std::shared_ptr<IdentifierInstruction> name;
-	std::vector<std::shared_ptr<FunctionParameterInstruction>> parameters;
-	std::shared_ptr< FunctionBodyInstruction> body;
+	std::vector<std::shared_ptr<SymbolParameterInstruction>> parameters;
+	std::shared_ptr< SymbolBodyInstruction> body;
 
 	std::string string() const
 	{
-		std::string result = "Function [" + name->string() + "] return [" + returnType->string() + "] and take [";
+		std::string result = "Symbol [" + name->string() + "] return [" + returnType->string() + "] and take [";
 		for (size_t i = 0; i < parameters.size(); i++)
 		{
 			if (i != 0)
@@ -203,7 +381,7 @@ struct FunctionInstruction : public AbstractInstruction
 struct PipelineBodyInstruction : public AbstractInstruction
 {
 	Lumina::Token pipelineToken;
-	std::shared_ptr< FunctionBodyInstruction> body;
+	std::shared_ptr<SymbolBodyInstruction> body;
 
 	std::string string() const
 	{
@@ -233,6 +411,11 @@ private:
 	bool hasTokenLeft() const
 	{
 		return (_index < _tokens->size());
+	}
+
+	void backOff()
+	{
+		_index--;
 	}
 	
 	void advance()
@@ -427,9 +610,9 @@ private:
 		return (result);
 	}
 
-	std::shared_ptr<FunctionParameterInstruction> parseFunctionParameterInstruction()
+	std::shared_ptr<SymbolParameterInstruction> parseSymbolParameterInstruction()
 	{
-		std::shared_ptr<FunctionParameterInstruction> result = std::make_shared<FunctionParameterInstruction>();
+		std::shared_ptr<SymbolParameterInstruction> result = std::make_shared<SymbolParameterInstruction>();
 
 		result->type = parseTypeInstruction();
 		result->name = parseIdentifierInstruction();
@@ -437,44 +620,50 @@ private:
 		return (result);
 	}
 
-	std::shared_ptr<FunctionBodyInstruction> parseFunctionBodyInstruction()
+	std::shared_ptr<SymbolBodyInstruction> parseSymbolBodyInstruction()
 	{
-		std::shared_ptr<FunctionBodyInstruction> result = std::make_shared<FunctionBodyInstruction>();
+		std::shared_ptr<SymbolBodyInstruction> result = std::make_shared<SymbolBodyInstruction>();
 
 		expect(Lumina::Token::Type::OpenCurlyBracket);
-		size_t nbBracket = 1;
-		while (hasTokenLeft() == true && (currentToken().type != Lumina::Token::Type::CloseCurlyBracket || nbBracket >= 1))
+		while (currentToken().type != Lumina::Token::Type::CloseCurlyBracket)
 		{
-			if (currentToken().type == Lumina::Token::Type::OpenCurlyBracket)
+			try
 			{
-				nbBracket++;
+				switch (currentToken().type)
+				{
+				case Lumina::Token::Type::Comment:
+					skipToken();
+					break;
+				default:
+					throw Lumina::TokenBasedError(_file, "Unexpected token type: " + to_string(currentToken().type), currentToken());
+				}
 			}
-			skipToken();
-			if (currentToken().type == Lumina::Token::Type::CloseCurlyBracket)
+			catch (const Lumina::TokenBasedError& e)
 			{
-				nbBracket--;
+				_result.errors.push_back(e);
+				skipLine();
 			}
 		}
 		expect(Lumina::Token::Type::CloseCurlyBracket);
 
-		return (result);
+		return result;
 	}
 
-	std::shared_ptr<FunctionInstruction> parseFunctionInstruction()
+	std::shared_ptr<SymbolInstruction> parseSymbolInstruction()
 	{
-		std::shared_ptr<FunctionInstruction> result = std::make_shared<FunctionInstruction>();
+		std::shared_ptr<SymbolInstruction> result = std::make_shared<SymbolInstruction>();
 
 		result->returnType = parseTypeInstruction();
 		result->name = parseIdentifierInstruction();
 		expect(Lumina::Token::Type::OpenParenthesis);
 		while (currentToken().type != Lumina::Token::Type::CloseParenthesis)
 		{
-			result->parameters.push_back(parseFunctionParameterInstruction());
+			result->parameters.push_back(parseSymbolParameterInstruction());
 			if (currentToken().type != Lumina::Token::Type::CloseParenthesis)
 				expect(Lumina::Token::Type::Comma);
 		}
 		expect(Lumina::Token::Type::CloseParenthesis);
-		result->body = parseFunctionBodyInstruction();
+		result->body = parseSymbolBodyInstruction();
 
 		return (result);
 	}
@@ -524,7 +713,7 @@ private:
 				}
 				case Lumina::Token::Type::Identifier:
 				{
-					result->instructions.push_back(parseFunctionInstruction());
+					result->instructions.push_back(parseSymbolInstruction());
 					break;
 				}
 				default:
@@ -554,7 +743,7 @@ private:
 		expect(Lumina::Token::Type::OpenParenthesis);
 		expect(Lumina::Token::Type::CloseParenthesis);
 
-		result->body = parseFunctionBodyInstruction();
+		result->body = parseSymbolBodyInstruction();
 
 		return (result);
 	}
@@ -621,7 +810,7 @@ private:
 				}
 				case Lumina::Token::Type::Identifier:
 				{
-					_result.instructions.push_back(parseFunctionInstruction());
+					_result.instructions.push_back(parseSymbolInstruction());
 					break;
 				}
 				default:
@@ -679,11 +868,6 @@ int main(int argc, char** argv)
 	for (const auto& error : lexerResult.errors)
 	{
 		std::cout << error.what() << std::endl;
-	}
-
-	for (const auto& instruction : lexerResult.instructions)
-	{
-		std::cout << instruction->string() << std::endl;
 	}
 
 	return (0);

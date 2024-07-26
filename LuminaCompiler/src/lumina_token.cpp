@@ -53,6 +53,7 @@ namespace Lumina
 		case Token::Type::IfStatement: return "IfStatement";
 		case Token::Type::WhileStatement: return "WhileStatement";
 		case Token::Type::ForStatement: return "ForStatement";
+		case Token::Type::ElseStatement: return "ElseStatement";
 		case Token::Type::EndOfSentence: return "EndOfSentence";
 		case Token::Type::Assignator: return "Assignator";
 		case Token::Type::Comma: return "Comma";

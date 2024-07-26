@@ -44,6 +44,7 @@ namespace Lumina
 			IfStatement, // "if"
 			WhileStatement, // "while"
 			ForStatement, // "for"
+			ElseStatement, // "else"
 			EndOfSentence, // ';'
 			Assignator, // '='
 			Comma

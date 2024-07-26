@@ -111,6 +111,14 @@ FragmentPass()
     {
         discard;
     }
+    else if (textureColor.a == 0.5f)
+    {
+        discard;
+    }
+    else
+    {
+        discard;
+    }
 
     pixelColor = Vector4(finalColor, textureColor.a);
 

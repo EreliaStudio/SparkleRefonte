@@ -246,6 +246,10 @@ namespace Lumina
 				{
 					tokenType = Token::Type::ForStatement;
 				}
+				else if (tokenStr == "else")
+				{
+					tokenType = Token::Type::ElseStatement;
+				}
 				else if (tokenStr == "return")
 				{
 					tokenType = Token::Type::Return;
