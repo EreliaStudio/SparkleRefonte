@@ -31,7 +31,7 @@ AttributeBlock modelAttributes
 // Define constant blocks
 ConstantBlock lightingConstants
 {
-    Vector3 test lightPosition;
+    Vector3 lightPosition;
     Vector3 lightColor;
     float ambientIntensity;
 };

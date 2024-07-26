@@ -159,14 +159,10 @@ struct FunctionParameterInstruction
 	}
 };
 
-struct FunctionElementInstruction : public AbstractInstruction
-{
-	
-};
 
 struct FunctionBodyInstruction : public AbstractInstruction
 {
-	std::vector<std::shared_ptr<FunctionElementInstruction>> elements;
+	std::vector<std::shared_ptr<Instruction>> elements;
 
 	std::string string() const
 	{
@@ -204,6 +200,21 @@ struct FunctionInstruction : public AbstractInstruction
 	}
 };
 
+struct PipelineBodyInstruction : public AbstractInstruction
+{
+	Lumina::Token pipelineToken;
+	std::shared_ptr< FunctionBodyInstruction> body;
+
+	std::string string() const
+	{
+		std::string result = "Pipeline flow : " + pipelineToken.content + "\n";
+
+		result += body->string();
+
+		return (result);
+	}
+};
+
 class Lexer
 {
 public:
@@ -232,6 +243,11 @@ private:
 	const Lumina::Token& currentToken() const
 	{
 		return (_tokens->operator[](_index));
+	}
+
+	const Lumina::Token& nextToken() const
+	{
+		return (_tokens->operator[](_index + 1));
 	}
 
 	void skipToken()
@@ -421,23 +437,23 @@ private:
 		return (result);
 	}
 
-	std::shared_ptr<FunctionElementInstruction> parseFunctionElementInstruction()
-	{
-		std::shared_ptr<FunctionElementInstruction> result = std::make_shared<FunctionElementInstruction>();
-
-		skipLine();
-
-		return (result);
-	}
-
 	std::shared_ptr<FunctionBodyInstruction> parseFunctionBodyInstruction()
 	{
 		std::shared_ptr<FunctionBodyInstruction> result = std::make_shared<FunctionBodyInstruction>();
 
 		expect(Lumina::Token::Type::OpenCurlyBracket);
-		while (currentToken().type != Lumina::Token::Type::CloseParenthesis)
+		size_t nbBracket = 1;
+		while (hasTokenLeft() == true && (currentToken().type != Lumina::Token::Type::CloseCurlyBracket || nbBracket >= 1))
 		{
-			result->elements.push_back(parseFunctionElementInstruction());
+			if (currentToken().type == Lumina::Token::Type::OpenCurlyBracket)
+			{
+				nbBracket++;
+			}
+			skipToken();
+			if (currentToken().type == Lumina::Token::Type::CloseCurlyBracket)
+			{
+				nbBracket--;
+			}
 		}
 		expect(Lumina::Token::Type::CloseCurlyBracket);
 
@@ -509,6 +525,7 @@ private:
 				case Lumina::Token::Type::Identifier:
 				{
 					result->instructions.push_back(parseFunctionInstruction());
+					break;
 				}
 				default:
 				{
@@ -525,6 +542,19 @@ private:
 			}
 		}
 		expect(Lumina::Token::Type::CloseCurlyBracket);
+
+		return (result);
+	}
+
+	std::shared_ptr<PipelineBodyInstruction> parsePipelineBodyInstruction()
+	{
+		std::shared_ptr<PipelineBodyInstruction> result = std::make_shared<PipelineBodyInstruction>();
+
+		result->pipelineToken = expect(Lumina::Token::Type::PipelineFlow);
+		expect(Lumina::Token::Type::OpenParenthesis);
+		expect(Lumina::Token::Type::CloseParenthesis);
+
+		result->body = parseFunctionBodyInstruction();
 
 		return (result);
 	}
@@ -554,7 +584,14 @@ private:
 				}
 				case Lumina::Token::Type::PipelineFlow:
 				{
-					_result.instructions.push_back(parsePipelineFlowInstruction());
+					if (nextToken().type == Lumina::Token::Type::OpenParenthesis)
+					{
+						_result.instructions.push_back(parsePipelineBodyInstruction());
+					}
+					else
+					{
+						_result.instructions.push_back(parsePipelineFlowInstruction());
+					}
 					break;
 				}
 				case Lumina::Token::Type::StructureBlock:
@@ -585,6 +622,7 @@ private:
 				case Lumina::Token::Type::Identifier:
 				{
 					_result.instructions.push_back(parseFunctionInstruction());
+					break;
 				}
 				default:
 				{
