@@ -159,9 +159,19 @@ struct SymbolParameterInstruction : public AbstractInstruction
 	}
 };
 
+struct OperatorExpressionInstruction : public AbstractInstruction
+{
+	Lumina::Token token;
+
+	std::string string() const
+	{
+		return (token.content);
+	}
+};
+
 struct NumberExpressionValueInstruction : public AbstractInstruction
 {
-	const Lumina::Token& token;
+	Lumina::Token token;
 
 	std::string string() const
 	{
@@ -620,6 +630,75 @@ private:
 		return (result);
 	}
 
+	std::shared_ptr<OperatorExpressionInstruction> parseOperatorExpressionInstruction()
+	{
+		std::shared_ptr<OperatorExpressionInstruction> result = std::make_shared<OperatorExpressionInstruction>();
+
+		result->token = expect(Lumina::Token::Type::Operator);
+
+		return (result);
+	}
+
+	std::shared_ptr<NumberExpressionValueInstruction> parseNumberExpressionValueInstruction()
+	{
+		std::shared_ptr<NumberExpressionValueInstruction> result = std::make_shared<NumberExpressionValueInstruction>();
+
+		result->token = expect(Lumina::Token::Type::Number);
+
+		return (result);
+	}
+
+	std::shared_ptr<ExpressionInstruction> parseExpression()
+	{
+		DEBUG_LINE();
+		std::shared_ptr<ExpressionInstruction> result = std::make_shared<ExpressionInstruction>();
+
+		bool isParsing = true;
+		while (isParsing)
+		{
+			DEBUG_LINE();
+			switch (currentToken().type)
+			{
+			case Lumina::Token::Type::Number:
+				DEBUG_LINE();
+				result->elements.push_back(parseNumberExpressionValueInstruction());
+				break;
+			}
+
+			if (currentToken().type == Lumina::Token::Type::Operator)
+			{
+				DEBUG_LINE();
+				result->elements.push_back(parseOperatorExpressionInstruction());
+				isParsing = true;
+			}
+			else
+			{
+				DEBUG_LINE();
+				isParsing = false;
+			}
+		}
+		DEBUG_LINE();
+
+		return (result);
+	}
+
+	std::shared_ptr<VariableDeclarationInstruction> parseVariableDeclarationInstruction()
+	{
+		std::shared_ptr<VariableDeclarationInstruction> result = std::make_shared<VariableDeclarationInstruction>();
+
+		result->type = parseTypeInstruction();
+		result->name = parseIdentifierInstruction();
+
+		if (currentToken().type != Lumina::Token::Type::EndOfSentence)
+		{
+			expect(Lumina::Token::Type::Assignator);
+			result->initializer = parseExpression();
+		}
+		expect(Lumina::Token::Type::EndOfSentence);
+
+		return (result);
+	}
+
 	std::shared_ptr<SymbolBodyInstruction> parseSymbolBodyInstruction()
 	{
 		std::shared_ptr<SymbolBodyInstruction> result = std::make_shared<SymbolBodyInstruction>();
@@ -633,6 +712,9 @@ private:
 				{
 				case Lumina::Token::Type::Comment:
 					skipToken();
+					break;
+				case Lumina::Token::Type::Identifier:
+					result->elements.push_back(parseVariableDeclarationInstruction());
 					break;
 				default:
 					throw Lumina::TokenBasedError(_file, "Unexpected token type: " + to_string(currentToken().type), currentToken());
