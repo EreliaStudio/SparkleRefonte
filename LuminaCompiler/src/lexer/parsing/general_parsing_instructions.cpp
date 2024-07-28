@@ -2,7 +2,7 @@
 
 namespace Lumina
 {
-	std::shared_ptr<TypeInstruction> Lexer::parseTypeInstruction()
+	std::shared_ptr<TypeInstruction> LexerChecker::parseTypeInstruction()
 	{
 		std::shared_ptr<TypeInstruction> result = std::make_shared<TypeInstruction>();
 
@@ -18,7 +18,7 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<IdentifierInstruction> Lexer::parseIdentifierInstruction()
+	std::shared_ptr<IdentifierInstruction> LexerChecker::parseIdentifierInstruction()
 	{
 		std::shared_ptr<IdentifierInstruction> result = std::make_shared<IdentifierInstruction>();
 

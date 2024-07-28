@@ -12,7 +12,7 @@
 
 namespace Lumina
 {
-	class Lexer
+	class LexerChecker
 	{
 	public:
 		struct Result
@@ -21,7 +21,7 @@ namespace Lumina
 			std::vector<Lumina::TokenBasedError> errors;
 		};
 
-		Lexer() = default;
+		LexerChecker() = default;
 
 		static Result checkSyntax(const std::filesystem::path& p_file, const std::vector<Lumina::Token>& p_tokens);
 

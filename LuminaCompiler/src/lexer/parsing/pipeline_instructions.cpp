@@ -2,7 +2,7 @@
 
 namespace Lumina
 {
-	std::shared_ptr<PipelineFlowInstruction> Lexer::parsePipelineFlowInstruction()
+	std::shared_ptr<PipelineFlowInstruction> LexerChecker::parsePipelineFlowInstruction()
 	{
 		std::shared_ptr<PipelineFlowInstruction> result = std::make_shared<PipelineFlowInstruction>();
 
@@ -17,7 +17,7 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<PipelineBodyInstruction> Lexer::parsePipelineBodyInstruction()
+	std::shared_ptr<PipelineBodyInstruction> LexerChecker::parsePipelineBodyInstruction()
 	{
 		std::shared_ptr<PipelineBodyInstruction> result = std::make_shared<PipelineBodyInstruction>();
 

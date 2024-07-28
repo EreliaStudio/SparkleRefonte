@@ -2,7 +2,7 @@
 
 namespace Lumina
 {
-	bool Lexer::describeSymbolCallName()
+	bool LexerChecker::describeSymbolCallName()
 	{
 		size_t offset = 0;
 
@@ -32,7 +32,7 @@ namespace Lumina
 		return false;
 	}
 
-	bool Lexer::describeVariableDeclarationInstruction()
+	bool LexerChecker::describeVariableDeclarationInstruction()
 	{
 		size_t offset = 0;
 
@@ -69,7 +69,7 @@ namespace Lumina
 		return false;
 	}
 
-	bool Lexer::describeSymbolCallInstruction()
+	bool LexerChecker::describeSymbolCallInstruction()
 	{
 		size_t offset = 0;
 
@@ -100,7 +100,7 @@ namespace Lumina
 	}
 
 
-	bool Lexer::describeVariableAssignationInstruction()
+	bool LexerChecker::describeVariableAssignationInstruction()
 	{
 		size_t offset = 0;
 

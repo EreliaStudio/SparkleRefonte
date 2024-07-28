@@ -148,8 +148,8 @@ namespace Lumina
 
 	struct StructureBlockInstruction : public AbstractInstruction
 	{
-		std::shared_ptr<Instruction> name;
-		std::vector<std::shared_ptr<Instruction>> elements;
+		Lumina::Token name;
+		std::vector<std::shared_ptr<BlockElementInstruction>> elements;
 
 		StructureBlockInstruction() :
 			AbstractInstruction(AbstractInstruction::Type::StructureBlock)
@@ -159,7 +159,7 @@ namespace Lumina
 
 		std::string string() const override
 		{
-			std::string result = "Structure named [" + name->string() + "] contain : \n";
+			std::string result = "Structure named [" + name.content + "] contain : \n";
 			for (const auto& element : elements)
 			{
 				result += "    " + element->string() + "\n";
@@ -170,8 +170,8 @@ namespace Lumina
 
 	struct AttributeBlockInstruction : public AbstractInstruction
 	{
-		std::shared_ptr<Instruction> name;
-		std::vector<std::shared_ptr<Instruction>> elements;
+		Lumina::Token name;
+		std::vector<std::shared_ptr<BlockElementInstruction>> elements;
 
 		AttributeBlockInstruction() :
 			AbstractInstruction(AbstractInstruction::Type::AttributeBlock)
@@ -181,7 +181,7 @@ namespace Lumina
 
 		std::string string() const override
 		{
-			std::string result = "Attribute named [" + name->string() + "] contain : \n";
+			std::string result = "Attribute named [" + name.content + "] contain : \n";
 			for (const auto& element : elements)
 			{
 				result += "    " + element->string() + "\n";
@@ -192,8 +192,8 @@ namespace Lumina
 
 	struct ConstantBlockInstruction : public AbstractInstruction
 	{
-		std::shared_ptr<Instruction> name;
-		std::vector<std::shared_ptr<Instruction>> elements;
+		Lumina::Token name;
+		std::vector<std::shared_ptr<BlockElementInstruction>> elements;
 
 		ConstantBlockInstruction() :
 			AbstractInstruction(AbstractInstruction::Type::ConstantBlock)
@@ -203,7 +203,7 @@ namespace Lumina
 
 		std::string string() const override
 		{
-			std::string result = "Constant named [" + name->string() + "] contain : \n";
+			std::string result = "Constant named [" + name.content + "] contain : \n";
 			for (const auto& element : elements)
 			{
 				result += "    " + element->string() + "\n";

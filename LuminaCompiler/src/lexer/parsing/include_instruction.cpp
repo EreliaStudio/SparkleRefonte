@@ -2,7 +2,7 @@
 
 namespace Lumina
 {
-	std::shared_ptr<IncludeInstruction> Lexer::parseIncludeInstruction()
+	std::shared_ptr<IncludeInstruction> LexerChecker::parseIncludeInstruction()
 	{
 		std::shared_ptr<IncludeInstruction> result = std::make_shared<IncludeInstruction>();
 

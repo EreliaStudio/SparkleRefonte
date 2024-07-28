@@ -3,7 +3,7 @@
 namespace Lumina
 {
 
-	std::shared_ptr<OperatorExpressionInstruction> Lexer::parseOperatorExpressionInstruction()
+	std::shared_ptr<OperatorExpressionInstruction> LexerChecker::parseOperatorExpressionInstruction()
 	{
 		std::shared_ptr<OperatorExpressionInstruction> result = std::make_shared<OperatorExpressionInstruction>();
 
@@ -12,7 +12,7 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<NumberExpressionValueInstruction> Lexer::parseNumberExpressionValueInstruction()
+	std::shared_ptr<NumberExpressionValueInstruction> LexerChecker::parseNumberExpressionValueInstruction()
 	{
 		std::shared_ptr<NumberExpressionValueInstruction> result = std::make_shared<NumberExpressionValueInstruction>();
 
@@ -21,7 +21,7 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<StringLiteralsExpressionValueInstruction> Lexer::parseStringLiteralsExpressionValueInstruction()
+	std::shared_ptr<StringLiteralsExpressionValueInstruction> LexerChecker::parseStringLiteralsExpressionValueInstruction()
 	{
 		std::shared_ptr<StringLiteralsExpressionValueInstruction> result = std::make_shared<StringLiteralsExpressionValueInstruction>();
 
@@ -30,7 +30,7 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<VariableExpressionValueInstruction> Lexer::parseVariableExpressionValueInstruction()
+	std::shared_ptr<VariableExpressionValueInstruction> LexerChecker::parseVariableExpressionValueInstruction()
 	{
 		std::shared_ptr<VariableExpressionValueInstruction> result = std::make_shared<VariableExpressionValueInstruction>();
 
@@ -49,7 +49,7 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<ExpressionInstruction> Lexer::parseExpression()
+	std::shared_ptr<ExpressionInstruction> LexerChecker::parseExpression()
 	{
 		std::shared_ptr<ExpressionInstruction> result = std::make_shared<ExpressionInstruction>();
 

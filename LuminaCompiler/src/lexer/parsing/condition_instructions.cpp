@@ -2,7 +2,7 @@
 
 namespace Lumina
 {
-	std::shared_ptr<ConditionInstruction> Lexer::parseConditionInstruction()
+	std::shared_ptr<ConditionInstruction> LexerChecker::parseConditionInstruction()
 	{
 		std::shared_ptr<ConditionInstruction> result = std::make_shared<ConditionInstruction>();
 
@@ -11,7 +11,7 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<IfStatementInstruction> Lexer::parseIfStatementInstruction()
+	std::shared_ptr<IfStatementInstruction> LexerChecker::parseIfStatementInstruction()
 	{
 		std::shared_ptr<IfStatementInstruction> result = std::make_shared<IfStatementInstruction>();
 
@@ -44,7 +44,7 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<WhileLoopInstruction> Lexer::parseWhileLoopInstruction()
+	std::shared_ptr<WhileLoopInstruction> LexerChecker::parseWhileLoopInstruction()
 	{
 		std::shared_ptr<WhileLoopInstruction> result = std::make_shared<WhileLoopInstruction>();
 
@@ -59,7 +59,7 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<ForLoopInstruction> Lexer::parseForLoopInstruction()
+	std::shared_ptr<ForLoopInstruction> LexerChecker::parseForLoopInstruction()
 	{
 		std::shared_ptr<ForLoopInstruction> result = std::make_shared<ForLoopInstruction>();
 

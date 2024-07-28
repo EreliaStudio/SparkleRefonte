@@ -2,7 +2,7 @@
 
 namespace Lumina
 {
-	std::shared_ptr<BlockElementInstruction> Lexer::parseBlockElementInstruction()
+	std::shared_ptr<BlockElementInstruction> LexerChecker::parseBlockElementInstruction()
 	{
 		std::shared_ptr<BlockElementInstruction> result = std::make_shared<BlockElementInstruction>();
 
@@ -13,12 +13,12 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<StructureBlockInstruction> Lexer::parseStructureBlockInstruction()
+	std::shared_ptr<StructureBlockInstruction> LexerChecker::parseStructureBlockInstruction()
 	{
 		std::shared_ptr<StructureBlockInstruction> result = std::make_shared<StructureBlockInstruction>();
 
 		expect(Lumina::Token::Type::StructureBlock, "Expected a structure block token."+ DEBUG_INFORMATION);
-		result->name = parseIdentifierInstruction();
+		result->name = expect(Lumina::Token::Type::Identifier, "Expected an structure type name");
 		expect(Lumina::Token::Type::OpenCurlyBracket, "Expected an open curly bracket."+ DEBUG_INFORMATION);
 		while (currentToken().type != Lumina::Token::Type::CloseCurlyBracket)
 		{
@@ -30,12 +30,12 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<AttributeBlockInstruction> Lexer::parseAttributeBlockInstruction()
+	std::shared_ptr<AttributeBlockInstruction> LexerChecker::parseAttributeBlockInstruction()
 	{
 		std::shared_ptr<AttributeBlockInstruction> result = std::make_shared<AttributeBlockInstruction>();
 
 		expect(Lumina::Token::Type::AttributeBlock, "Expected an attribute block token."+ DEBUG_INFORMATION);
-		result->name = parseIdentifierInstruction();
+		result->name = expect(Lumina::Token::Type::Identifier, "Expected an attribute type name");
 		expect(Lumina::Token::Type::OpenCurlyBracket, "Expected an open curly bracket."+ DEBUG_INFORMATION);
 		while (currentToken().type != Lumina::Token::Type::CloseCurlyBracket)
 		{
@@ -47,12 +47,12 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<ConstantBlockInstruction> Lexer::parseConstantBlockInstruction()
+	std::shared_ptr<ConstantBlockInstruction> LexerChecker::parseConstantBlockInstruction()
 	{
 		std::shared_ptr<ConstantBlockInstruction> result = std::make_shared<ConstantBlockInstruction>();
 
 		expect(Lumina::Token::Type::ConstantBlock, "Expected a constant block token."+ DEBUG_INFORMATION);
-		result->name = parseIdentifierInstruction();
+		result->name = expect(Lumina::Token::Type::Identifier, "Expected an constant type name");
 		expect(Lumina::Token::Type::OpenCurlyBracket, "Expected an open curly bracket."+ DEBUG_INFORMATION);
 		while (currentToken().type != Lumina::Token::Type::CloseCurlyBracket)
 		{
@@ -73,7 +73,7 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<TextureInstruction> Lexer::parseTextureInstruction()
+	std::shared_ptr<TextureInstruction> LexerChecker::parseTextureInstruction()
 	{
 		std::shared_ptr<TextureInstruction> result = std::make_shared<TextureInstruction>();
 

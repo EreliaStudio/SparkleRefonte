@@ -2,44 +2,44 @@
 
 namespace Lumina
 {
-	bool Lexer::hasTokenLeft() const
+	bool LexerChecker::hasTokenLeft() const
 	{
 		return (_index < _tokens->size());
 	}
 
-	void Lexer::backOff()
+	void LexerChecker::backOff()
 	{
 		_index--;
 	}
 
-	void Lexer::advance()
+	void LexerChecker::advance()
 	{
 		_index++;
 	}
 
-	const Lumina::Token& Lexer::currentToken() const
+	const Lumina::Token& LexerChecker::currentToken() const
 	{
 		return (_tokens->operator[](_index));
 	}
 
-	const Lumina::Token& Lexer::tokenAtIndex(size_t p_index) const
+	const Lumina::Token& LexerChecker::tokenAtIndex(size_t p_index) const
 	{
 		if (_index + p_index >= _tokens->size())
 			return noToken;
 		return (_tokens->operator[](_index + p_index));
 	}
 
-	const Lumina::Token& Lexer::nextToken() const
+	const Lumina::Token& LexerChecker::nextToken() const
 	{
 		return (tokenAtIndex(1));
 	}
 
-	void Lexer::skipToken()
+	void LexerChecker::skipToken()
 	{
 		_index++;
 	}
 
-	void Lexer::skipLine()
+	void LexerChecker::skipLine()
 	{
 		int currentLine = currentToken().context.line;
 		while (hasTokenLeft() == true &&
@@ -49,7 +49,7 @@ namespace Lumina
 		}
 	}
 
-	const Lumina::Token& Lexer::expect(Lumina::Token::Type p_expectedType, const std::string& p_errorMessage)
+	const Lumina::Token& LexerChecker::expect(Lumina::Token::Type p_expectedType, const std::string& p_errorMessage)
 	{
 		if (currentToken().type != p_expectedType)
 		{
@@ -60,7 +60,7 @@ namespace Lumina
 		return (result);
 	}
 
-	const Lumina::Token& Lexer::expect(std::vector<Lumina::Token::Type> p_expectedTypes, const std::string& p_errorMessage)
+	const Lumina::Token& LexerChecker::expect(std::vector<Lumina::Token::Type> p_expectedTypes, const std::string& p_errorMessage)
 	{
 		bool found = false;
 

@@ -2,7 +2,7 @@
 
 namespace Lumina
 {
-	std::shared_ptr<VariableDeclarationInstruction> Lexer::parseVariableDeclarationInstruction()
+	std::shared_ptr<VariableDeclarationInstruction> LexerChecker::parseVariableDeclarationInstruction()
 	{
 		std::shared_ptr<VariableDeclarationInstruction> result = std::make_shared<VariableDeclarationInstruction>();
 
@@ -19,7 +19,7 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<ReturnInstruction> Lexer::parseReturnInstruction()
+	std::shared_ptr<ReturnInstruction> LexerChecker::parseReturnInstruction()
 	{
 		std::shared_ptr<ReturnInstruction> result = std::make_shared<ReturnInstruction>();
 
@@ -30,7 +30,7 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<DiscardInstruction> Lexer::parseDiscardInstruction()
+	std::shared_ptr<DiscardInstruction> LexerChecker::parseDiscardInstruction()
 	{
 		std::shared_ptr<DiscardInstruction> result = std::make_shared<DiscardInstruction>();
 
@@ -40,7 +40,7 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<VariableDesignationInstruction> Lexer::parseVariableDesignationInstruction()
+	std::shared_ptr<VariableDesignationInstruction> LexerChecker::parseVariableDesignationInstruction()
 	{
 		std::shared_ptr<VariableDesignationInstruction> result = std::make_shared<VariableDesignationInstruction>();
 
@@ -54,7 +54,7 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<VariableAssignationInstruction> Lexer::parseVariableAssignationInstruction()
+	std::shared_ptr<VariableAssignationInstruction> LexerChecker::parseVariableAssignationInstruction()
 	{
 		std::shared_ptr<VariableAssignationInstruction> result = std::make_shared<VariableAssignationInstruction>();
 
@@ -66,7 +66,7 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<SymbolBodyInstruction> Lexer::parseSymbolBodyInstruction()
+	std::shared_ptr<SymbolBodyInstruction> LexerChecker::parseSymbolBodyInstruction()
 	{
 		std::shared_ptr<SymbolBodyInstruction> result = std::make_shared<SymbolBodyInstruction>();
 
@@ -130,7 +130,7 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<SymbolInstruction> Lexer::parseSymbolInstruction()
+	std::shared_ptr<SymbolInstruction> LexerChecker::parseSymbolInstruction()
 	{
 		std::shared_ptr<SymbolInstruction> result = std::make_shared<SymbolInstruction>();
 

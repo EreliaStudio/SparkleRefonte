@@ -2,7 +2,7 @@
 
 namespace Lumina
 {
-	std::shared_ptr<NamespaceInstruction> Lexer::parseNamespaceInstruction()
+	std::shared_ptr<NamespaceInstruction> LexerChecker::parseNamespaceInstruction()
 	{
 		std::shared_ptr<NamespaceInstruction> result = std::make_shared<NamespaceInstruction>();
 
@@ -51,7 +51,7 @@ namespace Lumina
 		return result;
 	}
 
-	Lexer::Result Lexer::parse(const std::filesystem::path& p_file, const std::vector<Lumina::Token>& p_tokens)
+	LexerChecker::Result LexerChecker::parse(const std::filesystem::path& p_file, const std::vector<Lumina::Token>& p_tokens)
 	{
 		_result = Result();
 		_file = p_file;
@@ -134,8 +134,8 @@ namespace Lumina
 		return (_result);
 	}
 
-	Lexer::Result Lexer::checkSyntax(const std::filesystem::path& p_file, const std::vector<Lumina::Token>& p_tokens)
+	LexerChecker::Result LexerChecker::checkSyntax(const std::filesystem::path& p_file, const std::vector<Lumina::Token>& p_tokens)
 	{
-		return (Lexer().parse(p_file, p_tokens));
+		return (LexerChecker().parse(p_file, p_tokens));
 	}
 }

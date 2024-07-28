@@ -2,7 +2,7 @@
 
 namespace Lumina
 {
-	std::shared_ptr<SymbolParameterInstruction> Lexer::parseSymbolParameterInstruction()
+	std::shared_ptr<SymbolParameterInstruction> LexerChecker::parseSymbolParameterInstruction()
 	{
 		std::shared_ptr<SymbolParameterInstruction> result = std::make_shared<SymbolParameterInstruction>();
 
@@ -12,7 +12,7 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<SymbolNameInstruction> Lexer::parseSymbolCallNameInstruction()
+	std::shared_ptr<SymbolNameInstruction> LexerChecker::parseSymbolCallNameInstruction()
 	{
 		std::shared_ptr<SymbolNameInstruction> result = std::make_shared<SymbolNameInstruction>();
 
@@ -29,7 +29,7 @@ namespace Lumina
 		return result;
 	}
 
-	std::shared_ptr<SymbolCallInstruction> Lexer::parseSymbolCallInstruction()
+	std::shared_ptr<SymbolCallInstruction> LexerChecker::parseSymbolCallInstruction()
 	{
 		std::shared_ptr<SymbolCallInstruction> result = std::make_shared<SymbolCallInstruction>();
 
