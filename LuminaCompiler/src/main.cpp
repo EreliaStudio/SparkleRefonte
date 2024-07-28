@@ -36,10 +36,5 @@ int main(int argc, char** argv)
 		std::cout << error.what() << std::endl;
 	}
 
-	for (const auto& instruction : lexerResult.instructions)
-	{
-		std::cout << instruction->string() << std::endl;
-	}
-
 	return (0);
 }
