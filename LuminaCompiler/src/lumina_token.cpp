@@ -56,6 +56,7 @@ namespace Lumina
 		case Token::Type::ElseStatement: return "ElseStatement";
 		case Token::Type::EndOfSentence: return "EndOfSentence";
 		case Token::Type::Assignator: return "Assignator";
+		case Token::Type::Incrementor: return "Incrementor";
 		case Token::Type::Comma: return "Comma";
 		default: return "Unknown";
 		}

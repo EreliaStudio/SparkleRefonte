@@ -281,7 +281,7 @@ namespace Lumina
 			else
 			{
 				// Handle operators and other tokens
-				std::string operators[] = { "==", "!=", "<=", ">=", "||", "&&", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=" };
+				std::string operators[] = { "==", "!=", "<=", ">=", "||", "&&" };
 				bool foundOperator = false;
 				for (const std::string& op : operators)
 				{
@@ -293,14 +293,36 @@ namespace Lumina
 						break;
 					}
 				}
-				if (!foundOperator)
+
+				std::string assignators[] = { "=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=" };
+				bool foundAssignator = false;
+				for (const std::string& op : assignators)
+				{
+					if (p_rawCode.substr(index, op.size()) == op)
+					{
+						tokenStr = parseSpecialToken(p_rawCode, index, op);
+						tokenType = Token::Type::Assignator;
+						foundOperator = true;
+						break;
+					}
+				}
+
+				std::string incrementor[] = { "++", "--" };
+				bool foundIncrementor = false;
+				for (const std::string& op : incrementor)
+				{
+					if (p_rawCode.substr(index, op.size()) == op)
+					{
+						tokenStr = parseSpecialToken(p_rawCode, index, op);
+						tokenType = Token::Type::Incrementor;
+						foundOperator = true;
+						break;
+					}
+				}
+				if (!foundOperator && !foundAssignator && !foundIncrementor)
 				{
 					switch (p_rawCode[index])
 					{
-					case '=':
-						tokenStr = parseSpecialToken(p_rawCode, index, "=");
-						tokenType = Token::Type::Assignator;
-						break;
 					case '{':
 						tokenStr = parseSpecialToken(p_rawCode, index, "{");
 						tokenType = Token::Type::OpenCurlyBracket;

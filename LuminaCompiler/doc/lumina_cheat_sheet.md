@@ -20,17 +20,6 @@ Input -> VertexPass: float variableNameA;
 VertexPass -> FragmentPass: Vector3 variableNameB;
 ```
 
-### Structures
-- Define custom structures to group variables.
-```cpp
-struct StructName
-{
-    float variableA;
-    Vector3 variableB;
-    Vector4 variableC;
-};
-```
-
 ### Functions
 - Define functions with return types and input parameters.
 ```cpp
@@ -47,6 +36,17 @@ Vector4 myFunction(float inputVariable)
     Vector4 result = Vector4(inputVariable);
     return result;
 }
+```
+
+### Structures
+- Define custom structures to group variables.
+```cpp
+struct StructName
+{
+    float variableA;
+    Vector3 variableB;
+    Vector4 variableC;
+};
 ```
 
 ### Attribute Blocks
@@ -270,7 +270,7 @@ FragmentPass()
 
     Vector3 finalColor = ambient + diffuse * material.diffuseColor + specular * material.specularColor;
 
-    Vector4 textureColor = diffuseTexture.pixel(fragUV);
+    Vector4 textureColor = getPixel(diffuseTexture, fragUV);
     finalColor *= textureColor.rgb;
 
     if (textureColor.a == 0)

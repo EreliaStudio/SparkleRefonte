@@ -46,7 +46,8 @@ namespace Lumina
 			ForStatement, // "for"
 			ElseStatement, // "else"
 			EndOfSentence, // ';'
-			Assignator, // '='
+			Assignator, // '=', "+=", "-=" etc
+			Incrementor, // '++', '--'
 			Comma
 		};
 
