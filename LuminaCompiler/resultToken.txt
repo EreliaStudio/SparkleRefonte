@@ -341,11 +341,10 @@ The vertex and fragment shaders work together to accurately render the 3D object
 [               Identifier] | [101::85 ] | lightColor
 [         CloseParenthesis] | [101::95 ] | )
 [            EndOfSentence] | [101::96 ] | ;
-[               Identifier] | [103::4  ] | MyNamespace
-[       NamespaceSeparator] | [103::15 ] | ::
-[               Identifier] | [103::17 ] | Material
-[               Identifier] | [103::26 ] | material
-[            EndOfSentence] | [103::34 ] | ;
+[       NamespaceSeparator] | [103::4  ] | ::
+[               Identifier] | [103::6  ] | Material
+[               Identifier] | [103::15 ] | material
+[            EndOfSentence] | [103::23 ] | ;
 [               Identifier] | [104::4  ] | Vector3
 [               Identifier] | [104::12 ] | specular
 [               Assignator] | [104::21 ] | =

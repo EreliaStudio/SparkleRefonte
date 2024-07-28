@@ -147,6 +147,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\lexer\parsing\block_instructions.cpp" />
+    <ClCompile Include="src\lexer\parsing\condition_instructions.cpp" />
+    <ClCompile Include="src\lexer\parsing\describe_methods.cpp" />
+    <ClCompile Include="src\lexer\parsing\expression_instructions.cpp" />
+    <ClCompile Include="src\lexer\parsing\general_parsing_instructions.cpp" />
+    <ClCompile Include="src\lexer\parsing\include_instruction.cpp" />
+    <ClCompile Include="src\lexer\parsing\parsing_utils.cpp" />
+    <ClCompile Include="src\lexer\parsing\pipeline_instructions.cpp" />
+    <ClCompile Include="src\lexer\parsing\symbol_call_instructions.cpp" />
+    <ClCompile Include="src\lexer\parsing\symbol_instructions.cpp" />
+    <ClCompile Include="src\lumina_instruction.cpp" />
+    <ClCompile Include="src\lexer\lumina_lexer.cpp" />
     <ClCompile Include="src\lumina_token.cpp" />
     <ClCompile Include="src\lumina_tokenizer.cpp" />
     <ClCompile Include="src\lumina_token_based_exception.cpp" />
@@ -155,6 +167,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\lumina_exception.hpp" />
+    <ClInclude Include="include\lumina_instructions.hpp" />
+    <ClInclude Include="include\lumina_lexer.hpp" />
     <ClInclude Include="include\lumina_token.hpp" />
     <ClInclude Include="include\lumina_tokenizer.hpp" />
     <ClInclude Include="include\lumina_utils.hpp" />
