@@ -2,13 +2,13 @@
 
 namespace Lumina
 {
-	std::shared_ptr<NamespaceInstruction> Lexer::parseNamespaceInstruction(const std::string& p_debugInformation)
+	std::shared_ptr<NamespaceInstruction> Lexer::parseNamespaceInstruction()
 	{
 		std::shared_ptr<NamespaceInstruction> result = std::make_shared<NamespaceInstruction>();
 
-		expect(Lumina::Token::Type::Namespace, "Expected a namespace token." + COMPOSED_DEBUG_INFORMATION(p_debugInformation));
-		result->name = parseIdentifierInstruction(COMPOSED_DEBUG_INFORMATION(p_debugInformation));
-		expect(Lumina::Token::Type::OpenCurlyBracket, "Expected an open curly bracket." + COMPOSED_DEBUG_INFORMATION(p_debugInformation));
+		expect(Lumina::Token::Type::Namespace, "Expected a namespace token."+ DEBUG_INFORMATION);
+		result->name = parseIdentifierInstruction();
+		expect(Lumina::Token::Type::OpenCurlyBracket, "Expected an open curly bracket."+ DEBUG_INFORMATION);
 		while (currentToken().type != Lumina::Token::Type::CloseCurlyBracket)
 		{
 			try
@@ -19,25 +19,25 @@ namespace Lumina
 					skipToken();
 					break;
 				case Lumina::Token::Type::StructureBlock:
-					result->instructions.push_back(parseStructureBlockInstruction(COMPOSED_DEBUG_INFORMATION(p_debugInformation)));
+					result->instructions.push_back(parseStructureBlockInstruction());
 					break;
 				case Lumina::Token::Type::AttributeBlock:
-					result->instructions.push_back(parseAttributeBlockInstruction(COMPOSED_DEBUG_INFORMATION(p_debugInformation)));
+					result->instructions.push_back(parseAttributeBlockInstruction());
 					break;
 				case Lumina::Token::Type::ConstantBlock:
-					result->instructions.push_back(parseConstantBlockInstruction(COMPOSED_DEBUG_INFORMATION(p_debugInformation)));
+					result->instructions.push_back(parseConstantBlockInstruction());
 					break;
 				case Lumina::Token::Type::Texture:
-					result->instructions.push_back(parseTextureInstruction(COMPOSED_DEBUG_INFORMATION(p_debugInformation)));
+					result->instructions.push_back(parseTextureInstruction());
 					break;
 				case Lumina::Token::Type::Namespace:
-					result->instructions.push_back(parseNamespaceInstruction(COMPOSED_DEBUG_INFORMATION(p_debugInformation)));
+					result->instructions.push_back(parseNamespaceInstruction());
 					break;
 				case Lumina::Token::Type::Identifier:
-					result->instructions.push_back(parseSymbolInstruction(COMPOSED_DEBUG_INFORMATION(p_debugInformation)));
+					result->instructions.push_back(parseSymbolInstruction());
 					break;
 				default:
-					throw Lumina::TokenBasedError(_file, "Unexpected token type : " + to_string(currentToken().type) + COMPOSED_DEBUG_INFORMATION(p_debugInformation), currentToken());
+					throw Lumina::TokenBasedError(_file, "Unexpected token type : " + to_string(currentToken().type)+ DEBUG_INFORMATION, currentToken());
 				}
 			}
 			catch (const Lumina::TokenBasedError& e)
@@ -46,7 +46,7 @@ namespace Lumina
 				skipLine();
 			}
 		}
-		expect(Lumina::Token::Type::CloseCurlyBracket, "Expected a close curly bracket." + COMPOSED_DEBUG_INFORMATION(p_debugInformation));
+		expect(Lumina::Token::Type::CloseCurlyBracket, "Expected a close curly bracket."+ DEBUG_INFORMATION);
 
 		return result;
 	}
