@@ -25,6 +25,13 @@ namespace Lumina
 		};
 
 	private:
+		std::unordered_set<std::string> pipelineFlowTypes = {
+			"float", "int", "uint", "bool",
+			"Vector2", "Vector3", "Vector4",
+			"Vector2Int", "Vector3Int", "Vector4Int",
+			"Vector2UInt", "Vector3UInt", "Vector4UInt"
+		};
+
 		std::unordered_set<std::string> blockList = {
 			"float", "int", "uint", "bool",
 			"Vector2", "Vector3", "Vector4",
@@ -64,7 +71,6 @@ namespace Lumina
 
 			if (_alreadyLoadedIncludes.contains(filePath) == false)
 			{
-				std::cout << "Including file : " << filePath << std::endl;
 				Lumina::LexerChecker::Result includeFileLexer = Lumina::LexerChecker::checkSyntax(fileName, Lumina::Tokenizer::tokenize(Lumina::readFileAsString(filePath)));
 
 				_result.errors.insert(_result.errors.end(), includeFileLexer.errors.begin(), includeFileLexer.errors.end());
@@ -78,6 +84,48 @@ namespace Lumina
 				_elements.insert(_elements.begin() + _index + 1, newElements.begin(), newElements.end());
 
 				_alreadyLoadedIncludes.insert(filePath);
+			}
+		}
+
+		void checkPipelineFlowInstruction(const std::filesystem::path& p_file, const std::shared_ptr<PipelineFlowInstruction>& p_instruction)
+		{
+			Lumina::Token inputPipeline;
+			Lumina::Token outputPipeline;
+			std::shared_ptr<TypeInstruction> type;
+			std::shared_ptr<IdentifierInstruction> name;
+
+			if (p_instruction->inputPipeline.content == "Input")
+			{
+				if (p_instruction->outputPipeline.content == "VertexPass")
+				{
+					if (pipelineFlowTypes.contains(p_instruction->type->string()) == true)
+					{
+
+					}
+					else
+					{
+						throw TokenBasedError(p_file, "Type [" + p_instruction->type->string() + "] not accepted as pipeline flow type", p_instruction->type->tokens[0]);
+					}
+				}
+				else
+				{
+					throw TokenBasedError(p_file, "Only pipeline flow acceptable for [Input] input is [VertexPass]", p_instruction->outputPipeline);
+				}
+			}
+			else if (p_instruction->inputPipeline.content == "VertexPass")
+			{
+				if (p_instruction->outputPipeline.content == "FragmentPass")
+				{
+					
+				}
+				else
+				{
+					throw TokenBasedError(p_file, "Only pipeline flow acceptable for [VertexPass] input is [FragmentPass]", p_instruction->outputPipeline);
+				}
+			}
+			else
+			{
+				throw TokenBasedError(p_file, "Pipeline flow entry can only be [Input] or [VertexPass]", p_instruction->inputPipeline);
 			}
 		}
 
@@ -103,6 +151,10 @@ namespace Lumina
 					{
 						checkIncludeInstruction(element.filePath, static_pointer_cast<IncludeInstruction>(instruction));
 						break;
+					}
+					case Instruction::Type::PipelineFlow:
+					{
+						checkPipelineFlowInstruction(element.filePath, static_pointer_cast<PipelineFlowInstruction>(instruction))
 					}
 					default:
 					{
