@@ -1,2 +1,2 @@
-import "function/functionB.lum"
-import "attribute/attributeB.lum"
+#include "function/functionB.lum"
+#include "attribute/attributeB.lum"

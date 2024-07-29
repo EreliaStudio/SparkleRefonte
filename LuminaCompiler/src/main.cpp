@@ -33,8 +33,17 @@ namespace Lumina
 			"Matrix2x2", "Matrix3x3", "Matrix4x4"
 		};
 
-		const std::vector<std::shared_ptr<AbstractInstruction>> *_instructions;
-		size_t index;
+		struct Element
+		{
+			std::filesystem::path filePath;
+			std::shared_ptr<AbstractInstruction> instruction;
+		};
+
+		Result _result;
+		std::vector<Element> _elements;
+		size_t _index;
+
+		std::unordered_set<std::filesystem::path> _alreadyLoadedIncludes;
 
 	public:
 		static Result checkSemantic(const std::filesystem::path& p_file, std::vector<std::shared_ptr<AbstractInstruction>>& p_instructions)
@@ -43,43 +52,73 @@ namespace Lumina
 		}
 
 	private:
-		void checkIncludeInstruction(const std::filesystem::path& p_file, std::shared_ptr<IncludeInstruction>& p_instruction)
+		void checkIncludeInstruction(const std::filesystem::path& p_file, const std::shared_ptr<IncludeInstruction>& p_instruction)
 		{
 			std::string fileName = p_instruction->includeFile.content.substr(1, p_instruction->includeFile.content.size() - 2);
-			std::filesystem::path filePath = composeFilePath(fileName);
+			std::filesystem::path filePath = composeFilePath(fileName, { p_file.parent_path() });
 
 			if (filePath.empty())
 			{
 				throw TokenBasedError(p_file, "Include file [" + fileName + "] not found", p_instruction->includeFile);
 			}
 
-			Lumina::LexerChecker::Result includeFileLexer = Lumina::LexerChecker::checkSyntax(fileName, Lumina::Tokenizer::tokenize(Lumina::readFileAsString(filePath)));
+			if (_alreadyLoadedIncludes.contains(filePath) == false)
+			{
+				std::cout << "Including file : " << filePath << std::endl;
+				Lumina::LexerChecker::Result includeFileLexer = Lumina::LexerChecker::checkSyntax(fileName, Lumina::Tokenizer::tokenize(Lumina::readFileAsString(filePath)));
 
+				_result.errors.insert(_result.errors.end(), includeFileLexer.errors.begin(), includeFileLexer.errors.end());
+
+				std::vector<Element> newElements;
+				for (auto& instruction : includeFileLexer.instructions)
+				{
+					newElements.push_back(Element{ filePath, instruction });
+				}
+
+				_elements.insert(_elements.begin() + _index + 1, newElements.begin(), newElements.end());
+
+				_alreadyLoadedIncludes.insert(filePath);
+			}
 		}
 
 		Result check(const std::filesystem::path& p_file, std::vector<std::shared_ptr<AbstractInstruction>>& p_instructions)
 		{
-			Result result;
+			_result = Result();
 
-			for (const auto& instruction : p_instructions)
+			for (auto& instruction : p_instructions)
 			{
+				_elements.push_back(Element{p_file, instruction});
+			}
+
+			while(_index < _elements.size())
+			{
+				auto& element = _elements[_index];
 				try
 				{
+					std::shared_ptr<AbstractInstruction> instruction = element.instruction;
+
 					switch (instruction->type)
 					{
-						case Lumina::AbstractInstruction::Type::Include:
-						{
-							checkIncludeInstruction(static_pointer_cast<IncludeInstruction>(instruction));
-						}
+					case Instruction::Type::Include:
+					{
+						checkIncludeInstruction(element.filePath, static_pointer_cast<IncludeInstruction>(instruction));
+						break;
+					}
+					default:
+					{
+						throw TokenBasedError(element.filePath, "Unexpected instruction type : " + ::to_string(instruction->type), Token());
+					}
 					}
 				}
 				catch (const TokenBasedError& e)
 				{
-					result.errors.push_back(e);
+					_result.errors.push_back(e);
 				}
+
+				_index++;
 			}
 
-			return result;
+			return _result;
 		}
 	};
 }

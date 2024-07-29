@@ -36,7 +36,7 @@ namespace Lumina
 		void backOff();
 		void advance();
 		const Lumina::Token& currentToken() const;
-		const Lumina::Token& tokenAtIndex(size_t p_index) const;
+		const Lumina::Token& tokenAtIndex(size_t p_offset) const;
 		const Lumina::Token& nextToken() const;
 		void skipToken();
 		void skipLine();

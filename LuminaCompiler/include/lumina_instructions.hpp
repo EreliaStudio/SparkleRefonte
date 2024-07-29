@@ -681,3 +681,5 @@ namespace Lumina
 		}
 	};
 }
+
+std::string to_string(Lumina::AbstractInstruction::Type p_type);

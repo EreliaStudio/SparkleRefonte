@@ -1,6 +1,5 @@
 // Include predefined and user-provided files
-#include <screenConstants>
-#include "shader/customInclude.lum"
+#include <importA>
 
 // Define the pipeline flow
 Input -> VertexPass: Vector3 vertexPosition;
