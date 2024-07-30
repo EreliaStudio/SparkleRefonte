@@ -74,6 +74,7 @@ namespace Lumina
 	{
 		if (p_tokens.size() == 0)
 			return (Token());
+
 		size_t tokenColumn = p_tokens[0].context.column;
 		size_t tokenSize = p_tokens.back().context.column + p_tokens.back().content.size() - p_tokens[0].context.column;
 

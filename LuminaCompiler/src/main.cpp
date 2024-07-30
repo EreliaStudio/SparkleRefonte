@@ -32,12 +32,115 @@ namespace Lumina
 			"Vector2UInt", "Vector3UInt", "Vector4UInt"
 		};
 
-		std::unordered_set<std::string> _alreadyCreatedStructures = {
-			"float", "int", "uint", "bool",
-			"Vector2", "Vector3", "Vector4",
-			"Vector2Int", "Vector3Int", "Vector4Int",
-			"Vector2UInt", "Vector3UInt", "Vector4UInt",
-			"Matrix2x2", "Matrix3x3", "Matrix4x4"
+		struct Structure
+		{
+			std::string name;
+			std::unordered_map<std::string, Structure> attributes;
+		
+			Structure() = default;
+			Structure(const std::string& p_name) :
+				name(p_name)
+			{
+
+			}
+			Structure(const std::string& p_name, const std::unordered_map<std::string, Structure>& p_attributes) :
+				name(p_name),
+				attributes(p_attributes)
+			{
+
+			}
+
+			bool operator==(const Structure& other) const
+			{
+				return name == other.name;
+			}
+		};
+
+		struct StructureHash
+		{
+			std::size_t operator()(const Structure& s) const
+			{
+				return std::hash<std::string>{}(s.name);
+			}
+		};
+
+		std::unordered_set<Structure, StructureHash> _alreadyCreatedAttributes;
+		std::unordered_set<Structure, StructureHash> _alreadyCreatedConstants;
+		std::unordered_set<Structure, StructureHash> _alreadyCreatedStructures = {
+			Structure("float"),
+			Structure("int"),
+			Structure("uint"),
+			Structure("bool"),
+
+			Structure(
+				"Vector2",
+				{
+					{"x", Structure("float")},
+					{"y", Structure("float")}
+				}),
+			Structure(
+				"Vector3",
+				{
+					{"x", Structure("float")},
+					{"y", Structure("float")},
+					{"z", Structure("float")}
+				}),
+			Structure(
+				"Vector4",
+				{
+					{"x", Structure("float")},
+					{"y", Structure("float")},
+					{"z", Structure("float")},
+					{"w", Structure("float")}
+				}),
+
+			Structure(
+				"Vector2Int",
+				{
+					{"x", Structure("int")},
+					{"y", Structure("int")}
+				}),
+			Structure(
+				"Vector3Int",
+				{
+					{"x", Structure("int")},
+					{"y", Structure("int")},
+					{"z", Structure("int")}
+				}),
+			Structure(
+				"Vector4Int",
+				{
+					{"x", Structure("int")},
+					{"y", Structure("int")},
+					{"z", Structure("int")},
+					{"w", Structure("int")}
+				}),
+
+			Structure(
+				"Vector2UInt",
+				{
+					{"x", Structure("uint")},
+					{"y", Structure("uint")}
+				}),
+			Structure(
+				"Vector3UInt",
+				{
+					{"x", Structure("uint")},
+					{"y", Structure("uint")},
+					{"z", Structure("uint")}
+				}),
+			Structure(
+				"Vector4UInt",
+				{
+					{"x", Structure("uint")},
+					{"y", Structure("uint")},
+					{"z", Structure("uint")},
+					{"w", Structure("uint")}
+				}),
+
+			Structure("Matrix2x2"),
+			Structure("Matrix3x3"),
+			Structure("Matrix4x4")
 		};
 
 		struct Element
@@ -132,7 +235,7 @@ namespace Lumina
 			_pipelineFlowUsedNames.insert(p_instruction->name->string());
 		}
 
-		void checkBlockInstruction(const std::filesystem::path& p_file, const std::shared_ptr<BlockInstruction>& p_instruction)
+		void checkBlockInstruction(const std::filesystem::path& p_file, const std::shared_ptr<BlockInstruction>& p_instruction, std::unordered_set<Structure, StructureHash>& p_storage)
 		{
 			std::string namespacePrefix = "";
 			for (size_t i = 0; i < _currentNamespace.size(); i++)
@@ -141,14 +244,14 @@ namespace Lumina
 					namespacePrefix += "::";
 				namespacePrefix += _currentNamespace[i].content;
 			}
-
-			std::string name = "";
 			if (_currentNamespace.size() != 0)
-				name += (_currentNamespace.size() == 0 ? "" : "::");
-			
-			name += p_instruction->name.content;
+				namespacePrefix += "::";
 
-			if (_alreadyCreatedStructures.contains(namespacePrefix + name) == true)
+			std::string name = p_instruction->name.content;
+
+			if (_alreadyCreatedAttributes.contains(namespacePrefix + name) == true ||
+				_alreadyCreatedConstants.contains(namespacePrefix + name) == true ||
+				_alreadyCreatedStructures.contains(namespacePrefix + name) == true)
 			{
 				if (_currentNamespace.size() == 0)
 				{
@@ -156,10 +259,79 @@ namespace Lumina
 				}
 				else
 				{
-					throw TokenBasedError(p_file, "Type [" + p_instruction->name.content + "] already exist inside " + namespacePrefix + " namespace", p_instruction->name);
+					throw TokenBasedError(p_file, "Type [" + p_instruction->name.content + "] already exist inside " + namespacePrefix.substr(0, namespacePrefix.size() - 2) + " namespace", p_instruction->name);
 				}
 			}
-			_alreadyCreatedStructures.insert(namespacePrefix + name);
+
+			Structure newStructure;
+			newStructure.name = namespacePrefix + name;
+
+			for (const auto& attribute : p_instruction->elements)
+			{
+				try
+				{
+					if (newStructure.attributes.contains(attribute->name->token.content) == true)
+					{
+						throw TokenBasedError(p_file, "Attribute named [" + attribute->name->token.content + "] already declared", attribute->name->token);
+					}
+
+					Lumina::Token typeToken = Lumina::Token::merge(attribute->type->tokens, Token::Type::Identifier);
+
+					if (typeToken.content.substr(0, 2) == "::")
+					{
+						std::string realType = typeToken.content.substr(2, typeToken.content.size() - 2);
+
+						if (_alreadyCreatedConstants.contains(realType) == true)
+						{
+							throw TokenBasedError(p_file, "Type [" + realType + "] is a ConstantBlock and can't be used in block definition", typeToken);
+						}
+						else if (_alreadyCreatedAttributes.contains(realType) == true)
+						{
+							throw TokenBasedError(p_file, "Type [" + realType + "] is a AttributeBlock and can't be used in block definition", typeToken);
+						}
+						else if (_alreadyCreatedStructures.contains(realType) == true)
+						{
+							newStructure.attributes[attribute->name->token.content] = *(_alreadyCreatedStructures.find(realType));
+						}
+						else
+						{
+							throw TokenBasedError(p_file, "Type [" + typeToken.content + "] not found", typeToken);
+						}
+					}
+					else
+					{
+						if (_alreadyCreatedConstants.contains(typeToken.content) == true ||
+							_alreadyCreatedConstants.contains(namespacePrefix + typeToken.content) == true)
+						{
+							throw TokenBasedError(p_file, "Type [" + typeToken.content + "] is a ConstantBlock and can't be used in block definition", typeToken);
+						}
+						else if (_alreadyCreatedAttributes.contains(typeToken.content) == true ||
+							_alreadyCreatedAttributes.contains(namespacePrefix + typeToken.content) == true)
+						{
+							throw TokenBasedError(p_file, "Type [" + typeToken.content + "] is a AttributeBlock and can't be used in block definition", typeToken);
+						}
+						else if (_alreadyCreatedStructures.contains(typeToken.content) == true)
+						{
+							newStructure.attributes[attribute->name->token.content] = *(_alreadyCreatedStructures.find(typeToken.content));
+						}
+						else if (_alreadyCreatedStructures.contains(namespacePrefix + typeToken.content) == true)
+						{
+							newStructure.attributes[attribute->name->token.content] = *(_alreadyCreatedStructures.find(namespacePrefix + typeToken.content));
+						}
+						else
+						{
+							throw TokenBasedError(p_file, "Type [" + typeToken.content + "] not found", typeToken);
+						}
+
+					}
+				}
+				catch (const TokenBasedError& e)
+				{
+					_result.errors.push_back(e);
+				}
+			}
+
+			p_storage.insert(namespacePrefix + name);
 		}
 
 		void checkNamespaceInstruction(const std::filesystem::path& p_file, const std::shared_ptr<NamespaceInstruction>& p_instruction)
@@ -177,10 +349,18 @@ namespace Lumina
 					switch (instruction->type)
 					{
 					case Instruction::Type::StructureBlock:
+					{
+						checkBlockInstruction(p_file, static_pointer_cast<BlockInstruction>(instruction), _alreadyCreatedStructures);
+						break;
+					}
 					case Instruction::Type::AttributeBlock:
+					{
+						checkBlockInstruction(p_file, static_pointer_cast<BlockInstruction>(instruction), _alreadyCreatedAttributes);
+						break;
+					}
 					case Instruction::Type::ConstantBlock:
 					{
-						checkBlockInstruction(p_file, static_pointer_cast<BlockInstruction>(instruction));
+						checkBlockInstruction(p_file, static_pointer_cast<BlockInstruction>(instruction), _alreadyCreatedConstants);
 						break;
 					}
 					case Instruction::Type::Namespace:
@@ -234,10 +414,18 @@ namespace Lumina
 						break;
 					}
 					case Instruction::Type::StructureBlock:
+					{
+						checkBlockInstruction(p_file, static_pointer_cast<BlockInstruction>(instruction), _alreadyCreatedStructures);
+						break;
+					}
 					case Instruction::Type::AttributeBlock:
+					{
+						checkBlockInstruction(p_file, static_pointer_cast<BlockInstruction>(instruction), _alreadyCreatedAttributes);
+						break;
+					}
 					case Instruction::Type::ConstantBlock:
 					{
-						checkBlockInstruction(element.filePath, static_pointer_cast<BlockInstruction>(instruction));
+						checkBlockInstruction(p_file, static_pointer_cast<BlockInstruction>(instruction), _alreadyCreatedConstants);
 						break;
 					}
 					case Instruction::Type::Namespace:

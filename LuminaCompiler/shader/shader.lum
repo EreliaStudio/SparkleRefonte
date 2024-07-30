@@ -38,22 +38,19 @@ ConstantBlock lightingConstants
 // Create namespaces
 namespace Lighting
 {
-struct Material
-{
-    Vector3 diffuseColor;
-    Vector3 specularColor;
-    float shininess;
-};
-struct Material
-{
-    Vector3 diffuseColor;
-    Vector3 specularColor;
-    float shininess;
-};
+    struct Material
+    {
+        Vector3Int diffuseColor;
+        Vector3 specularColor;
+        float shininess;
+    };
 
 	struct Test
 	{
-		int value;
+        Material materialA;
+        ::Material materialB;
+        Lighting::Material materialC;
+        ::Lighting::Material materialD;
 	};
 
     Vector3 calculateDiffuse(Vector3 normal, Vector3 lightDir, Vector3 lightColor)

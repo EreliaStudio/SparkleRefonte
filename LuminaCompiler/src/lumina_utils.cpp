@@ -19,6 +19,16 @@ namespace Lumina
 
 		inputFile.close();
 
+		std::string tab = "\t";
+		std::string spaces = "    "; // 4 spaces
+		size_t pos = 0;
+
+		while ((pos = result.find(tab, pos)) != std::string::npos)
+		{
+			result.replace(pos, tab.length(), spaces);
+			pos += spaces.length();
+		}
+
 		return (result);
 	}
 

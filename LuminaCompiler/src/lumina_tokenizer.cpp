@@ -163,6 +163,11 @@ namespace Lumina
 					columnNumber = 0;
 					//currentLine.clear();
 				}
+				else if (p_rawCode[index] == '\t')
+				{
+					columnNumber += 4;
+					//currentLine.clear();
+				}
 				else
 				{
 					columnNumber++;
