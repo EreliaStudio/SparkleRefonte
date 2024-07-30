@@ -340,6 +340,14 @@ namespace Lumina
 
 			_currentNamespace.push_back(p_instruction->name->token);
 
+			std::string namespacePrefix = "";
+			for (size_t i = 0; i < _currentNamespace.size(); i++)
+			{
+				if (i != 0)
+					namespacePrefix += "::";
+				namespacePrefix += _currentNamespace[i].content;
+			}
+
 			while (namespaceIndex < p_instruction->instructions.size())
 			{
 				try
@@ -370,7 +378,7 @@ namespace Lumina
 					}
 					default:
 					{
-						throw TokenBasedError(p_file, "Unexpected instruction type inside namespace : " + ::to_string(instruction->type), Token());
+						throw TokenBasedError(p_file, "Unexpected instruction type inside namespace [" + namespacePrefix + "] : " + ::to_string(instruction->type), Token());
 					}
 					}
 				}
