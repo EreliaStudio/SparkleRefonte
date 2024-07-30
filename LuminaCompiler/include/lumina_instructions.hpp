@@ -146,69 +146,59 @@ namespace Lumina
 		}
 	};
 
-	struct StructureBlockInstruction : public AbstractInstruction
+	struct BlockInstruction : public AbstractInstruction
 	{
 		Lumina::Token name;
 		std::vector<std::shared_ptr<BlockElementInstruction>> elements;
 
+		BlockInstruction(const Type& p_type) :
+			AbstractInstruction(p_type)
+		{
+
+		}
+
+		std::string string() const override
+		{
+			std::string result;
+			if (type == Type::StructureBlock)
+				result += "Structure";
+			else if (type == Type::AttributeBlock)
+				result += "Attribute";
+			else if (type == Type::ConstantBlock)
+				result += "Constant";
+			result += " named [" + name.content + "] contain : \n";
+			for (const auto& element : elements)
+			{
+				result += "    " + element->string() + "\n";
+			}
+			return (result);
+		}
+	};
+
+	struct StructureBlockInstruction : public BlockInstruction
+	{
 		StructureBlockInstruction() :
-			AbstractInstruction(AbstractInstruction::Type::StructureBlock)
+			BlockInstruction(AbstractInstruction::Type::StructureBlock)
 		{
 
-		}
-
-		std::string string() const override
-		{
-			std::string result = "Structure named [" + name.content + "] contain : \n";
-			for (const auto& element : elements)
-			{
-				result += "    " + element->string() + "\n";
-			}
-			return (result);
 		}
 	};
 
-	struct AttributeBlockInstruction : public AbstractInstruction
+	struct AttributeBlockInstruction : public BlockInstruction
 	{
-		Lumina::Token name;
-		std::vector<std::shared_ptr<BlockElementInstruction>> elements;
-
 		AttributeBlockInstruction() :
-			AbstractInstruction(AbstractInstruction::Type::AttributeBlock)
+			BlockInstruction(AbstractInstruction::Type::AttributeBlock)
 		{
 
-		}
-
-		std::string string() const override
-		{
-			std::string result = "Attribute named [" + name.content + "] contain : \n";
-			for (const auto& element : elements)
-			{
-				result += "    " + element->string() + "\n";
-			}
-			return (result);
 		}
 	};
 
-	struct ConstantBlockInstruction : public AbstractInstruction
+	struct ConstantBlockInstruction : public BlockInstruction
 	{
-		Lumina::Token name;
-		std::vector<std::shared_ptr<BlockElementInstruction>> elements;
-
 		ConstantBlockInstruction() :
-			AbstractInstruction(AbstractInstruction::Type::ConstantBlock)
+			BlockInstruction(AbstractInstruction::Type::ConstantBlock)
 		{
 
-		}
-
-		std::string string() const override
-		{
-			std::string result = "Constant named [" + name.content + "] contain : \n";
-			for (const auto& element : elements)
-			{
-				result += "    " + element->string() + "\n";
-			}
-			return (result);
 		}
 	};
 
@@ -230,7 +220,7 @@ namespace Lumina
 
 	struct NamespaceInstruction : public AbstractInstruction
 	{
-		std::shared_ptr<Instruction> name;
+		std::shared_ptr<IdentifierInstruction> name;
 		std::vector<std::shared_ptr<Instruction>> instructions;
 
 		NamespaceInstruction() :
@@ -241,7 +231,7 @@ namespace Lumina
 
 		std::string string() const override
 		{
-			std::string result = "Namespace contain [" + std::to_string(instructions.size()) + "] instructions :\n";
+			std::string result = "Namespace [" + name->string() + "] contain [" + std::to_string(instructions.size()) + "] instructions :\n";
 			for (const auto& instruction : instructions)
 			{
 				result += "    " + instruction->string() + "\n";

@@ -20,9 +20,9 @@
 [    PipelineFlowSeparator] | [  7::6  ] | ->
 [             PipelineFlow] | [  7::9  ] | VertexPass
 [                Separator] | [  7::19 ] | :
-[               Identifier] | [  7::21 ] | vec2
-[               Identifier] | [  7::26 ] | vertexUV
-[            EndOfSentence] | [  7::34 ] | ;
+[               Identifier] | [  7::21 ] | Vector2
+[               Identifier] | [  7::29 ] | vertexUV
+[            EndOfSentence] | [  7::37 ] | ;
 [             PipelineFlow] | [  8::0  ] | VertexPass
 [    PipelineFlowSeparator] | [  8::11 ] | ->
 [             PipelineFlow] | [  8::14 ] | FragmentPass
@@ -41,9 +41,9 @@
 [    PipelineFlowSeparator] | [ 10::11 ] | ->
 [             PipelineFlow] | [ 10::14 ] | FragmentPass
 [                Separator] | [ 10::26 ] | :
-[               Identifier] | [ 10::28 ] | vec2
-[               Identifier] | [ 10::33 ] | fragUV
-[            EndOfSentence] | [ 10::39 ] | ;
+[               Identifier] | [ 10::28 ] | Vector2
+[               Identifier] | [ 10::36 ] | fragUV
+[            EndOfSentence] | [ 10::42 ] | ;
 [                  Comment] | [ 12::0  ] | // Define custom structures
 [           StructureBlock] | [ 13::0  ] | struct
 [               Identifier] | [ 13::7  ] | Material
@@ -94,106 +94,160 @@
 [                Namespace] | [ 39::0  ] | namespace
 [               Identifier] | [ 39::10 ] | Lighting
 [         OpenCurlyBracket] | [ 40::0  ] | {
-[           StructureBlock] | [ 41::1  ] | struct
-[               Identifier] | [ 41::8  ] | Test
-[         OpenCurlyBracket] | [ 42::1  ] | {
-[               Identifier] | [ 43::2  ] | int
-[               Identifier] | [ 43::6  ] | value
-[            EndOfSentence] | [ 43::11 ] | ;
-[        CloseCurlyBracket] | [ 44::1  ] | }
-[            EndOfSentence] | [ 44::2  ] | ;
-[               Identifier] | [ 46::4  ] | Vector3
-[               Identifier] | [ 46::12 ] | calculateDiffuse
-[          OpenParenthesis] | [ 46::28 ] | (
-[               Identifier] | [ 46::29 ] | Vector3
-[               Identifier] | [ 46::37 ] | normal
-[                    Comma] | [ 46::43 ] | ,
-[               Identifier] | [ 46::45 ] | Vector3
-[               Identifier] | [ 46::53 ] | lightDir
-[                    Comma] | [ 46::61 ] | ,
-[               Identifier] | [ 46::63 ] | Vector3
-[               Identifier] | [ 46::71 ] | lightColor
-[         CloseParenthesis] | [ 46::81 ] | )
-[         OpenCurlyBracket] | [ 47::4  ] | {
-[               Identifier] | [ 48::8  ] | float
-[               Identifier] | [ 48::14 ] | diff
-[               Assignator] | [ 48::19 ] | =
-[               Identifier] | [ 48::21 ] | max
-[          OpenParenthesis] | [ 48::24 ] | (
-[               Identifier] | [ 48::25 ] | dot
-[          OpenParenthesis] | [ 48::28 ] | (
-[               Identifier] | [ 48::29 ] | normal
-[                    Comma] | [ 48::35 ] | ,
-[               Identifier] | [ 48::37 ] | lightDir
-[         CloseParenthesis] | [ 48::45 ] | )
-[                    Comma] | [ 48::46 ] | ,
-[                   Number] | [ 48::48 ] | 0.0
-[         CloseParenthesis] | [ 48::51 ] | )
-[            EndOfSentence] | [ 48::52 ] | ;
-[                   Return] | [ 49::8  ] | return
-[               Identifier] | [ 49::15 ] | diff
-[                 Operator] | [ 49::20 ] | *
-[               Identifier] | [ 49::22 ] | lightColor
-[            EndOfSentence] | [ 49::32 ] | ;
-[        CloseCurlyBracket] | [ 50::4  ] | }
-[               Identifier] | [ 52::4  ] | Vector3
-[               Identifier] | [ 52::12 ] | calculateSpecular
-[          OpenParenthesis] | [ 52::29 ] | (
-[               Identifier] | [ 52::30 ] | Vector3
-[               Identifier] | [ 52::38 ] | normal
-[                    Comma] | [ 52::44 ] | ,
-[               Identifier] | [ 52::46 ] | Vector3
-[               Identifier] | [ 52::54 ] | lightDir
-[                    Comma] | [ 52::62 ] | ,
-[               Identifier] | [ 52::64 ] | Vector3
-[               Identifier] | [ 52::72 ] | viewDir
-[                    Comma] | [ 52::79 ] | ,
-[               Identifier] | [ 52::81 ] | float
-[               Identifier] | [ 52::87 ] | shininess
-[                    Comma] | [ 52::96 ] | ,
-[               Identifier] | [ 52::98 ] | Vector3
-[               Identifier] | [ 52::106] | lightColor
-[         CloseParenthesis] | [ 52::116] | )
-[         OpenCurlyBracket] | [ 53::4  ] | {
-[               Identifier] | [ 54::8  ] | Vector3
-[               Identifier] | [ 54::16 ] | reflectDir
-[               Assignator] | [ 54::27 ] | =
-[               Identifier] | [ 54::29 ] | reflect
-[          OpenParenthesis] | [ 54::36 ] | (
-[                 Operator] | [ 54::37 ] | -
-[               Identifier] | [ 54::38 ] | lightDir
-[                    Comma] | [ 54::46 ] | ,
-[               Identifier] | [ 54::48 ] | normal
-[         CloseParenthesis] | [ 54::54 ] | )
-[            EndOfSentence] | [ 54::55 ] | ;
-[               Identifier] | [ 55::8  ] | float
-[               Identifier] | [ 55::14 ] | spec
-[               Assignator] | [ 55::19 ] | =
-[               Identifier] | [ 55::21 ] | pow
-[          OpenParenthesis] | [ 55::24 ] | (
-[               Identifier] | [ 55::25 ] | max
-[          OpenParenthesis] | [ 55::28 ] | (
-[               Identifier] | [ 55::29 ] | dot
-[          OpenParenthesis] | [ 55::32 ] | (
-[               Identifier] | [ 55::33 ] | viewDir
-[                    Comma] | [ 55::40 ] | ,
-[               Identifier] | [ 55::42 ] | reflectDir
-[         CloseParenthesis] | [ 55::52 ] | )
-[                    Comma] | [ 55::53 ] | ,
-[                   Number] | [ 55::55 ] | 0.0
-[         CloseParenthesis] | [ 55::58 ] | )
-[                    Comma] | [ 55::59 ] | ,
-[               Identifier] | [ 55::61 ] | shininess
-[         CloseParenthesis] | [ 55::70 ] | )
-[            EndOfSentence] | [ 55::71 ] | ;
-[                   Return] | [ 56::8  ] | return
-[               Identifier] | [ 56::15 ] | spec
-[                 Operator] | [ 56::20 ] | *
-[               Identifier] | [ 56::22 ] | lightColor
-[            EndOfSentence] | [ 56::32 ] | ;
-[        CloseCurlyBracket] | [ 57::4  ] | }
-[        CloseCurlyBracket] | [ 58::0  ] | }
-[                  Comment] | [ 60::0  ] | /*
+[           StructureBlock] | [ 41::0  ] | struct
+[               Identifier] | [ 41::7  ] | Material
+[         OpenCurlyBracket] | [ 42::0  ] | {
+[               Identifier] | [ 43::4  ] | Vector3
+[               Identifier] | [ 43::12 ] | diffuseColor
+[            EndOfSentence] | [ 43::24 ] | ;
+[               Identifier] | [ 44::4  ] | Vector3
+[               Identifier] | [ 44::12 ] | specularColor
+[            EndOfSentence] | [ 44::25 ] | ;
+[               Identifier] | [ 45::4  ] | float
+[               Identifier] | [ 45::10 ] | shininess
+[            EndOfSentence] | [ 45::19 ] | ;
+[        CloseCurlyBracket] | [ 46::0  ] | }
+[            EndOfSentence] | [ 46::1  ] | ;
+[           StructureBlock] | [ 47::0  ] | struct
+[               Identifier] | [ 47::7  ] | Material
+[         OpenCurlyBracket] | [ 48::0  ] | {
+[               Identifier] | [ 49::4  ] | Vector3
+[               Identifier] | [ 49::12 ] | diffuseColor
+[            EndOfSentence] | [ 49::24 ] | ;
+[               Identifier] | [ 50::4  ] | Vector3
+[               Identifier] | [ 50::12 ] | specularColor
+[            EndOfSentence] | [ 50::25 ] | ;
+[               Identifier] | [ 51::4  ] | float
+[               Identifier] | [ 51::10 ] | shininess
+[            EndOfSentence] | [ 51::19 ] | ;
+[        CloseCurlyBracket] | [ 52::0  ] | }
+[            EndOfSentence] | [ 52::1  ] | ;
+[           StructureBlock] | [ 54::1  ] | struct
+[               Identifier] | [ 54::8  ] | Test
+[         OpenCurlyBracket] | [ 55::1  ] | {
+[               Identifier] | [ 56::2  ] | int
+[               Identifier] | [ 56::6  ] | value
+[            EndOfSentence] | [ 56::11 ] | ;
+[        CloseCurlyBracket] | [ 57::1  ] | }
+[            EndOfSentence] | [ 57::2  ] | ;
+[               Identifier] | [ 59::4  ] | Vector3
+[               Identifier] | [ 59::12 ] | calculateDiffuse
+[          OpenParenthesis] | [ 59::28 ] | (
+[               Identifier] | [ 59::29 ] | Vector3
+[               Identifier] | [ 59::37 ] | normal
+[                    Comma] | [ 59::43 ] | ,
+[               Identifier] | [ 59::45 ] | Vector3
+[               Identifier] | [ 59::53 ] | lightDir
+[                    Comma] | [ 59::61 ] | ,
+[               Identifier] | [ 59::63 ] | Vector3
+[               Identifier] | [ 59::71 ] | lightColor
+[         CloseParenthesis] | [ 59::81 ] | )
+[         OpenCurlyBracket] | [ 60::4  ] | {
+[               Identifier] | [ 61::8  ] | float
+[               Identifier] | [ 61::14 ] | diff
+[               Assignator] | [ 61::19 ] | =
+[               Identifier] | [ 61::21 ] | max
+[          OpenParenthesis] | [ 61::24 ] | (
+[               Identifier] | [ 61::25 ] | dot
+[          OpenParenthesis] | [ 61::28 ] | (
+[               Identifier] | [ 61::29 ] | normal
+[                    Comma] | [ 61::35 ] | ,
+[               Identifier] | [ 61::37 ] | lightDir
+[         CloseParenthesis] | [ 61::45 ] | )
+[                    Comma] | [ 61::46 ] | ,
+[                   Number] | [ 61::48 ] | 0.0
+[         CloseParenthesis] | [ 61::51 ] | )
+[            EndOfSentence] | [ 61::52 ] | ;
+[                   Return] | [ 62::8  ] | return
+[               Identifier] | [ 62::15 ] | diff
+[                 Operator] | [ 62::20 ] | *
+[               Identifier] | [ 62::22 ] | lightColor
+[            EndOfSentence] | [ 62::32 ] | ;
+[        CloseCurlyBracket] | [ 63::4  ] | }
+[               Identifier] | [ 65::4  ] | Vector3
+[               Identifier] | [ 65::12 ] | calculateSpecular
+[          OpenParenthesis] | [ 65::29 ] | (
+[               Identifier] | [ 65::30 ] | Vector3
+[               Identifier] | [ 65::38 ] | normal
+[                    Comma] | [ 65::44 ] | ,
+[               Identifier] | [ 65::46 ] | Vector3
+[               Identifier] | [ 65::54 ] | lightDir
+[                    Comma] | [ 65::62 ] | ,
+[               Identifier] | [ 65::64 ] | Vector3
+[               Identifier] | [ 65::72 ] | viewDir
+[                    Comma] | [ 65::79 ] | ,
+[               Identifier] | [ 65::81 ] | float
+[               Identifier] | [ 65::87 ] | shininess
+[                    Comma] | [ 65::96 ] | ,
+[               Identifier] | [ 65::98 ] | Vector3
+[               Identifier] | [ 65::106] | lightColor
+[         CloseParenthesis] | [ 65::116] | )
+[         OpenCurlyBracket] | [ 66::4  ] | {
+[               Identifier] | [ 67::8  ] | Vector3
+[               Identifier] | [ 67::16 ] | reflectDir
+[               Assignator] | [ 67::27 ] | =
+[               Identifier] | [ 67::29 ] | reflect
+[          OpenParenthesis] | [ 67::36 ] | (
+[                 Operator] | [ 67::37 ] | -
+[               Identifier] | [ 67::38 ] | lightDir
+[                    Comma] | [ 67::46 ] | ,
+[               Identifier] | [ 67::48 ] | normal
+[         CloseParenthesis] | [ 67::54 ] | )
+[            EndOfSentence] | [ 67::55 ] | ;
+[               Identifier] | [ 68::8  ] | float
+[               Identifier] | [ 68::14 ] | spec
+[               Assignator] | [ 68::19 ] | =
+[               Identifier] | [ 68::21 ] | pow
+[          OpenParenthesis] | [ 68::24 ] | (
+[               Identifier] | [ 68::25 ] | max
+[          OpenParenthesis] | [ 68::28 ] | (
+[               Identifier] | [ 68::29 ] | dot
+[          OpenParenthesis] | [ 68::32 ] | (
+[               Identifier] | [ 68::33 ] | viewDir
+[                    Comma] | [ 68::40 ] | ,
+[               Identifier] | [ 68::42 ] | reflectDir
+[         CloseParenthesis] | [ 68::52 ] | )
+[                    Comma] | [ 68::53 ] | ,
+[                   Number] | [ 68::55 ] | 0.0
+[         CloseParenthesis] | [ 68::58 ] | )
+[                    Comma] | [ 68::59 ] | ,
+[               Identifier] | [ 68::61 ] | shininess
+[         CloseParenthesis] | [ 68::70 ] | )
+[            EndOfSentence] | [ 68::71 ] | ;
+[                   Return] | [ 69::8  ] | return
+[               Identifier] | [ 69::15 ] | spec
+[                 Operator] | [ 69::20 ] | *
+[               Identifier] | [ 69::22 ] | lightColor
+[            EndOfSentence] | [ 69::32 ] | ;
+[        CloseCurlyBracket] | [ 70::4  ] | }
+[        CloseCurlyBracket] | [ 71::0  ] | }
+[               Identifier] | [ 73::0  ] | Vector3
+[               Identifier] | [ 73::8  ] | calculateDiffuseA
+[          OpenParenthesis] | [ 73::25 ] | (
+[               Identifier] | [ 73::26 ] | Vector3
+[               Identifier] | [ 73::34 ] | normal
+[                    Comma] | [ 73::40 ] | ,
+[               Identifier] | [ 73::42 ] | Vector3
+[               Identifier] | [ 73::50 ] | lightDir
+[                    Comma] | [ 73::58 ] | ,
+[               Identifier] | [ 73::60 ] | Vector3
+[               Identifier] | [ 73::68 ] | lightColor
+[         CloseParenthesis] | [ 73::78 ] | )
+[         OpenCurlyBracket] | [ 74::0  ] | {
+[                   Return] | [ 75::4  ] | return
+[               Identifier] | [ 75::11 ] | Lighting
+[       NamespaceSeparator] | [ 75::19 ] | ::
+[               Identifier] | [ 75::21 ] | calculateDiffuse
+[          OpenParenthesis] | [ 75::37 ] | (
+[               Identifier] | [ 75::38 ] | normal
+[                    Comma] | [ 75::44 ] | ,
+[               Identifier] | [ 75::46 ] | lightDir
+[                    Comma] | [ 75::54 ] | ,
+[               Identifier] | [ 75::56 ] | lightColor
+[         CloseParenthesis] | [ 75::66 ] | )
+[            EndOfSentence] | [ 75::67 ] | ;
+[        CloseCurlyBracket] | [ 76::0  ] | }
+[                  Comment] | [ 78::0  ] | /*
 Pipeline Description:
 This pipeline is designed to render a 3D object by processing its vertex data and applying lighting calculations.
 
@@ -210,224 +264,224 @@ Fragment Shader (FragmentPass):
 
 The vertex and fragment shaders work together to accurately render the 3D object with realistic lighting and texturing.
 */
-[                  Comment] | [ 78::0  ] | // Define the vertex shader stage
-[             PipelineFlow] | [ 79::0  ] | VertexPass
-[          OpenParenthesis] | [ 79::10 ] | (
-[         CloseParenthesis] | [ 79::11 ] | )
-[         OpenCurlyBracket] | [ 80::0  ] | {
-[               Identifier] | [ 81::4  ] | Vector4
-[               Identifier] | [ 81::12 ] | worldPosition
-[               Assignator] | [ 81::26 ] | =
-[               Identifier] | [ 81::28 ] | modelAttributes
-[                 Accessor] | [ 81::43 ] | .
-[               Identifier] | [ 81::44 ] | modelMatrix
-[                 Operator] | [ 81::56 ] | *
-[               Identifier] | [ 81::58 ] | Vector4
-[          OpenParenthesis] | [ 81::65 ] | (
-[               Identifier] | [ 81::66 ] | vertexPosition
-[                    Comma] | [ 81::80 ] | ,
-[                   Number] | [ 81::82 ] | 1.0
-[         CloseParenthesis] | [ 81::85 ] | )
-[            EndOfSentence] | [ 81::86 ] | ;
-[               Identifier] | [ 82::4  ] | fragPosition
-[               Assignator] | [ 82::17 ] | =
-[               Identifier] | [ 82::19 ] | worldPosition
-[                 Accessor] | [ 82::32 ] | .
-[               Identifier] | [ 82::33 ] | xyz
-[            EndOfSentence] | [ 82::36 ] | ;
-[               Identifier] | [ 83::4  ] | fragNormal
-[               Assignator] | [ 83::15 ] | =
-[               Identifier] | [ 83::17 ] | mat3
-[          OpenParenthesis] | [ 83::21 ] | (
-[               Identifier] | [ 83::22 ] | modelAttributes
-[                 Accessor] | [ 83::37 ] | .
-[               Identifier] | [ 83::38 ] | normalMatrix
-[         CloseParenthesis] | [ 83::50 ] | )
-[                 Operator] | [ 83::52 ] | *
-[               Identifier] | [ 83::54 ] | vertexNormal
-[            EndOfSentence] | [ 83::66 ] | ;
-[               Identifier] | [ 84::4  ] | fragUV
-[               Assignator] | [ 84::11 ] | =
-[               Identifier] | [ 84::13 ] | vertexUV
-[            EndOfSentence] | [ 84::21 ] | ;
-[               Identifier] | [ 86::4  ] | Vector4
-[               Identifier] | [ 86::12 ] | clipSpacePosition
-[               Assignator] | [ 86::30 ] | =
-[               Identifier] | [ 86::32 ] | worldPosition
-[            EndOfSentence] | [ 86::45 ] | ;
-[               Identifier] | [ 87::4  ] | pixelPosition
-[               Assignator] | [ 87::18 ] | =
-[               Identifier] | [ 87::20 ] | clipSpacePosition
-[            EndOfSentence] | [ 87::37 ] | ;
-[        CloseCurlyBracket] | [ 88::0  ] | }
-[                  Comment] | [ 90::0  ] | // Define the fragment shader stage
-[             PipelineFlow] | [ 91::0  ] | FragmentPass
-[          OpenParenthesis] | [ 91::12 ] | (
-[         CloseParenthesis] | [ 91::13 ] | )
-[         OpenCurlyBracket] | [ 92::0  ] | {
-[                  Comment] | [ 93::4  ] | // Error handling example
-[              IfStatement] | [ 94::4  ] | if
-[          OpenParenthesis] | [ 94::7  ] | (
-[               Identifier] | [ 94::8  ] | lightingConstants
-[                 Accessor] | [ 94::25 ] | .
-[               Identifier] | [ 94::26 ] | ambientIntensity
-[                 Operator] | [ 94::43 ] | <
-[                   Number] | [ 94::45 ] | 0.0
-[                 Operator] | [ 94::49 ] | ||
-[               Identifier] | [ 94::52 ] | lightingConstants
-[                 Accessor] | [ 94::69 ] | .
-[               Identifier] | [ 94::70 ] | ambientIntensity
-[                 Operator] | [ 94::87 ] | >
-[                   Number] | [ 94::89 ] | 1.0
-[         CloseParenthesis] | [ 94::92 ] | )
-[         OpenCurlyBracket] | [ 95::4  ] | {
-[               Identifier] | [ 96::8  ] | raiseException
-[          OpenParenthesis] | [ 96::22 ] | (
-[           StringLitteral] | [ 96::23 ] | "Ambient intensity must be between 0 and 1. Current value: %d"
-[                    Comma] | [ 96::85 ] | ,
-[               Identifier] | [ 96::87 ] | lightingConstants
-[                 Accessor] | [ 96::104] | .
-[               Identifier] | [ 96::105] | ambientIntensity
-[         CloseParenthesis] | [ 96::121] | )
-[            EndOfSentence] | [ 96::122] | ;
-[        CloseCurlyBracket] | [ 97::4  ] | }
-[               Identifier] | [ 99::4  ] | Vector3
-[               Identifier] | [ 99::12 ] | normal
-[               Assignator] | [ 99::19 ] | =
-[               Identifier] | [ 99::21 ] | normalize
-[          OpenParenthesis] | [ 99::30 ] | (
-[               Identifier] | [ 99::31 ] | fragNormal
-[         CloseParenthesis] | [ 99::41 ] | )
-[            EndOfSentence] | [ 99::42 ] | ;
-[               Identifier] | [100::4  ] | Vector3
-[               Identifier] | [100::12 ] | lightDir
-[               Assignator] | [100::21 ] | =
-[               Identifier] | [100::23 ] | normalize
-[          OpenParenthesis] | [100::32 ] | (
-[               Identifier] | [100::33 ] | lightingConstants
-[                 Accessor] | [100::50 ] | .
-[               Identifier] | [100::51 ] | lightPosition
-[                 Operator] | [100::65 ] | -
-[               Identifier] | [100::67 ] | fragPosition
-[         CloseParenthesis] | [100::79 ] | )
-[            EndOfSentence] | [100::80 ] | ;
-[               Identifier] | [101::4  ] | Vector3
-[               Identifier] | [101::12 ] | viewDir
-[               Assignator] | [101::20 ] | =
-[               Identifier] | [101::22 ] | normalize
-[          OpenParenthesis] | [101::31 ] | (
-[                 Operator] | [101::32 ] | -
-[               Identifier] | [101::33 ] | fragPosition
-[         CloseParenthesis] | [101::45 ] | )
-[            EndOfSentence] | [101::46 ] | ;
-[               Identifier] | [103::4  ] | Vector3
-[               Identifier] | [103::12 ] | ambient
-[               Assignator] | [103::20 ] | =
-[               Identifier] | [103::22 ] | lightingConstants
-[                 Accessor] | [103::39 ] | .
-[               Identifier] | [103::40 ] | ambientIntensity
-[                 Operator] | [103::57 ] | *
-[               Identifier] | [103::59 ] | lightingConstants
-[                 Accessor] | [103::76 ] | .
-[               Identifier] | [103::77 ] | lightColor
-[            EndOfSentence] | [103::87 ] | ;
-[               Identifier] | [105::4  ] | Vector3
-[               Identifier] | [105::12 ] | diffuse
-[               Assignator] | [105::20 ] | =
-[               Identifier] | [105::22 ] | Lighting
-[       NamespaceSeparator] | [105::30 ] | ::
-[               Identifier] | [105::32 ] | calculateDiffuse
-[          OpenParenthesis] | [105::48 ] | (
-[               Identifier] | [105::49 ] | normal
-[                    Comma] | [105::55 ] | ,
-[               Identifier] | [105::57 ] | lightDir
-[                    Comma] | [105::65 ] | ,
-[               Identifier] | [105::67 ] | lightingConstants
-[                 Accessor] | [105::84 ] | .
-[               Identifier] | [105::85 ] | lightColor
-[         CloseParenthesis] | [105::95 ] | )
-[            EndOfSentence] | [105::96 ] | ;
-[       NamespaceSeparator] | [107::4  ] | ::
-[               Identifier] | [107::6  ] | Material
-[               Identifier] | [107::15 ] | material
-[            EndOfSentence] | [107::23 ] | ;
-[               Identifier] | [108::4  ] | Vector3
-[               Identifier] | [108::12 ] | specular
-[               Assignator] | [108::21 ] | =
-[       NamespaceSeparator] | [108::23 ] | ::
-[               Identifier] | [108::25 ] | Lighting
-[       NamespaceSeparator] | [108::33 ] | ::
-[               Identifier] | [108::35 ] | calculateSpecular
-[          OpenParenthesis] | [108::52 ] | (
-[               Identifier] | [108::53 ] | normal
-[                    Comma] | [108::59 ] | ,
-[               Identifier] | [108::61 ] | lightDir
-[                    Comma] | [108::69 ] | ,
-[               Identifier] | [108::71 ] | viewDir
-[                    Comma] | [108::78 ] | ,
-[               Identifier] | [108::80 ] | material
-[                 Accessor] | [108::88 ] | .
-[               Identifier] | [108::89 ] | shininess
-[                    Comma] | [108::98 ] | ,
-[               Identifier] | [108::100] | lightingConstants
-[                 Accessor] | [108::117] | .
-[               Identifier] | [108::118] | lightColor
-[         CloseParenthesis] | [108::128] | )
-[            EndOfSentence] | [108::129] | ;
-[               Identifier] | [110::4  ] | Vector3
-[               Identifier] | [110::12 ] | finalColor
-[               Assignator] | [110::23 ] | =
-[               Identifier] | [110::25 ] | ambient
-[                 Operator] | [110::33 ] | +
-[               Identifier] | [110::35 ] | diffuse
-[                 Operator] | [110::43 ] | *
-[               Identifier] | [110::45 ] | material
-[                 Accessor] | [110::53 ] | .
-[               Identifier] | [110::54 ] | diffuseColor
-[                 Operator] | [110::67 ] | +
-[               Identifier] | [110::69 ] | specular
-[                 Operator] | [110::78 ] | *
-[               Identifier] | [110::80 ] | material
-[                 Accessor] | [110::88 ] | .
-[               Identifier] | [110::89 ] | specularColor
-[            EndOfSentence] | [110::102] | ;
-[               Identifier] | [112::4  ] | Vector4
-[               Identifier] | [112::12 ] | textureColor
-[               Assignator] | [112::25 ] | =
-[               Identifier] | [112::27 ] | getPixel
-[          OpenParenthesis] | [112::35 ] | (
-[               Identifier] | [112::36 ] | diffuseTexture
-[                    Comma] | [112::50 ] | ,
-[               Identifier] | [112::52 ] | fragUV
-[         CloseParenthesis] | [112::58 ] | )
-[            EndOfSentence] | [112::59 ] | ;
-[               Identifier] | [113::4  ] | finalColor
-[               Assignator] | [113::15 ] | *=
-[               Identifier] | [113::18 ] | textureColor
-[                 Accessor] | [113::30 ] | .
-[               Identifier] | [113::31 ] | rgb
-[            EndOfSentence] | [113::34 ] | ;
-[              IfStatement] | [115::4  ] | if
-[          OpenParenthesis] | [115::7  ] | (
-[               Identifier] | [115::8  ] | textureColor
-[                 Accessor] | [115::20 ] | .
-[               Identifier] | [115::21 ] | a
-[                 Operator] | [115::23 ] | ==
-[                   Number] | [115::26 ] | 0
-[         CloseParenthesis] | [115::27 ] | )
-[         OpenCurlyBracket] | [116::4  ] | {
-[                  Discard] | [117::8  ] | discard
-[            EndOfSentence] | [117::15 ] | ;
-[        CloseCurlyBracket] | [118::4  ] | }
-[               Identifier] | [120::4  ] | pixelColor
-[               Assignator] | [120::15 ] | =
-[               Identifier] | [120::17 ] | Vector4
-[          OpenParenthesis] | [120::24 ] | (
-[               Identifier] | [120::25 ] | finalColor
-[                    Comma] | [120::35 ] | ,
-[               Identifier] | [120::37 ] | textureColor
-[                 Accessor] | [120::49 ] | .
-[               Identifier] | [120::50 ] | a
-[         CloseParenthesis] | [120::51 ] | )
-[            EndOfSentence] | [120::52 ] | ;
-[        CloseCurlyBracket] | [121::0  ] | }
+[                  Comment] | [ 96::0  ] | // Define the vertex shader stage
+[             PipelineFlow] | [ 97::0  ] | VertexPass
+[          OpenParenthesis] | [ 97::10 ] | (
+[         CloseParenthesis] | [ 97::11 ] | )
+[         OpenCurlyBracket] | [ 98::0  ] | {
+[               Identifier] | [ 99::4  ] | Vector4
+[               Identifier] | [ 99::12 ] | worldPosition
+[               Assignator] | [ 99::26 ] | =
+[               Identifier] | [ 99::28 ] | modelAttributes
+[                 Accessor] | [ 99::43 ] | .
+[               Identifier] | [ 99::44 ] | modelMatrix
+[                 Operator] | [ 99::56 ] | *
+[               Identifier] | [ 99::58 ] | Vector4
+[          OpenParenthesis] | [ 99::65 ] | (
+[               Identifier] | [ 99::66 ] | vertexPosition
+[                    Comma] | [ 99::80 ] | ,
+[                   Number] | [ 99::82 ] | 1.0
+[         CloseParenthesis] | [ 99::85 ] | )
+[            EndOfSentence] | [ 99::86 ] | ;
+[               Identifier] | [100::4  ] | fragPosition
+[               Assignator] | [100::17 ] | =
+[               Identifier] | [100::19 ] | worldPosition
+[                 Accessor] | [100::32 ] | .
+[               Identifier] | [100::33 ] | xyz
+[            EndOfSentence] | [100::36 ] | ;
+[               Identifier] | [101::4  ] | fragNormal
+[               Assignator] | [101::15 ] | =
+[               Identifier] | [101::17 ] | mat3
+[          OpenParenthesis] | [101::21 ] | (
+[               Identifier] | [101::22 ] | modelAttributes
+[                 Accessor] | [101::37 ] | .
+[               Identifier] | [101::38 ] | normalMatrix
+[         CloseParenthesis] | [101::50 ] | )
+[                 Operator] | [101::52 ] | *
+[               Identifier] | [101::54 ] | vertexNormal
+[            EndOfSentence] | [101::66 ] | ;
+[               Identifier] | [102::4  ] | fragUV
+[               Assignator] | [102::11 ] | =
+[               Identifier] | [102::13 ] | vertexUV
+[            EndOfSentence] | [102::21 ] | ;
+[               Identifier] | [104::4  ] | Vector4
+[               Identifier] | [104::12 ] | clipSpacePosition
+[               Assignator] | [104::30 ] | =
+[               Identifier] | [104::32 ] | worldPosition
+[            EndOfSentence] | [104::45 ] | ;
+[               Identifier] | [105::4  ] | pixelPosition
+[               Assignator] | [105::18 ] | =
+[               Identifier] | [105::20 ] | clipSpacePosition
+[            EndOfSentence] | [105::37 ] | ;
+[        CloseCurlyBracket] | [106::0  ] | }
+[                  Comment] | [108::0  ] | // Define the fragment shader stage
+[             PipelineFlow] | [109::0  ] | FragmentPass
+[          OpenParenthesis] | [109::12 ] | (
+[         CloseParenthesis] | [109::13 ] | )
+[         OpenCurlyBracket] | [110::0  ] | {
+[                  Comment] | [111::4  ] | // Error handling example
+[              IfStatement] | [112::4  ] | if
+[          OpenParenthesis] | [112::7  ] | (
+[               Identifier] | [112::8  ] | lightingConstants
+[                 Accessor] | [112::25 ] | .
+[               Identifier] | [112::26 ] | ambientIntensity
+[                 Operator] | [112::43 ] | <
+[                   Number] | [112::45 ] | 0.0
+[                 Operator] | [112::49 ] | ||
+[               Identifier] | [112::52 ] | lightingConstants
+[                 Accessor] | [112::69 ] | .
+[               Identifier] | [112::70 ] | ambientIntensity
+[                 Operator] | [112::87 ] | >
+[                   Number] | [112::89 ] | 1.0
+[         CloseParenthesis] | [112::92 ] | )
+[         OpenCurlyBracket] | [113::4  ] | {
+[               Identifier] | [114::8  ] | raiseException
+[          OpenParenthesis] | [114::22 ] | (
+[           StringLitteral] | [114::23 ] | "Ambient intensity must be between 0 and 1. Current value: %d"
+[                    Comma] | [114::85 ] | ,
+[               Identifier] | [114::87 ] | lightingConstants
+[                 Accessor] | [114::104] | .
+[               Identifier] | [114::105] | ambientIntensity
+[         CloseParenthesis] | [114::121] | )
+[            EndOfSentence] | [114::122] | ;
+[        CloseCurlyBracket] | [115::4  ] | }
+[               Identifier] | [117::4  ] | Vector3
+[               Identifier] | [117::12 ] | normal
+[               Assignator] | [117::19 ] | =
+[               Identifier] | [117::21 ] | normalize
+[          OpenParenthesis] | [117::30 ] | (
+[               Identifier] | [117::31 ] | fragNormal
+[         CloseParenthesis] | [117::41 ] | )
+[            EndOfSentence] | [117::42 ] | ;
+[               Identifier] | [118::4  ] | Vector3
+[               Identifier] | [118::12 ] | lightDir
+[               Assignator] | [118::21 ] | =
+[               Identifier] | [118::23 ] | normalize
+[          OpenParenthesis] | [118::32 ] | (
+[               Identifier] | [118::33 ] | lightingConstants
+[                 Accessor] | [118::50 ] | .
+[               Identifier] | [118::51 ] | lightPosition
+[                 Operator] | [118::65 ] | -
+[               Identifier] | [118::67 ] | fragPosition
+[         CloseParenthesis] | [118::79 ] | )
+[            EndOfSentence] | [118::80 ] | ;
+[               Identifier] | [119::4  ] | Vector3
+[               Identifier] | [119::12 ] | viewDir
+[               Assignator] | [119::20 ] | =
+[               Identifier] | [119::22 ] | normalize
+[          OpenParenthesis] | [119::31 ] | (
+[                 Operator] | [119::32 ] | -
+[               Identifier] | [119::33 ] | fragPosition
+[         CloseParenthesis] | [119::45 ] | )
+[            EndOfSentence] | [119::46 ] | ;
+[               Identifier] | [121::4  ] | Vector3
+[               Identifier] | [121::12 ] | ambient
+[               Assignator] | [121::20 ] | =
+[               Identifier] | [121::22 ] | lightingConstants
+[                 Accessor] | [121::39 ] | .
+[               Identifier] | [121::40 ] | ambientIntensity
+[                 Operator] | [121::57 ] | *
+[               Identifier] | [121::59 ] | lightingConstants
+[                 Accessor] | [121::76 ] | .
+[               Identifier] | [121::77 ] | lightColor
+[            EndOfSentence] | [121::87 ] | ;
+[               Identifier] | [123::4  ] | Vector3
+[               Identifier] | [123::12 ] | diffuse
+[               Assignator] | [123::20 ] | =
+[               Identifier] | [123::22 ] | Lighting
+[       NamespaceSeparator] | [123::30 ] | ::
+[               Identifier] | [123::32 ] | calculateDiffuse
+[          OpenParenthesis] | [123::48 ] | (
+[               Identifier] | [123::49 ] | normal
+[                    Comma] | [123::55 ] | ,
+[               Identifier] | [123::57 ] | lightDir
+[                    Comma] | [123::65 ] | ,
+[               Identifier] | [123::67 ] | lightingConstants
+[                 Accessor] | [123::84 ] | .
+[               Identifier] | [123::85 ] | lightColor
+[         CloseParenthesis] | [123::95 ] | )
+[            EndOfSentence] | [123::96 ] | ;
+[       NamespaceSeparator] | [125::4  ] | ::
+[               Identifier] | [125::6  ] | Material
+[               Identifier] | [125::15 ] | material
+[            EndOfSentence] | [125::23 ] | ;
+[               Identifier] | [126::4  ] | Vector3
+[               Identifier] | [126::12 ] | specular
+[               Assignator] | [126::21 ] | =
+[       NamespaceSeparator] | [126::23 ] | ::
+[               Identifier] | [126::25 ] | Lighting
+[       NamespaceSeparator] | [126::33 ] | ::
+[               Identifier] | [126::35 ] | calculateSpecular
+[          OpenParenthesis] | [126::52 ] | (
+[               Identifier] | [126::53 ] | normal
+[                    Comma] | [126::59 ] | ,
+[               Identifier] | [126::61 ] | lightDir
+[                    Comma] | [126::69 ] | ,
+[               Identifier] | [126::71 ] | viewDir
+[                    Comma] | [126::78 ] | ,
+[               Identifier] | [126::80 ] | material
+[                 Accessor] | [126::88 ] | .
+[               Identifier] | [126::89 ] | shininess
+[                    Comma] | [126::98 ] | ,
+[               Identifier] | [126::100] | lightingConstants
+[                 Accessor] | [126::117] | .
+[               Identifier] | [126::118] | lightColor
+[         CloseParenthesis] | [126::128] | )
+[            EndOfSentence] | [126::129] | ;
+[               Identifier] | [128::4  ] | Vector3
+[               Identifier] | [128::12 ] | finalColor
+[               Assignator] | [128::23 ] | =
+[               Identifier] | [128::25 ] | ambient
+[                 Operator] | [128::33 ] | +
+[               Identifier] | [128::35 ] | diffuse
+[                 Operator] | [128::43 ] | *
+[               Identifier] | [128::45 ] | material
+[                 Accessor] | [128::53 ] | .
+[               Identifier] | [128::54 ] | diffuseColor
+[                 Operator] | [128::67 ] | +
+[               Identifier] | [128::69 ] | specular
+[                 Operator] | [128::78 ] | *
+[               Identifier] | [128::80 ] | material
+[                 Accessor] | [128::88 ] | .
+[               Identifier] | [128::89 ] | specularColor
+[            EndOfSentence] | [128::102] | ;
+[               Identifier] | [130::4  ] | Vector4
+[               Identifier] | [130::12 ] | textureColor
+[               Assignator] | [130::25 ] | =
+[               Identifier] | [130::27 ] | getPixel
+[          OpenParenthesis] | [130::35 ] | (
+[               Identifier] | [130::36 ] | diffuseTexture
+[                    Comma] | [130::50 ] | ,
+[               Identifier] | [130::52 ] | fragUV
+[         CloseParenthesis] | [130::58 ] | )
+[            EndOfSentence] | [130::59 ] | ;
+[               Identifier] | [131::4  ] | finalColor
+[               Assignator] | [131::15 ] | *=
+[               Identifier] | [131::18 ] | textureColor
+[                 Accessor] | [131::30 ] | .
+[               Identifier] | [131::31 ] | rgb
+[            EndOfSentence] | [131::34 ] | ;
+[              IfStatement] | [133::4  ] | if
+[          OpenParenthesis] | [133::7  ] | (
+[               Identifier] | [133::8  ] | textureColor
+[                 Accessor] | [133::20 ] | .
+[               Identifier] | [133::21 ] | a
+[                 Operator] | [133::23 ] | ==
+[                   Number] | [133::26 ] | 0
+[         CloseParenthesis] | [133::27 ] | )
+[         OpenCurlyBracket] | [134::4  ] | {
+[                  Discard] | [135::8  ] | discard
+[            EndOfSentence] | [135::15 ] | ;
+[        CloseCurlyBracket] | [136::4  ] | }
+[               Identifier] | [138::4  ] | pixelColor
+[               Assignator] | [138::15 ] | =
+[               Identifier] | [138::17 ] | Vector4
+[          OpenParenthesis] | [138::24 ] | (
+[               Identifier] | [138::25 ] | finalColor
+[                    Comma] | [138::35 ] | ,
+[               Identifier] | [138::37 ] | textureColor
+[                 Accessor] | [138::49 ] | .
+[               Identifier] | [138::50 ] | a
+[         CloseParenthesis] | [138::51 ] | )
+[            EndOfSentence] | [138::52 ] | ;
+[        CloseCurlyBracket] | [139::0  ] | }

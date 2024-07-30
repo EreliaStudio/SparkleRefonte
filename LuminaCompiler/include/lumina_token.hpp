@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
+#include <vector>
 
 namespace Lumina
 {
@@ -58,9 +59,12 @@ namespace Lumina
 		Token() = default;
 
 		Token(const std::string& p_content, Type p_type, int p_line, int p_column, const std::string& p_inputLine);
+		Token(const std::string& p_content, Type p_type, const Context& p_context);
 
 		friend std::ostream& operator << (std::ostream& p_os, const Token::Type& p_type);
 		friend std::ostream& operator << (std::ostream& p_os, const Token& p_token);
+
+		static Token merge(const std::vector<Token>& p_tokens, const Token::Type& p_type);
 	};
 	
 	std::string to_string(Token::Type p_type);

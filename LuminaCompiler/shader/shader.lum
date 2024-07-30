@@ -4,10 +4,10 @@
 // Define the pipeline flow
 Input -> VertexPass: Vector3 vertexPosition;
 Input -> VertexPass: Vector3 vertexNormal;
-Input -> VertexPass: vec2 vertexUV;
+Input -> VertexPass: Vector2 vertexUV;
 VertexPass -> FragmentPass: Vector3 fragPosition;
 VertexPass -> FragmentPass: Vector3 fragNormal;
-VertexPass -> FragmentPass: vec2 fragUV;
+VertexPass -> FragmentPass: Vector2 fragUV;
 
 // Define custom structures
 struct Material
@@ -38,6 +38,19 @@ ConstantBlock lightingConstants
 // Create namespaces
 namespace Lighting
 {
+struct Material
+{
+    Vector3 diffuseColor;
+    Vector3 specularColor;
+    float shininess;
+};
+struct Material
+{
+    Vector3 diffuseColor;
+    Vector3 specularColor;
+    float shininess;
+};
+
 	struct Test
 	{
 		int value;
@@ -55,6 +68,11 @@ namespace Lighting
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
         return spec * lightColor;
     }
+}
+
+Vector3 calculateDiffuseA(Vector3 normal, Vector3 lightDir, Vector3 lightColor)
+{
+    return Lighting::calculateDiffuse(normal, lightDir, lightColor);
 }
 
 /*

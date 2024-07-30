@@ -9,6 +9,14 @@ namespace Lumina
 	{
 	}
 
+	Token::Token(const std::string& p_content, Type p_type, const Context& p_context) :
+		type(p_type),
+		content(p_content),
+		context(p_context)
+	{
+
+	}
+
 	std::ostream& operator << (std::ostream& p_os, const Token::Type& p_type)
 	{
 		p_os << to_string(p_type);
@@ -60,5 +68,19 @@ namespace Lumina
 		case Token::Type::Comma: return "Comma";
 		default: return "Unknown";
 		}
+	}
+
+	Token Token::merge(const std::vector<Token>& p_tokens, const Token::Type& p_type)
+	{
+		if (p_tokens.size() == 0)
+			return (Token());
+		size_t tokenColumn = p_tokens[0].context.column;
+		size_t tokenSize = p_tokens.back().context.column + p_tokens.back().content.size() - p_tokens[0].context.column;
+
+		return (Lumina::Token(
+					p_tokens[0].context.inputLine.substr(tokenColumn, tokenSize),
+					p_type,
+					p_tokens[0].context
+				));
 	}
 }
