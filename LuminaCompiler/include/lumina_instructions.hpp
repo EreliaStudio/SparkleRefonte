@@ -204,7 +204,7 @@ namespace Lumina
 
 	struct TextureInstruction : public AbstractInstruction
 	{
-		std::shared_ptr<Instruction> name;
+		Lumina::Token name;
 
 		TextureInstruction() :
 			AbstractInstruction(AbstractInstruction::Type::Texture)
@@ -214,7 +214,7 @@ namespace Lumina
 
 		std::string string() const override
 		{
-			return ("Texture named [" + name->string() + "]");
+			return ("Texture named [" + name.content + "]");
 		}
 	};
 

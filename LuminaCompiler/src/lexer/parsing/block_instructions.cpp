@@ -78,7 +78,7 @@ namespace Lumina
 		std::shared_ptr<TextureInstruction> result = std::make_shared<TextureInstruction>();
 
 		expect(Lumina::Token::Type::Texture, "Expected a texture token."+ DEBUG_INFORMATION);
-		result->name = parseIdentifierInstruction();
+		result->name = expect(Lumina::Token::Type::Identifier);
 		expect(Lumina::Token::Type::EndOfSentence, "Expected end of sentence."+ DEBUG_INFORMATION);
 
 		return result;

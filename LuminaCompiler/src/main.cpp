@@ -155,6 +155,7 @@ namespace Lumina
 
 		std::vector<Lumina::Token> _currentNamespace;
 
+		std::unordered_set<std::string> _alreadyCreatedTextures;
 		std::unordered_set<std::filesystem::path> _alreadyLoadedIncludes;
 		std::unordered_set<std::filesystem::path> _pipelineFlowUsedNames;
 
@@ -334,6 +335,15 @@ namespace Lumina
 			p_storage.insert(namespacePrefix + name);
 		}
 
+		void checkTextureInstruction(const std::filesystem::path& p_file, const std::shared_ptr<TextureInstruction>& p_instruction)
+		{
+			if (_alreadyCreatedTextures.contains(p_instruction->name.content) == true)
+			{
+				throw TokenBasedError(p_file, "Texture [" + p_instruction->name.content + "] already created", p_instruction->name);
+			}
+			_alreadyCreatedTextures.insert(p_instruction->name.content);
+		}
+
 		void checkNamespaceInstruction(const std::filesystem::path& p_file, const std::shared_ptr<NamespaceInstruction>& p_instruction)
 		{
 			size_t namespaceIndex = 0;
@@ -369,6 +379,11 @@ namespace Lumina
 					case Instruction::Type::ConstantBlock:
 					{
 						checkBlockInstruction(p_file, static_pointer_cast<BlockInstruction>(instruction), _alreadyCreatedConstants);
+						break;
+					}
+					case Instruction::Type::Texture:
+					{
+						checkTextureInstruction(p_file, static_pointer_cast<TextureInstruction>(instruction));
 						break;
 					}
 					case Instruction::Type::Namespace:
@@ -434,6 +449,11 @@ namespace Lumina
 					case Instruction::Type::ConstantBlock:
 					{
 						checkBlockInstruction(p_file, static_pointer_cast<BlockInstruction>(instruction), _alreadyCreatedConstants);
+						break;
+					}
+					case Instruction::Type::Texture:
+					{
+						checkTextureInstruction(p_file, static_pointer_cast<TextureInstruction>(instruction));
 						break;
 					}
 					case Instruction::Type::Namespace:
