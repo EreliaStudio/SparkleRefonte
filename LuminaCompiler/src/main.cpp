@@ -449,9 +449,55 @@ namespace Lumina
 			_alreadyCreatedTextures.insert(name);
 		}
 
-		void checkVariableDeclarationInstruction()
+		void checkExpressionInitialisation(const std::filesystem::path& p_file, const std::shared_ptr<ExpressionInstruction>& p_instruction, std::unordered_set<Variable, VariableHash> p_scopeVariables)
 		{
 
+		}
+		
+		void checkVariableDeclarationInstruction(const std::filesystem::path& p_file, const std::shared_ptr<VariableDeclarationInstruction>& p_instruction, std::unordered_set<Variable, VariableHash> p_scopeVariables)
+		{
+			std::string variableTypeName = p_instruction->type->string();
+
+			if (_alreadyCreatedStructures.find(variableTypeName) == _alreadyCreatedStructures.end())
+			{
+				std::string namespacePrefix = "";
+				for (size_t i = 0; i < _currentNamespace.size(); i++)
+				{
+					if (i != 0)
+						namespacePrefix += "::";
+					namespacePrefix += _currentNamespace[i].content;
+				}
+				if (_currentNamespace.size() != 0)
+					namespacePrefix += "::";
+
+				variableTypeName = namespacePrefix + variableTypeName;
+			
+				if (_alreadyCreatedStructures.find(variableTypeName) == _alreadyCreatedStructures.end())
+				{
+					if (_currentNamespace.size() == 0)
+					{
+						throw TokenBasedError(p_file, "Variable type [" + p_instruction->type->string() + "] not found" + DEBUG_INFORMATION, Lumina::Token::merge(p_instruction->type->tokens, Lumina::Token::Type::Identifier));
+					}
+					else
+					{
+						throw TokenBasedError(p_file, "Variable type [" + p_instruction->type->string() + "] not found inside " + namespacePrefix.substr(0, namespacePrefix.size() - 2) + " namespace" + DEBUG_INFORMATION, Lumina::Token::merge(p_instruction->type->tokens, Lumina::Token::Type::Identifier));
+					}
+				}
+			}
+
+			Variable tmpVariable = Variable(p_instruction->name.content, variableTypeName);
+
+			if (p_scopeVariables.find(tmpVariable) != p_scopeVariables.end())
+			{
+				throw TokenBasedError(p_file, "Variable named [" + p_instruction->name.content + "] already exist", p_instruction->name);
+			}
+
+			p_scopeVariables.insert(tmpVariable);
+
+			if (p_instruction->initializer != nullptr)
+			{
+				checkExpressionInitialisation(p_file, p_instruction->initializer, p_scopeVariables);
+			}
 		}
 
 		void checkSymbolBodyInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolBodyInstruction>& p_instruction, std::unordered_set<Variable, VariableHash> p_scopeVariables)
@@ -464,7 +510,7 @@ namespace Lumina
 					{
 					case Lumina::Instruction::Type::VariableDeclaration:
 					{
-
+						checkVariableDeclarationInstruction(p_file, static_pointer_cast<VariableDeclarationInstruction>(instruction), p_scopeVariables);
 						break;
 					}
 					default:
