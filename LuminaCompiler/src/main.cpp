@@ -64,6 +64,70 @@ namespace Lumina
 			}
 		};
 
+		struct Variable
+		{
+			std::string name;
+			Structure type;
+
+			Variable(const std::string& p_name, const Structure& p_type) :
+				name(p_name),
+				type(p_type)
+			{
+			}
+
+			Variable(const Variable& other) :
+				name(other.name),
+				type(other.type)
+			{
+
+			}
+
+			bool operator==(const Variable& other) const
+			{
+				return name == other.name;
+			}
+		};
+
+		struct VariableHash
+		{
+			std::size_t operator()(const Variable& v) const
+			{
+				return std::hash<std::string>{}(v.name);
+			}
+		};
+
+		struct Symbol
+		{
+			std::string name;
+			Structure returnType;
+			std::vector<Structure> parameters;
+
+			Symbol(const std::string& p_name, const Structure& p_returnType, const std::vector<Structure>& p_parameters) :
+				name(p_name),
+				returnType(p_returnType),
+				parameters(p_parameters)
+			{
+			}
+
+			bool operator==(const Symbol& other) const
+			{
+				return name == other.name && returnType == other.returnType && parameters == other.parameters;
+			}
+		};
+
+		struct SymbolHash
+		{
+			std::size_t operator()(const Symbol& s) const
+			{
+				std::size_t hash = std::hash<std::string>{}(s.name) ^ (std::hash<std::string>{}(s.returnType.name) << 1);
+				for (const auto& param : s.parameters)
+				{
+					hash ^= std::hash<std::string>{}(param.name);
+				}
+				return hash;
+			}
+		};
+
 		std::unordered_set<Structure, StructureHash> _alreadyCreatedAttributes;
 		std::unordered_set<Structure, StructureHash> _alreadyCreatedConstants;
 		std::unordered_set<Structure, StructureHash> _alreadyCreatedStructures = {
@@ -143,6 +207,25 @@ namespace Lumina
 			Structure("Matrix4x4")
 		};
 
+		std::unordered_set<Symbol, SymbolHash> _alreadyCreatedSymbols = {
+			Symbol("max", Structure("float"), { Structure("float"), Structure("float") }),
+			Symbol("min", Structure("float"), { Structure("float"), Structure("float") }),
+			Symbol("clamp", Structure("float"), { Structure("float"), Structure("float"), Structure("float") }),
+			Symbol("mix", Structure("float"), { Structure("float"), Structure("float"), Structure("float") }),
+			Symbol("step", Structure("float"), { Structure("float"), Structure("float") }),
+			Symbol("smoothstep", Structure("float"), { Structure("float"), Structure("float"), Structure("float") }),
+			Symbol("length", Structure("float"), { Structure("Vector2") }),
+			Symbol("length", Structure("float"), { Structure("Vector3") }),
+			Symbol("length", Structure("float"), { Structure("Vector4") }),
+			Symbol("normalize", Structure("Vector2"), { Structure("Vector2") }),
+			Symbol("normalize", Structure("Vector3"), { Structure("Vector3") }),
+			Symbol("normalize", Structure("Vector4"), { Structure("Vector4") }),
+			Symbol("dot", Structure("float"), { Structure("Vector2"), Structure("Vector2") }),
+			Symbol("dot", Structure("float"), { Structure("Vector3"), Structure("Vector3") }),
+			Symbol("dot", Structure("float"), { Structure("Vector4"), Structure("Vector4") }),
+			// Add other GLSL functions as needed
+		};
+
 		struct Element
 		{
 			std::filesystem::path filePath;
@@ -156,7 +239,7 @@ namespace Lumina
 		std::vector<Lumina::Token> _currentNamespace;
 
 		std::unordered_set<std::string> _alreadyCreatedTextures;
-		std::unordered_set<std::string> _alreadyCreatedSymbols;
+		
 		std::unordered_set<std::filesystem::path> _alreadyLoadedIncludes;
 		std::unordered_set<std::filesystem::path> _pipelineFlowUsedNames;
 		bool _vertexPipelineAlreadyParsed = false;
@@ -176,7 +259,7 @@ namespace Lumina
 
 			if (filePath.empty())
 			{
-				throw TokenBasedError(p_file, "Include file [" + fileName + "] not found", p_instruction->includeFile);
+				throw TokenBasedError(p_file, "Include file [" + fileName + "] not found" + DEBUG_INFORMATION, p_instruction->includeFile);
 			}
 
 			if (_alreadyLoadedIncludes.contains(filePath) == false)
@@ -203,19 +286,19 @@ namespace Lumina
 			{
 				if (p_instruction->outputPipeline.content != "VertexPass")
 				{
-					throw TokenBasedError(p_file, "Only pipeline flow acceptable for [Input] input is [VertexPass]", p_instruction->outputPipeline);
+					throw TokenBasedError(p_file, "Only pipeline flow acceptable for [Input] input is [VertexPass]" + DEBUG_INFORMATION, p_instruction->outputPipeline);
 				}
 			}
 			else if (p_instruction->inputPipeline.content == "VertexPass")
 			{
 				if (p_instruction->outputPipeline.content != "FragmentPass")
 				{
-					throw TokenBasedError(p_file, "Only pipeline flow acceptable for [VertexPass] input is [FragmentPass]", p_instruction->outputPipeline);
+					throw TokenBasedError(p_file, "Only pipeline flow acceptable for [VertexPass] input is [FragmentPass]" + DEBUG_INFORMATION, p_instruction->outputPipeline);
 				}
 			}
 			else
 			{
-				throw TokenBasedError(p_file, "Pipeline flow entry can only be [Input] or [VertexPass]", p_instruction->inputPipeline);
+				throw TokenBasedError(p_file, "Pipeline flow entry can only be [Input] or [VertexPass]" + DEBUG_INFORMATION, p_instruction->inputPipeline);
 			}
 		}
 
@@ -230,11 +313,11 @@ namespace Lumina
 
 			if (pipelineFlowTypes.contains(p_instruction->type->string()) == false)
 			{
-				throw TokenBasedError(p_file, "Type [" + p_instruction->type->string() + "] not accepted as pipeline flow type", Lumina::Token::merge(p_instruction->type->tokens, Lumina::Token::Type::Identifier));
+				throw TokenBasedError(p_file, "Type [" + p_instruction->type->string() + "] not accepted as pipeline flow type" + DEBUG_INFORMATION, Lumina::Token::merge(p_instruction->type->tokens, Lumina::Token::Type::Identifier));
 			}
 			if (_pipelineFlowUsedNames.contains(p_instruction->name.content) == true)
 			{
-				throw TokenBasedError(p_file, "Pipeline flow [" + p_instruction->name.content + "] variable already created", p_instruction->name);
+				throw TokenBasedError(p_file, "Pipeline flow [" + p_instruction->name.content + "] variable already created" + DEBUG_INFORMATION, p_instruction->name);
 			}
 			_pipelineFlowUsedNames.insert(p_instruction->name.content);
 		}
@@ -259,11 +342,11 @@ namespace Lumina
 			{
 				if (_currentNamespace.size() == 0)
 				{
-					throw TokenBasedError(p_file, "Type [" + p_instruction->name.content + "] already exist", p_instruction->name);
+					throw TokenBasedError(p_file, "Type [" + p_instruction->name.content + "] already exist" + DEBUG_INFORMATION, p_instruction->name);
 				}
 				else
 				{
-					throw TokenBasedError(p_file, "Type [" + p_instruction->name.content + "] already exist inside " + namespacePrefix.substr(0, namespacePrefix.size() - 2) + " namespace", p_instruction->name);
+					throw TokenBasedError(p_file, "Type [" + p_instruction->name.content + "] already exist inside " + namespacePrefix.substr(0, namespacePrefix.size() - 2) + " namespace" + DEBUG_INFORMATION, p_instruction->name);
 				}
 			}
 
@@ -276,7 +359,7 @@ namespace Lumina
 				{
 					if (newStructure.attributes.contains(attribute->name.content) == true)
 					{
-						throw TokenBasedError(p_file, "Attribute named [" + attribute->name.content + "] already declared", attribute->name);
+						throw TokenBasedError(p_file, "Attribute named [" + attribute->name.content + "] already declared" + DEBUG_INFORMATION, attribute->name);
 					}
 
 					Lumina::Token typeToken = Lumina::Token::merge(attribute->type->tokens, Token::Type::Identifier);
@@ -287,11 +370,11 @@ namespace Lumina
 
 						if (_alreadyCreatedConstants.contains(realType) == true)
 						{
-							throw TokenBasedError(p_file, "Type [" + realType + "] is a ConstantBlock and can't be used in block definition", typeToken);
+							throw TokenBasedError(p_file, "Type [" + realType + "] is a ConstantBlock and can't be used in block definition" + DEBUG_INFORMATION, typeToken);
 						}
 						else if (_alreadyCreatedAttributes.contains(realType) == true)
 						{
-							throw TokenBasedError(p_file, "Type [" + realType + "] is a AttributeBlock and can't be used in block definition", typeToken);
+							throw TokenBasedError(p_file, "Type [" + realType + "] is a AttributeBlock and can't be used in block definition" + DEBUG_INFORMATION, typeToken);
 						}
 						else if (_alreadyCreatedStructures.contains(realType) == true)
 						{
@@ -299,7 +382,7 @@ namespace Lumina
 						}
 						else
 						{
-							throw TokenBasedError(p_file, "Type [" + typeToken.content + "] not found", typeToken);
+							throw TokenBasedError(p_file, "Type [" + typeToken.content + "] not found" + DEBUG_INFORMATION, typeToken);
 						}
 					}
 					else
@@ -307,12 +390,12 @@ namespace Lumina
 						if (_alreadyCreatedConstants.contains(typeToken.content) == true ||
 							_alreadyCreatedConstants.contains(namespacePrefix + typeToken.content) == true)
 						{
-							throw TokenBasedError(p_file, "Type [" + typeToken.content + "] is a ConstantBlock and can't be used in block definition", typeToken);
+							throw TokenBasedError(p_file, "Type [" + typeToken.content + "] is a ConstantBlock and can't be used in block definition" + DEBUG_INFORMATION, typeToken);
 						}
 						else if (_alreadyCreatedAttributes.contains(typeToken.content) == true ||
 							_alreadyCreatedAttributes.contains(namespacePrefix + typeToken.content) == true)
 						{
-							throw TokenBasedError(p_file, "Type [" + typeToken.content + "] is a AttributeBlock and can't be used in block definition", typeToken);
+							throw TokenBasedError(p_file, "Type [" + typeToken.content + "] is a AttributeBlock and can't be used in block definition" + DEBUG_INFORMATION, typeToken);
 						}
 						else if (_alreadyCreatedStructures.contains(typeToken.content) == true)
 						{
@@ -324,7 +407,7 @@ namespace Lumina
 						}
 						else
 						{
-							throw TokenBasedError(p_file, "Type [" + typeToken.content + "] not found", typeToken);
+							throw TokenBasedError(p_file, "Type [" + typeToken.content + "] not found" + DEBUG_INFORMATION, typeToken);
 						}
 
 					}
@@ -356,19 +439,45 @@ namespace Lumina
 			{
 				if (_currentNamespace.size() == 0)
 				{
-					throw TokenBasedError(p_file, "Texture [" + p_instruction->name.content + "] already created", p_instruction->name);
+					throw TokenBasedError(p_file, "Texture [" + p_instruction->name.content + "] already created" + DEBUG_INFORMATION, p_instruction->name);
 				}
 				else
 				{
-					throw TokenBasedError(p_file, "Texture [" + p_instruction->name.content + "] already created inside " + namespacePrefix.substr(0, namespacePrefix.size() - 2) + " namespace", p_instruction->name);
+					throw TokenBasedError(p_file, "Texture [" + p_instruction->name.content + "] already created inside " + namespacePrefix.substr(0, namespacePrefix.size() - 2) + " namespace" + DEBUG_INFORMATION, p_instruction->name);
 				}
 			}
 			_alreadyCreatedTextures.insert(name);
 		}
 
-		void checkSymbolBodyInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolBodyInstruction>& p_instruction, std::unordered_set<std::string>& p_scopeVariables)
+		void checkVariableDeclarationInstruction()
 		{
 
+		}
+
+		void checkSymbolBodyInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolBodyInstruction>& p_instruction, std::unordered_set<Variable, VariableHash> p_scopeVariables)
+		{
+			for (const auto& instruction : p_instruction->elements)
+			{
+				try
+				{
+					switch (instruction->type)
+					{
+					case Lumina::Instruction::Type::VariableDeclaration:
+					{
+
+						break;
+					}
+					default:
+					{
+						throw TokenBasedError(p_file, "Unexpected symbol body instruction type : " + ::to_string(instruction->type) + DEBUG_INFORMATION, Token());
+					}
+					}
+				}
+				catch (const TokenBasedError& e)
+				{
+					_result.errors.push_back(e);
+				}
+			}
 		}
 
 		void checkSymbolInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolInstruction>& p_instruction)
@@ -385,52 +494,62 @@ namespace Lumina
 
 			std::string name = namespacePrefix + p_instruction->name.content;
 
-			if (_alreadyCreatedSymbols.contains(name) == true)
+			std::vector<Structure> parameters;
+			for (const auto& param : p_instruction->parameters)
+			{
+				parameters.push_back(*(_alreadyCreatedStructures.find(param->type->string())));
+			}
+
+			Symbol symbolToCheck(name, p_instruction->returnType->string(), parameters);
+
+			if (_alreadyCreatedSymbols.find(symbolToCheck) != _alreadyCreatedSymbols.end())
 			{
 				if (_currentNamespace.size() == 0)
 				{
-					throw TokenBasedError(p_file, "Symbol [" + p_instruction->name.content + "] already created", p_instruction->name);
+					throw TokenBasedError(p_file, "Symbol [" + p_instruction->name.content + "] already created" + DEBUG_INFORMATION, p_instruction->name);
 				}
 				else
 				{
-					throw TokenBasedError(p_file, "Symbol [" + p_instruction->name.content + "] already created inside " + namespacePrefix.substr(0, namespacePrefix.size() - 2) + " namespace", p_instruction->name);
+					throw TokenBasedError(p_file, "Symbol [" + p_instruction->name.content + "] already created inside " + namespacePrefix.substr(0, namespacePrefix.size() - 2) + " namespace" + DEBUG_INFORMATION, p_instruction->name);
 				}
 			}
 
-			_alreadyCreatedSymbols.insert(name);
+			_alreadyCreatedSymbols.insert(symbolToCheck);
 
-			if (_alreadyCreatedStructures.contains(p_instruction->returnType->string()) == false)
+			if (_alreadyCreatedStructures.find(p_instruction->returnType->string()) == _alreadyCreatedStructures.end())
 			{
 				throw TokenBasedError(
 					p_file,
-					"Return type [" + p_instruction->returnType->string() + "] not found",
+					"Return type [" + p_instruction->returnType->string() + "] not found" + DEBUG_INFORMATION,
 					Lumina::Token::merge(p_instruction->returnType->tokens, Lumina::Token::Type::Identifier)
 				);
 			}
 
-			std::unordered_set<std::string> scopeVariables;
+			std::unordered_set<Variable, VariableHash> scopeVariables;
 
 			for (const auto& parameter : p_instruction->parameters)
 			{
-				if (_alreadyCreatedStructures.contains(parameter->type->string()) == false)
+				if (_alreadyCreatedStructures.find(parameter->type->string()) == _alreadyCreatedStructures.end())
 				{
 					throw TokenBasedError(
 						p_file,
-						"Parameter type [" + parameter->type->string() + "] not found",
+						"Parameter type [" + parameter->type->string() + "] not found" + DEBUG_INFORMATION,
 						Lumina::Token::merge(parameter->type->tokens, Lumina::Token::Type::Identifier)
 					);
 				}
 
-				if (scopeVariables.contains(parameter->name.content) == true)
+				Variable tmpVariable = Variable(parameter->name.content, *(_alreadyCreatedStructures.find(parameter->type->string())));
+
+				if (scopeVariables.find(tmpVariable) != scopeVariables.end())
 				{
 					throw TokenBasedError(
 						p_file,
-						"Parameter [" + parameter->name.content + "] already defined",
+						"Parameter [" + parameter->name.content + "] already defined" + DEBUG_INFORMATION,
 						parameter->name
 					);
 				}
 
-				scopeVariables.insert(parameter->name.content);
+				scopeVariables.insert(tmpVariable);
 			}
 
 			checkSymbolBodyInstruction(p_file, p_instruction->body, scopeVariables);
@@ -440,14 +559,14 @@ namespace Lumina
 		{
 			if (p_instruction->pipelineToken.content == "Input")
 			{
-				throw TokenBasedError(p_file, "Impossible to define pipeline [" + p_instruction->pipelineToken.content + "] body", p_instruction->pipelineToken);
+				throw TokenBasedError(p_file, "Impossible to define pipeline [" + p_instruction->pipelineToken.content + "] body" + DEBUG_INFORMATION, p_instruction->pipelineToken);
 			}
 
 			if (p_instruction->pipelineToken.content == "VertexPass")
 			{
 				if (_vertexPipelineAlreadyParsed == true)
 				{
-					throw TokenBasedError(p_file, "Pipeline [" + p_instruction->pipelineToken.content + "] already defined", p_instruction->pipelineToken);
+					throw TokenBasedError(p_file, "Pipeline [" + p_instruction->pipelineToken.content + "] already defined" + DEBUG_INFORMATION, p_instruction->pipelineToken);
 				}
 				_vertexPipelineAlreadyParsed = true;
 			}
@@ -455,14 +574,12 @@ namespace Lumina
 			{
 				if (_fragmentPipelineAlreadyParsed == true)
 				{
-					throw TokenBasedError(p_file, "Pipeline [" + p_instruction->pipelineToken.content + "] already defined", p_instruction->pipelineToken);
+					throw TokenBasedError(p_file, "Pipeline [" + p_instruction->pipelineToken.content + "] already defined" + DEBUG_INFORMATION, p_instruction->pipelineToken);
 				}
 				_fragmentPipelineAlreadyParsed = true;
 			}
 
-			std::unordered_set<std::string> scopeVariables = {};
-
-			checkSymbolBodyInstruction(p_file, p_instruction->body, scopeVariables);
+			checkSymbolBodyInstruction(p_file, p_instruction->body, {});
 		}
 
 		void checkNamespaceInstruction(const std::filesystem::path& p_file, const std::shared_ptr<NamespaceInstruction>& p_instruction)
@@ -519,7 +636,7 @@ namespace Lumina
 					}
 					default:
 					{
-						throw TokenBasedError(p_file, "Unexpected instruction type inside namespace [" + namespacePrefix + "] : " + ::to_string(instruction->type), Token());
+						throw TokenBasedError(p_file, "Unexpected instruction type inside namespace [" + namespacePrefix + "] : " + ::to_string(instruction->type) + DEBUG_INFORMATION, Token());
 					}
 					}
 				}
@@ -537,6 +654,7 @@ namespace Lumina
 		Result check(const std::filesystem::path& p_file, std::vector<std::shared_ptr<AbstractInstruction>>& p_instructions)
 		{
 			_result = Result();
+			_index = 0;
 
 			for (auto& instruction : p_instructions)
 			{
@@ -599,7 +717,7 @@ namespace Lumina
 					}
 					default:
 					{
-						throw TokenBasedError(element.filePath, "Unexpected instruction type : " + ::to_string(instruction->type), Token());
+						throw TokenBasedError(element.filePath, "Unexpected instruction type : " + ::to_string(instruction->type) + DEBUG_INFORMATION, Token());
 					}
 					}
 				}

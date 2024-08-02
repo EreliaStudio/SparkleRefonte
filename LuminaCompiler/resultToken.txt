@@ -174,15 +174,15 @@
 [               Identifier] | [ 62::46 ] | Vector3
 [               Identifier] | [ 62::54 ] | lightDir
 [                    Comma] | [ 62::62 ] | ,
-[               Identifier] | [ 62::64 ] | Vector23
-[               Identifier] | [ 62::73 ] | viewDir
-[                    Comma] | [ 62::80 ] | ,
-[               Identifier] | [ 62::82 ] | float
-[               Identifier] | [ 62::88 ] | shininess
-[                    Comma] | [ 62::97 ] | ,
-[               Identifier] | [ 62::99 ] | Vector3
-[               Identifier] | [ 62::107] | lightColor
-[         CloseParenthesis] | [ 62::117] | )
+[               Identifier] | [ 62::64 ] | Vector3
+[               Identifier] | [ 62::72 ] | viewDir
+[                    Comma] | [ 62::79 ] | ,
+[               Identifier] | [ 62::81 ] | float
+[               Identifier] | [ 62::87 ] | shininess
+[                    Comma] | [ 62::96 ] | ,
+[               Identifier] | [ 62::98 ] | Vector3
+[               Identifier] | [ 62::106] | lightColor
+[         CloseParenthesis] | [ 62::116] | )
 [         OpenCurlyBracket] | [ 63::4  ] | {
 [               Identifier] | [ 64::8  ] | Vector3
 [               Identifier] | [ 64::16 ] | reflectDir
