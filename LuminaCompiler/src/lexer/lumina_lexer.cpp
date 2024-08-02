@@ -7,7 +7,7 @@ namespace Lumina
 		std::shared_ptr<NamespaceInstruction> result = std::make_shared<NamespaceInstruction>();
 
 		expect(Lumina::Token::Type::Namespace, "Expected a namespace token."+ DEBUG_INFORMATION);
-		result->name = parseIdentifierInstruction();
+		result->name = expect(Lumina::Token::Type::Identifier, "Expected an identifier name");
 		expect(Lumina::Token::Type::OpenCurlyBracket, "Expected an open curly bracket."+ DEBUG_INFORMATION);
 		while (currentToken().type != Lumina::Token::Type::CloseCurlyBracket)
 		{

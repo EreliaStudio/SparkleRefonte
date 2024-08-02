@@ -17,13 +17,4 @@ namespace Lumina
 
 		return result;
 	}
-
-	std::shared_ptr<IdentifierInstruction> LexerChecker::parseIdentifierInstruction()
-	{
-		std::shared_ptr<IdentifierInstruction> result = std::make_shared<IdentifierInstruction>();
-
-		result->token = expect(Lumina::Token::Type::Identifier, "Expected an identifier token."+ DEBUG_INFORMATION);
-
-		return result;
-	}
 }

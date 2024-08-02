@@ -7,7 +7,7 @@ namespace Lumina
 		std::shared_ptr<VariableDeclarationInstruction> result = std::make_shared<VariableDeclarationInstruction>();
 
 		result->type = parseTypeInstruction();
-		result->name = parseIdentifierInstruction();
+		result->name = expect(Lumina::Token::Type::Identifier, "Expected an identifier name");
 
 		if (currentToken().type != Lumina::Token::Type::EndOfSentence)
 		{
@@ -135,7 +135,7 @@ namespace Lumina
 		std::shared_ptr<SymbolInstruction> result = std::make_shared<SymbolInstruction>();
 
 		result->returnType = parseTypeInstruction();
-		result->name = parseIdentifierInstruction();
+		result->name = expect(Lumina::Token::Type::Identifier, "Expect an identifier." + DEBUG_INFORMATION);
 		expect(Lumina::Token::Type::OpenParenthesis, "Expected an open parenthesis."+ DEBUG_INFORMATION);
 		while (currentToken().type != Lumina::Token::Type::CloseParenthesis)
 		{

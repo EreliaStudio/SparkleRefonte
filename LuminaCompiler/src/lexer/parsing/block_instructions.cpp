@@ -7,7 +7,7 @@ namespace Lumina
 		std::shared_ptr<BlockElementInstruction> result = std::make_shared<BlockElementInstruction>();
 
 		result->type = parseTypeInstruction();
-		result->name = parseIdentifierInstruction();
+		result->name = expect(Lumina::Token::Type::Identifier, "Expected an identifier name");
 		expect(Lumina::Token::Type::EndOfSentence, "Expected end of sentence."+ DEBUG_INFORMATION);
 
 		return result;

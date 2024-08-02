@@ -115,7 +115,7 @@ namespace Lumina
 		Lumina::Token inputPipeline;
 		Lumina::Token outputPipeline;
 		std::shared_ptr<TypeInstruction> type;
-		std::shared_ptr<IdentifierInstruction> name;
+		Lumina::Token name;
 
 		PipelineFlowInstruction() :
 			AbstractInstruction(AbstractInstruction::Type::PipelineFlow)
@@ -125,14 +125,14 @@ namespace Lumina
 
 		std::string string() const override
 		{
-			return ("Pipeline from [" + inputPipeline.content + "] to [" + outputPipeline.content + "] -> type [" + type->string() + "] and name [" + name->string() + "]");
+			return ("Pipeline from [" + inputPipeline.content + "] to [" + outputPipeline.content + "] -> type [" + type->string() + "] and name [" + name.content + "]");
 		}
 	};
 
 	struct BlockElementInstruction : public AbstractInstruction
 	{
 		std::shared_ptr<TypeInstruction> type;
-		std::shared_ptr<IdentifierInstruction> name;
+		Lumina::Token name;
 
 		BlockElementInstruction() :
 			AbstractInstruction(AbstractInstruction::Type::BlockElement)
@@ -142,7 +142,7 @@ namespace Lumina
 
 		std::string string() const override
 		{
-			return ("Type [" + type->string() + "] and name [" + name->string() + "]");
+			return ("Type [" + type->string() + "] and name [" + name.content + "]");
 		}
 	};
 
@@ -220,7 +220,7 @@ namespace Lumina
 
 	struct NamespaceInstruction : public AbstractInstruction
 	{
-		std::shared_ptr<IdentifierInstruction> name;
+		Lumina::Token name;
 		std::vector<std::shared_ptr<Instruction>> instructions;
 
 		NamespaceInstruction() :
@@ -231,7 +231,7 @@ namespace Lumina
 
 		std::string string() const override
 		{
-			std::string result = "Namespace [" + name->string() + "] contain [" + std::to_string(instructions.size()) + "] instructions :\n";
+			std::string result = "Namespace [" + name.content + "] contain [" + std::to_string(instructions.size()) + "] instructions :\n";
 			for (const auto& instruction : instructions)
 			{
 				result += "    " + instruction->string() + "\n";
@@ -243,7 +243,7 @@ namespace Lumina
 	struct SymbolParameterInstruction : public AbstractInstruction
 	{
 		std::shared_ptr<TypeInstruction> type;
-		std::shared_ptr<IdentifierInstruction> name;
+		Lumina::Token name;
 
 		SymbolParameterInstruction() :
 			AbstractInstruction(AbstractInstruction::Type::SymbolParameter)
@@ -253,7 +253,7 @@ namespace Lumina
 
 		std::string string() const override
 		{
-			return ("Type [" + type->string() + "] and name [" + name->string() + "]");
+			return ("Type [" + type->string() + "] and name [" + name.content + "]");
 		}
 	};
 
@@ -398,7 +398,7 @@ namespace Lumina
 	struct VariableDeclarationInstruction : public AbstractInstruction
 	{
 		std::shared_ptr<TypeInstruction> type;
-		std::shared_ptr<IdentifierInstruction> name;
+		Lumina::Token name;
 		std::shared_ptr<ExpressionInstruction> initializer;
 
 		VariableDeclarationInstruction() :
@@ -409,7 +409,7 @@ namespace Lumina
 
 		std::string string() const override
 		{
-			std::string result = "Variable Declaration: " + type->string() + " " + name->string();
+			std::string result = "Variable Declaration: " + type->string() + " " + name.content;
 			if (initializer)
 			{
 				result += " = " + initializer->string();
@@ -624,7 +624,7 @@ namespace Lumina
 	struct SymbolInstruction : public AbstractInstruction
 	{
 		std::shared_ptr<TypeInstruction> returnType;
-		std::shared_ptr<IdentifierInstruction> name;
+		Lumina::Token name;
 		std::vector<std::shared_ptr<SymbolParameterInstruction>> parameters;
 		std::shared_ptr<SymbolBodyInstruction> body;
 
@@ -636,7 +636,7 @@ namespace Lumina
 
 		std::string string() const override
 		{
-			std::string result = "Symbol [" + name->string() + "] return [" + returnType->string() + "] and take [";
+			std::string result = "Symbol [" + name.content + "] return [" + returnType->string() + "] and take [";
 			for (size_t i = 0; i < parameters.size(); i++)
 			{
 				if (i != 0)

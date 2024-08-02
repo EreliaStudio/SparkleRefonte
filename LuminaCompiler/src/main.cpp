@@ -156,8 +156,11 @@ namespace Lumina
 		std::vector<Lumina::Token> _currentNamespace;
 
 		std::unordered_set<std::string> _alreadyCreatedTextures;
+		std::unordered_set<std::string> _alreadyCreatedSymbols;
 		std::unordered_set<std::filesystem::path> _alreadyLoadedIncludes;
 		std::unordered_set<std::filesystem::path> _pipelineFlowUsedNames;
+		bool _vertexPipelineAlreadyParsed = false;
+		bool _fragmentPipelineAlreadyParsed = false;
 
 	public:
 		static Result checkSemantic(const std::filesystem::path& p_file, std::vector<std::shared_ptr<AbstractInstruction>>& p_instructions)
@@ -229,11 +232,11 @@ namespace Lumina
 			{
 				throw TokenBasedError(p_file, "Type [" + p_instruction->type->string() + "] not accepted as pipeline flow type", Lumina::Token::merge(p_instruction->type->tokens, Lumina::Token::Type::Identifier));
 			}
-			if (_pipelineFlowUsedNames.contains(p_instruction->name->string()) == true)
+			if (_pipelineFlowUsedNames.contains(p_instruction->name.content) == true)
 			{
-				throw TokenBasedError(p_file, "Pipeline flow [" + p_instruction->name->string() + "] variable already created", p_instruction->name->token);
+				throw TokenBasedError(p_file, "Pipeline flow [" + p_instruction->name.content + "] variable already created", p_instruction->name);
 			}
-			_pipelineFlowUsedNames.insert(p_instruction->name->string());
+			_pipelineFlowUsedNames.insert(p_instruction->name.content);
 		}
 
 		void checkBlockInstruction(const std::filesystem::path& p_file, const std::shared_ptr<BlockInstruction>& p_instruction, std::unordered_set<Structure, StructureHash>& p_storage)
@@ -271,9 +274,9 @@ namespace Lumina
 			{
 				try
 				{
-					if (newStructure.attributes.contains(attribute->name->token.content) == true)
+					if (newStructure.attributes.contains(attribute->name.content) == true)
 					{
-						throw TokenBasedError(p_file, "Attribute named [" + attribute->name->token.content + "] already declared", attribute->name->token);
+						throw TokenBasedError(p_file, "Attribute named [" + attribute->name.content + "] already declared", attribute->name);
 					}
 
 					Lumina::Token typeToken = Lumina::Token::merge(attribute->type->tokens, Token::Type::Identifier);
@@ -292,7 +295,7 @@ namespace Lumina
 						}
 						else if (_alreadyCreatedStructures.contains(realType) == true)
 						{
-							newStructure.attributes[attribute->name->token.content] = *(_alreadyCreatedStructures.find(realType));
+							newStructure.attributes[attribute->name.content] = *(_alreadyCreatedStructures.find(realType));
 						}
 						else
 						{
@@ -313,11 +316,11 @@ namespace Lumina
 						}
 						else if (_alreadyCreatedStructures.contains(typeToken.content) == true)
 						{
-							newStructure.attributes[attribute->name->token.content] = *(_alreadyCreatedStructures.find(typeToken.content));
+							newStructure.attributes[attribute->name.content] = *(_alreadyCreatedStructures.find(typeToken.content));
 						}
 						else if (_alreadyCreatedStructures.contains(namespacePrefix + typeToken.content) == true)
 						{
-							newStructure.attributes[attribute->name->token.content] = *(_alreadyCreatedStructures.find(namespacePrefix + typeToken.content));
+							newStructure.attributes[attribute->name.content] = *(_alreadyCreatedStructures.find(namespacePrefix + typeToken.content));
 						}
 						else
 						{
@@ -363,11 +366,110 @@ namespace Lumina
 			_alreadyCreatedTextures.insert(name);
 		}
 
+		void checkSymbolBodyInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolBodyInstruction>& p_instruction, std::unordered_set<std::string>& p_scopeVariables)
+		{
+
+		}
+
+		void checkSymbolInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolInstruction>& p_instruction)
+		{
+			std::string namespacePrefix = "";
+			for (size_t i = 0; i < _currentNamespace.size(); i++)
+			{
+				if (i != 0)
+					namespacePrefix += "::";
+				namespacePrefix += _currentNamespace[i].content;
+			}
+			if (_currentNamespace.size() != 0)
+				namespacePrefix += "::";
+
+			std::string name = namespacePrefix + p_instruction->name.content;
+
+			if (_alreadyCreatedSymbols.contains(name) == true)
+			{
+				if (_currentNamespace.size() == 0)
+				{
+					throw TokenBasedError(p_file, "Symbol [" + p_instruction->name.content + "] already created", p_instruction->name);
+				}
+				else
+				{
+					throw TokenBasedError(p_file, "Symbol [" + p_instruction->name.content + "] already created inside " + namespacePrefix.substr(0, namespacePrefix.size() - 2) + " namespace", p_instruction->name);
+				}
+			}
+
+			_alreadyCreatedSymbols.insert(name);
+
+			if (_alreadyCreatedStructures.contains(p_instruction->returnType->string()) == false)
+			{
+				throw TokenBasedError(
+					p_file,
+					"Return type [" + p_instruction->returnType->string() + "] not found",
+					Lumina::Token::merge(p_instruction->returnType->tokens, Lumina::Token::Type::Identifier)
+				);
+			}
+
+			std::unordered_set<std::string> scopeVariables;
+
+			for (const auto& parameter : p_instruction->parameters)
+			{
+				if (_alreadyCreatedStructures.contains(parameter->type->string()) == false)
+				{
+					throw TokenBasedError(
+						p_file,
+						"Parameter type [" + parameter->type->string() + "] not found",
+						Lumina::Token::merge(parameter->type->tokens, Lumina::Token::Type::Identifier)
+					);
+				}
+
+				if (scopeVariables.contains(parameter->name.content) == true)
+				{
+					throw TokenBasedError(
+						p_file,
+						"Parameter [" + parameter->name.content + "] already defined",
+						parameter->name
+					);
+				}
+
+				scopeVariables.insert(parameter->name.content);
+			}
+
+			checkSymbolBodyInstruction(p_file, p_instruction->body, scopeVariables);
+		}
+
+		void checkPipelineBodyInstruction(const std::filesystem::path& p_file, const std::shared_ptr<PipelineBodyInstruction>& p_instruction)
+		{
+			if (p_instruction->pipelineToken.content == "Input")
+			{
+				throw TokenBasedError(p_file, "Impossible to define pipeline [" + p_instruction->pipelineToken.content + "] body", p_instruction->pipelineToken);
+			}
+
+			if (p_instruction->pipelineToken.content == "VertexPass")
+			{
+				if (_vertexPipelineAlreadyParsed == true)
+				{
+					throw TokenBasedError(p_file, "Pipeline [" + p_instruction->pipelineToken.content + "] already defined", p_instruction->pipelineToken);
+				}
+				_vertexPipelineAlreadyParsed = true;
+			}
+			else if (p_instruction->pipelineToken.content == "FragmentPass")
+			{
+				if (_fragmentPipelineAlreadyParsed == true)
+				{
+					throw TokenBasedError(p_file, "Pipeline [" + p_instruction->pipelineToken.content + "] already defined", p_instruction->pipelineToken);
+				}
+				_fragmentPipelineAlreadyParsed = true;
+			}
+
+			std::unordered_set<std::string> scopeVariables = {};
+
+			checkSymbolBodyInstruction(p_file, p_instruction->body, scopeVariables);
+		}
+
 		void checkNamespaceInstruction(const std::filesystem::path& p_file, const std::shared_ptr<NamespaceInstruction>& p_instruction)
 		{
 			size_t namespaceIndex = 0;
 
-			_currentNamespace.push_back(p_instruction->name->token);
+			_currentNamespace.push_back(p_instruction->name);
 
 			std::string namespacePrefix = "";
 			for (size_t i = 0; i < _currentNamespace.size(); i++)
@@ -403,6 +505,11 @@ namespace Lumina
 					case Instruction::Type::Texture:
 					{
 						checkTextureInstruction(p_file, static_pointer_cast<TextureInstruction>(instruction));
+						break;
+					}
+					case Instruction::Type::Symbol:
+					{
+						checkSymbolInstruction(p_file, static_pointer_cast<SymbolInstruction>(instruction));
 						break;
 					}
 					case Instruction::Type::Namespace:
@@ -473,6 +580,16 @@ namespace Lumina
 					case Instruction::Type::Texture:
 					{
 						checkTextureInstruction(p_file, static_pointer_cast<TextureInstruction>(instruction));
+						break;
+					}
+					case Instruction::Type::Symbol:
+					{
+						checkSymbolInstruction(p_file, static_pointer_cast<SymbolInstruction>(instruction));
+						break;
+					}
+					case Instruction::Type::PipelineBody:
+					{
+						checkPipelineBodyInstruction(p_file, static_pointer_cast<PipelineBodyInstruction>(instruction));
 						break;
 					}
 					case Instruction::Type::Namespace:

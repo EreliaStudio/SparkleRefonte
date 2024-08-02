@@ -7,7 +7,7 @@ namespace Lumina
 		std::shared_ptr<SymbolParameterInstruction> result = std::make_shared<SymbolParameterInstruction>();
 
 		result->type = parseTypeInstruction();
-		result->name = parseIdentifierInstruction();
+		result->name = expect(Lumina::Token::Type::Identifier, "Expected an identifier token." + DEBUG_INFORMATION);
 
 		return result;
 	}

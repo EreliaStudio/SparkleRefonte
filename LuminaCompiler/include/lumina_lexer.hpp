@@ -50,7 +50,6 @@ namespace Lumina
 
 		std::shared_ptr<Lumina::IncludeInstruction> parseIncludeInstruction();
 		std::shared_ptr<Lumina::TypeInstruction> parseTypeInstruction();
-		std::shared_ptr<Lumina::IdentifierInstruction> parseIdentifierInstruction();
 		std::shared_ptr<Lumina::PipelineFlowInstruction> parsePipelineFlowInstruction();
 		std::shared_ptr<Lumina::BlockElementInstruction> parseBlockElementInstruction();
 		std::shared_ptr<Lumina::StructureBlockInstruction> parseStructureBlockInstruction();

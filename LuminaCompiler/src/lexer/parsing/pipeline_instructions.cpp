@@ -11,7 +11,7 @@ namespace Lumina
 		result->outputPipeline = expect(Lumina::Token::Type::PipelineFlow, "Expected a pipeline flow token."+ DEBUG_INFORMATION);
 		expect(Lumina::Token::Type::Separator, "Expected a separator token."+ DEBUG_INFORMATION);
 		result->type = parseTypeInstruction();
-		result->name = parseIdentifierInstruction();
+		result->name = expect(Lumina::Token::Type::Identifier, "Expected an identifier name");
 		expect(Lumina::Token::Type::EndOfSentence, "Expected end of sentence."+ DEBUG_INFORMATION);
 
 		return result;
