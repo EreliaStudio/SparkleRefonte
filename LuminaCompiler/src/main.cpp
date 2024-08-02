@@ -337,11 +337,30 @@ namespace Lumina
 
 		void checkTextureInstruction(const std::filesystem::path& p_file, const std::shared_ptr<TextureInstruction>& p_instruction)
 		{
-			if (_alreadyCreatedTextures.contains(p_instruction->name.content) == true)
+			std::string namespacePrefix = "";
+			for (size_t i = 0; i < _currentNamespace.size(); i++)
 			{
-				throw TokenBasedError(p_file, "Texture [" + p_instruction->name.content + "] already created", p_instruction->name);
+				if (i != 0)
+					namespacePrefix += "::";
+				namespacePrefix += _currentNamespace[i].content;
 			}
-			_alreadyCreatedTextures.insert(p_instruction->name.content);
+			if (_currentNamespace.size() != 0)
+				namespacePrefix += "::";
+
+			std::string name = namespacePrefix + p_instruction->name.content;
+
+			if (_alreadyCreatedTextures.contains(name) == true)
+			{
+				if (_currentNamespace.size() == 0)
+				{
+					throw TokenBasedError(p_file, "Texture [" + p_instruction->name.content + "] already created", p_instruction->name);
+				}
+				else
+				{
+					throw TokenBasedError(p_file, "Texture [" + p_instruction->name.content + "] already created inside " + namespacePrefix.substr(0, namespacePrefix.size() - 2) + " namespace", p_instruction->name);
+				}
+			}
+			_alreadyCreatedTextures.insert(name);
 		}
 
 		void checkNamespaceInstruction(const std::filesystem::path& p_file, const std::shared_ptr<NamespaceInstruction>& p_instruction)
