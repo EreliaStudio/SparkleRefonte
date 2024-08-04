@@ -257,12 +257,32 @@ namespace Lumina
 		}
 	};
 
-	struct OperatorExpressionInstruction : public AbstractInstruction
+	struct ExpressionElementInstruction : public AbstractInstruction
+	{
+		virtual std::vector<Token> getTokens() const = 0;
+
+		ExpressionElementInstruction(const AbstractInstruction::Type& p_type) :
+			AbstractInstruction(p_type)
+		{
+
+		}
+	};
+
+	struct OperatorExpressionInstruction : public ExpressionElementInstruction
 	{
 		Lumina::Token token;
+
+		std::vector<Token> getTokens() const
+		{
+			std::vector<Token> result;
+
+			result.push_back(token);
+
+			return (result);
+		}
 
 		OperatorExpressionInstruction() :
-			AbstractInstruction(AbstractInstruction::Type::OperatorExpression)
+			ExpressionElementInstruction(AbstractInstruction::Type::OperatorExpression)
 		{
 
 		}
@@ -273,12 +293,21 @@ namespace Lumina
 		}
 	};
 
-	struct NumberExpressionValueInstruction : public AbstractInstruction
+	struct NumberExpressionValueInstruction : public ExpressionElementInstruction
 	{
 		Lumina::Token token;
+
+		std::vector<Token> getTokens() const
+		{
+			std::vector<Token> result;
+
+			result.push_back(token);
+
+			return (result);
+		}
 
 		NumberExpressionValueInstruction() :
-			AbstractInstruction(AbstractInstruction::Type::NumberExpressionValue)
+			ExpressionElementInstruction(AbstractInstruction::Type::NumberExpressionValue)
 		{
 
 		}
@@ -289,12 +318,21 @@ namespace Lumina
 		}
 	};
 
-	struct StringLiteralsExpressionValueInstruction : public AbstractInstruction
+	struct StringLiteralsExpressionValueInstruction : public ExpressionElementInstruction
 	{
 		Lumina::Token token;
 
+		std::vector<Token> getTokens() const
+		{
+			std::vector<Token> result;
+
+			result.push_back(token);
+
+			return (result);
+		}
+
 		StringLiteralsExpressionValueInstruction() :
-			AbstractInstruction(AbstractInstruction::Type::StringLiteralsExpressionValue)
+			ExpressionElementInstruction(AbstractInstruction::Type::StringLiteralsExpressionValue)
 		{
 
 		}
@@ -305,12 +343,17 @@ namespace Lumina
 		}
 	};
 
-	struct VariableExpressionValueInstruction : public AbstractInstruction
+	struct VariableExpressionValueInstruction : public ExpressionElementInstruction
 	{
 		std::vector<Lumina::Token> tokens;
 
+		std::vector<Token> getTokens() const
+		{
+			return (tokens);
+		}
+
 		VariableExpressionValueInstruction() :
-			AbstractInstruction(AbstractInstruction::Type::VariableExpressionValue)
+			ExpressionElementInstruction(AbstractInstruction::Type::VariableExpressionValue)
 		{
 
 		}
@@ -330,7 +373,7 @@ namespace Lumina
 
 	struct ExpressionInstruction : public AbstractInstruction
 	{
-		std::vector<std::shared_ptr<Instruction>> elements;
+		std::vector<std::shared_ptr<ExpressionElementInstruction>> elements;
 
 		ExpressionInstruction() :
 			AbstractInstruction(AbstractInstruction::Type::Expression)
@@ -338,9 +381,23 @@ namespace Lumina
 
 		}
 
+		std::vector<Lumina::Token> getTokens() const
+		{
+			std::vector<Lumina::Token> result;
+
+			for (const auto& element : elements)
+			{
+				std::vector<Lumina::Token> elementTokens = element->getTokens();
+
+				result.insert(result.end(), elementTokens.begin(), elementTokens.end());
+			}
+
+			return (result);
+		}
+
 		std::string string() const override
 		{
-			std::string result;
+			std::string result = "";
 
 			for (size_t i = 0; i < elements.size(); i++)
 			{
@@ -464,13 +521,34 @@ namespace Lumina
 		}
 	};
 
-	struct SymbolCallInstruction : public AbstractInstruction
+	struct SymbolCallInstruction : public ExpressionElementInstruction
 	{
 		std::shared_ptr<SymbolNameInstruction> name;
 		std::vector<std::shared_ptr<ExpressionInstruction>> arguments;
 
+		std::vector<Lumina::Token> getTokens() const
+		{
+			std::vector<Lumina::Token> result;
+
+			for (const auto& token : name->tokens)
+			{
+				result.push_back(token);
+			}
+
+			for (const auto& argument : arguments)
+			{
+				std::vector<Lumina::Token> tmp = argument->getTokens();
+				for (const auto& token : tmp)
+				{
+					result.push_back(token);
+				}
+			}
+
+			return (result);
+		}
+
 		SymbolCallInstruction() :
-			AbstractInstruction(AbstractInstruction::Type::SymbolCall)
+			ExpressionElementInstruction(AbstractInstruction::Type::SymbolCall)
 		{
 
 		}

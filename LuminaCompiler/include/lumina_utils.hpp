@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef NDEBUG
-#define DEBUG_INFORMATION std::string(" ") + __FUNCTION__ + "::" + std::to_string(__LINE__)
+#define DEBUG_INFORMATION std::string("    [") + __FUNCTION__ + "::" + std::to_string(__LINE__) + "]"
 #else
 #define DEBUG_INFORMATION std::string()
 #endif

@@ -36,6 +36,7 @@ namespace Lumina
 		{
 			std::string name;
 			std::unordered_map<std::string, Structure> attributes;
+			std::vector<std::string> acceptedConvertions;
 		
 			Structure() = default;
 			Structure(const std::string& p_name) :
@@ -43,9 +44,16 @@ namespace Lumina
 			{
 
 			}
-			Structure(const std::string& p_name, const std::unordered_map<std::string, Structure>& p_attributes) :
+			Structure(const std::string& p_name, const std::vector<std::string>& p_acceptedConvertion) :
 				name(p_name),
-				attributes(p_attributes)
+				acceptedConvertions(p_acceptedConvertion)
+			{
+
+			}
+			Structure(const std::string& p_name, const std::unordered_map<std::string, Structure>& p_attributes, const std::vector<std::string>& p_acceptedConvertion = {}) :
+				name(p_name),
+				attributes(p_attributes),
+				acceptedConvertions(p_acceptedConvertion)
 			{
 
 			}
@@ -69,6 +77,8 @@ namespace Lumina
 			std::string name;
 			Structure type;
 
+			Variable() = default;
+
 			Variable(const std::string& p_name, const Structure& p_type) :
 				name(p_name),
 				type(p_type)
@@ -88,19 +98,18 @@ namespace Lumina
 			}
 		};
 
-		struct VariableHash
-		{
-			std::size_t operator()(const Variable& v) const
-			{
-				return std::hash<std::string>{}(v.name);
-			}
-		};
+		using VariableStorage = std::unordered_map<std::string, Variable>;
 
 		struct Symbol
 		{
 			std::string name;
 			Structure returnType;
 			std::vector<Structure> parameters;
+
+			Symbol(const std::string& p_name) :
+				name(p_name)
+			{
+			}
 
 			Symbol(const std::string& p_name, const Structure& p_returnType, const std::vector<Structure>& p_parameters) :
 				name(p_name),
@@ -111,7 +120,7 @@ namespace Lumina
 
 			bool operator==(const Symbol& other) const
 			{
-				return name == other.name && returnType == other.returnType && parameters == other.parameters;
+				return name == other.name;
 			}
 		};
 
@@ -131,9 +140,9 @@ namespace Lumina
 		std::unordered_set<Structure, StructureHash> _alreadyCreatedAttributes;
 		std::unordered_set<Structure, StructureHash> _alreadyCreatedConstants;
 		std::unordered_set<Structure, StructureHash> _alreadyCreatedStructures = {
-			Structure("float"),
-			Structure("int"),
-			Structure("uint"),
+			Structure("float", std::vector<std::string>({"int", "uint"})),
+			Structure("int", std::vector<std::string>({"float", "uint"})),
+			Structure("uint", std::vector<std::string>({"int", "float"})),
 			Structure("bool"),
 
 			Structure(
@@ -141,14 +150,22 @@ namespace Lumina
 				{
 					{"x", Structure("float")},
 					{"y", Structure("float")}
-				}),
+				},
+				std::vector<std::string>({
+					"Vector2Int",
+					"Vector2UInt"
+				})),
 			Structure(
 				"Vector3",
 				{
 					{"x", Structure("float")},
 					{"y", Structure("float")},
 					{"z", Structure("float")}
-				}),
+				},
+				std::vector<std::string>({
+					"Vector3Int",
+					"Vector3UInt"
+				})),
 			Structure(
 				"Vector4",
 				{
@@ -156,21 +173,33 @@ namespace Lumina
 					{"y", Structure("float")},
 					{"z", Structure("float")},
 					{"w", Structure("float")}
-				}),
+				},
+				std::vector<std::string>({
+					"Vector4Int",
+					"Vector4UInt"
+				})),
 
 			Structure(
 				"Vector2Int",
 				{
 					{"x", Structure("int")},
 					{"y", Structure("int")}
-				}),
+				},
+				std::vector<std::string>({
+					"Vector2",
+					"Vector2UInt"
+				})),
 			Structure(
 				"Vector3Int",
 				{
 					{"x", Structure("int")},
 					{"y", Structure("int")},
 					{"z", Structure("int")}
-				}),
+				},
+				std::vector<std::string>({
+					"Vector3",
+					"Vector3UInt"
+				})),
 			Structure(
 				"Vector4Int",
 				{
@@ -178,21 +207,33 @@ namespace Lumina
 					{"y", Structure("int")},
 					{"z", Structure("int")},
 					{"w", Structure("int")}
-				}),
+				},
+				std::vector<std::string>({
+					"Vector4",
+					"Vector4UInt"
+				})),
 
 			Structure(
 				"Vector2UInt",
 				{
 					{"x", Structure("uint")},
 					{"y", Structure("uint")}
-				}),
+				},
+				std::vector<std::string>({
+					"Vector2",
+					"Vector2Int"
+				})),
 			Structure(
 				"Vector3UInt",
 				{
 					{"x", Structure("uint")},
 					{"y", Structure("uint")},
 					{"z", Structure("uint")}
-				}),
+				},
+				std::vector<std::string>({
+					"Vector3",
+					"Vector3Int"
+				})),
 			Structure(
 				"Vector4UInt",
 				{
@@ -200,7 +241,11 @@ namespace Lumina
 					{"y", Structure("uint")},
 					{"z", Structure("uint")},
 					{"w", Structure("uint")}
-				}),
+				},
+				std::vector<std::string>({
+					"Vector4",
+					"Vector4Int"
+				})),
 
 			Structure("Matrix2x2"),
 			Structure("Matrix3x3"),
@@ -449,12 +494,169 @@ namespace Lumina
 			_alreadyCreatedTextures.insert(name);
 		}
 
-		void checkExpressionInitialisation(const std::filesystem::path& p_file, const std::shared_ptr<ExpressionInstruction>& p_instruction, std::unordered_set<Variable, VariableHash> p_scopeVariables)
+		void checkSymbolCallExpression(const std::filesystem::path& p_file, const std::shared_ptr<SymbolCallInstruction>& symbolCall)
+		{
+			std::string symbolName = symbolCall->name->string();
+
+			auto it = _alreadyCreatedSymbols.find(Symbol(symbolName, {}, {}));
+			if (it == _alreadyCreatedSymbols.end())
+			{
+				std::string namespacePrefix = "";
+				for (size_t i = 0; i < _currentNamespace.size(); i++)
+				{
+					if (i != 0)
+						namespacePrefix += "::";
+					namespacePrefix += _currentNamespace[i].content;
+				}
+				if (_currentNamespace.size() != 0)
+					namespacePrefix += "::";
+
+				symbolName = namespacePrefix + symbolName;
+
+				it = _alreadyCreatedSymbols.find(Symbol(symbolName, {}, {}));
+				if (it == _alreadyCreatedSymbols.end())
+				{
+					if (_currentNamespace.size() == 0)
+					{
+						throw TokenBasedError(p_file, "Symbol [" + symbolName + "] not found" + DEBUG_INFORMATION, Lumina::Token::merge(symbolCall->name->tokens, Lumina::Token::Type::Identifier));
+					}
+					else
+					{
+						throw TokenBasedError(p_file, "Symbol [" + symbolName + "] not found inside " + namespacePrefix.substr(0, namespacePrefix.size() - 2) + " namespace" + DEBUG_INFORMATION, Lumina::Token::merge(symbolCall->name->tokens, Lumina::Token::Type::Identifier));
+					}
+				}
+			}
+
+			const Symbol& symbol = *it;
+			if (symbol.parameters.size() != symbolCall->arguments.size())
+			{
+				throw TokenBasedError(p_file, "Symbol [" + symbolName + "] called with incorrect number of arguments" + DEBUG_INFORMATION, Lumina::Token::merge(symbolCall->name->tokens, Lumina::Token::Type::Identifier));
+			}
+		}
+
+		std::string getConstantValueType(const std::filesystem::path& p_file, const std::shared_ptr<NumberExpressionValueInstruction>& p_instruction)
+		{
+			const std::string& tokenContent = p_instruction->token.content;
+
+			if (tokenContent.find('.') != std::string::npos)
+			{
+				return ("float");
+			}
+
+			if (tokenContent.size() > 2 && (tokenContent.substr(0, 2) == "0x" || tokenContent.substr(0, 2) == "0X"))
+			{
+				return ("uint");
+			}
+
+			if (!tokenContent.empty() && (tokenContent.back() == 'u' || tokenContent.back() == 'U'))
+			{
+				return ("uint");
+			}
+
+			if (tokenContent == "true" || tokenContent == "false")
+			{
+				return ("bool");
+			}
+
+			return ("int");
+		}
+
+		std::string getVariableType(const std::filesystem::path& p_file, const std::shared_ptr<VariableExpressionValueInstruction>& p_instruction, const VariableStorage& p_scopeVariables)
+		{
+			std::string variableName = p_instruction->tokens[0].content;
+
+			if (p_scopeVariables.contains(variableName))
+			{
+
+			}
+
+			return ("float");
+		}
+
+		std::string getSymbolCallType(const std::filesystem::path& p_file, const std::shared_ptr<SymbolCallInstruction>& p_instruction, const VariableStorage& p_scopeVariables)
+		{
+			std::string symbolName = p_instruction->name->string();
+
+			std::string namespacePrefix = "";
+			for (size_t i = 0; i < _currentNamespace.size(); i++)
+			{
+				if (i != 0)
+					namespacePrefix += "::";
+				namespacePrefix += _currentNamespace[i].content;
+			}
+			if (_currentNamespace.size() != 0)
+				namespacePrefix += "::";
+
+			if (_alreadyCreatedSymbols.contains(symbolName) == false)
+			{
+				if (_alreadyCreatedSymbols.contains(namespacePrefix + symbolName) == false)
+				{
+					if (_currentNamespace.size() == 0)
+					{
+						throw TokenBasedError(p_file, "Symbol type [" + p_instruction->name->string() + "] not found" + DEBUG_INFORMATION, Lumina::Token::merge(p_instruction->name->tokens, Lumina::Token::Type::Identifier));
+					}
+					else
+					{
+						throw TokenBasedError(p_file, "Variable type [" + p_instruction->name->string() + "] not found inside " + namespacePrefix.substr(0, namespacePrefix.size() - 2) + " namespace" + DEBUG_INFORMATION, Lumina::Token::merge(p_instruction->name->tokens, Lumina::Token::Type::Identifier));
+					}
+				}
+			}
+			
+			return (_alreadyCreatedSymbols.find(symbolName)->returnType.name);
+		}
+
+		std::string getExpressionValueType(const std::filesystem::path& p_file, const std::shared_ptr<ExpressionElementInstruction>& p_instruction, const VariableStorage& p_scopeVariables)
+		{
+			switch (p_instruction->type)
+			{
+			case Instruction::Type::NumberExpressionValue:
+				return (getConstantValueType(p_file, static_pointer_cast<NumberExpressionValueInstruction>(p_instruction)));
+			case Instruction::Type::StringLiteralsExpressionValue:
+				return ("string");
+			case Instruction::Type::VariableExpressionValue:
+				return (getVariableType(p_file, static_pointer_cast<VariableExpressionValueInstruction>(p_instruction), p_scopeVariables));
+			case Instruction::Type::SymbolCall:
+				return (getSymbolCallType(p_file, static_pointer_cast<SymbolCallInstruction>(p_instruction), p_scopeVariables));
+			}
+		}
+
+		std::string getExpressionType(const std::filesystem::path& p_file, const std::shared_ptr<ExpressionInstruction>& p_instruction, const VariableStorage& p_scopeVariables)
+		{
+			const Structure* result = nullptr;
+
+			for (const auto& element : p_instruction->elements)
+			{		
+				std::string elementType = getExpressionValueType(p_file, element, p_scopeVariables);
+				
+				if (result == nullptr)
+				{
+					result = &(*(_alreadyCreatedStructures.find(elementType)));
+				}
+				else
+				{
+					auto it = _alreadyCreatedStructures.find(elementType);
+					if (it != _alreadyCreatedStructures.end())
+					{
+						const Structure& tmpStructure = *it;
+
+						if (std::find(tmpStructure.acceptedConvertions.begin(), tmpStructure.acceptedConvertions.end(), elementType) == tmpStructure.acceptedConvertions.end())
+						{
+							throw TokenBasedError(p_file, "Invalid convertion from [" + elementType + "] to [" + tmpStructure.name + "]" + DEBUG_INFORMATION, Lumina::Token::merge(element->getTokens(), Lumina::Token::Type::Identifier));
+						}
+					}
+				}
+				std::cout << "Element [" << element->string() << "] type : " << elementType << std::endl;
+			}
+
+			return ("void");
+		}
+
+		void checkExpressionInstruction(const std::filesystem::path& p_file, const std::shared_ptr<ExpressionInstruction>& p_instruction, const VariableStorage& p_scopeVariables)
 		{
 
 		}
-		
-		void checkVariableDeclarationInstruction(const std::filesystem::path& p_file, const std::shared_ptr<VariableDeclarationInstruction>& p_instruction, std::unordered_set<Variable, VariableHash> p_scopeVariables)
+
+		void checkVariableDeclarationInstruction(const std::filesystem::path& p_file, const std::shared_ptr<VariableDeclarationInstruction>& p_instruction, VariableStorage p_scopeVariables)
 		{
 			std::string variableTypeName = p_instruction->type->string();
 
@@ -487,20 +689,39 @@ namespace Lumina
 
 			Variable tmpVariable = Variable(p_instruction->name.content, variableTypeName);
 
-			if (p_scopeVariables.find(tmpVariable) != p_scopeVariables.end())
+			if (p_scopeVariables.contains(tmpVariable.name) == true)
 			{
 				throw TokenBasedError(p_file, "Variable named [" + p_instruction->name.content + "] already exist", p_instruction->name);
 			}
 
-			p_scopeVariables.insert(tmpVariable);
+			p_scopeVariables[tmpVariable.name] = tmpVariable;
 
 			if (p_instruction->initializer != nullptr)
 			{
-				checkExpressionInitialisation(p_file, p_instruction->initializer, p_scopeVariables);
+				std::string expressionType = getExpressionType(p_file, p_instruction->initializer, p_scopeVariables);
+
+				if (expressionType != tmpVariable.type)
+				{
+					throw TokenBasedError(p_file, "Initializer type invalid. Expected a [" + tmpVariable.type.name + "] type but received a [" + expressionType + "]", Lumina::Token::merge(p_instruction->initializer->getTokens(), Lumina::Token::Type::Identifier));
+				}
+
+				checkExpressionInstruction(p_file, p_instruction->initializer, p_scopeVariables);
 			}
 		}
 
-		void checkSymbolBodyInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolBodyInstruction>& p_instruction, std::unordered_set<Variable, VariableHash> p_scopeVariables)
+		void checkReturnInstruction(const std::filesystem::path& p_file, const std::shared_ptr<ReturnInstruction>& p_instruction, VariableStorage p_scopeVariables, const std::string& p_expectedReturnType)
+		{
+			std::string returnType = getExpressionType(p_file, p_instruction->argument, p_scopeVariables);
+
+			if (returnType != p_expectedReturnType)
+			{
+				throw TokenBasedError(p_file, "Unexpected return type [" + returnType + "] when expected [" + p_expectedReturnType + "]", Lumina::Token::merge(p_instruction->argument->getTokens(), Lumina::Token::Type::Identifier));
+			}
+
+			checkExpressionInstruction(p_file, p_instruction->argument, p_scopeVariables);
+		}
+
+		void checkSymbolBodyInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolBodyInstruction>& p_instruction, VariableStorage p_scopeVariables, const std::string& p_expectedReturnType)
 		{
 			for (const auto& instruction : p_instruction->elements)
 			{
@@ -511,6 +732,11 @@ namespace Lumina
 					case Lumina::Instruction::Type::VariableDeclaration:
 					{
 						checkVariableDeclarationInstruction(p_file, static_pointer_cast<VariableDeclarationInstruction>(instruction), p_scopeVariables);
+						break;
+					}
+					case Lumina::Instruction::Type::Return:
+					{
+						checkReturnInstruction(p_file, static_pointer_cast<ReturnInstruction>(instruction), p_scopeVariables, p_expectedReturnType);
 						break;
 					}
 					default:
@@ -571,7 +797,7 @@ namespace Lumina
 				);
 			}
 
-			std::unordered_set<Variable, VariableHash> scopeVariables;
+			VariableStorage scopeVariables;
 
 			for (const auto& parameter : p_instruction->parameters)
 			{
@@ -586,7 +812,7 @@ namespace Lumina
 
 				Variable tmpVariable = Variable(parameter->name.content, *(_alreadyCreatedStructures.find(parameter->type->string())));
 
-				if (scopeVariables.find(tmpVariable) != scopeVariables.end())
+				if (scopeVariables.contains(tmpVariable.name) == true)
 				{
 					throw TokenBasedError(
 						p_file,
@@ -595,10 +821,10 @@ namespace Lumina
 					);
 				}
 
-				scopeVariables.insert(tmpVariable);
+				scopeVariables[tmpVariable.name] = tmpVariable;
 			}
 
-			checkSymbolBodyInstruction(p_file, p_instruction->body, scopeVariables);
+			checkSymbolBodyInstruction(p_file, p_instruction->body, scopeVariables, p_instruction->returnType->string());
 		}
 
 		void checkPipelineBodyInstruction(const std::filesystem::path& p_file, const std::shared_ptr<PipelineBodyInstruction>& p_instruction)
@@ -625,7 +851,7 @@ namespace Lumina
 				_fragmentPipelineAlreadyParsed = true;
 			}
 
-			checkSymbolBodyInstruction(p_file, p_instruction->body, {});
+			checkSymbolBodyInstruction(p_file, p_instruction->body, std::unordered_map<std::string, Variable>(), "void");
 		}
 
 		void checkNamespaceInstruction(const std::filesystem::path& p_file, const std::shared_ptr<NamespaceInstruction>& p_instruction)
