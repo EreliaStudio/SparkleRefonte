@@ -164,11 +164,21 @@
     <ClCompile Include="src\lumina_token_based_exception.cpp" />
     <ClCompile Include="src\lumina_utils.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\semantic_checker\lumina_semantic_checker.cpp" />
+    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_blocks.cpp" />
+    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_check.cpp" />
+    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_function_body.cpp" />
+    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_get_expression_type.cpp" />
+    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_include.cpp" />
+    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_namespace.cpp" />
+    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_pipeline_flow.cpp" />
+    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_symbol_definition.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\lumina_exception.hpp" />
     <ClInclude Include="include\lumina_instructions.hpp" />
     <ClInclude Include="include\lumina_lexer.hpp" />
+    <ClInclude Include="include\lumina_semantic_checker.hpp" />
     <ClInclude Include="include\lumina_token.hpp" />
     <ClInclude Include="include\lumina_tokenizer.hpp" />
     <ClInclude Include="include\lumina_utils.hpp" />

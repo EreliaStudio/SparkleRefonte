@@ -1,6 +1,5 @@
 Vector3 calculateDiffuse(Vector3 normal, Vector3 lightDir, Vector3 lightColor)
 {
     float diff = max(10.0, 0.0);
-	return ;
-    return diff * lightColor;
+    return lightColor * Vector3(diff, diff, diff);
 }
