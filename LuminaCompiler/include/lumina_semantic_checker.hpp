@@ -24,13 +24,26 @@ namespace Lumina
 			std::vector<TokenBasedError> errors;
 		};
 
-	private:
-		std::unordered_set<std::string> pipelineFlowTypes = {
-			"float", "int", "uint", "bool",
-			"Vector2", "Vector3", "Vector4",
-			"Vector2Int", "Vector3Int", "Vector4Int",
-			"Vector2UInt", "Vector3UInt", "Vector4UInt"
+		struct Type
+		{
+			struct Attribute
+			{
+				Type* type;
+				std::string name;
+			};
+
+			std::string name;
+			std::vector<Attribute> attribute;
+			std::vector<Type*> acceptedConversion; //Point to type convertible from this type
+			bool acceptOperation; //Operator +, -, *, /
+			std::vector<std::vector<Type*>> constructors;
+
+			friend std::ostream& operator<<(std::ostream& os, const Type& type);
 		};
+
+	private:
+		std::unordered_set<std::string> _pipelineAllowedTypes;
+		std::unordered_map<std::string, Type> _availableTypes;
 
 		struct Element
 		{
@@ -46,13 +59,15 @@ namespace Lumina
 
 		std::unordered_set<std::filesystem::path> _alreadyLoadedIncludes;
 		std::unordered_set<std::filesystem::path> _pipelineFlowUsedNames;
-		bool _vertexPipelineAlreadyParsed = false;
-		bool _fragmentPipelineAlreadyParsed = false;
 
 	public:
 		static Result checkSemantic(const std::filesystem::path& p_file, std::vector<std::shared_ptr<AbstractInstruction>>& p_instructions);
 
 	private:
+		void setupTypes();
+		void setupAllowedPipelineTypes();
+		void setup();
+
 		std::string namespacePrefix() const;
 		
 		void checkIncludeInstruction(const std::filesystem::path& p_file, const std::shared_ptr<IncludeInstruction>& p_instruction);

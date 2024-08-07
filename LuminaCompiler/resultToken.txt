@@ -128,7 +128,9 @@
 [               Identifier] | [ 45::15 ] | diff
 [                 Operator] | [ 45::20 ] | *
 [               Identifier] | [ 45::22 ] | lightColor
-[            EndOfSentence] | [ 45::32 ] | ;
+[                 Accessor] | [ 45::32 ] | .
+[               Identifier] | [ 45::33 ] | x
+[            EndOfSentence] | [ 45::34 ] | ;
 [        CloseCurlyBracket] | [ 46::4  ] | }
 [               Identifier] | [ 48::4  ] | Vector3
 [               Identifier] | [ 48::12 ] | calculateSpecular

@@ -28,9 +28,12 @@ namespace Lumina
 			throw TokenBasedError(p_file, "Pipeline flow entry can only be [Input] or [VertexPass]" + DEBUG_INFORMATION, p_instruction->inputPipeline);
 		}
 
-		if (pipelineFlowTypes.contains(p_instruction->type->string()) == false)
+		if (_pipelineAllowedTypes.contains(p_instruction->type->string()) == false)
 		{
-			throw TokenBasedError(p_file, "Type [" + p_instruction->type->string() + "] not accepted as pipeline flow type" + DEBUG_INFORMATION, Lumina::Token::merge(p_instruction->type->tokens, Lumina::Token::Type::Identifier));
+			if (_pipelineAllowedTypes.contains(p_instruction->type->string().substr(2, p_instruction->type->string().size() - 2)) == false)
+			{
+				throw TokenBasedError(p_file, "Type [" + p_instruction->type->string() + "] not accepted as pipeline flow type" + DEBUG_INFORMATION, Lumina::Token::merge(p_instruction->type->tokens, Lumina::Token::Type::Identifier));
+			}
 		}
 		if (_pipelineFlowUsedNames.contains(p_instruction->name.content) == true)
 		{
