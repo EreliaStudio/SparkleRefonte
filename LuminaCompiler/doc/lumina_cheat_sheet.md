@@ -170,10 +170,10 @@ Here is an example of a complete Lumina pipeline code:
 // Define the pipeline flow
 Input -> VertexPass: Vector3 vertexPosition;
 Input -> VertexPass: Vector3 vertexNormal;
-Input -> VertexPass: vec2 vertexUV;
+Input -> VertexPass: Vector2 vertexUV;
 VertexPass -> FragmentPass: Vector3 fragPosition;
 VertexPass -> FragmentPass: Vector3 fragNormal;
-VertexPass -> FragmentPass: vec2 fragUV;
+VertexPass -> FragmentPass: Vector2 fragUV;
 
 // Define custom structures
 struct Material

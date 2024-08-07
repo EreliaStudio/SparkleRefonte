@@ -24,31 +24,6 @@ namespace Lumina
 
 				switch (instruction->type)
 				{
-				case Instruction::Type::StructureBlock:
-				{
-					checkBlockInstruction(p_file, static_pointer_cast<BlockInstruction>(instruction), _alreadyCreatedStructures);
-					break;
-				}
-				case Instruction::Type::AttributeBlock:
-				{
-					checkBlockInstruction(p_file, static_pointer_cast<BlockInstruction>(instruction), _alreadyCreatedAttributes);
-					break;
-				}
-				case Instruction::Type::ConstantBlock:
-				{
-					checkBlockInstruction(p_file, static_pointer_cast<BlockInstruction>(instruction), _alreadyCreatedConstants);
-					break;
-				}
-				case Instruction::Type::Texture:
-				{
-					checkTextureInstruction(p_file, static_pointer_cast<TextureInstruction>(instruction));
-					break;
-				}
-				case Instruction::Type::Symbol:
-				{
-					checkSymbolInstruction(p_file, static_pointer_cast<SymbolInstruction>(instruction));
-					break;
-				}
 				case Instruction::Type::Namespace:
 				{
 					checkNamespaceInstruction(p_file, static_pointer_cast<NamespaceInstruction>(instruction));

@@ -2,8 +2,13 @@
 
 namespace Lumina
 {
-	void SemanticChecker::validatePipelineFlow(const std::filesystem::path& p_file, const std::shared_ptr<PipelineFlowInstruction>& p_instruction)
+	void SemanticChecker::checkPipelineFlowInstruction(const std::filesystem::path& p_file, const std::shared_ptr<PipelineFlowInstruction>& p_instruction)
 	{
+		Lumina::Token inputPipeline;
+		Lumina::Token outputPipeline;
+		std::shared_ptr<TypeInstruction> type;
+		std::shared_ptr<IdentifierInstruction> name;
+
 		if (p_instruction->inputPipeline.content == "Input")
 		{
 			if (p_instruction->outputPipeline.content != "VertexPass")
@@ -22,16 +27,6 @@ namespace Lumina
 		{
 			throw TokenBasedError(p_file, "Pipeline flow entry can only be [Input] or [VertexPass]" + DEBUG_INFORMATION, p_instruction->inputPipeline);
 		}
-	}
-
-	void SemanticChecker::checkPipelineFlowInstruction(const std::filesystem::path& p_file, const std::shared_ptr<PipelineFlowInstruction>& p_instruction)
-	{
-		Lumina::Token inputPipeline;
-		Lumina::Token outputPipeline;
-		std::shared_ptr<TypeInstruction> type;
-		std::shared_ptr<IdentifierInstruction> name;
-
-		validatePipelineFlow(p_file, p_instruction);
 
 		if (pipelineFlowTypes.contains(p_instruction->type->string()) == false)
 		{

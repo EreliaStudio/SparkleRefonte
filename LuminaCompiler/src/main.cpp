@@ -1,5 +1,9 @@
 #pragma once
 
+#include "lumina_tokenizer.hpp"
+#include "lumina_lexer.hpp"
+#include "lumina_semantic_checker.hpp"
+
 int main(int argc, char** argv)
 {
 	if (argc == 1)
