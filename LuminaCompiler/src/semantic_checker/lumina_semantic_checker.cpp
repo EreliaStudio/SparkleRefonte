@@ -10,7 +10,6 @@ namespace Lumina
 	void SemanticChecker::setup()
 	{
 		setupTypes();
-		setupAllowedPipelineTypes();
 	}
 
 	SemanticChecker::Result SemanticChecker::check(const std::filesystem::path& p_file, std::vector<std::shared_ptr<AbstractInstruction>>& p_instructions)
@@ -20,7 +19,7 @@ namespace Lumina
 
 		setup();
 
-		for (const auto& [name, type] : _availableTypes)
+		for (const auto& type : _types)
 		{
 			std::cout << "Type : " << type << std::endl;
 		}

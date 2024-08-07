@@ -32,19 +32,16 @@ namespace Lumina
 				std::string name;
 			};
 
-			std::string name;
-			std::vector<Attribute> attribute;
-			std::vector<Type*> acceptedConversion; //Point to type convertible from this type
-			bool acceptOperation; //Operator +, -, *, /
-			std::vector<std::vector<Type*>> constructors;
+			std::string name = "";
+			std::vector<Attribute> attribute = {};
+			std::vector<Type*> acceptedConversion = {}; //Point to type convertible from this type
+			bool acceptOperation = false; //Operator +, -, *, /
+			std::vector<std::vector<Type*>> constructors = {};
 
 			friend std::ostream& operator<<(std::ostream& os, const Type& type);
 		};
 
 	private:
-		std::unordered_set<std::string> _pipelineAllowedTypes;
-		std::unordered_map<std::string, Type> _availableTypes;
-
 		struct Element
 		{
 			std::filesystem::path filePath;
@@ -59,7 +56,7 @@ namespace Lumina
 
 		std::unordered_set<std::filesystem::path> _loadedIncludes;
 
-		std::vector<Type> _types;
+		std::list<Type> _types;
 		std::vector<Type*> _standardTypes;
 		std::vector<Type*> _structures;
 		std::vector<Type*> _attributes;
@@ -71,7 +68,6 @@ namespace Lumina
 
 	private:
 		void setupTypes();
-		void setupAllowedPipelineTypes();
 		void setup();
 
 		void addType(const Type& p_type);

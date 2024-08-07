@@ -30,8 +30,13 @@ namespace Lumina
 				return type.name == p_typeName;
 			});
 
+			std::cout << "Requesting type : " << p_typeName << std::endl;
 		if (it == _types.end())
+		{
+			std::cout << "    Not found" << std::endl;
 			return (nullptr);
+		}
+
 		return (&(*it));
 	}
 
@@ -61,7 +66,6 @@ namespace Lumina
 
 	void SemanticChecker::setupTypes()
 	{
-		// Basic types
 		Type intType;
 		intType.name = "int";
 		intType.acceptOperation = true;
@@ -89,8 +93,7 @@ namespace Lumina
 		vector2Type.attribute.push_back({ type("float"), "y" });
 		vector2Type.acceptOperation = true;
 		vector2Type.constructors = {
-			{type("float"), type("float")},
-			{type("Vector2")}
+			{type("float"), type("float")}
 		};
 		addStandardType(vector2Type);
 
@@ -100,8 +103,7 @@ namespace Lumina
 		vector2IntType.attribute.push_back({ type("int"), "y" });
 		vector2IntType.acceptOperation = true;
 		vector2IntType.constructors = {
-			{type("int"), type("int")},
-			{type("Vector2Int")}
+			{type("int"), type("int")}
 		};
 		addStandardType(vector2IntType);
 
@@ -111,12 +113,10 @@ namespace Lumina
 		vector2UIntType.attribute.push_back({ type("uint"), "y" });
 		vector2UIntType.acceptOperation = true;
 		vector2UIntType.constructors = {
-			{type("uint"), type("uint")},
-			{type("Vector2UInt")}
+			{type("uint"), type("uint")}
 		};
 		addStandardType(vector2UIntType);
 
-		// Vector3 types
 		Type vector3Type;
 		vector3Type.name = "Vector3";
 		vector3Type.attribute.push_back({ type("float"), "x" });
@@ -126,8 +126,7 @@ namespace Lumina
 		vector3Type.constructors = {
 			{type("float"), type("float"), type("float")},
 			{type("Vector2"), type("float")},
-			{type("float"), type("Vector2")},
-			{type("Vector3")}
+			{type("float"), type("Vector2")}
 		};
 		addStandardType(vector3Type);
 
@@ -140,8 +139,7 @@ namespace Lumina
 		vector3IntType.constructors = {
 			{type("int"), type("int"), type("int")},
 			{type("Vector2Int"), type("int")},
-			{type("int"), type("Vector2Int")},
-			{type("Vector3Int")}
+			{type("int"), type("Vector2Int")}
 		};
 		addStandardType(vector3IntType);
 
@@ -154,12 +152,10 @@ namespace Lumina
 		vector3UIntType.constructors = {
 			{type("uint"), type("uint"), type("uint")},
 			{type("Vector2UInt"), type("uint")},
-			{type("uint"), type("Vector2UInt")},
-			{type("Vector3UInt")}
+			{type("uint"), type("Vector2UInt")}
 		};
 		addStandardType(vector3UIntType);
 
-		// Vector4 types
 		Type vector4Type;
 		vector4Type.name = "Vector4";
 		vector4Type.attribute.push_back({ type("float"), "x" });
@@ -172,7 +168,6 @@ namespace Lumina
 			{type("Vector3"), type("float")},
 			{type("float"), type("Vector3")},
 			{type("Vector2"), type("Vector2")},
-			{type("Vector4")},
 			{type("float"), type("Vector2"), type("float")},
 			{type("Vector2"), type("float"), type("float")},
 			{type("float"), type("float"), type("Vector2")}
@@ -191,7 +186,6 @@ namespace Lumina
 			{type("Vector3Int"), type("int")},
 			{type("int"), type("Vector3Int")},
 			{type("Vector2Int"), type("Vector2Int")},
-			{type("Vector4Int")},
 			{type("int"), type("Vector2Int"), type("int")},
 			{type("Vector2Int"), type("int"), type("int")},
 			{type("int"), type("int"), type("Vector2Int")}
@@ -210,7 +204,6 @@ namespace Lumina
 			{type("Vector3UInt"), type("uint")},
 			{type("uint"), type("Vector3UInt")},
 			{type("Vector2UInt"), type("Vector2UInt")},
-			{type("Vector4UInt")},
 			{type("uint"), type("Vector2UInt"), type("uint")},
 			{type("Vector2UInt"), type("uint"), type("uint")},
 			{type("uint"), type("uint"), type("Vector2UInt")}
@@ -218,13 +211,11 @@ namespace Lumina
 
 		addStandardType(vector4UIntType);
 
-		// Set accepted conversions for basic types
 		type("int")->acceptedConversion = { type("float"), type("uint") };
 		type("float")->acceptedConversion = { type("int"), type("uint") };
 		type("uint")->acceptedConversion = { type("int"), type("float") };
 		type("bool")->acceptedConversion = {};
 
-		// Set accepted conversions for vector types
 		type("Vector2")->acceptedConversion = { type("Vector2Int"), type("Vector2UInt") };
 		type("Vector2Int")->acceptedConversion = { type("Vector2"), type("Vector2UInt") };
 		type("Vector2UInt")->acceptedConversion = { type("Vector2"), type("Vector2Int") };
@@ -236,16 +227,6 @@ namespace Lumina
 		type("Vector4")->acceptedConversion = { type("Vector4Int"), type("Vector4UInt") };
 		type("Vector4Int")->acceptedConversion = { type("Vector4"), type("Vector4UInt") };
 		type("Vector4UInt")->acceptedConversion = { type("Vector4"), type("Vector4Int") };
-	}
-
-	void SemanticChecker::setupAllowedPipelineTypes()
-	{
-		_pipelineAllowedTypes = {
-			"int", "uint", "float", "bool",
-			"Vector2", "Vector2Int", "Vector2UInt",
-			"Vector3", "Vector3Int", "Vector3UInt",
-			"Vector4", "Vector4Int", "Vector4UInt"
-		};
 	}
 	
 	std::ostream& operator<<(std::ostream& os, const SemanticChecker::Type& type)
@@ -265,7 +246,7 @@ namespace Lumina
 		os << "Constructors:\n";
 		for (const auto& constructor : type.constructors)
 		{
-			os << "  (";
+			os << "  " << type.name << "(";
 			for (size_t i = 0; i < constructor.size(); ++i)
 			{
 				os << (constructor[i] ? constructor[i]->name : "null");
