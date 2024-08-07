@@ -75,6 +75,9 @@
     <ClCompile Include="src\semantic_checker\lumina_semantic_checker_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_pipeline_flow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\lumina_utils.hpp">

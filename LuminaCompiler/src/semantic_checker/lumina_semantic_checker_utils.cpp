@@ -30,38 +30,72 @@ namespace Lumina
 				return type.name == p_typeName;
 			});
 
-			std::cout << "Requesting type : " << p_typeName << std::endl;
 		if (it == _types.end())
 		{
-			std::cout << "    Not found" << std::endl;
 			return (nullptr);
 		}
 
 		return (&(*it));
 	}
 
+	SemanticChecker::Type* SemanticChecker::standardType(const std::string& p_standardTypeName)
+	{
+		SemanticChecker::Type* result = type(p_standardTypeName);
+
+		if (result == nullptr || _standardTypes.contains(result) == false)
+			return (nullptr);
+		return (result);
+	}
+
+	SemanticChecker::Type* SemanticChecker::structure(const std::string& p_structureName)
+	{
+		SemanticChecker::Type* result = type(p_structureName);
+
+		if (result == nullptr || (_structures.contains(result) == false && _standardTypes.contains(result) == false))
+			return (nullptr);
+		return (result);
+	}
+
+	SemanticChecker::Type* SemanticChecker::attribute(const std::string& p_attributeName)
+	{
+		SemanticChecker::Type* result = type(p_attributeName);
+
+		if (result == nullptr || _attributes.contains(result) == false)
+			return (nullptr);
+		return (result);
+	}
+
+	SemanticChecker::Type* SemanticChecker::constant(const std::string& p_constantName)
+	{
+		SemanticChecker::Type* result = type(p_constantName);
+
+		if (result == nullptr || _constants.contains(result) == false)
+			return (nullptr);
+		return (result);
+	}
+
 	void SemanticChecker::addStandardType(const SemanticChecker::Type& p_standardType)
 	{
 		addType(p_standardType);
-		_standardTypes.push_back(type(p_standardType.name));
+		_standardTypes.insert(type(p_standardType.name));
 	}
 	
 	void SemanticChecker::addStructure(const SemanticChecker::Type& p_structure)
 	{
 		addType(p_structure);
-		_structures.push_back(type(p_structure.name));
+		_structures.insert(type(p_structure.name));
 	}
 
 	void SemanticChecker::addAttribute(const SemanticChecker::Type& p_attribute)
 	{
 		addType(p_attribute);
-		_attributes.push_back(type(p_attribute.name));
+		_attributes.insert(type(p_attribute.name));
 	}
 
 	void SemanticChecker::addConstant(const SemanticChecker::Type& p_constant)
 	{
 		addType(p_constant);
-		_constants.push_back(type(p_constant.name));
+		_constants.insert(type(p_constant.name));
 	}
 
 	void SemanticChecker::setupTypes()

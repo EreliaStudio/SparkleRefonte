@@ -57,11 +57,13 @@ namespace Lumina
 		std::unordered_set<std::filesystem::path> _loadedIncludes;
 
 		std::list<Type> _types;
-		std::vector<Type*> _standardTypes;
-		std::vector<Type*> _structures;
-		std::vector<Type*> _attributes;
-		std::vector<Type*> _constants;
+		std::unordered_set<Type*> _standardTypes;
+		std::unordered_set<Type*> _structures;
+		std::unordered_set<Type*> _attributes;
+		std::unordered_set<Type*> _constants;
 
+		std::unordered_map<std::string, Type*> _vertexPassVariables;
+		std::unordered_map<std::string, Type*> _fragmentPassVariables;
 
 	public:
 		static Result checkSemantic(const std::filesystem::path& p_file, std::vector<std::shared_ptr<AbstractInstruction>>& p_instructions);
@@ -71,15 +73,22 @@ namespace Lumina
 		void setup();
 
 		void addType(const Type& p_type);
-		Type* type(const std::string& p_typeName);
 		void addStandardType(const Type& p_structure);
 		void addStructure(const Type& p_structure);
 		void addAttribute(const Type& p_attribute);
 		void addConstant(const Type& p_constant);
+
+		Type* type(const std::string& p_typeName);
+		Type* standardType(const std::string& p_standardTypeName);
+		Type* structure(const std::string& p_structureName);
+		Type* attribute(const std::string& p_attributeName);
+		Type* constant(const std::string& p_constantName);
 		
 		std::string namespacePrefix() const;
 		
 		void checkIncludeInstruction(const std::filesystem::path& p_file, const std::shared_ptr<IncludeInstruction>& p_instruction);
+		void checkPipelineFlowInstruction(const std::filesystem::path& p_file, const std::shared_ptr<PipelineFlowInstruction>& p_instruction);
+
 		Result check(const std::filesystem::path& p_file, std::vector<std::shared_ptr<AbstractInstruction>>& p_instructions);
 	};
 }
