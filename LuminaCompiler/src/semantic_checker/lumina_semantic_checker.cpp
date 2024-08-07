@@ -44,16 +44,6 @@ namespace Lumina
 					checkIncludeInstruction(element.filePath, static_pointer_cast<IncludeInstruction>(instruction));
 					break;
 				}
-				case Instruction::Type::PipelineFlow:
-				{
-					checkPipelineFlowInstruction(element.filePath, static_pointer_cast<PipelineFlowInstruction>(instruction));
-					break;
-				}
-				case Instruction::Type::Namespace:
-				{
-					checkNamespaceInstruction(element.filePath, static_pointer_cast<NamespaceInstruction>(instruction));
-					break;
-				}
 				default:
 				{
 					throw TokenBasedError(element.filePath, "Unexpected instruction type : " + ::to_string(instruction->type) + DEBUG_INFORMATION, Token());

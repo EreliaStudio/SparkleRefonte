@@ -57,8 +57,14 @@ namespace Lumina
 
 		std::vector<Lumina::Token> _currentNamespace;
 
-		std::unordered_set<std::filesystem::path> _alreadyLoadedIncludes;
-		std::unordered_set<std::filesystem::path> _pipelineFlowUsedNames;
+		std::unordered_set<std::filesystem::path> _loadedIncludes;
+
+		std::vector<Type> _types;
+		std::vector<Type*> _standardTypes;
+		std::vector<Type*> _structures;
+		std::vector<Type*> _attributes;
+		std::vector<Type*> _constants;
+
 
 	public:
 		static Result checkSemantic(const std::filesystem::path& p_file, std::vector<std::shared_ptr<AbstractInstruction>>& p_instructions);
@@ -68,11 +74,16 @@ namespace Lumina
 		void setupAllowedPipelineTypes();
 		void setup();
 
+		void addType(const Type& p_type);
+		Type* type(const std::string& p_typeName);
+		void addStandardType(const Type& p_structure);
+		void addStructure(const Type& p_structure);
+		void addAttribute(const Type& p_attribute);
+		void addConstant(const Type& p_constant);
+		
 		std::string namespacePrefix() const;
 		
 		void checkIncludeInstruction(const std::filesystem::path& p_file, const std::shared_ptr<IncludeInstruction>& p_instruction);
-		void checkPipelineFlowInstruction(const std::filesystem::path& p_file, const std::shared_ptr<PipelineFlowInstruction>& p_instruction);
-		void checkNamespaceInstruction(const std::filesystem::path& p_file, const std::shared_ptr<NamespaceInstruction>& p_instruction);
 		Result check(const std::filesystem::path& p_file, std::vector<std::shared_ptr<AbstractInstruction>>& p_instructions);
 	};
 }

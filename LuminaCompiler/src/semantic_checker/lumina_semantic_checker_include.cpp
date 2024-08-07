@@ -12,7 +12,7 @@ namespace Lumina
 			throw TokenBasedError(p_file, "Include file [" + fileName + "] not found" + DEBUG_INFORMATION, p_instruction->includeFile);
 		}
 
-		if (_alreadyLoadedIncludes.contains(filePath) == false)
+		if (_loadedIncludes.contains(filePath) == false)
 		{
 			Lumina::LexerChecker::Result includeFileLexer = Lumina::LexerChecker::checkSyntax(fileName, Lumina::Tokenizer::tokenize(Lumina::readFileAsString(filePath)));
 
@@ -26,7 +26,7 @@ namespace Lumina
 
 			_elements.insert(_elements.begin() + _index + 1, newElements.begin(), newElements.end());
 
-			_alreadyLoadedIncludes.insert(filePath);
+			_loadedIncludes.insert(filePath);
 		}
 	}
 }
