@@ -10,6 +10,7 @@ namespace Lumina
 	void SemanticChecker::setup()
 	{
 		setupTypes();
+		setupStructures();
 	}
 
 	SemanticChecker::Result SemanticChecker::check(const std::filesystem::path& p_file, std::vector<std::shared_ptr<AbstractInstruction>>& p_instructions)
@@ -46,6 +47,21 @@ namespace Lumina
 				case Instruction::Type::PipelineFlow:
 				{
 					checkPipelineFlowInstruction(element.filePath, static_pointer_cast<PipelineFlowInstruction>(instruction));
+					break;
+				}
+				case Instruction::Type::StructureBlock:
+				{
+					checkStructureInstruction(element.filePath, static_pointer_cast<StructureBlockInstruction>(instruction));
+					break;
+				}
+				case Instruction::Type::AttributeBlock:
+				{
+					checkAttributeInstruction(element.filePath, static_pointer_cast<AttributeBlockInstruction>(instruction));
+					break;
+				}
+				case Instruction::Type::ConstantBlock:
+				{
+					checkConstantInstruction(element.filePath, static_pointer_cast<ConstantBlockInstruction>(instruction));
 					break;
 				}
 				default:

@@ -30,10 +30,11 @@ namespace Lumina
 			{
 				Type* type;
 				std::string name;
+				size_t size;
 			};
 
 			std::string name = "";
-			std::vector<Attribute> attribute = {};
+			std::vector<Attribute> attributes = {};
 			std::vector<Type*> acceptedConversion = {}; //Point to type convertible from this type
 			bool acceptOperation = false; //Operator +, -, *, /
 			std::vector<std::vector<Type*>> constructors = {};
@@ -70,6 +71,7 @@ namespace Lumina
 
 	private:
 		void setupTypes();
+		void setupStructures();
 		void setup();
 
 		void addType(const Type& p_type);
@@ -88,6 +90,9 @@ namespace Lumina
 		
 		void checkIncludeInstruction(const std::filesystem::path& p_file, const std::shared_ptr<IncludeInstruction>& p_instruction);
 		void checkPipelineFlowInstruction(const std::filesystem::path& p_file, const std::shared_ptr<PipelineFlowInstruction>& p_instruction);
+		void checkStructureInstruction(const std::filesystem::path& p_file, const std::shared_ptr<StructureBlockInstruction>& p_instruction);
+		void checkAttributeInstruction(const std::filesystem::path& p_file, const std::shared_ptr<AttributeBlockInstruction>& p_instruction);
+		void checkConstantInstruction(const std::filesystem::path& p_file, const std::shared_ptr<ConstantBlockInstruction>& p_instruction);
 
 		Result check(const std::filesystem::path& p_file, std::vector<std::shared_ptr<AbstractInstruction>>& p_instructions);
 	};

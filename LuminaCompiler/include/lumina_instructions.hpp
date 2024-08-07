@@ -14,7 +14,6 @@ namespace Lumina
 			Type,
 			Include,
 			PipelineFlow,
-			BlockElement,
 			StructureBlock,
 			AttributeBlock,
 			ConstantBlock,
@@ -50,7 +49,10 @@ namespace Lumina
 		{
 
 		}
-		virtual std::string string() const = 0;
+		virtual ~AbstractInstruction()
+		{
+
+		}
 	};
 
 	using Instruction = AbstractInstruction;
@@ -64,11 +66,6 @@ namespace Lumina
 		{
 
 		}
-
-		std::string string() const override
-		{
-			return (token.content);
-		}
 	};
 
 	struct TypeInstruction : public AbstractInstruction
@@ -80,18 +77,6 @@ namespace Lumina
 		{
 
 		}
-
-		std::string string() const override
-		{
-			std::string result = "";
-
-			for (const auto& token : tokens)
-			{
-				result += token.content;
-			}
-
-			return (result);
-		}
 	};
 
 	struct IncludeInstruction : public AbstractInstruction
@@ -102,11 +87,6 @@ namespace Lumina
 			AbstractInstruction(AbstractInstruction::Type::Include)
 		{
 
-		}
-
-		std::string string() const override
-		{
-			return ("Include file : " + includeFile.content.substr(1, includeFile.content.size() - 2));
 		}
 	};
 
@@ -122,27 +102,16 @@ namespace Lumina
 		{
 
 		}
-
-		std::string string() const override
-		{
-			return ("Pipeline from [" + inputPipeline.content + "] to [" + outputPipeline.content + "] -> type [" + type->string() + "] and name [" + name.content + "]");
-		}
 	};
 
-	struct BlockElementInstruction : public AbstractInstruction
+	struct BlockElementInstruction
 	{
 		std::shared_ptr<TypeInstruction> type;
 		Lumina::Token name;
 
-		BlockElementInstruction() :
-			AbstractInstruction(AbstractInstruction::Type::BlockElement)
+		BlockElementInstruction()
 		{
 
-		}
-
-		std::string string() const override
-		{
-			return ("Type [" + type->string() + "] and name [" + name.content + "]");
 		}
 	};
 
@@ -155,23 +124,6 @@ namespace Lumina
 			AbstractInstruction(p_type)
 		{
 
-		}
-
-		std::string string() const override
-		{
-			std::string result;
-			if (type == Type::StructureBlock)
-				result += "Structure";
-			else if (type == Type::AttributeBlock)
-				result += "Attribute";
-			else if (type == Type::ConstantBlock)
-				result += "Constant";
-			result += " named [" + name.content + "] contain : \n";
-			for (const auto& element : elements)
-			{
-				result += "    " + element->string() + "\n";
-			}
-			return (result);
 		}
 	};
 
@@ -211,11 +163,6 @@ namespace Lumina
 		{
 
 		}
-
-		std::string string() const override
-		{
-			return ("Texture named [" + name.content + "]");
-		}
 	};
 
 	struct NamespaceInstruction : public AbstractInstruction
@@ -228,16 +175,6 @@ namespace Lumina
 		{
 
 		}
-
-		std::string string() const override
-		{
-			std::string result = "Namespace [" + name.content + "] contain [" + std::to_string(instructions.size()) + "] instructions :\n";
-			for (const auto& instruction : instructions)
-			{
-				result += "    " + instruction->string() + "\n";
-			}
-			return (result);
-		}
 	};
 
 	struct SymbolParameterInstruction : public AbstractInstruction
@@ -249,11 +186,6 @@ namespace Lumina
 			AbstractInstruction(AbstractInstruction::Type::SymbolParameter)
 		{
 
-		}
-
-		std::string string() const override
-		{
-			return ("Type [" + type->string() + "] and name [" + name.content + "]");
 		}
 	};
 
@@ -286,11 +218,6 @@ namespace Lumina
 		{
 
 		}
-
-		std::string string() const override
-		{
-			return (token.content);
-		}
 	};
 
 	struct NumberExpressionValueInstruction : public ExpressionElementInstruction
@@ -310,11 +237,6 @@ namespace Lumina
 			ExpressionElementInstruction(AbstractInstruction::Type::NumberExpressionValue)
 		{
 
-		}
-
-		std::string string() const override
-		{
-			return (token.content);
 		}
 	};
 
@@ -336,11 +258,6 @@ namespace Lumina
 		{
 
 		}
-
-		std::string string() const override
-		{
-			return (token.content);
-		}
 	};
 
 	struct VariableExpressionValueInstruction : public ExpressionElementInstruction
@@ -356,18 +273,6 @@ namespace Lumina
 			ExpressionElementInstruction(AbstractInstruction::Type::VariableExpressionValue)
 		{
 
-		}
-
-		std::string string() const override
-		{
-			std::string result = "";
-
-			for (const auto& token : tokens)
-			{
-				result += token.content;
-			}
-
-			return (result);
 		}
 	};
 
@@ -394,20 +299,6 @@ namespace Lumina
 
 			return (result);
 		}
-
-		std::string string() const override
-		{
-			std::string result = "";
-
-			for (size_t i = 0; i < elements.size(); i++)
-			{
-				if (i != 0)
-					result += " ";
-				result += elements[i]->string();
-			}
-
-			return (result);
-		}
 	};
 
 	struct VariableDesignationInstruction : public AbstractInstruction
@@ -418,18 +309,6 @@ namespace Lumina
 			AbstractInstruction(AbstractInstruction::Type::VariableDesignation)
 		{
 
-		}
-
-		std::string string() const override
-		{
-			std::string result = "";
-
-			for (const auto& token : tokens)
-			{
-				result += token.content;
-			}
-
-			return (result);
 		}
 	};
 
@@ -442,13 +321,6 @@ namespace Lumina
 			AbstractInstruction(AbstractInstruction::Type::VariableAssignation)
 		{
 
-		}
-
-		std::string string() const override
-		{
-			std::string result = "Variable Assignation: " + name->string() + " = " + initializer->string();
-
-			return result;
 		}
 	};
 
@@ -463,16 +335,6 @@ namespace Lumina
 		{
 
 		}
-
-		std::string string() const override
-		{
-			std::string result = "Variable Declaration: " + type->string() + " " + name.content;
-			if (initializer)
-			{
-				result += " = " + initializer->string();
-			}
-			return result;
-		}
 	};
 
 	struct SymbolNameInstruction : public AbstractInstruction
@@ -484,18 +346,6 @@ namespace Lumina
 		{
 
 		}
-
-		std::string string() const override
-		{
-			std::string result = "";
-
-			for (const auto& token : tokens)
-			{
-				result += token.content;
-			}
-
-			return (result);
-		}
 	};
 
 	struct SymbolBodyInstruction : public AbstractInstruction
@@ -506,18 +356,6 @@ namespace Lumina
 			AbstractInstruction(AbstractInstruction::Type::SymbolBody)
 		{
 
-		}
-
-		std::string string() const override
-		{
-			std::string result = "";
-
-			for (const auto& element : elements)
-			{
-				result += element->string() + "\n";
-			}
-
-			return (result);
 		}
 	};
 
@@ -552,21 +390,6 @@ namespace Lumina
 		{
 
 		}
-
-		std::string string() const override
-		{
-			std::string result = "Symbol Call: " + name->string() + "(";
-			for (size_t i = 0; i < arguments.size(); ++i)
-			{
-				if (i != 0)
-				{
-					result += ", ";
-				}
-				result += arguments[i]->string();
-			}
-			result += ")";
-			return result;
-		}
 	};
 
 	struct ReturnInstruction : public AbstractInstruction
@@ -578,12 +401,6 @@ namespace Lumina
 		{
 
 		}
-
-		std::string string() const override
-		{
-			std::string result = "return " + argument->string();
-			return result;
-		}
 	};
 
 	struct DiscardInstruction : public AbstractInstruction
@@ -592,11 +409,6 @@ namespace Lumina
 			AbstractInstruction(AbstractInstruction::Type::Discard)
 		{
 
-		}
-
-		std::string string() const override
-		{
-			return ("discarding");
 		}
 	};
 
@@ -609,11 +421,6 @@ namespace Lumina
 		{
 
 		}
-
-		std::string string() const override
-		{
-			return ("Condition : " + expression->string());
-		}
 	};
 
 	struct ElseInstruction : public AbstractInstruction
@@ -625,18 +432,6 @@ namespace Lumina
 			AbstractInstruction(AbstractInstruction::Type::Else)
 		{
 
-		}
-
-		std::string string() const override
-		{
-			if (condition)
-			{
-				return "Else If (" + condition->string() + ") " + body->string();
-			}
-			else
-			{
-				return "Else " + body->string();
-			}
 		}
 	};
 
@@ -651,16 +446,6 @@ namespace Lumina
 		{
 
 		}
-
-		std::string string() const override
-		{
-			std::string result = "If (" + condition->string() + ") " + body->string();
-			for (const auto& elseBlock : elseBlocks)
-			{
-				result += "\n" + elseBlock->string();
-			}
-			return result;
-		}
 	};
 
 	struct WhileLoopInstruction : public AbstractInstruction
@@ -672,11 +457,6 @@ namespace Lumina
 			AbstractInstruction(AbstractInstruction::Type::WhileLoop)
 		{
 
-		}
-
-		std::string string() const override
-		{
-			return "While (" + condition->string() + ") " + body->string();
 		}
 	};
 
@@ -692,11 +472,6 @@ namespace Lumina
 		{
 
 		}
-
-		std::string string() const override
-		{
-			return "For (" + initializer->string() + "; " + condition->string() + "; " + increment->string() + ") " + body->string();
-		}
 	};
 
 	struct SymbolInstruction : public AbstractInstruction
@@ -711,21 +486,6 @@ namespace Lumina
 		{
 
 		}
-
-		std::string string() const override
-		{
-			std::string result = "Symbol [" + name.content + "] return [" + returnType->string() + "] and take [";
-			for (size_t i = 0; i < parameters.size(); i++)
-			{
-				if (i != 0)
-					result += " / ";
-				result += parameters[i]->string();
-			}
-			result += "] as parameters and contain body :\n";
-			result += body->string();
-
-			return (result);
-		}
 	};
 
 	struct PipelineBodyInstruction : public AbstractInstruction
@@ -737,15 +497,6 @@ namespace Lumina
 			AbstractInstruction(AbstractInstruction::Type::PipelineBody)
 		{
 
-		}
-
-		std::string string() const override
-		{
-			std::string result = "Pipeline flow : " + pipelineToken.content + "\n";
-
-			result += body->string();
-
-			return (result);
 		}
 	};
 }

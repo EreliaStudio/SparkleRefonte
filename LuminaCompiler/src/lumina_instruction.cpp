@@ -12,8 +12,6 @@ std::string to_string(Lumina::AbstractInstruction::Type p_type)
 		return "Include";
 	case Lumina::AbstractInstruction::Type::PipelineFlow:
 		return "PipelineFlow";
-	case Lumina::AbstractInstruction::Type::BlockElement:
-		return "BlockElement";
 	case Lumina::AbstractInstruction::Type::StructureBlock:
 		return "StructureBlock";
 	case Lumina::AbstractInstruction::Type::AttributeBlock:
