@@ -265,44 +265,21 @@ namespace Lumina
 
 	void SemanticChecker::setupStructures()
 	{
-		Type col2;
-		col2.name = "Column2";
-		col2.attributes.push_back({ type("float"), "", 2 });
-		col2.acceptOperation = false;
-
-		addStructure(col2);
 
 		Type matrix2x2;
 		matrix2x2.name = "Matrix4x4";
-		matrix2x2.attributes.push_back({ type("Column2"), "", 2 });
 		matrix2x2.acceptOperation = true;
 
 		addStructure(matrix2x2);
 
-		Type col3;
-		col3.name = "Column3";
-		col3.attributes.push_back({ type("float"), "", 3 });
-		col3.acceptOperation = false;
-
-		addStructure(col3);
-
 		Type matrix3x3;
 		matrix3x3.name = "Matrix3x3";
-		matrix2x2.attributes.push_back({ type("Column3"), "", 3 });
 		matrix3x3.acceptOperation = true;
 
 		addStructure(matrix3x3);
-
-		Type col4;
-		col4.name = "Column4";
-		col4.attributes.push_back({ type("float"), "", 4 });
-		col4.acceptOperation = false;
-
-		addStructure(col4);
 		
 		Type matrix4x4;
 		matrix4x4.name = "Matrix4x4";
-		matrix4x4.attributes.push_back({ type("Column4"), "", 4 });
 		matrix4x4.acceptOperation = true;
 
 		addStructure(matrix4x4);
