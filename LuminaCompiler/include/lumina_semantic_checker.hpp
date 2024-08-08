@@ -63,6 +63,8 @@ namespace Lumina
 		std::unordered_set<Type*> _attributes;
 		std::unordered_set<Type*> _constants;
 
+		std::unordered_set<std::string> _textures;
+
 		std::unordered_map<std::string, Type*> _vertexPassVariables;
 		std::unordered_map<std::string, Type*> _fragmentPassVariables;
 
@@ -86,13 +88,16 @@ namespace Lumina
 		Type* attribute(const std::string& p_attributeName);
 		Type* constant(const std::string& p_constantName);
 		
-		std::string namespacePrefix() const;
+		std::string createNamespacePrefix() const;
 		
 		void checkIncludeInstruction(const std::filesystem::path& p_file, const std::shared_ptr<IncludeInstruction>& p_instruction);
 		void checkPipelineFlowInstruction(const std::filesystem::path& p_file, const std::shared_ptr<PipelineFlowInstruction>& p_instruction);
 		void checkStructureInstruction(const std::filesystem::path& p_file, const std::shared_ptr<StructureBlockInstruction>& p_instruction);
 		void checkAttributeInstruction(const std::filesystem::path& p_file, const std::shared_ptr<AttributeBlockInstruction>& p_instruction);
 		void checkConstantInstruction(const std::filesystem::path& p_file, const std::shared_ptr<ConstantBlockInstruction>& p_instruction);
+		void checkTextureInstruction(const std::filesystem::path& p_file, const std::shared_ptr<TextureInstruction>& p_instruction);
+
+		void checkNamespaceInstruction(const std::filesystem::path& p_file, const std::shared_ptr<NamespaceInstruction>& p_instruction);
 
 		Result check(const std::filesystem::path& p_file, std::vector<std::shared_ptr<AbstractInstruction>>& p_instructions);
 	};

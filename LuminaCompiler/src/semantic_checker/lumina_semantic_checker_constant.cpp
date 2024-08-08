@@ -15,26 +15,33 @@ namespace Lumina
 
 		for (const auto& element : p_instruction->elements)
 		{
-			auto it = std::find_if(newConstant.attributes.begin(), newConstant.attributes.end(), [&, element](const Type::Attribute& attribute)
+			try
+			{
+				auto it = std::find_if(newConstant.attributes.begin(), newConstant.attributes.end(), [&, element](const Type::Attribute& attribute)
+					{
+						return attribute.name == element->name.content;
+					});
+
+				if (it != newConstant.attributes.end())
 				{
-					return attribute.name == element->name.content;
-				});
+					throw TokenBasedError(p_file, "[" + element->name.content + "] already defined in [" + p_instruction->name.content + "]", p_instruction->name);
+				}
 
-			if (it != newConstant.attributes.end())
-			{
-				throw TokenBasedError(p_file, "[" + element->name.content + "] already defined in [" + p_instruction->name.content + "]", p_instruction->name);
+				Token typeToken = Token::merge(element->type->tokens, Token::Type::Identifier);
+
+				Type* attributeType = type(typeToken.content);
+
+				if (attributeType == nullptr)
+				{
+					throw TokenBasedError(p_file, "Type [" + typeToken.content + "] not found", typeToken);
+				}
+
+				newConstant.attributes.push_back({ attributeType, element->name.content });
 			}
-
-			Token typeToken = Token::merge(element->type->tokens, Token::Type::Identifier);
-
-			Type* attributeType = type(typeToken.content);
-
-			if (attributeType == nullptr)
+			catch (TokenBasedError& e)
 			{
-				throw TokenBasedError(p_file, "Type [" + typeToken.content + "] not found", typeToken);
+				_result.errors.push_back(e);
 			}
-
-			newConstant.attributes.push_back({ attributeType, element->name.content });
 		}
 
 		addConstant(newConstant);

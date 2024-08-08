@@ -87,6 +87,12 @@
     <ClCompile Include="src\semantic_checker\lumina_semantic_checker_constant.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_namespace.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\lumina_utils.hpp">

@@ -20,11 +20,6 @@ namespace Lumina
 
 		setup();
 
-		for (const auto& type : _types)
-		{
-			std::cout << "Type : " << type << std::endl;
-		}
-
 		for (auto& instruction : p_instructions)
 		{
 			_elements.push_back(Element{ p_file, instruction });
@@ -62,6 +57,16 @@ namespace Lumina
 				case Instruction::Type::ConstantBlock:
 				{
 					checkConstantInstruction(element.filePath, static_pointer_cast<ConstantBlockInstruction>(instruction));
+					break;
+				}
+				case Instruction::Type::Texture:
+				{
+					checkTextureInstruction(element.filePath, static_pointer_cast<TextureInstruction>(instruction));
+					break;
+				}
+				case Instruction::Type::Namespace:
+				{
+					checkNamespaceInstruction(element.filePath, static_pointer_cast<NamespaceInstruction>(instruction));
 					break;
 				}
 				default:
