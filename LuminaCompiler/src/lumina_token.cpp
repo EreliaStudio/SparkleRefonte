@@ -53,6 +53,8 @@ namespace Lumina
 		case Token::Type::CloseCurlyBracket: return "CloseCurlyBracket";
 		case Token::Type::OpenParenthesis: return "OpenParenthesis";
 		case Token::Type::CloseParenthesis: return "CloseParenthesis";
+		case Token::Type::OpenBracket: return "OpenBracket";
+		case Token::Type::CloseBracket: return "CloseBracket";
 		case Token::Type::Accessor: return "Accessor";
 		case Token::Type::Comment: return "Comment";
 		case Token::Type::Operator: return "Operator";

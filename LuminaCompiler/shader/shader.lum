@@ -15,7 +15,7 @@ struct Material
 {
     Vector3 diffuseColor;
     Vector3 specularColor;
-    float shininess;
+    float shininess[4];
 };
 
 // Define a texture

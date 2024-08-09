@@ -336,6 +336,14 @@ namespace Lumina
 						tokenStr = parseSpecialToken(p_rawCode, index, "}");
 						tokenType = Token::Type::CloseCurlyBracket;
 						break;
+					case '[':
+						tokenStr = parseSpecialToken(p_rawCode, index, "[");
+						tokenType = Token::Type::OpenBracket;
+						break;
+					case ']':
+						tokenStr = parseSpecialToken(p_rawCode, index, "]");
+						tokenType = Token::Type::CloseBracket;
+						break;
 					case '(':
 						tokenStr = parseSpecialToken(p_rawCode, index, "(");
 						tokenType = Token::Type::OpenParenthesis;

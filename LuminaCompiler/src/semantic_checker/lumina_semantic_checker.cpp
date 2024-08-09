@@ -83,6 +83,34 @@ namespace Lumina
 			_index++;
 		}
 
+		std::cout << " --- Structures ---" << std::endl;
+		for (const auto& structure : _structures)
+		{
+			std::cout << *structure << std::endl;
+		}
+		std::cout << " --- --- --- --- ---" << std::endl << std::endl;
+
+		std::cout << " --- Attributes ---" << std::endl;
+		for (const auto& attribute : _attributes)
+		{
+			std::cout << *attribute << std::endl;
+		}
+		std::cout << " --- --- --- --- ---" << std::endl << std::endl;
+
+		std::cout << " --- Constants ---" << std::endl;
+		for (const auto& constant : _constants)
+		{
+			std::cout << *constant << std::endl;
+		}
+		std::cout << " --- --- --- --- ---" << std::endl << std::endl;
+
+		std::cout << " --- Texture ---" << std::endl;
+		for (const auto& texture : _textures)
+		{
+			std::cout << texture << std::endl;
+		}
+		std::cout << " --- --- --- --- ---" << std::endl << std::endl;
+
 		return _result;
 	}
 }

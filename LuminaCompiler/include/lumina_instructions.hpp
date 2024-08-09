@@ -107,6 +107,7 @@ namespace Lumina
 	struct BlockElementInstruction
 	{
 		std::shared_ptr<TypeInstruction> type;
+		size_t nbElement;
 		Lumina::Token name;
 
 		BlockElementInstruction()

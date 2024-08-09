@@ -36,7 +36,7 @@ namespace Lumina
 					throw TokenBasedError(p_file, "Type [" + typeToken.content + "] not found", typeToken);
 				}
 
-				newStructure.attributes.push_back({ attributeType, element->name.content });
+				newStructure.attributes.push_back({ attributeType, element->name.content, element->nbElement });
 			}
 			catch (TokenBasedError& e)
 			{

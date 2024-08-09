@@ -58,7 +58,10 @@
 [            EndOfSentence] | [ 17::25 ] | ;
 [               Identifier] | [ 18::4  ] | float
 [               Identifier] | [ 18::10 ] | shininess
-[            EndOfSentence] | [ 18::19 ] | ;
+[              OpenBracket] | [ 18::19 ] | [
+[                   Number] | [ 18::20 ] | 4
+[             CloseBracket] | [ 18::21 ] | ]
+[            EndOfSentence] | [ 18::22 ] | ;
 [        CloseCurlyBracket] | [ 19::0  ] | }
 [            EndOfSentence] | [ 19::1  ] | ;
 [                  Comment] | [ 21::0  ] | // Define a texture

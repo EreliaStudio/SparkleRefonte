@@ -49,7 +49,9 @@ namespace Lumina
 			EndOfSentence, // ';'
 			Assignator, // '=', "+=", "-=" etc
 			Incrementor, // '++', '--'
-			Comma
+			Comma, // ','
+			OpenBracket, // '['
+			CloseBracket // ']'
 		};
 
 		Type type = Type::Unknow;

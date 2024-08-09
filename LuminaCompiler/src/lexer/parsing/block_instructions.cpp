@@ -8,6 +8,17 @@ namespace Lumina
 
 		result->type = parseTypeInstruction();
 		result->name = expect(Lumina::Token::Type::Identifier, "Expected an identifier name");
+		if (currentToken().type != Lumina::Token::Type::EndOfSentence)
+		{
+			expect(Lumina::Token::Type::OpenBracket, "Expected an opening bracket to define an array or an end of sentence." + DEBUG_INFORMATION);
+			Token numberToken = expect(Lumina::Token::Type::Number, "Expected a number of element for the array." + DEBUG_INFORMATION);
+			result->nbElement = std::stoi(numberToken.content);
+			expect(Lumina::Token::Type::CloseBracket, "Expected a closing bracket." + DEBUG_INFORMATION);
+		}
+		else
+		{
+			result->nbElement = 0;
+		}
 		expect(Lumina::Token::Type::EndOfSentence, "Expected end of sentence."+ DEBUG_INFORMATION);
 
 		return result;

@@ -262,7 +262,7 @@ namespace Lumina
 	{
 
 		Type matrix2x2;
-		matrix2x2.name = "Matrix4x4";
+		matrix2x2.name = "Matrix2x2";
 		matrix2x2.acceptOperation = true;
 
 		addStructure(matrix2x2);
@@ -286,7 +286,7 @@ namespace Lumina
 		os << "Attributes:\n";
 		for (const auto& attr : type.attributes)
 		{
-			os << "  - " << attr.name << ": " << (attr.type ? attr.type->name : "null") << "\n";
+			os << "  - " << attr.name << ": " << (attr.type ? attr.type->name : "null") << (attr.size == 0 ? "" : "[" + std::to_string(attr.size) + "]") << "\n";
 		}
 		os << "Accepted Conversions:\n";
 		for (const auto& conv : type.acceptedConversion)
