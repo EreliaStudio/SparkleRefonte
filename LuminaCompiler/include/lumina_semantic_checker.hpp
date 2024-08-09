@@ -46,7 +46,7 @@ namespace Lumina
 		{
 			Type* returnType;
 			std::string name;
-			std::vector<Type*> parameters;
+			std::unordered_map<std::string, Type*> parameters;
 		};
 
 	private:

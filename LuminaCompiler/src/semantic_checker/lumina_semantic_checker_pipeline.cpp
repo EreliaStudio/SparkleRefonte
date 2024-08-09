@@ -10,6 +10,7 @@ namespace Lumina
 			throw TokenBasedError(p_file, "[" + p_instruction->pipelineToken.content + "] already parsed.", p_instruction->pipelineToken);
 		}
 
+		std::cout << "Pipeline [" << p_instruction->pipelineToken.content << "] :" << std::endl;
 		checkSymbolBodyInstruction(p_file, p_instruction->body, (p_instruction->pipelineToken.content == "VertexPass" ? _vertexPassVariables : _fragmentPassVariables));
 	}
 }

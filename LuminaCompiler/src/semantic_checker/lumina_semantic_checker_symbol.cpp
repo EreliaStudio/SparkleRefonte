@@ -25,7 +25,12 @@ namespace Lumina
 				throwException(p_file, "Parameter type [" + parameterTypeToken.content + "] not found", returnTypeToken);
 			}
 
-			newSymbol.parameters.push_back(parameterType);
+			if (newSymbol.parameters.contains(parameter->name.content) == true)
+			{
+				throwException(p_file, "Parameter [" + parameter->name.content + "] already declared in function [" + newSymbol.name + "]", returnTypeToken);
+			}
+
+			newSymbol.parameters[parameter->name.content] = parameterType;
 		}
 
 		const std::vector<Symbol>& tmpSymbolArray = symbolArray(newSymbol.name);
@@ -42,9 +47,9 @@ namespace Lumina
 			{
 				bool isSame = true;
 
-				for (size_t i = 0; isSame == true && i < symbol.parameters.size(); i++)
+				for (const auto& [name, type] : newSymbol.parameters)
 				{
-					if (symbol.parameters[i] != newSymbol.parameters[i])
+					if (symbol.parameters.contains(name))
 					{
 						isSame = false;
 					}
@@ -75,6 +80,12 @@ namespace Lumina
 			functionVariables[constant->name] = constant;
 		}
 
+		for (const auto& [name, type] : newSymbol.parameters)
+		{
+			functionVariables[name] = type;
+		}
+
+		std::cout << "Symbol [" << newSymbol.name << "]" << std::endl;
 		checkSymbolBodyInstruction(p_file, p_instruction->body, functionVariables);
 	}
 }

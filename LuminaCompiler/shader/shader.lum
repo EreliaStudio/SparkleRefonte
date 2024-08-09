@@ -36,11 +36,6 @@ ConstantBlock lightingConstants
     float ambientIntensity;
 };
 
-    Vector3 calculateDiffuse(Vector3 normal, Vector3 lightDir, Vector3 lightColor)
-    {
-        float diff = max(dot(normal, lightDir), 0.0);
-        return diff * lightColor;
-    }
 // Create namespaces
 namespace Lighting
 {
