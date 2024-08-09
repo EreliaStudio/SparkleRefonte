@@ -13,6 +13,20 @@ namespace Lumina
 		return (result);
 	}
 
+	void SemanticChecker::throwException(const std::filesystem::path& p_filePath, const std::string& p_errorMessage, const Token& p_errorToken)
+	{
+		if (_currentNamespace.size() == 0)
+		{
+			throw TokenBasedError(p_filePath, p_errorMessage, p_errorToken);
+		}
+		else
+		{
+			std::string namespacePrefix = createNamespacePrefix();
+
+			throw TokenBasedError(p_filePath, p_errorMessage + " in namespace [" + namespacePrefix.substr(0, namespacePrefix.size() - 2) + "]", p_errorToken);
+		}
+	}
+
 	void SemanticChecker::addType(const SemanticChecker::Type& p_type)
 	{
 		_types.push_back(p_type);
@@ -20,17 +34,37 @@ namespace Lumina
 
 	SemanticChecker::Type* SemanticChecker::type(const std::string& p_typeName)
 	{
-		auto it = std::find_if(_types.begin(), _types.end(), [&, p_typeName](const Type& type)
-			{
-				return type.name == p_typeName;
-			});
+		std::vector<std::string> namespacePrefixes;
+		std::string currentPrefix = "";
 
-		if (it == _types.end())
+		for (const auto& ns : _currentNamespace)
 		{
-			return (nullptr);
+			if (!currentPrefix.empty())
+			{
+				currentPrefix += "::";
+			}
+			currentPrefix += ns.content;
+			namespacePrefixes.push_back(currentPrefix);
 		}
 
-		return (&(*it));
+		namespacePrefixes.push_back("");
+
+		for (const auto& prefix : namespacePrefixes)
+		{
+			std::string fullTypeName = prefix.empty() ? p_typeName : prefix + "::" + p_typeName;
+
+			auto it = std::find_if(_types.begin(), _types.end(), [&fullTypeName](const Type& type)
+				{
+					return type.name == fullTypeName;
+				});
+
+			if (it != _types.end())
+			{
+				return &(*it);
+			}
+		}
+
+		return nullptr;
 	}
 
 	SemanticChecker::Type* SemanticChecker::standardType(const std::string& p_standardTypeName)
@@ -69,6 +103,19 @@ namespace Lumina
 		return (result);
 	}
 
+
+	const std::vector<SemanticChecker::Symbol>& SemanticChecker::symbolArray(const std::string& p_symbolName)
+	{
+		return (_symbols[p_symbolName]);
+	}
+	
+	void SemanticChecker::addSymbol(const SemanticChecker::Symbol& p_symbol)
+	{
+		std::vector<SemanticChecker::Symbol>& symbolArray = _symbols[p_symbol.name];
+
+		symbolArray.push_back(p_symbol);
+	}
+
 	void SemanticChecker::addStandardType(const SemanticChecker::Type& p_standardType)
 	{
 		addType(p_standardType);
@@ -85,12 +132,18 @@ namespace Lumina
 	{
 		addType(p_attribute);
 		_attributes.insert(type(p_attribute.name));
+
+		_vertexPassVariables[p_attribute.name] = type(p_attribute.name);
+		_fragmentPassVariables[p_attribute.name] = type(p_attribute.name);
 	}
 
 	void SemanticChecker::addConstant(const SemanticChecker::Type& p_constant)
 	{
 		addType(p_constant);
 		_constants.insert(type(p_constant.name));
+
+		_vertexPassVariables[p_constant.name] = type(p_constant.name);
+		_fragmentPassVariables[p_constant.name] = type(p_constant.name);
 	}
 
 	void SemanticChecker::setupTypes()

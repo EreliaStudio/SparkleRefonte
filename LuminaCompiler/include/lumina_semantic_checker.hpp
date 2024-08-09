@@ -42,6 +42,13 @@ namespace Lumina
 			friend std::ostream& operator<<(std::ostream& os, const Type& type);
 		};
 
+		struct Symbol
+		{
+			Type* returnType;
+			std::string name;
+			std::vector<Type*> parameters;
+		};
+
 	private:
 		struct Element
 		{
@@ -65,7 +72,11 @@ namespace Lumina
 
 		std::unordered_set<std::string> _textures;
 
+		std::unordered_map<std::string, std::vector<Symbol>> _symbols;
+
+		bool _vertexParsed = false;
 		std::unordered_map<std::string, Type*> _vertexPassVariables;
+		bool _fragmentParsed = false;
 		std::unordered_map<std::string, Type*> _fragmentPassVariables;
 
 	public:
@@ -87,8 +98,12 @@ namespace Lumina
 		Type* structure(const std::string& p_structureName);
 		Type* attribute(const std::string& p_attributeName);
 		Type* constant(const std::string& p_constantName);
+
+		const std::vector<Symbol>& symbolArray(const std::string& p_symbolName);
+		void addSymbol(const Symbol& p_symbol);
 		
 		std::string createNamespacePrefix() const;
+		void throwException(const std::filesystem::path& p_filePath, const std::string& p_errorMessage, const Token& p_errorToken);
 		
 		void checkIncludeInstruction(const std::filesystem::path& p_file, const std::shared_ptr<IncludeInstruction>& p_instruction);
 		void checkPipelineFlowInstruction(const std::filesystem::path& p_file, const std::shared_ptr<PipelineFlowInstruction>& p_instruction);
@@ -97,6 +112,12 @@ namespace Lumina
 		void checkConstantInstruction(const std::filesystem::path& p_file, const std::shared_ptr<ConstantBlockInstruction>& p_instruction);
 		void checkTextureInstruction(const std::filesystem::path& p_file, const std::shared_ptr<TextureInstruction>& p_instruction);
 
+		void checkSymbolInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolInstruction>& p_instruction);
+
+		void checkPipelineBodyInstruction(const std::filesystem::path& p_file, const std::shared_ptr<PipelineBodyInstruction>& p_instruction);
+
+		void checkSymbolBodyInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolBodyInstruction>& p_instruction, std::unordered_map<std::string, Type*> p_variables);
+		
 		void checkNamespaceInstruction(const std::filesystem::path& p_file, const std::shared_ptr<NamespaceInstruction>& p_instruction);
 
 		Result check(const std::filesystem::path& p_file, std::vector<std::shared_ptr<AbstractInstruction>>& p_instructions);

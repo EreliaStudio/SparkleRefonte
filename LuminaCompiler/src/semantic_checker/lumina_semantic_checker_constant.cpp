@@ -4,14 +4,18 @@ namespace Lumina
 {
 	void SemanticChecker::checkConstantInstruction(const std::filesystem::path& p_file, const std::shared_ptr<ConstantBlockInstruction>& p_instruction)
 	{
-		if (type(p_instruction->name.content) != nullptr)
+		std::string namespacePrefix = createNamespacePrefix();
+
+		if (type(namespacePrefix + p_instruction->name.content) != nullptr ||
+			_vertexPassVariables.contains(namespacePrefix + p_instruction->name.content) == true ||
+			_fragmentPassVariables.contains(namespacePrefix + p_instruction->name.content) == true)
 		{
-			throw TokenBasedError(p_file, "Constant [" + p_instruction->name.content + "] already define", p_instruction->name);
+			throwException(p_file, "Constant [" + p_instruction->name.content + "] already define", p_instruction->name);
 		}
 
 		Type newConstant;
 
-		newConstant.name = p_instruction->name.content;
+		newConstant.name = namespacePrefix + p_instruction->name.content;
 
 		for (const auto& element : p_instruction->elements)
 		{

@@ -5,7 +5,9 @@ namespace Lumina
 	void SemanticChecker::checkNamespaceInstruction(const std::filesystem::path& p_file, const std::shared_ptr<NamespaceInstruction>& p_instruction)
 	{
 		size_t namespaceIndex = 0;
-		
+
+		_currentNamespace.push_back(p_instruction->name);
+
 		while (namespaceIndex < p_instruction->instructions.size())
 		{
 			try
@@ -34,6 +36,11 @@ namespace Lumina
 					checkTextureInstruction(p_file, static_pointer_cast<TextureInstruction>(instruction));
 					break;
 				}
+				case Instruction::Type::Symbol:
+				{
+					checkSymbolInstruction(p_file, static_pointer_cast<SymbolInstruction>(instruction));
+					break;
+				}
 				case Instruction::Type::Namespace:
 				{
 					checkNamespaceInstruction(p_file, static_pointer_cast<NamespaceInstruction>(instruction));
@@ -52,5 +59,7 @@ namespace Lumina
 
 			namespaceIndex++;
 		}
+
+		_currentNamespace.pop_back();
 	}
 }

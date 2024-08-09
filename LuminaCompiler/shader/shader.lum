@@ -36,10 +36,31 @@ ConstantBlock lightingConstants
     float ambientIntensity;
 };
 
+    Vector3 calculateDiffuse(Vector3 normal, Vector3 lightDir, Vector3 lightColor)
+    {
+        float diff = max(dot(normal, lightDir), 0.0);
+        return diff * lightColor;
+    }
 // Create namespaces
 namespace Lighting
 {
+    Texture diffuseTexture2;
+
+    struct Material
+    {
+        Vector3 diffuseColor;
+        Vector3 specularColor;
+        float shininess[4];
+    };
+
     Vector3 calculateDiffuse(Vector3 normal, Vector3 lightDir, Vector3 lightColor)
+    {
+        float diff = max(dot(normal, lightDir), 0.0);
+        return diff * lightColor;
+    }
+
+    
+    Vector3 calculateDiffuse(Vector3 normal, Vector3 lightDir, Vector4 lightColor)
     {
         float diff = max(dot(normal, lightDir), 0.0);
         return diff * lightColor;

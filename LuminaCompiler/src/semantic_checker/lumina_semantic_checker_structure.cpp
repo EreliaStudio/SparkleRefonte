@@ -4,14 +4,16 @@ namespace Lumina
 {
 	void SemanticChecker::checkStructureInstruction(const std::filesystem::path& p_file, const std::shared_ptr<StructureBlockInstruction>& p_instruction)
 	{
-		if (type(p_instruction->name.content) != nullptr)
+		std::string namespacePrefix = createNamespacePrefix();
+
+		if (type(namespacePrefix + p_instruction->name.content) != nullptr)
 		{
-			throw TokenBasedError(p_file, "Structure [" + p_instruction->name.content + "] already define", p_instruction->name);
+			throwException(p_file, "Structure [" + p_instruction->name.content + "] already define", p_instruction->name);
 		}
 
 		Type newStructure;
 
-		newStructure.name = p_instruction->name.content;
+		newStructure.name = namespacePrefix + p_instruction->name.content;
 
 		for (const auto& element : p_instruction->elements)
 		{
