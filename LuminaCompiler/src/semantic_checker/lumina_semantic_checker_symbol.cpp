@@ -85,7 +85,6 @@ namespace Lumina
 			functionVariables[name] = type;
 		}
 
-		std::cout << "Symbol [" << newSymbol.name << "]" << std::endl;
 		checkSymbolBodyInstruction(p_file, p_instruction->body, functionVariables);
 	}
 }

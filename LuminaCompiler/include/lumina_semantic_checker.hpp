@@ -36,7 +36,7 @@ namespace Lumina
 			std::string name = "";
 			std::vector<Attribute> attributes = {};
 			std::vector<Type*> acceptedConversion = {}; //Point to type convertible from this type
-			bool acceptOperation = false; //Operator +, -, *, /
+			std::vector<std::string> operators; //Operator +, -, *, /
 			std::vector<std::vector<Type*>> constructors = {};
 
 			friend std::ostream& operator<<(std::ostream& os, const Type& type);
@@ -116,6 +116,10 @@ namespace Lumina
 
 		void checkPipelineBodyInstruction(const std::filesystem::path& p_file, const std::shared_ptr<PipelineBodyInstruction>& p_instruction);
 
+		void checkOperatorExpression(const std::filesystem::path& p_file, const std::shared_ptr<OperatorExpressionInstruction>& p_instruction, Type* p_expectedType);
+		void checkSymbolCallReturnType(const std::filesystem::path& p_file, const std::shared_ptr<OperatorExpressionInstruction>& p_instruction, Type* p_expectedType):
+		void checkExpressionInstruction(const std::filesystem::path& p_file, const std::shared_ptr<ExpressionInstruction>& p_instruction, const std::unordered_map<std::string, Type*>& p_variables, Type* p_expectedType);
+		void checkVariableDeclarationInstruction(const std::filesystem::path& p_file, const std::shared_ptr<VariableDeclarationInstruction>& varDecl, std::unordered_map<std::string, Type*>& p_variables);
 		void checkSymbolBodyInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolBodyInstruction>& p_instruction, std::unordered_map<std::string, Type*> p_variables);
 		
 		void checkNamespaceInstruction(const std::filesystem::path& p_file, const std::shared_ptr<NamespaceInstruction>& p_instruction);

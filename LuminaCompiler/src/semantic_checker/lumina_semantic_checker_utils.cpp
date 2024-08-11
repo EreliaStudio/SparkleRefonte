@@ -148,63 +148,70 @@ namespace Lumina
 
 	void SemanticChecker::setupTypes()
 	{
+		// int type
 		Type intType;
 		intType.name = "int";
-		intType.acceptOperation = true;
+		intType.operators = { "+", "-", "*", "/", "%", "==", "!=", "<", ">", "<=", ">=", "+=", "-=", "*=", "/=", "%=" };
 		addStandardType(intType);
 
+		// float type
 		Type floatType;
 		floatType.name = "float";
-		floatType.acceptOperation = true;
+		floatType.operators = { "+", "-", "*", "/", "==", "!=", "<", ">", "<=", ">=", "+=", "-=", "*=", "/=" };
 		addStandardType(floatType);
 
+		// uint type
 		Type uintType;
 		uintType.name = "uint";
-		uintType.acceptOperation = true;
+		uintType.operators = { "+", "-", "*", "/", "%", "==", "!=", "<", ">", "<=", ">=", "+=", "-=", "*=", "/=", "%=" };
 		addStandardType(uintType);
 
+		// bool type
 		Type boolType;
 		boolType.name = "bool";
-		boolType.acceptOperation = false; // Typically, operations like +, -, *, / are not accepted on bool
+		boolType.operators = { "==", "!=", "&&", "||" }; // Typically, only logical and comparison operators are accepted
 		addStandardType(boolType);
 
-		// Vector2 types
+		// Vector2 type
 		Type vector2Type;
 		vector2Type.name = "Vector2";
 		vector2Type.attributes.push_back({ type("float"), "x", 1 });
 		vector2Type.attributes.push_back({ type("float"), "y", 1 });
-		vector2Type.acceptOperation = true;
+		vector2Type.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise operations
 		vector2Type.constructors = {
 			{type("float"), type("float")}
 		};
 		addStandardType(vector2Type);
 
+		// Vector2Int type
 		Type vector2IntType;
 		vector2IntType.name = "Vector2Int";
 		vector2IntType.attributes.push_back({ type("int"), "x", 1 });
 		vector2IntType.attributes.push_back({ type("int"), "y", 1 });
-		vector2IntType.acceptOperation = true;
+		vector2IntType.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise operations
 		vector2IntType.constructors = {
 			{type("int"), type("int")}
 		};
 		addStandardType(vector2IntType);
 
+		// Vector2UInt type
 		Type vector2UIntType;
 		vector2UIntType.name = "Vector2UInt";
 		vector2UIntType.attributes.push_back({ type("uint"), "x", 1 });
 		vector2UIntType.attributes.push_back({ type("uint"), "y", 1 });
-		vector2UIntType.acceptOperation = true;
+		vector2UIntType.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise operations
 		vector2UIntType.constructors = {
 			{type("uint"), type("uint")}
 		};
 		addStandardType(vector2UIntType);
 
+		// Vector3 type
 		Type vector3Type;
 		vector3Type.name = "Vector3";
 		vector3Type.attributes.push_back({ type("float"), "x", 1 });
 		vector3Type.attributes.push_back({ type("float"), "y", 1 });
 		vector3Type.attributes.push_back({ type("float"), "z", 1 });
-		vector3Type.acceptOperation = true;
+		vector3Type.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise operations
 		vector3Type.constructors = {
 			{type("float"), type("float"), type("float")},
 			{type("Vector2"), type("float")},
@@ -212,12 +219,13 @@ namespace Lumina
 		};
 		addStandardType(vector3Type);
 
+		// Vector3Int type
 		Type vector3IntType;
 		vector3IntType.name = "Vector3Int";
 		vector3IntType.attributes.push_back({ type("int"), "x", 1 });
 		vector3IntType.attributes.push_back({ type("int"), "y", 1 });
 		vector3IntType.attributes.push_back({ type("int"), "z", 1 });
-		vector3IntType.acceptOperation = true;
+		vector3IntType.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise operations
 		vector3IntType.constructors = {
 			{type("int"), type("int"), type("int")},
 			{type("Vector2Int"), type("int")},
@@ -225,12 +233,13 @@ namespace Lumina
 		};
 		addStandardType(vector3IntType);
 
+		// Vector3UInt type
 		Type vector3UIntType;
 		vector3UIntType.name = "Vector3UInt";
 		vector3UIntType.attributes.push_back({ type("uint"), "x", 1 });
 		vector3UIntType.attributes.push_back({ type("uint"), "y", 1 });
 		vector3UIntType.attributes.push_back({ type("uint"), "z", 1 });
-		vector3UIntType.acceptOperation = true;
+		vector3UIntType.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise operations
 		vector3UIntType.constructors = {
 			{type("uint"), type("uint"), type("uint")},
 			{type("Vector2UInt"), type("uint")},
@@ -238,13 +247,14 @@ namespace Lumina
 		};
 		addStandardType(vector3UIntType);
 
+		// Vector4 type
 		Type vector4Type;
 		vector4Type.name = "Vector4";
 		vector4Type.attributes.push_back({ type("float"), "x", 1 });
 		vector4Type.attributes.push_back({ type("float"), "y", 1 });
 		vector4Type.attributes.push_back({ type("float"), "z", 1 });
 		vector4Type.attributes.push_back({ type("float"), "w", 1 });
-		vector4Type.acceptOperation = true;
+		vector4Type.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise operations
 		vector4Type.constructors = {
 			{type("float"), type("float"), type("float"), type("float")},
 			{type("Vector3"), type("float")},
@@ -256,13 +266,14 @@ namespace Lumina
 		};
 		addStandardType(vector4Type);
 
+		// Vector4Int type
 		Type vector4IntType;
 		vector4IntType.name = "Vector4Int";
 		vector4IntType.attributes.push_back({ type("int"), "x", 1 });
 		vector4IntType.attributes.push_back({ type("int"), "y", 1 });
 		vector4IntType.attributes.push_back({ type("int"), "z", 1 });
 		vector4IntType.attributes.push_back({ type("int"), "w", 1 });
-		vector4IntType.acceptOperation = true;
+		vector4IntType.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise operations
 		vector4IntType.constructors = {
 			{type("int"), type("int"), type("int"), type("int")},
 			{type("Vector3Int"), type("int")},
@@ -274,13 +285,14 @@ namespace Lumina
 		};
 		addStandardType(vector4IntType);
 
+		// Vector4UInt type
 		Type vector4UIntType;
 		vector4UIntType.name = "Vector4UInt";
 		vector4UIntType.attributes.push_back({ type("uint"), "x", 1 });
 		vector4UIntType.attributes.push_back({ type("uint"), "y", 1 });
 		vector4UIntType.attributes.push_back({ type("uint"), "z", 1 });
 		vector4UIntType.attributes.push_back({ type("uint"), "w", 1 });
-		vector4UIntType.acceptOperation = true;
+		vector4UIntType.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise operations
 		vector4UIntType.constructors = {
 			{type("uint"), type("uint"), type("uint"), type("uint")},
 			{type("Vector3UInt"), type("uint")},
@@ -290,9 +302,9 @@ namespace Lumina
 			{type("Vector2UInt"), type("uint"), type("uint")},
 			{type("uint"), type("uint"), type("Vector2UInt")}
 		};
-
 		addStandardType(vector4UIntType);
 
+		// Accepted type conversions (unchanged)
 		type("int")->acceptedConversion = { type("float"), type("uint") };
 		type("float")->acceptedConversion = { type("int"), type("uint") };
 		type("uint")->acceptedConversion = { type("int"), type("float") };
@@ -313,23 +325,22 @@ namespace Lumina
 
 	void SemanticChecker::setupStructures()
 	{
-
+		// Matrix2x2 type
 		Type matrix2x2;
 		matrix2x2.name = "Matrix2x2";
-		matrix2x2.acceptOperation = true;
-
+		matrix2x2.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise and matrix operations
 		addStructure(matrix2x2);
 
+		// Matrix3x3 type
 		Type matrix3x3;
 		matrix3x3.name = "Matrix3x3";
-		matrix3x3.acceptOperation = true;
-
+		matrix3x3.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise and matrix operations
 		addStructure(matrix3x3);
-		
+
+		// Matrix4x4 type
 		Type matrix4x4;
 		matrix4x4.name = "Matrix4x4";
-		matrix4x4.acceptOperation = true;
-
+		matrix4x4.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise and matrix operations
 		addStructure(matrix4x4);
 	}
 	
