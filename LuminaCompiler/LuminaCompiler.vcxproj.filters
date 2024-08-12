@@ -66,43 +66,46 @@
     <ClCompile Include="src\lexer\parsing\pipeline_instructions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\semantic_checker\lumina_semantic_checker.cpp">
+    <ClCompile Include="src\semantic_checker\checker.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_include.cpp">
+    <ClCompile Include="src\semantic_checker\check_include_instruction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_utils.cpp">
+    <ClCompile Include="src\semantic_checker\checker_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_pipeline_flow.cpp">
+    <ClCompile Include="src\semantic_checker\check_pipeline_flow_instruction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_structure.cpp">
+    <ClCompile Include="src\semantic_checker\check_structure_instruction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_attribute.cpp">
+    <ClCompile Include="src\semantic_checker\check_attribute_instruction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_constant.cpp">
+    <ClCompile Include="src\semantic_checker\check_constant_instruction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_texture.cpp">
+    <ClCompile Include="src\semantic_checker\check_texture_instruction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_namespace.cpp">
+    <ClCompile Include="src\semantic_checker\check_namespace_instruction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_symbol.cpp">
+    <ClCompile Include="src\semantic_checker\check_symbol_instruction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_code_block.cpp">
+    <ClCompile Include="src\semantic_checker\check_code_block_instruction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\semantic_checker\lumina_semantic_checker_pipeline.cpp">
+    <ClCompile Include="src\semantic_checker\check_pipeline_instruction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\semantic_checker\symbol_body\lumina_semantic_checker_symbol_body_variable_declaration.cpp">
+    <ClCompile Include="src\semantic_checker\symbol_body\variable_declaration.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\semantic_checker\symbol_body\expression_utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

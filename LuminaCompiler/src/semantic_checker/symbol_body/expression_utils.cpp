@@ -165,7 +165,7 @@ namespace Lumina
 	{
 		Token variableToken = Token::merge(p_instruction->tokens, Token::Type::Identifier);
 		Type* variableType = getExpressionElementType(p_file, static_pointer_cast<ExpressionElementInstruction>(p_instruction), p_variables);
-		
+
 		if (p_expectedType != variableType && p_expectedType->acceptedConversion.contains(variableType) == false)
 		{
 			throw TokenBasedError(p_file, "No convertion from type [" + variableType->name + "] to expected type [" + p_expectedType->name + "]" + DEBUG_INFORMATION, variableToken);
@@ -215,29 +215,6 @@ namespace Lumina
 			{
 				_result.errors.push_back(e);
 			}
-		}
-	}
-
-	void SemanticChecker::checkVariableDeclarationInstruction(const std::filesystem::path& p_file, const std::shared_ptr<VariableDeclarationInstruction>& p_instruction, std::unordered_map<std::string, SemanticChecker::Type*>& p_variables)
-	{
-		Token typeToken = Token::merge(p_instruction->type->tokens, Token::Type::Identifier);
-		std::string typeName = typeToken.content;
-		Type* varType = type(typeName);
-		if (varType == nullptr)
-		{
-			throw TokenBasedError(p_file, "Type [" + typeName + "] not found", typeToken);
-		}
-
-		if (p_variables.contains(p_instruction->name.content))
-		{
-			throw TokenBasedError(p_file, "Variable [" + p_instruction->name.content + "] already declared in this scope", p_instruction->name);
-		}
-
-		p_variables[p_instruction->name.content] = varType;
-
-		if (p_instruction->initializer)
-		{
-			checkExpressionInstruction(p_file, p_instruction->initializer, p_variables, varType);
 		}
 	}
 }
