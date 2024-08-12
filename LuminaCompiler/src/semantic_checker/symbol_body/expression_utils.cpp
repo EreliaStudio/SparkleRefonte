@@ -46,7 +46,27 @@ namespace Lumina
 			throw TokenBasedError(p_file, "No symbol [" + nameToken.content + "] found" + DEBUG_INFORMATION, nameToken);
 		}
 
-		return (targetSymbolArray->back().returnType);
+		Type* result = targetSymbolArray->back().returnType;
+
+		if (value->resultAccessor != nullptr)
+		{
+			for (size_t i = 0; i < value->resultAccessor->tokens.size(); i++)
+			{
+				std::string expectedAttributeName = value->resultAccessor->tokens[i].content;
+				const auto& it = std::find_if(result->attributes.begin(), result->attributes.end(), [expectedAttributeName](const Type::Attribute& p_attribute) {
+					return (p_attribute.name == expectedAttributeName);
+					});
+
+				if (it == result->attributes.end())
+				{
+					throw TokenBasedError(p_file, "Attribute [" + expectedAttributeName + "] not found in [" + result->name + "] type" + DEBUG_INFORMATION, value->resultAccessor->tokens[i]);
+				}
+
+				result = it->type;
+			}
+		}
+
+		return (result);
 	}
 
 	SemanticChecker::Type* SemanticChecker::getExpressionElementType(const std::filesystem::path& p_file, const std::shared_ptr<ExpressionElementInstruction>& p_instruction, const std::unordered_map<std::string, Type*>& p_variables)
@@ -104,6 +124,24 @@ namespace Lumina
 		}
 
 		Type* symbolReturnType = targetSymbolArray->front().returnType;
+
+		if (p_instruction->resultAccessor != nullptr)
+		{
+			for (size_t i = 0; i < p_instruction->resultAccessor->tokens.size(); i++)
+			{
+				std::string expectedAttributeName = p_instruction->resultAccessor->tokens[i].content;
+				const auto& it = std::find_if(symbolReturnType->attributes.begin(), symbolReturnType->attributes.end(), [expectedAttributeName](const Type::Attribute& p_attribute) {
+					return (p_attribute.name == expectedAttributeName);
+					});
+
+				if (it == symbolReturnType->attributes.end())
+				{
+					throw TokenBasedError(p_file, "Attribute [" + expectedAttributeName + "] not found in [" + symbolReturnType->name + "] type" + DEBUG_INFORMATION, p_instruction->resultAccessor->tokens[i]);
+				}
+
+				symbolReturnType = it->type;
+			}
+		}
 
 		if (p_expectedType != symbolReturnType && p_expectedType->acceptedConversion.contains(symbolReturnType) == false)
 		{

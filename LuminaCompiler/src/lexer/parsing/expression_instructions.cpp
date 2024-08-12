@@ -95,11 +95,13 @@ namespace Lumina
 				result->elements.push_back(parseOperatorExpressionInstruction());
 				isParsing = true;
 			}
-			else
+			else if (openParenthesis == 0)
 			{
 				isParsing = false;
 			}
 		}
+
+		
 
 		return result;
 	}

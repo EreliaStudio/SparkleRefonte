@@ -31,6 +31,7 @@ namespace Lumina
 			SymbolName,
 			SymbolBody,
 			SymbolCall,
+			ResultAccessor,
 			Return,
 			Discard,
 			Condition,
@@ -289,10 +290,23 @@ namespace Lumina
 		}
 	};
 
+
 	struct SymbolCallInstruction : public ExpressionElementInstruction
 	{
+		struct ResultAccessor : public AbstractInstruction
+		{
+			std::vector<Token> tokens;
+
+			ResultAccessor() :
+				AbstractInstruction(AbstractInstruction::Type::ResultAccessor)
+			{
+
+			}
+		};
+
 		std::shared_ptr<SymbolNameInstruction> name;
 		std::vector<std::shared_ptr<ExpressionInstruction>> arguments;
+		std::shared_ptr<ResultAccessor> resultAccessor;
 
 		SymbolCallInstruction() :
 			ExpressionElementInstruction(AbstractInstruction::Type::SymbolCall)

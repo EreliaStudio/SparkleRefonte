@@ -46,6 +46,17 @@ namespace Lumina
 		}
 		expect(Lumina::Token::Type::CloseParenthesis, "Expected a close parenthesis."+ DEBUG_INFORMATION);
 
+		if (currentToken().type == Token::Type::Accessor)
+		{
+			result->resultAccessor = std::make_shared<SymbolCallInstruction::ResultAccessor>();
+
+			while (currentToken().type == Lumina::Token::Type::Accessor)
+			{
+				expect(Lumina::Token::Type::Accessor, "Expected an accessor token." + DEBUG_INFORMATION);
+				result->resultAccessor->tokens.push_back(expect(Lumina::Token::Type::Identifier, "Expected an identifier token." + DEBUG_INFORMATION));
+			}
+		}
+
 		return result;
 	}
 }
