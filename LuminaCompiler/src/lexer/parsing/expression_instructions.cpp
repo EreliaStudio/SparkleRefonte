@@ -42,7 +42,7 @@ namespace Lumina
 		}
 		while (currentToken().type == Lumina::Token::Type::Accessor)
 		{
-			result->tokens.push_back(expect(Lumina::Token::Type::Accessor, "Expected an accessor token."+ DEBUG_INFORMATION));
+			expect(Lumina::Token::Type::Accessor, "Expected an accessor token."+ DEBUG_INFORMATION);
 			result->tokens.push_back(expect(Lumina::Token::Type::Identifier, "Expected an identifier token."+ DEBUG_INFORMATION));
 		}
 
@@ -53,11 +53,22 @@ namespace Lumina
 	{
 		std::shared_ptr<ExpressionInstruction> result = std::make_shared<ExpressionInstruction>();
 
+		size_t openParenthesis = 0;
 		bool isParsing = true;
 		while (isParsing)
 		{
 			switch (currentToken().type)
 			{
+			case Lumina::Token::Type::OpenParenthesis:
+				openParenthesis++;
+				expect(Lumina::Token::Type::OpenParenthesis);
+				break;
+			case Lumina::Token::Type::CloseParenthesis:
+				if (openParenthesis == 0)
+					throw Lumina::TokenBasedError(_file, "Unexpected token ')'." + DEBUG_INFORMATION, currentToken());
+				expect(Lumina::Token::Type::CloseParenthesis);
+				openParenthesis--;
+				break;
 			case Lumina::Token::Type::Number:
 				result->elements.push_back(parseNumberExpressionValueInstruction());
 				break;

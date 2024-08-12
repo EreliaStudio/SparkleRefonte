@@ -35,8 +35,8 @@ namespace Lumina
 
 			std::string name = "";
 			std::vector<Attribute> attributes = {};
-			std::vector<Type*> acceptedConversion = {}; //Point to type convertible from this type
-			std::vector<std::string> operators; //Operator +, -, *, /
+			std::unordered_set<Type*> acceptedConversion = {}; //Point to type convertible from this type
+			std::unordered_set<std::string> operators; //Operator +, -, *, /
 			std::vector<std::vector<Type*>> constructors = {};
 
 			friend std::ostream& operator<<(std::ostream& os, const Type& type);
@@ -44,9 +44,14 @@ namespace Lumina
 
 		struct Symbol
 		{
+			struct Parameter
+			{
+				std::string name;
+				Type* type;
+			};
 			Type* returnType;
 			std::string name;
-			std::unordered_map<std::string, Type*> parameters;
+			std::vector<Parameter> parameters;
 		};
 
 	private:
@@ -116,7 +121,15 @@ namespace Lumina
 
 		void checkPipelineBodyInstruction(const std::filesystem::path& p_file, const std::shared_ptr<PipelineBodyInstruction>& p_instruction);
 
-		void checkOperatorExpression(const std::filesystem::path& p_file, const std::shared_ptr<OperatorExpressionInstruction>& p_instruction, Type* p_expectedType);
+		Type* getNumberExpressionElementType(const std::filesystem::path& p_file, const std::shared_ptr<NumberExpressionValueInstruction>& p_instruction);
+		Type* getVariableExpressionElementType(const std::filesystem::path& p_file, const std::shared_ptr<VariableExpressionValueInstruction>& p_instruction, const std::unordered_map<std::string, Type*>& p_variables);
+		Type* getSymbolCallExpressionElementType(const std::filesystem::path& p_file, const std::shared_ptr<ExpressionElementInstruction>& p_instruction);
+		Type* getExpressionElementType(const std::filesystem::path& p_file, const std::shared_ptr<ExpressionElementInstruction>& p_instruction, const std::unordered_map<std::string, Type*>& p_variables);
+		Type* getExpressionType(const std::filesystem::path& p_file, const std::shared_ptr<ExpressionInstruction>& p_instruction, const std::unordered_map<std::string, Type*>& p_variables);
+
+		void checkNumberExpressionValueInstruction(const std::filesystem::path& p_file, const std::shared_ptr<NumberExpressionValueInstruction>& p_instruction, Type* p_expectedType);
+		void checkVariableExpressionValueInstruction(const std::filesystem::path& p_file, const std::shared_ptr<VariableExpressionValueInstruction>& p_instruction, const std::unordered_map<std::string, Type*>& p_variables, Type* p_expectedType);
+		void checkSymbolCallInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolCallInstruction>& p_instruction, const std::unordered_map<std::string, Type*>& p_variables, Type* p_expectedType);
 		void checkExpressionInstruction(const std::filesystem::path& p_file, const std::shared_ptr<ExpressionInstruction>& p_instruction, const std::unordered_map<std::string, Type*>& p_variables, Type* p_expectedType);
 		void checkVariableDeclarationInstruction(const std::filesystem::path& p_file, const std::shared_ptr<VariableDeclarationInstruction>& varDecl, std::unordered_map<std::string, Type*>& p_variables);
 		void checkSymbolBodyInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolBodyInstruction>& p_instruction, std::unordered_map<std::string, Type*> p_variables);

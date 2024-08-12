@@ -192,32 +192,28 @@ namespace Lumina
 
 	struct ExpressionElementInstruction : public AbstractInstruction
 	{
-		virtual std::vector<Token> getTokens() const = 0;
-
 		ExpressionElementInstruction(const AbstractInstruction::Type& p_type) :
 			AbstractInstruction(p_type)
 		{
 
 		}
+
+		virtual Token mergedToken() const = 0;
 	};
 
 	struct OperatorExpressionInstruction : public ExpressionElementInstruction
 	{
 		Lumina::Token token;
 
-		std::vector<Token> getTokens() const
-		{
-			std::vector<Token> result;
-
-			result.push_back(token);
-
-			return (result);
-		}
-
 		OperatorExpressionInstruction() :
 			ExpressionElementInstruction(AbstractInstruction::Type::OperatorExpression)
 		{
 
+		}
+
+		Token mergedToken() const
+		{
+			return (token);
 		}
 	};
 
@@ -225,19 +221,15 @@ namespace Lumina
 	{
 		Lumina::Token token;
 
-		std::vector<Token> getTokens() const
-		{
-			std::vector<Token> result;
-
-			result.push_back(token);
-
-			return (result);
-		}
-
 		NumberExpressionValueInstruction() :
 			ExpressionElementInstruction(AbstractInstruction::Type::NumberExpressionValue)
 		{
 
+		}
+
+		Token mergedToken() const
+		{
+			return (token);
 		}
 	};
 
@@ -245,19 +237,15 @@ namespace Lumina
 	{
 		Lumina::Token token;
 
-		std::vector<Token> getTokens() const
-		{
-			std::vector<Token> result;
-
-			result.push_back(token);
-
-			return (result);
-		}
-
 		StringLiteralsExpressionValueInstruction() :
 			ExpressionElementInstruction(AbstractInstruction::Type::StringLiteralsExpressionValue)
 		{
 
+		}
+
+		Token mergedToken() const
+		{
+			return (token);
 		}
 	};
 
@@ -265,15 +253,15 @@ namespace Lumina
 	{
 		std::vector<Lumina::Token> tokens;
 
-		std::vector<Token> getTokens() const
-		{
-			return (tokens);
-		}
-
 		VariableExpressionValueInstruction() :
 			ExpressionElementInstruction(AbstractInstruction::Type::VariableExpressionValue)
 		{
 
+		}
+
+		Token mergedToken() const
+		{
+			return (Token::merge(tokens, Token::Type::Identifier));
 		}
 	};
 
@@ -287,18 +275,46 @@ namespace Lumina
 
 		}
 
-		std::vector<Lumina::Token> getTokens() const
+		Token mergedToken() const;
+	};
+
+	struct SymbolNameInstruction : public AbstractInstruction
+	{
+		std::vector<Lumina::Token> tokens;
+
+		SymbolNameInstruction() :
+			AbstractInstruction(AbstractInstruction::Type::SymbolName)
 		{
-			std::vector<Lumina::Token> result;
 
-			for (const auto& element : elements)
+		}
+	};
+
+	struct SymbolCallInstruction : public ExpressionElementInstruction
+	{
+		std::shared_ptr<SymbolNameInstruction> name;
+		std::vector<std::shared_ptr<ExpressionInstruction>> arguments;
+
+		SymbolCallInstruction() :
+			ExpressionElementInstruction(AbstractInstruction::Type::SymbolCall)
+		{
+
+		}
+
+		Token mergedToken() const
+		{
+			std::vector<Token> tokens;
+
+			for (const auto& token : name->tokens)
 			{
-				std::vector<Lumina::Token> elementTokens = element->getTokens();
-
-				result.insert(result.end(), elementTokens.begin(), elementTokens.end());
+				tokens.push_back(token);
 			}
 
-			return (result);
+			for (const auto& argument : arguments)
+			{
+				tokens.push_back(argument->mergedToken());
+			}
+
+			return (Token::merge(tokens, Token::Type::Identifier));
 		}
 	};
 
@@ -338,56 +354,12 @@ namespace Lumina
 		}
 	};
 
-	struct SymbolNameInstruction : public AbstractInstruction
-	{
-		std::vector<Lumina::Token> tokens;
-
-		SymbolNameInstruction() :
-			AbstractInstruction(AbstractInstruction::Type::SymbolName)
-		{
-
-		}
-	};
-
 	struct SymbolBodyInstruction : public AbstractInstruction
 	{
 		std::vector<std::shared_ptr<Instruction>> elements;
 
 		SymbolBodyInstruction() :
 			AbstractInstruction(AbstractInstruction::Type::SymbolBody)
-		{
-
-		}
-	};
-
-	struct SymbolCallInstruction : public ExpressionElementInstruction
-	{
-		std::shared_ptr<SymbolNameInstruction> name;
-		std::vector<std::shared_ptr<ExpressionInstruction>> arguments;
-
-		std::vector<Lumina::Token> getTokens() const
-		{
-			std::vector<Lumina::Token> result;
-
-			for (const auto& token : name->tokens)
-			{
-				result.push_back(token);
-			}
-
-			for (const auto& argument : arguments)
-			{
-				std::vector<Lumina::Token> tmp = argument->getTokens();
-				for (const auto& token : tmp)
-				{
-					result.push_back(token);
-				}
-			}
-
-			return (result);
-		}
-
-		SymbolCallInstruction() :
-			ExpressionElementInstruction(AbstractInstruction::Type::SymbolCall)
 		{
 
 		}

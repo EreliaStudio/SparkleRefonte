@@ -173,6 +173,10 @@ namespace Lumina
 
 	void SemanticChecker::setupTypes()
 	{
+		Type voidType;
+		voidType.name = "void";
+		addStandardType(voidType);
+
 		// int type
 		Type intType;
 		intType.name = "int";

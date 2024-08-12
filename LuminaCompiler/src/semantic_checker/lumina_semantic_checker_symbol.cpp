@@ -32,12 +32,15 @@ namespace Lumina
 				throwException(p_file, "Parameter type [" + parameterTypeToken.content + "] not found", returnTypeToken);
 			}
 
-			if (newSymbol.parameters.contains(parameter->name.content) == true)
+			auto it = std::find_if(newSymbol.parameters.begin(), newSymbol.parameters.end(), [parameter](const Symbol::Parameter& param) {
+				return (param.name == parameter->name.content);
+				});
+			if (it != newSymbol.parameters.end())
 			{
 				throwException(p_file, "Parameter [" + parameter->name.content + "] already declared in function [" + newSymbol.name + "]", returnTypeToken);
 			}
 
-			newSymbol.parameters[parameter->name.content] = parameterType;
+			newSymbol.parameters.push_back({ parameter->name.content, parameterType });
 		}
 
 		const std::vector<Symbol>& tmpSymbolArray = _symbols[createNamespacePrefix() + newSymbol.name];
@@ -54,9 +57,9 @@ namespace Lumina
 			{
 				bool isSame = true;
 
-				for (const auto& [name, type] : newSymbol.parameters)
+				for (size_t i = 0; i < symbol.parameters.size(); i++)
 				{
-					if (symbol.parameters.contains(name))
+					if (symbol.parameters[i].type != newSymbol.parameters[i].type)
 					{
 						isSame = false;
 					}

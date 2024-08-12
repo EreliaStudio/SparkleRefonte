@@ -1,9 +1,10 @@
-struct calculateDiffuse
+int max(float a, float b)
 {
-};
+    return a;
+}
 
 Vector3 calculateDiffuse(Vector3 normal, Vector3 lightDir, Vector3 lightColor)
 {
-    float diff = max(dot(normal, lightDir), 0.0);
+    float diff = max(max(lightDir.x, lightDir.z), 0.0);
     return diff * lightColor;
 }

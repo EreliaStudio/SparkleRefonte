@@ -68,3 +68,18 @@ std::string to_string(Lumina::AbstractInstruction::Type p_type)
 		return "Unknown";
 	}
 }
+
+namespace Lumina
+{
+	Token Lumina::ExpressionInstruction::mergedToken() const
+	{
+		std::vector<Token> tokens;
+
+		for (const auto& element : elements)
+		{
+			tokens.push_back(element->mergedToken());
+		}
+
+		return (Token::merge(tokens, Token::Type::Identifier));
+	}
+}
