@@ -10,53 +10,23 @@ namespace Lumina
 		}
 	}
 
-	void SemanticChecker::checkSymbolCallReturnType(const std::filesystem::path& p_file, const std::shared_ptr<OperatorExpressionInstruction>& p_instruction, Type* p_expectedType)
+	void SemanticChecker::checkExpressionInstruction(const std::filesystem::path& p_file, const std::shared_ptr<ExpressionInstruction>& p_instruction, const std::unordered_map<std::string, SemanticChecker::Type*>& p_variables, SemanticChecker::Type* p_expectedType)
 	{
-
-	}
-
-	void SemanticChecker::checkExpressionInstruction(const std::filesystem::path& p_file, const std::shared_ptr<ExpressionInstruction>& p_instruction, const std::unordered_map<std::string, Type*>& p_variables, Type* p_expectedType)
-	{
-		Type* exprType = nullptr;
-
-		// Iterate over the elements in the expression
 		for (const auto& element : p_instruction->elements)
 		{
-			switch (element->type)
+			try
 			{
-			case Instruction::Type::NumberExpressionValue:
-				exprType = type("float"); // Assume numeric literals are floats; adjust as necessary
-				break;
-			case Instruction::Type::VariableExpressionValue:
-			{
-				auto varExpr = std::static_pointer_cast<VariableExpressionValueInstruction>(element);
-				std::string varName = varExpr->tokens.front().content;
-
-				if (!p_variables.contains(varName))
+				switch (element->type)
 				{
-					throw TokenBasedError(p_file, "Variable [" + varName + "] not declared in this scope", varExpr->tokens.front());
+				default:
+				{
+					throw TokenBasedError(p_file, "Unexpected expression instruction type : " + ::to_string(element->type) + DEBUG_INFORMATION, Token());
 				}
-				exprType = p_variables.at(varName);
-				break;
+				}
 			}
-			case Instruction::Type::SymbolCall:
+			catch (TokenBasedError& e)
 			{
-				auto symbolCall = std::static_pointer_cast<SymbolCallInstruction>(element);
-				exprType = checkSymbolCallReturnType(p_file, symbolCall, p_variables);
-				break;
-			}
-			case Instruction::Type::OperatorExpression:
-			{
-				checkOperatorExpression(p_file, std::static_pointer_cast<OperatorExpressionInstruction>(element));
-				break;
-			}
-			default:
-				throw TokenBasedError(p_file, "Unexpected expression type", Token());
-			}
-
-			if (p_expectedType != nullptr && exprType != nullptr && exprType != p_expectedType)
-			{
-				throw TokenBasedError(p_file, "Expression type mismatch. Expected [" + p_expectedType->name + "] but got [" + exprType->name + "]", Token());
+				_result.errors.push_back(e);
 			}
 		}
 	}
@@ -80,7 +50,7 @@ namespace Lumina
 
 		if (p_instruction->initializer)
 		{
-			checkExpression(p_file, p_instruction->initializer, p_variables, varType);
+			checkExpressionInstruction(p_file, p_instruction->initializer, p_variables, varType);
 		}
 	}
 }

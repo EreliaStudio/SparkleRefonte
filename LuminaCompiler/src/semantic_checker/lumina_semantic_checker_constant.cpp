@@ -13,6 +13,14 @@ namespace Lumina
 			throwException(p_file, "Constant [" + p_instruction->name.content + "] already define", p_instruction->name);
 		}
 
+
+		std::vector<Symbol>* symbolVerification = symbolArray(p_instruction->name.content);
+
+		if (symbolVerification != nullptr)
+		{
+			throwException(p_file, "Code block name [" + p_instruction->name.content + "] is invalid : Name conflict with an existing symbol", p_instruction->name);
+		}
+
 		Type newConstant;
 
 		newConstant.name = namespacePrefix + p_instruction->name.content;

@@ -99,7 +99,7 @@ namespace Lumina
 		Type* attribute(const std::string& p_attributeName);
 		Type* constant(const std::string& p_constantName);
 
-		const std::vector<Symbol>& symbolArray(const std::string& p_symbolName);
+		std::vector<Symbol>* symbolArray(const std::string& p_symbolName);
 		void addSymbol(const Symbol& p_symbol);
 		
 		std::string createNamespacePrefix() const;
@@ -117,7 +117,6 @@ namespace Lumina
 		void checkPipelineBodyInstruction(const std::filesystem::path& p_file, const std::shared_ptr<PipelineBodyInstruction>& p_instruction);
 
 		void checkOperatorExpression(const std::filesystem::path& p_file, const std::shared_ptr<OperatorExpressionInstruction>& p_instruction, Type* p_expectedType);
-		void checkSymbolCallReturnType(const std::filesystem::path& p_file, const std::shared_ptr<OperatorExpressionInstruction>& p_instruction, Type* p_expectedType):
 		void checkExpressionInstruction(const std::filesystem::path& p_file, const std::shared_ptr<ExpressionInstruction>& p_instruction, const std::unordered_map<std::string, Type*>& p_variables, Type* p_expectedType);
 		void checkVariableDeclarationInstruction(const std::filesystem::path& p_file, const std::shared_ptr<VariableDeclarationInstruction>& varDecl, std::unordered_map<std::string, Type*>& p_variables);
 		void checkSymbolBodyInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolBodyInstruction>& p_instruction, std::unordered_map<std::string, Type*> p_variables);

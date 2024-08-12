@@ -104,9 +104,34 @@ namespace Lumina
 	}
 
 
-	const std::vector<SemanticChecker::Symbol>& SemanticChecker::symbolArray(const std::string& p_symbolName)
+	std::vector<SemanticChecker::Symbol>* SemanticChecker::symbolArray(const std::string& p_symbolName)
 	{
-		return (_symbols[p_symbolName]);
+		std::vector<std::string> namespacePrefixes;
+		std::string currentPrefix = "";
+
+		for (const auto& ns : _currentNamespace)
+		{
+			if (!currentPrefix.empty())
+			{
+				currentPrefix += "::";
+			}
+			currentPrefix += ns.content;
+			namespacePrefixes.push_back(currentPrefix);
+		}
+
+		namespacePrefixes.push_back("");
+
+		for (const auto& prefix : namespacePrefixes)
+		{
+			std::string fullSymbolName = prefix.empty() ? p_symbolName : prefix + "::" + p_symbolName;
+
+			if (_symbols.contains(fullSymbolName) == true)
+			{
+				return (&(_symbols[fullSymbolName]));
+			}
+		}
+		
+		return (nullptr);
 	}
 	
 	void SemanticChecker::addSymbol(const SemanticChecker::Symbol& p_symbol)
@@ -357,7 +382,13 @@ namespace Lumina
 		{
 			os << "  - " << (conv ? conv->name : "null") << "\n";
 		}
-		os << "Accept Operations: " << (type.acceptOperation ? "true" : "false") << "\n";
+		os << "Accept Operations:\n";
+		if (type.operators.size() == 0)
+			os << " - None";
+		for (const auto& conv : type.operators)
+		{
+			os << "  - " << conv << "\n";
+		}
 		os << "Constructors:\n";
 		for (const auto& constructor : type.constructors)
 		{

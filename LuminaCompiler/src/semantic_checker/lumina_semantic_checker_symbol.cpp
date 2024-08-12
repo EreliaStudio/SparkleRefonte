@@ -14,6 +14,13 @@ namespace Lumina
 			throwException(p_file, "Return type [" + returnTypeToken.content + "] not found", returnTypeToken);
 		}
 
+		Type* typeVerification = type(p_instruction->name.content);
+
+		if (typeVerification != nullptr)
+		{
+			throwException(p_file, "Symbol name [" + p_instruction->name.content + "] is invalid : Name conflict with an existing code block.", p_instruction->name);
+		}
+
 		newSymbol.name = createNamespacePrefix() + p_instruction->name.content;
 		for (const auto& parameter : p_instruction->parameters)
 		{
@@ -33,7 +40,7 @@ namespace Lumina
 			newSymbol.parameters[parameter->name.content] = parameterType;
 		}
 
-		const std::vector<Symbol>& tmpSymbolArray = symbolArray(newSymbol.name);
+		const std::vector<Symbol>& tmpSymbolArray = _symbols[createNamespacePrefix() + newSymbol.name];
 
 		if (tmpSymbolArray.size() != 0 &&
 			tmpSymbolArray.back().returnType != newSymbol.returnType)
