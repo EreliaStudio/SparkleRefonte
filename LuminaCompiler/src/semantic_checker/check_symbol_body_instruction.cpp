@@ -25,13 +25,29 @@ namespace Lumina
 					checkReturnInstruction(p_file, std::static_pointer_cast<ReturnInstruction>(element), p_variables, returnType);
 					break;
 				}
+				case Instruction::Type::Discard:
+				{
+					checkDiscardInstruction(p_file, std::static_pointer_cast<DiscardInstruction>(element), p_variables);
+					break;
+				}
 				case Instruction::Type::IfStatement:
 				{
 					checkIfStatementInstruction(p_file, std::static_pointer_cast<IfStatementInstruction>(element), p_variables, returnType);
 					break;
 				}
+				case Instruction::Type::WhileLoop:
+				{
+					checkWhileLoopInstruction(p_file, std::static_pointer_cast<WhileLoopInstruction>(element), p_variables, returnType);
+					break;
+				}
+				case Instruction::Type::SymbolCall:
+				{
+					checkSymbolCallInstruction(p_file, std::static_pointer_cast<SymbolCallInstruction>(element), p_variables, returnType);
+				}
 				default:
-					throw TokenBasedError(p_file, "Unexpected instruction type in symbol body - type : " + ::to_string(element->type), Token());
+				{
+					throw TokenBasedError(p_file, "Unexpected instruction type in symbol body - type : " + ::to_string(element->type), element->mergedToken());
+				}
 				}
 			}
 			catch (TokenBasedError& e)

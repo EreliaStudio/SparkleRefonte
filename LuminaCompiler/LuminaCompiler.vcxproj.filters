@@ -132,6 +132,12 @@
     <ClCompile Include="src\semantic_checker\symbol_body\check_if_statement_instruction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\semantic_checker\symbol_body\check_while_loop_instruction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\semantic_checker\symbol_body\check_discard_instruction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\lumina_utils.hpp">

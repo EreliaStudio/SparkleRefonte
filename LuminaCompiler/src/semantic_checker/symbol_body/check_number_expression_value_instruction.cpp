@@ -6,7 +6,7 @@ namespace Lumina
 	{
 		Type* numberType = getNumberExpressionElementType(p_file, p_instruction);
 
-		if (p_expectedType != numberType && p_expectedType->acceptedConversion.contains(numberType) == false)
+		if (p_expectedType != numberType && p_expectedType->acceptedConversions.contains(numberType) == false)
 		{
 			throw TokenBasedError(p_file, "No convertion from type [" + numberType->name + "] to expected type [" + p_expectedType->name + "]" + DEBUG_INFORMATION, p_instruction->mergedToken());
 		}

@@ -11,6 +11,10 @@ namespace Lumina
 	{
 		setupTypes();
 		setupStructures();
+		setupSymbols();
+
+		_vertexPassVariables["pixelPosition"] = type("Vector4");
+		_fragmentPassVariables["pixelColor"] = type("Vector4");
 	}
 
 	SemanticChecker::Result SemanticChecker::check(const std::filesystem::path& p_file, std::vector<std::shared_ptr<AbstractInstruction>>& p_instructions)

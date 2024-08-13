@@ -33,6 +33,10 @@ namespace Lumina
 				{
 					break;
 				}
+				case Instruction::Type::ComparatorOperatorExpression:
+				{
+					break;
+				}
 				default:
 				{
 					throw TokenBasedError(p_file, "Unexpected expression instruction type : " + ::to_string(element->type) + DEBUG_INFORMATION, element->mergedToken());

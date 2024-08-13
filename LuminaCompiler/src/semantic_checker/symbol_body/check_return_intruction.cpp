@@ -13,7 +13,7 @@ namespace Lumina
 		{
 			Type* expressionType = getExpressionType(p_file, p_instruction->argument, p_variables);
 
-			if (p_returnType != expressionType && p_returnType->acceptedConversion.contains(expressionType) == false)
+			if (p_returnType != expressionType && p_returnType->acceptedConversions.contains(expressionType) == false)
 			{
 				throw TokenBasedError(p_file, "No convertion from type [" + expressionType->name + "] to expected type [" + p_returnType->name + "]" + DEBUG_INFORMATION, p_instruction->argument->mergedToken());
 			}

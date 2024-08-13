@@ -52,6 +52,8 @@ std::string to_string(Lumina::AbstractInstruction::Type p_type)
 		return "Return";
 	case Lumina::AbstractInstruction::Type::Discard:
 		return "Discard";
+	case Lumina::AbstractInstruction::Type::ConditionElement:
+		return "ConditionElement";
 	case Lumina::AbstractInstruction::Type::Condition:
 		return "Condition";
 	case Lumina::AbstractInstruction::Type::Else:

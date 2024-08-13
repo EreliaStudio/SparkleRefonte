@@ -21,6 +21,7 @@ namespace Lumina
 			Namespace,
 			SymbolParameter,
 			OperatorExpression,
+			ComparatorOperatorExpression,
 			BoolExpressionValue,
 			NumberExpressionValue,
 			StringLiteralsExpressionValue,
@@ -35,6 +36,7 @@ namespace Lumina
 			ResultAccessor,
 			Return,
 			Discard,
+			ConditionElement,
 			Condition,
 			Else,
 			IfStatement,
@@ -55,6 +57,7 @@ namespace Lumina
 		{
 
 		}
+		virtual Token mergedToken() const = 0;
 	};
 
 	using Instruction = AbstractInstruction;
@@ -68,6 +71,10 @@ namespace Lumina
 		{
 
 		}
+		Token mergedToken() const
+		{
+			return (token);
+		}
 	};
 
 	struct TypeInstruction : public AbstractInstruction
@@ -79,6 +86,10 @@ namespace Lumina
 		{
 
 		}
+		Token mergedToken() const
+		{
+			return Token::merge(tokens, Token::Type::Identifier);
+		}
 	};
 
 	struct IncludeInstruction : public AbstractInstruction
@@ -89,6 +100,11 @@ namespace Lumina
 			AbstractInstruction(AbstractInstruction::Type::Include)
 		{
 
+		}
+
+		Token mergedToken() const
+		{
+			return (includeFile);
 		}
 	};
 
@@ -104,12 +120,20 @@ namespace Lumina
 		{
 
 		}
+
+		Token mergedToken() const
+		{
+			std::vector<Token> tokens = {
+				inputPipeline, name
+			};
+			return Token::merge(tokens, Token::Type::Identifier);
+		}
 	};
 
 	struct BlockElementInstruction
 	{
 		std::shared_ptr<TypeInstruction> type;
-		size_t nbElement;
+		size_t nbElement = 0;
 		Lumina::Token name;
 
 		BlockElementInstruction()
@@ -127,6 +151,11 @@ namespace Lumina
 			AbstractInstruction(p_type)
 		{
 
+		}
+
+		Token mergedToken() const
+		{
+			return name;
 		}
 	};
 
@@ -166,6 +195,11 @@ namespace Lumina
 		{
 
 		}
+
+		Token mergedToken() const
+		{
+			return (name);
+		}
 	};
 
 	struct NamespaceInstruction : public AbstractInstruction
@@ -177,6 +211,11 @@ namespace Lumina
 			AbstractInstruction(AbstractInstruction::Type::Namespace)
 		{
 
+		}
+
+		Token mergedToken() const
+		{
+			return (name);
 		}
 	};
 
@@ -190,6 +229,11 @@ namespace Lumina
 		{
 
 		}
+
+		Token mergedToken() const
+		{
+			return (Token::merge({ type->mergedToken(), name }, Token::Type::Identifier));
+		}
 	};
 
 	struct ExpressionElementInstruction : public AbstractInstruction
@@ -199,8 +243,6 @@ namespace Lumina
 		{
 
 		}
-
-		virtual Token mergedToken() const = 0;
 	};
 
 	struct OperatorExpressionInstruction : public ExpressionElementInstruction
@@ -209,6 +251,22 @@ namespace Lumina
 
 		OperatorExpressionInstruction() :
 			ExpressionElementInstruction(AbstractInstruction::Type::OperatorExpression)
+		{
+
+		}
+
+		Token mergedToken() const
+		{
+			return (token);
+		}
+	};
+
+	struct ComparatorOperatorExpressionInstruction : public ExpressionElementInstruction
+	{
+		Lumina::Token token;
+
+		ComparatorOperatorExpressionInstruction() :
+			ExpressionElementInstruction(AbstractInstruction::Type::ComparatorOperatorExpression)
 		{
 
 		}
@@ -305,6 +363,11 @@ namespace Lumina
 		{
 
 		}
+
+		Token mergedToken() const
+		{
+			return (Token::merge(tokens, Token::Type::Identifier));
+		}
 	};
 
 
@@ -318,6 +381,11 @@ namespace Lumina
 				AbstractInstruction(AbstractInstruction::Type::ResultAccessor)
 			{
 
+			}
+
+			Token mergedToken() const
+			{
+				return (Token::merge(tokens, Token::Type::Identifier));
 			}
 		};
 
@@ -358,6 +426,11 @@ namespace Lumina
 		{
 
 		}
+
+		Token mergedToken() const
+		{
+			return (Token::merge(tokens, Token::Type::Identifier));
+		}
 	};
 
 	struct VariableAssignationInstruction : public AbstractInstruction
@@ -369,6 +442,11 @@ namespace Lumina
 			AbstractInstruction(AbstractInstruction::Type::VariableAssignation)
 		{
 
+		}
+
+		Token mergedToken() const
+		{
+			return (Token::merge({name->mergedToken(), initializer->mergedToken()}, Token::Type::Identifier));
 		}
 	};
 
@@ -383,6 +461,11 @@ namespace Lumina
 		{
 
 		}
+
+		Token mergedToken() const
+		{
+			return (Token::merge({ type->mergedToken(), initializer->mergedToken() }, Token::Type::Identifier));
+		}
 	};
 
 	struct SymbolBodyInstruction : public AbstractInstruction
@@ -393,6 +476,18 @@ namespace Lumina
 			AbstractInstruction(AbstractInstruction::Type::SymbolBody)
 		{
 
+		}
+
+		Token mergedToken() const
+		{
+			std::vector<Token> tokens;
+
+			for (const auto& element : elements)
+			{
+				tokens.push_back(element->mergedToken());
+			}
+
+			return (Token::merge(tokens, Token::Type::Identifier));
 		}
 	};
 
@@ -405,6 +500,11 @@ namespace Lumina
 		{
 
 		}
+
+		Token mergedToken() const
+		{
+			return (argument->mergedToken());
+		}
 	};
 
 	struct DiscardInstruction : public AbstractInstruction
@@ -414,18 +514,51 @@ namespace Lumina
 		{
 
 		}
+
+		Token mergedToken() const
+		{
+			return (Token());
+		}
 	};
 
-	struct ConditionInstruction : public AbstractInstruction
+	struct ConditionElementInstruction : public AbstractInstruction
 	{
 		std::shared_ptr<ExpressionInstruction> lhs;
 		Token comparatorToken;
 		std::shared_ptr<ExpressionInstruction> rhs;
 
+		ConditionElementInstruction() :
+			AbstractInstruction(AbstractInstruction::Type::ConditionElement)
+		{
+
+		}
+
+		Token mergedToken() const
+		{
+			return (Token::merge({ lhs->mergedToken(), rhs->mergedToken() }, Token::Type::Identifier));
+		}
+	};
+
+	struct ConditionInstruction : public AbstractInstruction
+	{
+		std::vector<std::shared_ptr<ConditionElementInstruction>> elements;
+
 		ConditionInstruction() :
 			AbstractInstruction(AbstractInstruction::Type::Condition)
 		{
 
+		}
+
+		Token mergedToken() const
+		{
+			std::vector<Token> tokens;
+
+			for (const auto& element : elements)
+			{
+				tokens.push_back(element->mergedToken());
+			}
+
+			return (Token::merge(tokens, Token::Type::Identifier));
 		}
 	};
 
@@ -438,6 +571,16 @@ namespace Lumina
 			AbstractInstruction(AbstractInstruction::Type::Else)
 		{
 
+		}
+
+		Token mergedToken() const
+		{
+			std::vector<Token> tokens;
+
+			tokens.push_back(condition->mergedToken());
+			tokens.push_back(body->mergedToken());
+
+			return (Token::merge(tokens, Token::Type::Identifier));
 		}
 	};
 
@@ -452,6 +595,21 @@ namespace Lumina
 		{
 
 		}
+
+		Token mergedToken() const
+		{
+			std::vector<Token> tokens;
+
+			tokens.push_back(condition->mergedToken());
+			tokens.push_back(body->mergedToken());
+
+			for (const auto& element : elseBlocks)
+			{
+				tokens.push_back(element->mergedToken());
+			}
+
+			return (Token::merge(tokens, Token::Type::Identifier));
+		}
 	};
 
 	struct WhileLoopInstruction : public AbstractInstruction
@@ -463,6 +621,16 @@ namespace Lumina
 			AbstractInstruction(AbstractInstruction::Type::WhileLoop)
 		{
 
+		}
+
+		Token mergedToken() const
+		{
+			std::vector<Token> tokens;
+
+			tokens.push_back(condition->mergedToken());
+			tokens.push_back(body->mergedToken());
+
+			return (Token::merge(tokens, Token::Type::Identifier));
 		}
 	};
 
@@ -478,6 +646,18 @@ namespace Lumina
 		{
 
 		}
+
+		Token mergedToken() const
+		{
+			std::vector<Token> tokens;
+
+			tokens.push_back(initializer->mergedToken());
+			tokens.push_back(condition->mergedToken());
+			tokens.push_back(increment->mergedToken());
+			tokens.push_back(body->mergedToken());
+
+			return (Token::merge(tokens, Token::Type::Identifier));
+		}
 	};
 
 	struct SymbolInstruction : public AbstractInstruction
@@ -492,6 +672,23 @@ namespace Lumina
 		{
 
 		}
+
+		Token mergedToken() const
+		{
+			std::vector<Token> tokens;
+
+			tokens.push_back(returnType->mergedToken());
+			tokens.push_back(name);
+
+			for (const auto& parameter : parameters)
+			{
+				tokens.push_back(parameter->mergedToken());
+			}
+
+			tokens.push_back(body->mergedToken());
+
+			return (Token::merge(tokens, Token::Type::Identifier));
+		}
 	};
 
 	struct PipelineBodyInstruction : public AbstractInstruction
@@ -503,6 +700,16 @@ namespace Lumina
 			AbstractInstruction(AbstractInstruction::Type::PipelineBody)
 		{
 
+		}
+
+		Token mergedToken() const
+		{
+			std::vector<Token> tokens;
+
+			tokens.push_back(pipelineToken);
+			tokens.push_back(body->mergedToken());
+
+			return (Token::merge(tokens, Token::Type::Identifier));
 		}
 	};
 }

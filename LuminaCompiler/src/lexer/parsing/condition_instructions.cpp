@@ -2,15 +2,30 @@
 
 namespace Lumina
 {
-	std::shared_ptr<ConditionInstruction> LexerChecker::parseConditionInstruction()
+	std::shared_ptr<Lumina::ConditionElementInstruction> LexerChecker::parseConditionElementInstruction()
 	{
-		std::shared_ptr<ConditionInstruction> result = std::make_shared<ConditionInstruction>();
+		std::shared_ptr<ConditionElementInstruction> result = std::make_shared<ConditionElementInstruction>();
 
 		result->lhs = parseExpression();
 		if (currentToken().type != Lumina::Token::Type::CloseParenthesis)
 		{
-			result->comparatorToken = expect(Lumina::Token::Type::ComparatorOperator, "Expected a valid comparator operator token." + DEBUG_INFORMATION);
+			result->comparatorToken = expect(Lumina::Token::Type::ConditionOperator, "Expected a valid comparator operator token." + DEBUG_INFORMATION);
 			result->rhs = parseExpression();
+		}
+
+		return result;
+	}
+
+	std::shared_ptr<ConditionInstruction> LexerChecker::parseConditionInstruction()
+	{
+		std::shared_ptr<ConditionInstruction> result = std::make_shared<ConditionInstruction>();
+
+		result->elements.push_back(parseConditionElementInstruction());
+
+		while (currentToken().type == Token::Type::ComparatorOperator)
+		{
+			expect(Token::Type::ComparatorOperator, "Expected a valid comparator operator." + DEBUG_INFORMATION);
+			result->elements.push_back(parseConditionElementInstruction());
 		}
 
 		return result;

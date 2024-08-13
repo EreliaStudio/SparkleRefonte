@@ -199,7 +199,7 @@ namespace Lumina
 			}
 			else if (p_rawCode[index] == '<')
 			{
-				int beginIndex = index;
+				size_t beginIndex = index;
 				tokenStr = parseIncludeLiterals(p_rawCode, index);
 				if (!tokenStr.empty())
 				{
@@ -209,7 +209,7 @@ namespace Lumina
 				{
 					index = beginIndex;
 					tokenStr = parseSpecialToken(p_rawCode, index, std::string(1, p_rawCode[index]));
-					tokenType = Token::Type::Operator;
+					tokenType = Token::Type::ComparatorOperator;
 				}
 			}
 			else if (isIdentifierStart(p_rawCode[index]))
@@ -290,7 +290,7 @@ namespace Lumina
 			else
 			{
 				// Handle operators and other tokens
-				std::string operators[] = { "==", "!=", "<=", ">=", "||", "&&" };
+				std::string operators[] = { "==", "!=", "<=", ">=" };
 				bool foundOperator = false;
 				for (const std::string& op : operators)
 				{
@@ -299,6 +299,19 @@ namespace Lumina
 						tokenStr = parseSpecialToken(p_rawCode, index, op);
 						tokenType = Token::Type::ComparatorOperator;
 						foundOperator = true;
+						break;
+					}
+				}
+
+				std::string conditionOperators[] = { "||", "&&" };
+				bool foundConditionOperator = false;
+				for (const std::string& op : conditionOperators)
+				{
+					if (p_rawCode.substr(index, op.size()) == op)
+					{
+						tokenStr = parseSpecialToken(p_rawCode, index, op);
+						tokenType = Token::Type::ConditionOperator;
+						foundConditionOperator = true;
 						break;
 					}
 				}
@@ -328,7 +341,7 @@ namespace Lumina
 						break;
 					}
 				}
-				if (!foundOperator && !foundAssignator && !foundIncrementor)
+				if (!foundOperator && !foundAssignator && !foundIncrementor && !foundConditionOperator)
 				{
 					switch (p_rawCode[index])
 					{

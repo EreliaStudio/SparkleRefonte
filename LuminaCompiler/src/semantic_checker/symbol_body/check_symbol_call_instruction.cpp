@@ -32,7 +32,7 @@ namespace Lumina
 			}
 		}
 
-		if (p_expectedType != symbolReturnType && p_expectedType->acceptedConversion.contains(symbolReturnType) == false)
+		if (p_expectedType != symbolReturnType && p_expectedType->acceptedConversions.contains(symbolReturnType) == false)
 		{
 			throw TokenBasedError(p_file, "No convertion from type [" + symbolReturnType->name + "] to expected type [" + p_expectedType->name + "]" + DEBUG_INFORMATION, nameToken);
 		}
@@ -49,7 +49,7 @@ namespace Lumina
 
 					Type* parameterType = getExpressionType(p_file, p_instruction->arguments[i], p_variables);
 
-					if (parameterType != param.type && param.type->acceptedConversion.contains(parameterType) == false)
+					if (parameterType != param.type && param.type->acceptedConversions.contains(parameterType) == false)
 					{
 						error = true;
 					}

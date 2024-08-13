@@ -44,6 +44,7 @@ namespace Lumina
 			Return, // "return"
 			Discard, // "discard"
 			BoolStatement, // "true" or "false"
+			ConditionOperator, // Operator || and &&
 			IfStatement, // "if"
 			WhileStatement, // "while"
 			ForStatement, // "for"

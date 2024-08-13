@@ -35,7 +35,7 @@ namespace Lumina
 
 			std::string name = "";
 			std::vector<Attribute> attributes = {};
-			std::unordered_set<Type*> acceptedConversion = {}; //Point to type convertible from this type
+			std::unordered_set<Type*> acceptedConversions = {}; //Point to type convertible from this type
 			std::unordered_set<std::string> operators; //Operator +, -, *, /
 			std::unordered_set<std::string> comparaisonOperators; //Operator <, >, <=, ==, etc
 			std::vector<std::vector<Type*>> constructors = {};
@@ -91,6 +91,7 @@ namespace Lumina
 	private:
 		void setupTypes();
 		void setupStructures();
+		void setupSymbols();
 		void setup();
 
 		void addType(const Type& p_type);
@@ -133,12 +134,15 @@ namespace Lumina
 		void checkSymbolCallInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolCallInstruction>& p_instruction, const std::unordered_map<std::string, Type*> p_variables, Type* p_expectedType);
 		void checkExpressionInstruction(const std::filesystem::path& p_file, const std::shared_ptr<ExpressionInstruction>& p_instruction, const std::unordered_map<std::string, Type*> p_variables, Type* p_expectedType);
 		
+		void checkConditionElementInstruction(const std::filesystem::path& p_file, const std::shared_ptr<ConditionElementInstruction>& p_instruction, std::unordered_map<std::string, Type*> p_variables);
 		void checkConditionInstruction(const std::filesystem::path& p_file, const std::shared_ptr<ConditionInstruction>& p_instruction, std::unordered_map<std::string, Type*> p_variables);
 		
 		void checkVariableDeclarationInstruction(const std::filesystem::path& p_file, const std::shared_ptr<VariableDeclarationInstruction>& p_instruction, std::unordered_map<std::string, Type*>& p_variables);
 		void checkVariableAssignationInstruction(const std::filesystem::path& p_file, const std::shared_ptr<VariableAssignationInstruction>& p_instruction, std::unordered_map<std::string, Type*> p_variables);
 		void checkIfStatementInstruction(const std::filesystem::path& p_file, const std::shared_ptr<IfStatementInstruction>& p_instruction, std::unordered_map<std::string, Type*> p_variables, Type* returnType);
+		void checkWhileLoopInstruction(const std::filesystem::path& p_file, const std::shared_ptr<WhileLoopInstruction>& p_instruction, std::unordered_map<std::string, Type*> p_variables, Type* returnType);
 		void checkReturnInstruction(const std::filesystem::path& p_file, const std::shared_ptr<ReturnInstruction>& p_instruction, std::unordered_map<std::string, Type*> p_variables, Type* returnType);
+		void checkDiscardInstruction(const std::filesystem::path& p_file, const std::shared_ptr<DiscardInstruction>& p_instruction, std::unordered_map<std::string, Type*> p_variables);
 		
 		void checkSymbolBodyInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolBodyInstruction>& p_instruction, std::unordered_map<std::string, Type*> p_variables, Type* returnType);
 		

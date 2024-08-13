@@ -5,6 +5,7 @@ namespace Lumina
 	void SemanticChecker::checkPipelineFlowInstruction(const std::filesystem::path& p_file, const std::shared_ptr<PipelineFlowInstruction>& p_instruction)
 	{
 		std::unordered_map<std::string, Type*>* target;
+		std::unordered_map<std::string, Type*>* targetSecond = nullptr;
 
 		if (p_instruction->inputPipeline.content == "Input")
 		{
@@ -22,6 +23,7 @@ namespace Lumina
 			if (p_instruction->outputPipeline.content == "FragmentPass")
 			{
 				target = &(_fragmentPassVariables);
+				targetSecond = &(_vertexPassVariables);
 			}
 			else
 			{
@@ -42,5 +44,7 @@ namespace Lumina
 		}
 
 		(*target)[p_instruction->name.content] = tmpType;
+		if (targetSecond != nullptr)
+			(*targetSecond)[p_instruction->name.content] = tmpType;
 	}
 }

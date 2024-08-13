@@ -62,6 +62,7 @@ namespace Lumina
 		case Token::Type::ComparatorOperator: return "ComparatorOperator";			
 		case Token::Type::Return: return "Return";
 		case Token::Type::Discard: return "Discard";
+		case Token::Type::ConditionOperator: return "ConditionOperator";
 		case Token::Type::IfStatement: return "IfStatement";
 		case Token::Type::WhileStatement: return "WhileStatement";
 		case Token::Type::ForStatement: return "ForStatement";

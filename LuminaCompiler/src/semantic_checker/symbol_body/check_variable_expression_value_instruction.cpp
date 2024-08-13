@@ -7,7 +7,7 @@ namespace Lumina
 		Token variableToken = Token::merge(p_instruction->tokens, Token::Type::Identifier);
 		Type* variableType = getExpressionElementType(p_file, static_pointer_cast<ExpressionElementInstruction>(p_instruction), p_variables);
 
-		if (p_expectedType != variableType && p_expectedType->acceptedConversion.contains(variableType) == false)
+		if (p_expectedType != variableType && p_expectedType->acceptedConversions.contains(variableType) == false)
 		{
 			throw TokenBasedError(p_file, "No convertion from type [" + variableType->name + "] to expected type [" + p_expectedType->name + "]" + DEBUG_INFORMATION, variableToken);
 		}

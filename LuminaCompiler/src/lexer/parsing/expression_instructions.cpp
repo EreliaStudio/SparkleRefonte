@@ -3,11 +3,20 @@
 namespace Lumina
 {
 
+	std::shared_ptr<ComparatorOperatorExpressionInstruction> LexerChecker::parseComparatorOperatorExpressionInstruction()
+	{
+		std::shared_ptr<ComparatorOperatorExpressionInstruction> result = std::make_shared<ComparatorOperatorExpressionInstruction>();
+
+		result->token = expect(Lumina::Token::Type::ComparatorOperator, "Expected a comparator operator token." + DEBUG_INFORMATION);
+
+		return result;
+	}
+
 	std::shared_ptr<OperatorExpressionInstruction> LexerChecker::parseOperatorExpressionInstruction()
 	{
 		std::shared_ptr<OperatorExpressionInstruction> result = std::make_shared<OperatorExpressionInstruction>();
 
-		result->token = expect(Lumina::Token::Type::Operator, "Expected an operator token."+ DEBUG_INFORMATION);
+		result->token = expect(Lumina::Token::Type::Operator, "Expected an operator token." + DEBUG_INFORMATION);
 
 		return result;
 	}
@@ -62,36 +71,36 @@ namespace Lumina
 	{
 		std::shared_ptr<ExpressionInstruction> result = std::make_shared<ExpressionInstruction>();
 
-		size_t openParenthesis = 0;
-
 		bool isParsing = true;
-		while (isParsing)
+		while (isParsing == true)
 		{
 			switch (currentToken().type)
 			{
-			case Lumina::Token::Type::OpenParenthesis:
-				openParenthesis++;
-				if (nextToken().type == Lumina::Token::Type::CloseParenthesis)
-				{
-					throw Lumina::TokenBasedError(_file, "Unexpected couple token '()'." + DEBUG_INFORMATION, Token::merge({ currentToken(), nextToken() }, Token::Type::Identifier));
-				}
-				expect(Lumina::Token::Type::OpenParenthesis);
+			case Lumina::Token::Type::Operator:
+			{
+				result->elements.push_back(parseOperatorExpressionInstruction());
 				break;
-			case Lumina::Token::Type::CloseParenthesis:
-				if (openParenthesis == 0)
-					throw Lumina::TokenBasedError(_file, "Unexpected token ')'." + DEBUG_INFORMATION, currentToken());
-				expect(Lumina::Token::Type::CloseParenthesis);
-				openParenthesis--;
+			}
+			case Lumina::Token::Type::ComparatorOperator:
+			{
+				result->elements.push_back(parseComparatorOperatorExpressionInstruction());
 				break;
-			case Lumina::Token::Type::BoolStatement :
+			}
+			case Lumina::Token::Type::BoolStatement:
+			{
 				result->elements.push_back(parseBoolExpressionValueInstruction());
 				break;
+			}
 			case Lumina::Token::Type::Number:
+			{
 				result->elements.push_back(parseNumberExpressionValueInstruction());
 				break;
+			}
 			case Lumina::Token::Type::StringLitteral:
+			{
 				result->elements.push_back(parseStringLiteralsExpressionValueInstruction());
 				break;
+			}
 			case Lumina::Token::Type::Identifier:
 			case Lumina::Token::Type::NamespaceSeparator:
 			{
@@ -105,16 +114,11 @@ namespace Lumina
 				}
 				break;
 			}
-			}
-
-			if (currentToken().type == Lumina::Token::Type::Operator)
-			{
-				result->elements.push_back(parseOperatorExpressionInstruction());
-				isParsing = true;
-			}
-			else if (openParenthesis == 0)
+			default:
 			{
 				isParsing = false;
+				break;
+			}
 			}
 		}
 

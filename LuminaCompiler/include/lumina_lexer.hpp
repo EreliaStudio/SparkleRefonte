@@ -57,6 +57,7 @@ namespace Lumina
 		std::shared_ptr<Lumina::ConstantBlockInstruction> parseConstantBlockInstruction();
 		std::shared_ptr<Lumina::TextureInstruction> parseTextureInstruction();
 		std::shared_ptr<Lumina::SymbolParameterInstruction> parseSymbolParameterInstruction();
+		std::shared_ptr<Lumina::ComparatorOperatorExpressionInstruction> parseComparatorOperatorExpressionInstruction();
 		std::shared_ptr<Lumina::OperatorExpressionInstruction> parseOperatorExpressionInstruction();
 		std::shared_ptr<Lumina::BoolExpressionValueInstruction> parseBoolExpressionValueInstruction();
 		std::shared_ptr<Lumina::NumberExpressionValueInstruction> parseNumberExpressionValueInstruction();
@@ -70,6 +71,7 @@ namespace Lumina
 		std::shared_ptr<Lumina::DiscardInstruction> parseDiscardInstruction();
 		std::shared_ptr<Lumina::VariableDesignationInstruction> parseVariableDesignationInstruction();
 		std::shared_ptr<Lumina::VariableAssignationInstruction> parseVariableAssignationInstruction();
+		std::shared_ptr<Lumina::ConditionElementInstruction> parseConditionElementInstruction();
 		std::shared_ptr<Lumina::ConditionInstruction> parseConditionInstruction();
 		std::shared_ptr<Lumina::IfStatementInstruction> parseIfStatementInstruction();
 		std::shared_ptr<Lumina::WhileLoopInstruction> parseWhileLoopInstruction();
