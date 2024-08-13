@@ -7,7 +7,7 @@ namespace Lumina
 		return (type("float"));
 	}
 
-	SemanticChecker::Type* SemanticChecker::getVariableExpressionElementType(const std::filesystem::path& p_file, const std::shared_ptr<VariableExpressionValueInstruction>& p_instruction, const std::unordered_map<std::string, Type*>& p_variables)
+	SemanticChecker::Type* SemanticChecker::getVariableExpressionElementType(const std::filesystem::path& p_file, const std::shared_ptr<VariableExpressionValueInstruction>& p_instruction, std::unordered_map<std::string, Type*> p_variables)
 	{
 		if (p_variables.contains(p_instruction->tokens[0].content) == false)
 		{
@@ -69,7 +69,7 @@ namespace Lumina
 		return (result);
 	}
 
-	SemanticChecker::Type* SemanticChecker::getExpressionElementType(const std::filesystem::path& p_file, const std::shared_ptr<ExpressionElementInstruction>& p_instruction, const std::unordered_map<std::string, Type*>& p_variables)
+	SemanticChecker::Type* SemanticChecker::getExpressionElementType(const std::filesystem::path& p_file, const std::shared_ptr<ExpressionElementInstruction>& p_instruction, std::unordered_map<std::string, Type*> p_variables)
 	{
 		switch (p_instruction->type)
 		{

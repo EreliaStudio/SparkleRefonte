@@ -166,7 +166,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\semantic_checker\checker.cpp" />
     <ClCompile Include="src\semantic_checker\check_attribute_instruction.cpp" />
-    <ClCompile Include="src\semantic_checker\check_code_block_instruction.cpp" />
+    <ClCompile Include="src\semantic_checker\check_symbol_body_instruction.cpp" />
     <ClCompile Include="src\semantic_checker\check_constant_instruction.cpp" />
     <ClCompile Include="src\semantic_checker\check_include_instruction.cpp" />
     <ClCompile Include="src\semantic_checker\check_namespace_instruction.cpp" />
@@ -177,6 +177,7 @@
     <ClCompile Include="src\semantic_checker\check_texture_instruction.cpp" />
     <ClCompile Include="src\semantic_checker\checker_utils.cpp" />
     <ClCompile Include="src\semantic_checker\symbol_body\check_expression_instruction.cpp" />
+    <ClCompile Include="src\semantic_checker\symbol_body\check_if_statement_instruction.cpp" />
     <ClCompile Include="src\semantic_checker\symbol_body\check_number_expression_value_instruction.cpp" />
     <ClCompile Include="src\semantic_checker\symbol_body\check_return_intruction.cpp" />
     <ClCompile Include="src\semantic_checker\symbol_body\check_symbol_call_instruction.cpp" />

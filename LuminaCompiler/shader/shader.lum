@@ -1,6 +1,10 @@
 Vector3 calculateDiffuse(Vector3 normal, Vector3 lightDir, Vector3 lightColor)
 {
     float diff = Vector2(10, 10).x + 15;
+    if (diff > 10)
+    {
+        diff = 15;
+    }
     diff = Vector3(diff, diff, diff).x;
     return Vector3(diff, diff, diff) * lightColor;
 }

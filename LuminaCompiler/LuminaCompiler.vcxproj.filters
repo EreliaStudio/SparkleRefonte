@@ -96,7 +96,7 @@
     <ClCompile Include="src\semantic_checker\check_symbol_instruction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\semantic_checker\check_code_block_instruction.cpp">
+    <ClCompile Include="src\semantic_checker\check_symbol_body_instruction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\semantic_checker\check_pipeline_instruction.cpp">
@@ -127,6 +127,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\semantic_checker\symbol_body\check_variable_assignation_instruction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\semantic_checker\symbol_body\check_if_statement_instruction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
