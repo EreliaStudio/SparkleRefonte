@@ -8,10 +8,9 @@ namespace Lumina
 
 		for (const auto& element : p_instruction->elements)
 		{
-			std::cout << "Parsing element : " << element->mergedToken() << std::endl;
-
 			switch (element->type)
 			{
+			case Instruction::Type::BoolExpressionValue:
 			case Instruction::Type::NumberExpressionValue:
 			case Instruction::Type::VariableExpressionValue:
 			case Instruction::Type::SymbolCall:
@@ -43,6 +42,7 @@ namespace Lumina
 			}
 			
 		}
+
 
 		if (result == nullptr)
 			return (type("void"));

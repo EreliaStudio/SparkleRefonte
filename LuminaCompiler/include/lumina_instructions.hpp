@@ -21,6 +21,7 @@ namespace Lumina
 			Namespace,
 			SymbolParameter,
 			OperatorExpression,
+			BoolExpressionValue,
 			NumberExpressionValue,
 			StringLiteralsExpressionValue,
 			VariableExpressionValue,
@@ -218,6 +219,22 @@ namespace Lumina
 		}
 	};
 
+	struct BoolExpressionValueInstruction : public ExpressionElementInstruction
+	{
+		Lumina::Token token;
+
+		BoolExpressionValueInstruction() :
+			ExpressionElementInstruction(AbstractInstruction::Type::BoolExpressionValue)
+		{
+
+		}
+
+		Token mergedToken() const
+		{
+			return (token);
+		}
+	};
+
 	struct NumberExpressionValueInstruction : public ExpressionElementInstruction
 	{
 		Lumina::Token token;
@@ -401,7 +418,9 @@ namespace Lumina
 
 	struct ConditionInstruction : public AbstractInstruction
 	{
-		std::shared_ptr<ExpressionInstruction> expression;
+		std::shared_ptr<ExpressionInstruction> lhs;
+		Token comparatorToken;
+		std::shared_ptr<ExpressionInstruction> rhs;
 
 		ConditionInstruction() :
 			AbstractInstruction(AbstractInstruction::Type::Condition)

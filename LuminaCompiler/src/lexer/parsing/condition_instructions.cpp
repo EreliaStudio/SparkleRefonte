@@ -6,7 +6,12 @@ namespace Lumina
 	{
 		std::shared_ptr<ConditionInstruction> result = std::make_shared<ConditionInstruction>();
 
-		result->expression = parseExpression();
+		result->lhs = parseExpression();
+		if (currentToken().type != Lumina::Token::Type::CloseParenthesis)
+		{
+			result->comparatorToken = expect(Lumina::Token::Type::ComparatorOperator, "Expected a valid comparator operator token." + DEBUG_INFORMATION);
+			result->rhs = parseExpression();
+		}
 
 		return result;
 	}

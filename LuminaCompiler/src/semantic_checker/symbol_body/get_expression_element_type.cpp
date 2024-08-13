@@ -73,6 +73,10 @@ namespace Lumina
 	{
 		switch (p_instruction->type)
 		{
+		case Instruction::Type::BoolExpressionValue:
+		{
+			return (type("bool"));
+		}
 		case Instruction::Type::NumberExpressionValue:
 		{
 			return (getNumberExpressionElementType(p_file, static_pointer_cast<NumberExpressionValueInstruction>(p_instruction)));

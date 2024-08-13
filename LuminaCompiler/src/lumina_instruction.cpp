@@ -30,6 +30,8 @@ std::string to_string(Lumina::AbstractInstruction::Type p_type)
 		return "NumberExpressionValue";
 	case Lumina::AbstractInstruction::Type::StringLiteralsExpressionValue:
 		return "StringLiteralsExpressionValue";
+	case Lumina::AbstractInstruction::Type::BoolExpressionValue:
+		return "BoolExpressionValue";
 	case Lumina::AbstractInstruction::Type::VariableExpressionValue:
 		return "VariableExpressionValue";
 	case Lumina::AbstractInstruction::Type::Expression:

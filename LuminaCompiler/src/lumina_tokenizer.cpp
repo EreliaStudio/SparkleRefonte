@@ -263,6 +263,10 @@ namespace Lumina
 				{
 					tokenType = Token::Type::Discard;
 				}
+				else if (tokenStr == "true" || tokenStr == "false")
+				{
+					tokenType = Token::Type::BoolStatement;
+				}
 				else
 				{
 					tokenType = Token::Type::Identifier;
@@ -293,13 +297,13 @@ namespace Lumina
 					if (p_rawCode.substr(index, op.size()) == op)
 					{
 						tokenStr = parseSpecialToken(p_rawCode, index, op);
-						tokenType = Token::Type::Operator;
+						tokenType = Token::Type::ComparatorOperator;
 						foundOperator = true;
 						break;
 					}
 				}
 
-				std::string assignators[] = { "=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=" };
+				std::string assignators[] = { "=", "+=", "-=", "*=", "/=", "%=" };
 				bool foundAssignator = false;
 				for (const std::string& op : assignators)
 				{
@@ -368,13 +372,16 @@ namespace Lumina
 						tokenStr = parseSpecialToken(p_rawCode, index, ",");
 						tokenType = Token::Type::Comma;
 						break;
+					case '<':
+					case '>':
+						tokenStr = parseSpecialToken(p_rawCode, index, std::string(1, p_rawCode[index]));
+						tokenType = Token::Type::ComparatorOperator;
+						break;
 					case '+':
 					case '-':
 					case '*':
 					case '/':
 					case '%':
-					case '<':
-					case '>':
 					case '!':
 					case '&':
 					case '|':

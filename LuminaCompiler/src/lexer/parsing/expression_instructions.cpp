@@ -12,6 +12,15 @@ namespace Lumina
 		return result;
 	}
 
+	std::shared_ptr<Lumina::BoolExpressionValueInstruction> LexerChecker::parseBoolExpressionValueInstruction()
+	{
+		std::shared_ptr<BoolExpressionValueInstruction> result = std::make_shared<BoolExpressionValueInstruction>();
+
+		result->token = expect(Lumina::Token::Type::BoolStatement, "Expected a bool statement token [true] or [false]." + DEBUG_INFORMATION);
+
+		return result;
+	}
+
 	std::shared_ptr<NumberExpressionValueInstruction> LexerChecker::parseNumberExpressionValueInstruction()
 	{
 		std::shared_ptr<NumberExpressionValueInstruction> result = std::make_shared<NumberExpressionValueInstruction>();
@@ -73,6 +82,9 @@ namespace Lumina
 					throw Lumina::TokenBasedError(_file, "Unexpected token ')'." + DEBUG_INFORMATION, currentToken());
 				expect(Lumina::Token::Type::CloseParenthesis);
 				openParenthesis--;
+				break;
+			case Lumina::Token::Type::BoolStatement :
+				result->elements.push_back(parseBoolExpressionValueInstruction());
 				break;
 			case Lumina::Token::Type::Number:
 				result->elements.push_back(parseNumberExpressionValueInstruction());

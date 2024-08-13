@@ -10,6 +10,10 @@ namespace Lumina
 			{
 				switch (element->type)
 				{
+				case Instruction::Type::BoolExpressionValue:
+				{
+					break;
+				}
 				case Instruction::Type::VariableExpressionValue:
 				{
 					checkVariableExpressionValueInstruction(p_file, static_pointer_cast<VariableExpressionValueInstruction>(element), p_variables, p_expectedType);

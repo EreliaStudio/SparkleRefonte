@@ -57,7 +57,9 @@ namespace Lumina
 		case Token::Type::CloseBracket: return "CloseBracket";
 		case Token::Type::Accessor: return "Accessor";
 		case Token::Type::Comment: return "Comment";
+		case Token::Type::BoolStatement: return "BoolStatement";
 		case Token::Type::Operator: return "Operator";
+		case Token::Type::ComparatorOperator: return "ComparatorOperator";			
 		case Token::Type::Return: return "Return";
 		case Token::Type::Discard: return "Discard";
 		case Token::Type::IfStatement: return "IfStatement";

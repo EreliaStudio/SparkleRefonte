@@ -198,25 +198,29 @@ namespace Lumina
 		// int type
 		Type intType;
 		intType.name = "int";
-		intType.operators = { "+", "-", "*", "/", "%", "==", "!=", "<", ">", "<=", ">=", "+=", "-=", "*=", "/=", "%=" };
+		intType.operators = { "+", "-", "*", "/", "%", "+=", "-=", "*=", "/=", "%=" };
+		intType.comparaisonOperators = { "==", "!=", "<", ">", "<=", ">=" };
 		addStandardType(intType);
 
 		// float type
 		Type floatType;
 		floatType.name = "float";
-		floatType.operators = { "+", "-", "*", "/", "==", "!=", "<", ">", "<=", ">=", "+=", "-=", "*=", "/=" };
+		floatType.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" };
+		floatType.comparaisonOperators = { "==", "!=", "<", ">", "<=", ">=" };
 		addStandardType(floatType);
 
 		// uint type
 		Type uintType;
 		uintType.name = "uint";
-		uintType.operators = { "+", "-", "*", "/", "%", "==", "!=", "<", ">", "<=", ">=", "+=", "-=", "*=", "/=", "%=" };
+		uintType.operators = { "+", "-", "*", "/", "%", "+=", "-=", "*=", "/=", "%=" };
+		uintType.comparaisonOperators = { "==", "!=", "<", ">", "<=", ">=" };
 		addStandardType(uintType);
 
 		// bool type
 		Type boolType;
 		boolType.name = "bool";
-		boolType.operators = { "==", "!=", "&&", "||" }; // Typically, only logical and comparison operators are accepted
+		boolType.operators = { "&&", "||" };
+		boolType.comparaisonOperators = { "==", "!=" };
 		addStandardType(boolType);
 
 		// Vector2 type
@@ -225,6 +229,7 @@ namespace Lumina
 		vector2Type.attributes.push_back({ type("float"), "x", 1 });
 		vector2Type.attributes.push_back({ type("float"), "y", 1 });
 		vector2Type.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise operations
+		vector2Type.comparaisonOperators = { "==", "!=" }; // Assuming vector comparison
 		vector2Type.constructors = {
 			{type("float"), type("float")}
 		};
@@ -236,6 +241,7 @@ namespace Lumina
 		vector2IntType.attributes.push_back({ type("int"), "x", 1 });
 		vector2IntType.attributes.push_back({ type("int"), "y", 1 });
 		vector2IntType.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise operations
+		vector2IntType.comparaisonOperators = { "==", "!=" }; // Assuming vector comparison
 		vector2IntType.constructors = {
 			{type("int"), type("int")}
 		};
@@ -247,6 +253,7 @@ namespace Lumina
 		vector2UIntType.attributes.push_back({ type("uint"), "x", 1 });
 		vector2UIntType.attributes.push_back({ type("uint"), "y", 1 });
 		vector2UIntType.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise operations
+		vector2UIntType.comparaisonOperators = { "==", "!=" }; // Assuming vector comparison
 		vector2UIntType.constructors = {
 			{type("uint"), type("uint")}
 		};
@@ -259,6 +266,7 @@ namespace Lumina
 		vector3Type.attributes.push_back({ type("float"), "y", 1 });
 		vector3Type.attributes.push_back({ type("float"), "z", 1 });
 		vector3Type.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise operations
+		vector3Type.comparaisonOperators = { "==", "!=" }; // Assuming vector comparison
 		vector3Type.constructors = {
 			{type("float"), type("float"), type("float")},
 			{type("Vector2"), type("float")},
@@ -273,6 +281,7 @@ namespace Lumina
 		vector3IntType.attributes.push_back({ type("int"), "y", 1 });
 		vector3IntType.attributes.push_back({ type("int"), "z", 1 });
 		vector3IntType.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise operations
+		vector3IntType.comparaisonOperators = { "==", "!=" }; // Assuming vector comparison
 		vector3IntType.constructors = {
 			{type("int"), type("int"), type("int")},
 			{type("Vector2Int"), type("int")},
@@ -287,6 +296,7 @@ namespace Lumina
 		vector3UIntType.attributes.push_back({ type("uint"), "y", 1 });
 		vector3UIntType.attributes.push_back({ type("uint"), "z", 1 });
 		vector3UIntType.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise operations
+		vector3UIntType.comparaisonOperators = { "==", "!=" }; // Assuming vector comparison
 		vector3UIntType.constructors = {
 			{type("uint"), type("uint"), type("uint")},
 			{type("Vector2UInt"), type("uint")},
@@ -302,6 +312,7 @@ namespace Lumina
 		vector4Type.attributes.push_back({ type("float"), "z", 1 });
 		vector4Type.attributes.push_back({ type("float"), "w", 1 });
 		vector4Type.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise operations
+		vector4Type.comparaisonOperators = { "==", "!=" }; // Assuming vector comparison
 		vector4Type.constructors = {
 			{type("float"), type("float"), type("float"), type("float")},
 			{type("Vector3"), type("float")},
@@ -321,6 +332,7 @@ namespace Lumina
 		vector4IntType.attributes.push_back({ type("int"), "z", 1 });
 		vector4IntType.attributes.push_back({ type("int"), "w", 1 });
 		vector4IntType.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise operations
+		vector4IntType.comparaisonOperators = { "==", "!=" }; // Assuming vector comparison
 		vector4IntType.constructors = {
 			{type("int"), type("int"), type("int"), type("int")},
 			{type("Vector3Int"), type("int")},
@@ -340,6 +352,7 @@ namespace Lumina
 		vector4UIntType.attributes.push_back({ type("uint"), "z", 1 });
 		vector4UIntType.attributes.push_back({ type("uint"), "w", 1 });
 		vector4UIntType.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise operations
+		vector4UIntType.comparaisonOperators = { "==", "!=" }; // Assuming vector comparison
 		vector4UIntType.constructors = {
 			{type("uint"), type("uint"), type("uint"), type("uint")},
 			{type("Vector3UInt"), type("uint")},
@@ -375,19 +388,22 @@ namespace Lumina
 		// Matrix2x2 type
 		Type matrix2x2;
 		matrix2x2.name = "Matrix2x2";
-		matrix2x2.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise and matrix operations
+		matrix2x2.operators = { "*" };
+		matrix2x2.acceptedConversion = { type("Vector2"), type("Vector2Int"), type("Vector2UInt") };
 		addStructure(matrix2x2);
 
 		// Matrix3x3 type
 		Type matrix3x3;
 		matrix3x3.name = "Matrix3x3";
-		matrix3x3.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise and matrix operations
+		matrix3x3.operators = { "*" };
+		matrix3x3.acceptedConversion = { type("Vector3"), type("Vector3Int"), type("Vector3UInt") };
 		addStructure(matrix3x3);
 
 		// Matrix4x4 type
 		Type matrix4x4;
 		matrix4x4.name = "Matrix4x4";
-		matrix4x4.operators = { "+", "-", "*", "/", "+=", "-=", "*=", "/=" }; // Assuming element-wise and matrix operations
+		matrix4x4.operators = { "*" };
+		matrix4x4.acceptedConversion = { type("Vector4"), type("Vector4Int"), type("Vector4UInt") };
 		addStructure(matrix4x4);
 	}
 	

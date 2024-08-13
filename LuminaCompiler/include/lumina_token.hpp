@@ -40,8 +40,10 @@ namespace Lumina
 			Accessor, // '.'
 			Comment, // Comments: "//" until end of line or "/* */"
 			Operator, // Operators: +, -, *, /, etc.
+			ComparatorOperator, // Operators: <, >, >=, <=, == and !=.
 			Return, // "return"
 			Discard, // "discard"
+			BoolStatement, // "true" or "false"
 			IfStatement, // "if"
 			WhileStatement, // "while"
 			ForStatement, // "for"

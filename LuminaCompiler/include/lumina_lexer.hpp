@@ -58,6 +58,7 @@ namespace Lumina
 		std::shared_ptr<Lumina::TextureInstruction> parseTextureInstruction();
 		std::shared_ptr<Lumina::SymbolParameterInstruction> parseSymbolParameterInstruction();
 		std::shared_ptr<Lumina::OperatorExpressionInstruction> parseOperatorExpressionInstruction();
+		std::shared_ptr<Lumina::BoolExpressionValueInstruction> parseBoolExpressionValueInstruction();
 		std::shared_ptr<Lumina::NumberExpressionValueInstruction> parseNumberExpressionValueInstruction();
 		std::shared_ptr<Lumina::StringLiteralsExpressionValueInstruction> parseStringLiteralsExpressionValueInstruction();
 		std::shared_ptr<Lumina::VariableExpressionValueInstruction> parseVariableExpressionValueInstruction();

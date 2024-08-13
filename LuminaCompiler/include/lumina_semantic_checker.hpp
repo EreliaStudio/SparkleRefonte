@@ -37,6 +37,7 @@ namespace Lumina
 			std::vector<Attribute> attributes = {};
 			std::unordered_set<Type*> acceptedConversion = {}; //Point to type convertible from this type
 			std::unordered_set<std::string> operators; //Operator +, -, *, /
+			std::unordered_set<std::string> comparaisonOperators; //Operator <, >, <=, ==, etc
 			std::vector<std::vector<Type*>> constructors = {};
 
 			friend std::ostream& operator<<(std::ostream& os, const Type& type);
@@ -131,6 +132,8 @@ namespace Lumina
 		void checkVariableExpressionValueInstruction(const std::filesystem::path& p_file, const std::shared_ptr<VariableExpressionValueInstruction>& p_instruction, const std::unordered_map<std::string, Type*> p_variables, Type* p_expectedType);
 		void checkSymbolCallInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolCallInstruction>& p_instruction, const std::unordered_map<std::string, Type*> p_variables, Type* p_expectedType);
 		void checkExpressionInstruction(const std::filesystem::path& p_file, const std::shared_ptr<ExpressionInstruction>& p_instruction, const std::unordered_map<std::string, Type*> p_variables, Type* p_expectedType);
+		
+		void checkConditionInstruction(const std::filesystem::path& p_file, const std::shared_ptr<ConditionInstruction>& p_instruction, std::unordered_map<std::string, Type*> p_variables);
 		
 		void checkVariableDeclarationInstruction(const std::filesystem::path& p_file, const std::shared_ptr<VariableDeclarationInstruction>& p_instruction, std::unordered_map<std::string, Type*>& p_variables);
 		void checkVariableAssignationInstruction(const std::filesystem::path& p_file, const std::shared_ptr<VariableAssignationInstruction>& p_instruction, std::unordered_map<std::string, Type*> p_variables);
