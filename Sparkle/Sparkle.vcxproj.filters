@@ -51,9 +51,6 @@
     <ClCompile Include="src\application\module\spk_keyboard_module.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\application\module\spk_module.cpp">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
     <ClCompile Include="src\application\module\spk_mouse_module.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
@@ -90,7 +87,16 @@
     <ClCompile Include="src\structure\system\exception\spk_exception.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\structure\graphical\pipeline\spk_pipeline.cpp">
+    <ClCompile Include="src\structure\container\spk_json_file.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\structure\container\spk_json_file_number.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\structure\container\spk_json_file_string.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="src\structure\container\spk_json_object.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>
@@ -224,7 +230,10 @@
     <ClInclude Include="include\utils\spk_string_utils.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\structure\graphical\pipeline\spk_pipeline.hpp">
+    <ClInclude Include="include\structure\container\spk_json_file.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\structure\container\spk_json_object.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>

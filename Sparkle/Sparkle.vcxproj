@@ -19,14 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\structure\container\spk_json_file.cpp" />
+    <ClCompile Include="src\structure\container\spk_json_file_number.cpp" />
+    <ClCompile Include="src\structure\container\spk_json_file_string.cpp" />
+    <ClCompile Include="src\structure\container\spk_json_object.cpp" />
     <ClCompile Include="src\application\module\spk_controller_module.cpp" />
     <ClCompile Include="src\application\module\spk_keyboard_module.cpp" />
-    <ClCompile Include="src\application\module\spk_module.cpp" />
     <ClCompile Include="src\application\module\spk_mouse_module.cpp" />
     <ClCompile Include="src\application\module\spk_paint_module.cpp" />
     <ClCompile Include="src\application\module\spk_system_module.cpp" />
     <ClCompile Include="src\application\module\spk_update_module.cpp" />
-    <ClCompile Include="src\structure\graphical\pipeline\spk_pipeline.cpp" />
     <ClCompile Include="src\structure\graphical\spk_window.cpp" />
     <ClCompile Include="src\structure\math\spk_math.cpp" />
     <ClCompile Include="src\structure\math\spk_matrix4x4.cpp" />
@@ -47,7 +49,8 @@
     <ClCompile Include="src\widget\spk_widget.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\structure\graphical\pipeline\spk_pipeline.hpp" />
+    <ClInclude Include="include\structure\container\spk_json_file.hpp" />
+    <ClInclude Include="include\structure\container\spk_json_object.hpp" />
     <ClInclude Include="include\structure\system\device\spk_controller_input_thread.hpp" />
     <ClInclude Include="include\application\module\spk_controller_module.hpp" />
     <ClInclude Include="include\application\module\spk_keyboard_module.hpp" />

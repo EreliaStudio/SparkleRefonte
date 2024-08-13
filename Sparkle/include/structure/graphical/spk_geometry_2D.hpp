@@ -20,7 +20,7 @@ namespace spk
 			}
 
 			template<typename TScalarType>
-			Position(const TScalarType& p_scalar) :
+			explicit Position(const TScalarType& p_scalar) :
 				x(static_cast<TType>(p_scalar)),
 				y(static_cast<TType>(p_scalar))
 			{
@@ -209,7 +209,7 @@ namespace spk
 			}
 
 			template<typename TScalarType>
-			Size(const TScalarType& p_scalar) :
+			explicit Size(const TScalarType& p_scalar) :
 				width(static_cast<TType>(p_scalar)),
 				height(static_cast<TType>(p_scalar))
 			{

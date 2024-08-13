@@ -134,31 +134,22 @@ namespace spk
 				switch (_controllerState.rgdwPOV[0])
 				{
 				case -1:
-					spk::cout << "Case -1" << std::endl;
 					PostRightDirectionalCrossMotion(_hWnd, 0, 0); break;
 				case 0:
-					spk::cout << "Case 0" << std::endl;
 					PostRightDirectionalCrossMotion(_hWnd, 0, 1); break;
 				case 4500:
-					spk::cout << "Case 4500" << std::endl;
 					PostRightDirectionalCrossMotion(_hWnd, 1, 1); break;
 				case 9000:
-					spk::cout << "Case 9000" << std::endl;
 					PostRightDirectionalCrossMotion(_hWnd, 1, 0); break;
 				case 13500:
-					spk::cout << "Case 13500" << std::endl;
 					PostRightDirectionalCrossMotion(_hWnd, 1, -1); break;
 				case 18000:
-					spk::cout << "Case 18000" << std::endl;
 					PostRightDirectionalCrossMotion(_hWnd, 0, -1); break;
 				case 22500:
-					spk::cout << "Case 22500" << std::endl;
 					PostRightDirectionalCrossMotion(_hWnd, -1, -1); break;
 				case 27000:
-					spk::cout << "Case 27000" << std::endl;
 					PostRightDirectionalCrossMotion(_hWnd, -1, 0); break;
 				case 31500:
-					spk::cout << "Case 31500" << std::endl;
 					PostRightDirectionalCrossMotion(_hWnd, -1, 1); break;
 				}
 				_prevControllerState.rgdwPOV[0] = _controllerState.rgdwPOV[0];

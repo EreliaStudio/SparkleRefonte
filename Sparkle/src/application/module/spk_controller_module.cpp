@@ -25,12 +25,10 @@ namespace spk
 			if (p_event.trigger.id == spk::Controller::Trigger::ID::Left)
 			{
 				_controller.leftTrigger.ratio = static_cast<float>(p_event.trigger.value) / static_cast<float>(std::numeric_limits<unsigned short>::max());
-				std::cout << "Controller set to : " << _controller.leftTrigger.ratio << " and trigger value : " << p_event.trigger.value << std::endl;
 			}
 			else if (p_event.trigger.id == spk::Controller::Trigger::ID::Right)
 			{
 				_controller.rightTrigger.ratio = static_cast<float>(p_event.trigger.value) / static_cast<float>(std::numeric_limits<unsigned short>::max());
-				std::cout << "Controller set to : " << _controller.rightTrigger.ratio << " and trigger value : " << p_event.trigger.value << std::endl;
 			}
 			break;
 		}
