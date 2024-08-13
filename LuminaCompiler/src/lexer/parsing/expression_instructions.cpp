@@ -54,6 +54,7 @@ namespace Lumina
 		std::shared_ptr<ExpressionInstruction> result = std::make_shared<ExpressionInstruction>();
 
 		size_t openParenthesis = 0;
+
 		bool isParsing = true;
 		while (isParsing)
 		{
@@ -61,6 +62,10 @@ namespace Lumina
 			{
 			case Lumina::Token::Type::OpenParenthesis:
 				openParenthesis++;
+				if (nextToken().type == Lumina::Token::Type::CloseParenthesis)
+				{
+					throw Lumina::TokenBasedError(_file, "Unexpected couple token '()'." + DEBUG_INFORMATION, Token::merge({ currentToken(), nextToken() }, Token::Type::Identifier));
+				}
 				expect(Lumina::Token::Type::OpenParenthesis);
 				break;
 			case Lumina::Token::Type::CloseParenthesis:
@@ -100,8 +105,6 @@ namespace Lumina
 				isParsing = false;
 			}
 		}
-
-		
 
 		return result;
 	}

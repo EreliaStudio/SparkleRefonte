@@ -1,15 +1,6 @@
-int max(float a, float b)
-{
-    return a;
-}
-
-Vector2 test()
-{
-	return (Vector2(10, 10));
-}
-
 Vector3 calculateDiffuse(Vector3 normal, Vector3 lightDir, Vector3 lightColor)
 {
-    float diff = max(max(10.0, test().x), 0.0);
-    return diff * lightColor;
+    float diff = Vector2(10, 10).x + 15;
+    diff = Vector3(diff, diff, diff).x;
+    return Vector3(diff, diff, diff) * lightColor;
 }

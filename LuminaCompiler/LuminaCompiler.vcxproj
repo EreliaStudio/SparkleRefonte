@@ -176,8 +176,15 @@
     <ClCompile Include="src\semantic_checker\check_symbol_instruction.cpp" />
     <ClCompile Include="src\semantic_checker\check_texture_instruction.cpp" />
     <ClCompile Include="src\semantic_checker\checker_utils.cpp" />
-    <ClCompile Include="src\semantic_checker\symbol_body\expression_utils.cpp" />
-    <ClCompile Include="src\semantic_checker\symbol_body\variable_declaration.cpp" />
+    <ClCompile Include="src\semantic_checker\symbol_body\check_expression_instruction.cpp" />
+    <ClCompile Include="src\semantic_checker\symbol_body\check_number_expression_value_instruction.cpp" />
+    <ClCompile Include="src\semantic_checker\symbol_body\check_return_intruction.cpp" />
+    <ClCompile Include="src\semantic_checker\symbol_body\check_symbol_call_instruction.cpp" />
+    <ClCompile Include="src\semantic_checker\symbol_body\check_variable_assignation_instruction.cpp" />
+    <ClCompile Include="src\semantic_checker\symbol_body\check_variable_expression_value_instruction.cpp" />
+    <ClCompile Include="src\semantic_checker\symbol_body\get_expression_element_type.cpp" />
+    <ClCompile Include="src\semantic_checker\symbol_body\get_expression_type.cpp" />
+    <ClCompile Include="src\semantic_checker\symbol_body\check_variable_declaration_instruction.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\lumina_exception.hpp" />

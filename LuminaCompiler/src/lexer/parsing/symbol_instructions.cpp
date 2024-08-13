@@ -13,6 +13,10 @@ namespace Lumina
 		{
 			expect(Lumina::Token::Type::Assignator, "Expected an assignator token."+ DEBUG_INFORMATION);
 			result->initializer = parseExpression();
+			if (result->initializer->elements.size() == 0)
+			{
+				throw TokenBasedError(_file, "Expected an assignation value." + DEBUG_INFORMATION, currentToken());
+			}
 		}
 		expect(Lumina::Token::Type::EndOfSentence, "Expected end of sentence."+ DEBUG_INFORMATION);
 

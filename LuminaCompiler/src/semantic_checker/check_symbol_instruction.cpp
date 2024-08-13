@@ -95,6 +95,6 @@ namespace Lumina
 			functionVariables[name] = type;
 		}
 
-		checkSymbolBodyInstruction(p_file, p_instruction->body, functionVariables);
+		checkSymbolBodyInstruction(p_file, p_instruction->body, functionVariables, newSymbol.returnType);
 	}
 }

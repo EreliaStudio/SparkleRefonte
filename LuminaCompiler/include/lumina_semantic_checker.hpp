@@ -132,7 +132,9 @@ namespace Lumina
 		void checkSymbolCallInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolCallInstruction>& p_instruction, const std::unordered_map<std::string, Type*>& p_variables, Type* p_expectedType);
 		void checkExpressionInstruction(const std::filesystem::path& p_file, const std::shared_ptr<ExpressionInstruction>& p_instruction, const std::unordered_map<std::string, Type*>& p_variables, Type* p_expectedType);
 		void checkVariableDeclarationInstruction(const std::filesystem::path& p_file, const std::shared_ptr<VariableDeclarationInstruction>& varDecl, std::unordered_map<std::string, Type*>& p_variables);
-		void checkSymbolBodyInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolBodyInstruction>& p_instruction, std::unordered_map<std::string, Type*> p_variables);
+		void checkVariableAssignationInstruction(const std::filesystem::path& p_file, const std::shared_ptr<VariableAssignationInstruction>& varDecl, std::unordered_map<std::string, Type*>& p_variables);
+		void checkReturnInstruction(const std::filesystem::path& p_file, const std::shared_ptr<ReturnInstruction>& varDecl, std::unordered_map<std::string, Type*>& p_variables, Type* returnType);
+		void checkSymbolBodyInstruction(const std::filesystem::path& p_file, const std::shared_ptr<SymbolBodyInstruction>& p_instruction, std::unordered_map<std::string, Type*> p_variables, Type* returnType);
 		
 		void checkNamespaceInstruction(const std::filesystem::path& p_file, const std::shared_ptr<NamespaceInstruction>& p_instruction);
 

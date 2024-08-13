@@ -52,6 +52,9 @@ namespace Lumina
 		for (const auto& prefix : namespacePrefixes)
 		{
 			std::string fullTypeName = prefix.empty() ? p_typeName : prefix + "::" + p_typeName;
+			
+			if (fullTypeName.substr(0, 2) == "::")
+				fullTypeName = fullTypeName.substr(2, fullTypeName.size() - 2);
 
 			auto it = std::find_if(_types.begin(), _types.end(), [&fullTypeName](const Type& type)
 				{
@@ -125,6 +128,9 @@ namespace Lumina
 		{
 			std::string fullSymbolName = prefix.empty() ? p_symbolName : prefix + "::" + p_symbolName;
 
+			if (fullSymbolName.substr(0, 2) == "::")
+				fullSymbolName = fullSymbolName.substr(2, fullSymbolName.size() - 2);
+
 			if (_symbols.contains(fullSymbolName) == true)
 			{
 				return (&(_symbols[fullSymbolName]));
@@ -145,6 +151,18 @@ namespace Lumina
 	{
 		addType(p_standardType);
 		_standardTypes.insert(type(p_standardType.name));
+		for (const auto& constructor : p_standardType.constructors)
+		{
+			Symbol newSymbol;
+
+			newSymbol.name = p_standardType.name;
+			newSymbol.returnType = type(p_standardType.name);
+
+			for (const auto& parameter : constructor)
+				newSymbol.parameters.push_back({ "", parameter});
+
+			addSymbol(newSymbol);
+		}
 	}
 	
 	void SemanticChecker::addStructure(const SemanticChecker::Type& p_structure)
