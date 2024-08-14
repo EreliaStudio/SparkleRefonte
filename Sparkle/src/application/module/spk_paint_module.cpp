@@ -1,6 +1,6 @@
 #include "application/module/spk_paint_module.hpp"
 
-#include "structure/graphical/spk_window.hpp"
+#include "structure/graphics/spk_window.hpp"
 
 namespace spk
 {

@@ -3,7 +3,7 @@
 #include "application/spk_application.hpp"
 
 #include "structure/spk_safe_pointer.hpp"
-#include "structure/graphical/spk_window.hpp"
+#include "structure/graphics/spk_window.hpp"
 
 namespace spk
 {

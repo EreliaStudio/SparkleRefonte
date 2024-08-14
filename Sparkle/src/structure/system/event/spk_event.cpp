@@ -1,6 +1,6 @@
 #include "structure/system/event/spk_event.hpp"
 
-#include "structure/graphical/spk_window.hpp"
+#include "structure/graphics/spk_window.hpp"
 
 #include "spk_debug_macro.hpp"
 

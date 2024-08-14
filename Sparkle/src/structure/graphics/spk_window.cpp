@@ -1,4 +1,4 @@
-#include "structure/graphical/spk_window.hpp"
+#include "structure/graphics/spk_window.hpp"
 
 #include "application/spk_graphical_application.hpp"
 

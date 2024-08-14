@@ -138,7 +138,8 @@
     <ClCompile Include="src\structure\design_pattern\spk_observable_value_tester.cpp" />
     <ClCompile Include="src\structure\design_pattern\spk_singleton_tester.cpp" />
     <ClCompile Include="src\structure\design_pattern\spk_stateful_object_tester.cpp" />
-    <ClCompile Include="src\structure\graphical\spk_geometry_2D_tester.cpp" />
+    <ClCompile Include="src\structure\graphics\spk_color_tester.cpp" />
+    <ClCompile Include="src\structure\graphics\spk_geometry_2D_tester.cpp" />
     <ClCompile Include="src\structure\math\spk_math_tester.cpp" />
     <ClCompile Include="src\structure\math\spk_matrix_tester.cpp" />
     <ClCompile Include="src\structure\math\spk_vector2_tester.cpp" />
@@ -169,7 +170,8 @@
     <ClInclude Include="include\structure\design_pattern\spk_observable_value_tester.hpp" />
     <ClInclude Include="include\structure\design_pattern\spk_singleton_tester.hpp" />
     <ClInclude Include="include\structure\design_pattern\spk_stateful_object_tester.hpp" />
-    <ClInclude Include="include\structure\graphical\spk_geometry_2D_tester.hpp" />
+    <ClInclude Include="include\structure\graphics\spk_color_tester.hpp" />
+    <ClInclude Include="include\structure\graphics\spk_geometry_2D_tester.hpp" />
     <ClInclude Include="include\structure\math\spk_math_tester.hpp" />
     <ClInclude Include="include\structure\math\spk_matrix_tester.hpp" />
     <ClInclude Include="include\structure\math\spk_vector2_tester.hpp" />

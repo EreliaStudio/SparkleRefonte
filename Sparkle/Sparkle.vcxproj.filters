@@ -42,7 +42,7 @@
     <ClCompile Include="src\structure\math\spk_math.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\structure\graphical\spk_window.cpp">
+    <ClCompile Include="src\structure\graphics\spk_window.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="src\application\module\spk_controller_module.cpp">
@@ -99,6 +99,9 @@
     <ClCompile Include="src\structure\container\spk_json_object.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="src\structure\graphics\spk_color.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\sparkle.hpp">
@@ -137,7 +140,7 @@
     <ClInclude Include="include\structure\design_pattern\spk_contract_provider.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\structure\graphical\spk_geometry_2D.hpp">
+    <ClInclude Include="include\structure\graphics\spk_geometry_2D.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="include\structure\spk_safe_pointer.hpp">
@@ -179,7 +182,7 @@
     <ClInclude Include="include\utils\spk_file_utils.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\structure\graphical\spk_window.hpp">
+    <ClInclude Include="include\structure\graphics\spk_window.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="include\structure\system\device\spk_mouse.hpp">
@@ -234,6 +237,9 @@
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="include\structure\container\spk_json_object.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="include\structure\graphics\spk_color.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
   </ItemGroup>

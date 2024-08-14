@@ -5,7 +5,7 @@
 #include "structure/design_pattern/spk_inherence_object.hpp"
 #include "structure/design_pattern/spk_activable_object.hpp"
 
-#include "structure/graphical/spk_geometry_2D.hpp"
+#include "structure/graphics/spk_geometry_2D.hpp"
 
 #include "structure/system/event/spk_event.hpp"
 

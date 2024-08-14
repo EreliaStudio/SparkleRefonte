@@ -6,7 +6,7 @@
 #endif
 
 #include "structure/spk_safe_pointer.hpp"
-#include "structure/graphical/spk_geometry_2D.hpp"
+#include "structure/graphics/spk_geometry_2D.hpp"
 
 #include "structure/container/spk_thread_safe_queue.hpp"
 

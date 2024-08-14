@@ -189,8 +189,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shader\customInclude.lum" />
-    <None Include="shader\shader.lum" />
+    <None Include="shader\shader.json" />
     <None Include="vcpkg.json" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -10,7 +10,7 @@
 #include "structure/system/device/spk_keyboard.hpp"
 #include "structure/system/device/spk_controller.hpp"
 
-#include "structure/graphical/spk_geometry_2D.hpp"
+#include "structure/graphics/spk_geometry_2D.hpp"
 
 #include <unordered_map>
 #include <functional>
