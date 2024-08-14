@@ -6,6 +6,9 @@
 
 #include "structure/spk_safe_pointer.hpp"
 
+#include "structure/container/spk_json_file.hpp"
+#include "structure/container/spk_data_buffer.hpp"
+
 #include "structure/design_pattern/spk_stateful_object.hpp"
 #include "structure/design_pattern/spk_activable_object.hpp"
 #include "structure/design_pattern/spk_inherence_object.hpp"

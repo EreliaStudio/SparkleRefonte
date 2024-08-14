@@ -2,21 +2,10 @@
 #include <locale>
 #include <codecvt>
 
+#include "utils/spk_string_utils.hpp"
+
 namespace spk
 {
-	std::string wstring_to_string(const std::wstring& wstr)
-	{
-		if (wstr.empty())
-		{
-			return std::string();
-		}
-
-		int size_needed = WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), NULL, 0, NULL, NULL);
-		std::string str(size_needed, 0);
-		WideCharToMultiByte(CP_UTF8, 0, &wstr[0], (int)wstr.size(), &str[0], size_needed, NULL, NULL);
-		return str;
-	}
-
 	GraphicalApplication::GraphicalApplication()
 	{
 		WNDCLASSEX wc = { 0 };
@@ -57,7 +46,7 @@ namespace spk
 	spk::SafePointer<Window> GraphicalApplication::createWindow(const std::wstring& p_title, const spk::Geometry2DInt& p_geometry)
 	{
 		if (_windows.contains(p_title) == true)
-			throw std::runtime_error("Can't create a second window named [" + wstring_to_string(p_title) + "]");
+			throw std::runtime_error("Can't create a second window named [" + StringUtils::wstringToString(p_title) + "]");
 		_windows[p_title] = std::make_unique<spk::Window>(p_title, p_geometry);
 
 		_windows[p_title]->_initialize([&](spk::SafePointer<spk::Window> windowPtr){_windowToRemove.push(std::move(windowPtr));});
