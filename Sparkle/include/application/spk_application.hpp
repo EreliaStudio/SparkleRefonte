@@ -30,75 +30,21 @@ namespace spk
 		spk::SafePointer<spk::PersistantWorker> _mainThreadWorker;
 
 	public:
-		Application() :
-			_mainThreadWorker(worker(MainThreadName))
-		{
+		Application();
+		~Application();
 
-		}
+		spk::SafePointer<spk::PersistantWorker> worker(const std::wstring& p_threadName);
 
-		spk::SafePointer<spk::PersistantWorker> worker(const std::wstring& p_threadName)
-		{
-			if (_workers.contains(p_threadName) == false)
-				_workers[p_threadName] = std::make_unique<spk::PersistantWorker>(p_threadName);
+		Contract addExecutionStep(const std::wstring& p_threadName, const Job& p_job);
+		Contract addExecutionStep(const Job& p_job);
 
-			return (_workers[p_threadName].get());
-		}
+		PreparationContract addPreparationStep(const std::wstring& p_threadName, const PreparationJob& p_job);
+		PreparationContract addPreparationStep(const PreparationJob& p_job);
 
-		Contract addExecutionStep(const std::wstring& p_threadName, const Job& p_job)
-		{
-			return (worker(p_threadName)->addExecutionStep(p_job));
-		}
+		int run();
 
-		Contract addExecutionStep(const Job& p_job)
-		{
-			return (_workers[MainThreadName]->addExecutionStep(p_job));
-		}
+		void quit(int p_errorCode);
 
-		PreparationContract addPreparationStep(const std::wstring& p_threadName, const PreparationJob& p_job)
-		{
-			return (worker(p_threadName)->addPreparationStep(p_job));
-		}
-
-		PreparationContract addPreparationStep(const PreparationJob& p_job)
-		{
-			return (_workers[MainThreadName]->addPreparationStep(p_job));
-		}
-
-		int run()
-		{
-			_isRunning = true;
-
-			for (auto& [key, worker] : _workers)
-			{
-				if (key != MainThreadName)
-					worker->start();
-			}
-
-			spk::cout.setPrefix(L"MainThread");
-			_mainThreadWorker->preparationJobs().trigger();
-			while (_isRunning == true)
-			{
-				_mainThreadWorker->executionJobs().trigger();
-			}
-
-			for (auto& [key, worker] : _workers)
-			{
-				if (key != MainThreadName)
-					worker->stop();
-			}
-
-			return (_errorCode);
-		}
-
-		void quit(int p_errorCode)
-		{
-			_isRunning = false;
-			_errorCode = p_errorCode;
-		}
-
-		bool isRunning() const
-		{
-			return (_isRunning);
-		}
+		bool isRunning() const;
 	};
 }
