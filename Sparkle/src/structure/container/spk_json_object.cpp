@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "utils/spk_string_utils.hpp"
+
 namespace spk
 {
 	namespace JSON
@@ -46,7 +48,7 @@ namespace spk
 			Object* result = new Object(p_key);
 
 			if (std::get<std::map<std::wstring, Object*>>(_content).count(p_key) != 0)
-				throw std::runtime_error("Can't add attribute named [" + std::string(p_key.begin(), p_key.end()) + "] : it already exists");
+				throw std::runtime_error("Can't add attribute named [" + spk::StringUtils::wstringToString(p_key) + "] : it already exists");
 			std::get<std::map<std::wstring, Object*>>(_content)[p_key] = result;
 			return (*result);
 		}
@@ -90,7 +92,7 @@ namespace spk
 			auto& map = std::get<std::map<std::wstring, Object*>>(_content);
 
 			if (map.count(p_key) == 0)
-				throw std::runtime_error("Can't acces JSON object named [" + std::string(p_key.begin(), p_key.end()) + "] : it does not exist");
+				throw std::runtime_error("Can't acces JSON object named [" + spk::StringUtils::wstringToString(p_key) + "] : it does not exist");
 
 			Object* result = map.at(p_key);
 

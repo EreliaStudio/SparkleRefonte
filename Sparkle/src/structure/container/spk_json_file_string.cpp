@@ -3,6 +3,8 @@
 #include <fstream>
 #include <algorithm>
 
+#include "utils/spk_string_utils.hpp"
+
 namespace spk
 {
 	namespace JSON
@@ -48,12 +50,12 @@ namespace spk
 						}
 						catch (const std::exception&)
 						{
-							throw std::runtime_error("Invalid Unicode escape : <" + std::string(p_fileContent.begin(), p_fileContent.end()).substr(i, 6) + '>');
+							throw std::runtime_error("Invalid Unicode escape : <" + spk::StringUtils::wstringToString(p_fileContent).substr(i, 6) + '>');
 						}
 						i += 4;
 						break;
 					default:
-						throw std::runtime_error("Invalid escape sequence: <" + std::string(p_fileContent.begin(), p_fileContent.end()).substr(i, 2) + '>');
+						throw std::runtime_error("Invalid escape sequence: <" + spk::StringUtils::wstringToString(p_fileContent).substr(i, 2) + '>');
 					}
 					++i;
 				}
@@ -119,7 +121,7 @@ namespace spk
 		std::wstring _getAttributeName(const std::wstring& p_content, size_t& p_index)
 		{
 			if (p_content[p_index] != L'"')
-				throw std::runtime_error("Invalid attribute name [" + std::string(p_content.begin(), p_content.end()).substr(p_index, 2) + "]");
+				throw std::runtime_error("Invalid attribute name [" + spk::StringUtils::wstringToString(p_content).substr(p_index, 2) + "]");
 
 			++p_index;
 			size_t start = p_index;
@@ -131,7 +133,7 @@ namespace spk
 			}
 			++p_index;
 			if (p_content[p_index] != L':')
-				throw std::runtime_error("Invalid attribute name [" + std::string(p_content.begin(), p_content.end()).substr(start, p_index - start) + "]");
+				throw std::runtime_error("Invalid attribute name [" + spk::StringUtils::wstringToString(p_content).substr(start, p_index - start) + "]");
 			++p_index;
 			return (_handleEscapeSequence(p_content.substr(start, p_index - start - 2)));
 		}
@@ -166,12 +168,12 @@ namespace spk
 				if (isAString == false &&
 					(p_content[p_index] == L'"' || p_content[p_index] == L'[' ||
 						p_content[p_index] == L'{' || p_content[p_index] == L','))
-					throw std::runtime_error("Invalid JSON unit [" + std::string(p_content.begin(), p_content.end()).substr(oldIndex, 5) + "]");
+					throw std::runtime_error("Invalid JSON unit [" + spk::StringUtils::wstringToString(p_content).substr(oldIndex, 5) + "]");
 			}
 			if (isAString == true)
 			{
 				if (p_content[p_index] != L'"')
-					throw std::runtime_error("Invalid JSON unit [" + std::string(p_content.begin(), p_content.end()).substr(oldIndex, p_index - oldIndex) + "]");
+					throw std::runtime_error("Invalid JSON unit [" + spk::StringUtils::wstringToString(p_content).substr(oldIndex, p_index - oldIndex) + "]");
 				else
 					++p_index;
 			}

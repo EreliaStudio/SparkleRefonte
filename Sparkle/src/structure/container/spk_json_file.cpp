@@ -3,6 +3,8 @@
 #include <fstream>
 #include <algorithm>
 
+#include "utils/spk_string_utils.hpp"
+
 namespace spk::JSON
 {
 	std::wstring _applyGrammar(const std::wstring& p_fileContent);
@@ -41,7 +43,7 @@ namespace spk::JSON
 		else if (p_unitSubString == L"false")
 			p_objectToFill.set(false);
 		else
-			throw std::runtime_error("Invalid boolean JSON value: " + std::string(p_unitSubString.begin(), p_unitSubString.end()));
+			throw std::runtime_error("Invalid boolean JSON value: " + spk::StringUtils::wstringToString(p_unitSubString));
 	}
 
 	static void _loadUnitNull(spk::JSON::Object& p_objectToFill, const std::wstring& p_unitSubString)
@@ -49,7 +51,7 @@ namespace spk::JSON
 		if (p_unitSubString == L"null")
 			p_objectToFill.set(nullptr);
 		else
-			throw std::runtime_error("Invalid null JSON value: " + std::string(p_unitSubString.begin(), p_unitSubString.end()));
+			throw std::runtime_error("Invalid null JSON value: " + spk::StringUtils::wstringToString(p_unitSubString));
 	}
 
 	static void _loadUnit(spk::JSON::Object& p_objectToFill, const std::wstring& p_content, size_t& p_index)
@@ -73,7 +75,7 @@ namespace spk::JSON
 			_loadUnitNull(p_objectToFill, substring);
 			break;
 		default:
-			throw std::runtime_error("Invalid JSON value: " + std::string(substring.begin(), substring.end()));
+			throw std::runtime_error("Invalid JSON value: " + spk::StringUtils::wstringToString(substring));
 			break;
 		}
 	}
@@ -145,7 +147,7 @@ namespace spk::JSON
 			_loadArray(p_objectToFill, p_content, p_index);
 			break;
 		default:
-			throw std::runtime_error("Unexpected data type in JSON: " + std::string(p_content.begin(), p_content.end()).substr(p_index, 10));
+			throw std::runtime_error("Unexpected data type in JSON: " + spk::StringUtils::wstringToString(p_content).substr(p_index, 10));
 		}
 	}
 

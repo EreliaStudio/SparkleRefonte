@@ -1,4 +1,5 @@
 #include "utils/spk_string_utils.hpp"
+#include <windows.h>
 
 namespace spk
 {
@@ -7,6 +8,54 @@ namespace spk
 		std::wstring stringToWString(const std::string& p_str)
 		{
 			return std::wstring(p_str.begin(), p_str.end());
+		}
+
+		std::string wstringToString(const std::wstring& p_wstr)
+		{
+			if (p_wstr.empty())
+			{
+				return std::string();
+			}
+
+			int size_needed = WideCharToMultiByte(CP_UTF8, 0, &p_wstr[0], (int)p_wstr.size(), NULL, 0, NULL, NULL);
+			std::string strTo(size_needed, 0);
+			WideCharToMultiByte(CP_UTF8, 0, &p_wstr[0], (int)p_wstr.size(), &strTo[0], size_needed, NULL, NULL);
+
+			return strTo;
+		}
+
+		std::vector<std::string> splitString(const std::string& p_str, const std::string& p_delimiter)
+		{
+			std::vector<std::string> result;
+			size_t start = 0;
+			size_t end = p_str.find(p_delimiter);
+
+			while (end != std::string::npos)
+			{
+				result.push_back(p_str.substr(start, end - start));
+				start = end + p_delimiter.length();
+				end = p_str.find(p_delimiter, start);
+			}
+
+			result.push_back(p_str.substr(start, end));
+			return result;
+		}
+
+		std::vector<std::wstring> splitWString(const std::wstring& p_wstr, const std::wstring& p_delimiter)
+		{
+			std::vector<std::wstring> result;
+			size_t start = 0;
+			size_t end = p_wstr.find(p_delimiter);
+
+			while (end != std::wstring::npos)
+			{
+				result.push_back(p_wstr.substr(start, end - start));
+				start = end + p_delimiter.length();
+				end = p_wstr.find(p_delimiter, start);
+			}
+
+			result.push_back(p_wstr.substr(start, end));
+			return result;
 		}
 	}
 }

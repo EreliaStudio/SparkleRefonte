@@ -147,6 +147,7 @@
     <ClCompile Include="src\structure\spk_safe_pointer_tester.cpp" />
     <ClCompile Include="src\structure\thread\spk_persistant_worker_tester.cpp" />
     <ClCompile Include="src\structure\thread\spk_thread_tester.cpp" />
+    <ClCompile Include="src\utils\spk_string_utils_tester.cpp" />
     <ClCompile Include="src\widget\spk_widget_tester.cpp" />
   </ItemGroup>
   <ItemGroup>

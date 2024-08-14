@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <any>
 
+#include "utils/spk_string_utils.hpp"
+
 namespace spk
 {
 	namespace JSON
@@ -109,7 +111,7 @@ namespace spk
 				{
 					Unit tmpUnit = TType();
 					std::string types[] = { "bool", "long", "double", "std::wstring", "Object*", "std::nullptr_t" };
-					throw std::runtime_error("Wrong type request for object [" + std::string(_name.begin(), _name.end()) + "] as Unit : Request type [" + types[tmpUnit.index()] + "] but unit contain [" + types[unit.index()] + "]");
+					throw std::runtime_error("Wrong type request for object [" + spk::StringUtils::wstringToString(_name) + "] as Unit : Request type [" + types[tmpUnit.index()] + "] but unit contain [" + types[unit.index()] + "]");
 				}
 
 				return (*value);
