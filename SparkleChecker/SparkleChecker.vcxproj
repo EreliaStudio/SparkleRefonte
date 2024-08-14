@@ -130,6 +130,7 @@
     <ClCompile Include="src\application\spk_console_application_tester.cpp" />
     <ClCompile Include="src\spk_sfinae_tester.cpp" />
     <ClCompile Include="src\structure\container\spk_data_buffer_tester.cpp" />
+    <ClCompile Include="src\structure\container\spk_json_object_tester.cpp" />
     <ClCompile Include="src\structure\container\spk_pool_tester.cpp" />
     <ClCompile Include="src\structure\design_pattern\spk_activable_object_tester.cpp" />
     <ClCompile Include="src\structure\design_pattern\spk_contract_provider_tester.cpp" />
@@ -162,6 +163,7 @@
   <ItemGroup>
     <ClInclude Include="include\application\spk_application_tester.hpp" />
     <ClInclude Include="include\structure\container\spk_data_buffer_tester.hpp" />
+    <ClInclude Include="include\structure\container\spk_json_object_tester.hpp" />
     <ClInclude Include="include\structure\container\spk_pool_tester.hpp" />
     <ClInclude Include="include\structure\design_pattern\spk_activable_object_tester.hpp" />
     <ClInclude Include="include\structure\design_pattern\spk_contract_provider_tester.hpp" />

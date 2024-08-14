@@ -97,7 +97,7 @@ namespace spk
 			<< std::setw(2) << static_cast<int>(p_color.b * 255)
 			<< std::setw(2) << static_cast<int>(p_color.a * 255);
 
-		p_object.set<std::wstring>(ss.str());
+		p_object = ss.str();
 		return p_object;
 	}
 

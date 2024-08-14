@@ -10,7 +10,7 @@ void ColorTest::SetUp()
 
     // Mock JSON object for testing
     spk::JSON::Object jsonObject;
-    jsonObject.set<std::wstring>(L"0x3F7FBFFF");
+    jsonObject = L"0x3F7FBFFF";
 
     jsonColor = spk::Color(jsonObject);
 }
@@ -102,7 +102,7 @@ TEST_F(ColorTest, LoadColorFromJSONString)
 TEST_F(ColorTest, LoadColorFromInvalidJSONString)
 {
     spk::JSON::Object jsonObject;
-    jsonObject.set<std::wstring>(L"0xZZZZZZZZ");
+    jsonObject = L"0xZZZZZZZZ";
 
     spk::Color loadedColor;
 

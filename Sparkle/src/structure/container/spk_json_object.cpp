@@ -4,6 +4,8 @@
 
 #include "utils/spk_string_utils.hpp"
 
+#include "spk_debug_macro.hpp"
+
 namespace spk
 {
 	namespace JSON
@@ -67,6 +69,11 @@ namespace spk
 				setAsObject();
 			}
 
+			if (!std::holds_alternative<std::map<std::wstring, Object*>>(_content))
+			{
+				throw std::runtime_error("Object does not hold a map, cannot access by key");
+			}
+
 			auto& map = std::get<std::map<std::wstring, Object*>>(_content);
 
 			if (map.count(p_key) == 0)
@@ -89,6 +96,11 @@ namespace spk
 
 		const Object& Object::operator[](const std::wstring& p_key) const
 		{
+			if (!std::holds_alternative<std::map<std::wstring, Object*>>(_content))
+			{
+				throw std::runtime_error("Object does not hold a map, cannot access by key");
+			}
+
 			auto& map = std::get<std::map<std::wstring, Object*>>(_content);
 
 			if (map.count(p_key) == 0)
@@ -113,6 +125,7 @@ namespace spk
 				throw std::runtime_error("Can't get object members : object is not initialized or is not of type object");
 			return (std::get<std::map<std::wstring, Object*>>(_content));
 		}
+
 
 		void	Object::setAsObject()
 		{
@@ -171,12 +184,37 @@ namespace spk
 
 		Object& Object::operator[](size_t p_index)
 		{
-			return (*(std::get<std::vector<Object*>>(_content)[p_index]));
+			if (!std::holds_alternative<std::vector<Object*>>(_content))
+			{
+				throw std::runtime_error("Object does not hold an array, cannot access by index");
+			}
+
+			auto& vec = std::get<std::vector<Object*>>(_content);
+
+			// Check if the index is within bounds
+			if (p_index >= vec.size())
+			{
+				throw std::out_of_range("Index out of range");
+			}
+
+			return *(vec[p_index]);
 		}
 
 		const Object& Object::operator[](size_t p_index) const
 		{
-			return (*(std::get<std::vector<Object*>>(_content)[p_index]));
+			if (!std::holds_alternative<std::vector<Object*>>(_content))
+			{
+				throw std::runtime_error("Object does not hold an array, cannot access by index");
+			}
+
+			const std::vector<Object*>& vec = std::get<std::vector<Object*>>(_content);
+
+			if (p_index >= vec.size())
+			{
+				throw std::out_of_range("Index out of range");
+			}
+
+			return *(vec[p_index]);
 		}
 
 		void	Object::setAsArray()
@@ -194,6 +232,10 @@ namespace spk
 
 		size_t Object::count(const std::wstring& p_key) const
 		{
+			if (!std::holds_alternative<std::map<std::wstring, Object*>>(_content))
+			{
+				throw std::runtime_error("Object does not hold a map, cannot perform count operation");
+			}
 			return (std::get<std::map<std::wstring, Object*>>(_content).count(p_key));
 		}
 

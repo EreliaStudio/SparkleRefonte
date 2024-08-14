@@ -117,6 +117,13 @@ namespace spk
 				return (*value);
 			}
 
+			template<typename TType>
+			Object& operator=(const TType& value)
+			{
+				this->set<TType>(value);
+				return (*this);
+			}
+
 			friend std::wostream& operator<<(std::wostream& p_os, const Object& p_object);
 		};
 	}
