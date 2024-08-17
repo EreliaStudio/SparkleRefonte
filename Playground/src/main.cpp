@@ -391,7 +391,9 @@ public:
     class Uniform
     {
     public:
-        class Element
+		using BindingPoint = long long;
+
+		class Element
         {
         private:
             GLint _gpuOffset;
@@ -494,12 +496,54 @@ public:
         }
     };
 
+	class Object
+	{
+	friend class Pipeline;
+
+	private:
+		Pipeline* _owner;
+		Storage _storage;
+		std::unordered_map<std::wstring, Uniform> _attributes;
+
+		Object(Pipeline* p_owner) :
+			_owner(p_owner)
+		{
+
+		}
+
+	public:
+		Storage& storage()
+		{
+			return (_storage);
+		}
+
+		const Storage& storage() const
+		{
+			return (_storage);
+		}
+
+		std::unordered_map<std::wstring, Uniform>& attributes()
+		{
+			return (_attributes);
+		}
+
+		const std::unordered_map<std::wstring, Uniform>& attributes() const
+		{
+			return (_attributes);
+		}
+	};
+
 	struct Program
 	{
 		GLuint id;
 	};
 
 private:
+
+	std::wstring _name;
+	static std::unordered_map<std::wstring, Uniform::BindingPoint> _usedBindingPoints;
+	std::unordered_map<std::wstring, Uniform> _constants;
+
 	void load(const std::wstring& p_vertexCode, const std::wstring& p_fragmentCode)
 	{
 
@@ -509,6 +553,11 @@ public:
 	Pipeline(const spk::JSON::File& p_inputFile)
 	{
 		load(p_inputFile[L"VertexShaderCode"].as<std::wstring>(), p_inputFile[L"FragmentShaderCode"].as<std::wstring>());
+	}
+
+	const std::wstring& name() const
+	{
+		return (_name);
 	}
 };
 std::wstring to_wstring(Pipeline::VertexBufferObject::Type type);

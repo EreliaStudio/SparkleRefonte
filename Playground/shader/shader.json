@@ -1,8 +1,14 @@
 {
+	"PipelineFlows": [
+		{
+			"name": "test",
+			"type": "vec2"
+		}
+	],
 	"vertexShaderCode": "
 
 	","
 	"FragmentShaderCode": "
-			
-		"
+
+	"
 }
