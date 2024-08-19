@@ -415,7 +415,7 @@ public:
                         "Expected a size of " + std::to_string(_size) + " bytes, "
                         "but received " + std::to_string(sizeof(TType)) + " bytes of data.");
                 }
-                _vbo->edit(&p_data, _size, _gpuOffset);
+                _vbo->push(&p_data, _size, _gpuOffset);
                 return *this;
             }
 
@@ -531,28 +531,128 @@ public:
 		{
 			return (_attributes);
 		}
-	};
 
-	struct Program
-	{
-		GLuint id;
+		void render()
+		{
+			_owner->activate();
+
+			_storage.activate();
+			for (const auto& [key, uniform] : _attributes)
+			{
+				uniform.bind();
+			}
+	
+			_owner->draw(_storage.elementBuffer().size() / sizeof(size_t));
+
+			_owner->deactivate();
+		}
+
+		void renderInstanced(size_t p_nbInstance)
+		{
+			_owner->activate();
+
+			_storage.activate();
+			for (const auto& [key, uniform] : _attributes)
+			{
+				uniform.bind();
+			}
+			
+			_owner->drawInstanced(_storage.elementBuffer().size() / sizeof(size_t), p_nbInstance);
+
+			_owner->deactivate();
+		}
 	};
 
 private:
-
 	std::wstring _name;
-	static std::unordered_map<std::wstring, Uniform::BindingPoint> _usedBindingPoints;
+
+	bool _loaded;
+	GLuint _id;
+
+	std::string _vertexCode;
+	std::string _fragmentCode;
+
 	std::unordered_map<std::wstring, Uniform> _constants;
 
-	void load(const std::wstring& p_vertexCode, const std::wstring& p_fragmentCode)
+	GLuint compileShader(const std::string& p_code, GLenum mode)
 	{
+		GLuint shader = glCreateShader(mode);
 
+		const char* shaderSource = p_code.c_str();
+		glShaderSource(shader, 1, &shaderSource, nullptr);
+
+		glCompileShader(shader);
+
+		GLint success;
+		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+		if (!success)
+		{
+			GLchar infoLog[512];
+			glGetShaderInfoLog(shader, 512, nullptr, infoLog);
+			throw std::runtime_error("Shader compilation failed: " + std::string(infoLog));
+		}
+
+		return shader;
+	}
+
+	GLuint linkShaders(GLuint vertexShader, GLuint fragmentShader)
+	{
+		GLuint program = glCreateProgram();
+
+		glAttachShader(program, vertexShader);
+		glAttachShader(program, fragmentShader);
+
+		glLinkProgram(program);
+
+		GLint success;
+		glGetProgramiv(program, GL_LINK_STATUS, &success);
+		if (!success)
+		{
+			GLchar infoLog[512];
+			glGetProgramInfoLog(program, 512, nullptr, infoLog);
+			throw std::runtime_error("Shader Program linking failed: " + std::string(infoLog));
+		}
+
+		return program;
+	}
+
+	void activate()
+	{
+		glUseProgram(_id);
+	}
+
+	void deactivate()
+	{
+		glUseProgram(0);
+	}
+
+	void draw(size_t p_nbTriangle)
+	{
+		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(p_nbTriangle), GL_UNSIGNED_INT, nullptr);
+	}
+
+	void drawInstanced(size_t p_nbTriangle, size_t p_nbInstance)
+	{
+		glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(p_nbTriangle), GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(p_nbInstance));
 	}
 
 public:
-	Pipeline(const spk::JSON::File& p_inputFile)
+	Pipeline(const spk::JSON::File& p_inputFile) : 
+		_loaded(false)
 	{
-		load(p_inputFile[L"VertexShaderCode"].as<std::wstring>(), p_inputFile[L"FragmentShaderCode"].as<std::wstring>());
+		_vertexCode = spk::StringUtils::wstringToString(p_inputFile[L"VertexShaderCode"].as<std::wstring>());
+		_fragmentCode = spk::StringUtils::wstringToString(p_inputFile[L"FragmentShaderCode"].as<std::wstring>());
+	}
+
+	void load()
+	{
+		GLuint vertexShaderID = compileShader(_vertexCode, GL_VERTEX_SHADER);
+		GLuint fragmentShaderID = compileShader(_fragmentCode, GL_FRAGMENT_SHADER);
+
+		_id = linkShaders(vertexShaderID, fragmentShaderID);
+		
+		glDeleteShader(vertexShaderID);
+		glDeleteShader(fragmentShaderID);
 	}
 
 	const std::wstring& name() const
@@ -638,6 +738,8 @@ std::wostream& operator<<(std::wostream& os, spk::Pipeline::VertexBufferObject::
 class TestWidget : public spk::Widget
 {
 private:
+	spk::Pipeline _pipeline;
+
 	void _onGeometryChange()
 	{
 		DEBUG_LINE();
@@ -670,9 +772,10 @@ private:
 
 public:
 	TestWidget(spk::SafePointer<Widget> p_parent) :
-		spk::Widget(L"TestWidget", p_parent)
+		spk::Widget(L"TestWidget", p_parent),
+		_pipeline(spk::JSON::File("shader/shader.json"))
 	{
-
+		
 	}
 };
 
