@@ -14,6 +14,8 @@
 #include "structure/design_pattern/spk_inherence_object.hpp"
 #include "structure/design_pattern/spk_contract_provider.hpp"
 
+#include "structure/math/spk_vector2.hpp"
+#include "structure/math/spk_vector3.hpp"
 #include "structure/graphics/spk_color.hpp"
 
 #include "structure/thread/spk_thread.hpp"

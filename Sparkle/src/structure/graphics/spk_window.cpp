@@ -3,6 +3,8 @@
 #include "application/spk_graphical_application.hpp"
 
 #include "spk_debug_macro.hpp"
+#include <GL/glew.h>
+#include <GL/wglew.h>
 #include <gl/GL.h>
 #include <gl/GLU.h>
 
@@ -103,17 +105,66 @@ namespace spk
 			throw std::runtime_error("Failed to set pixel format.");
 		}
 
-		_hglrc = wglCreateContext(_hdc);
-		if (_hglrc == nullptr)
+		// Create a temporary context to initialize modern OpenGL
+		HGLRC tempContext = wglCreateContext(_hdc);
+		if (!tempContext)
 		{
-			throw std::runtime_error("Failed to create OpenGL context.");
+			throw std::runtime_error("Failed to create temporary OpenGL context.");
 		}
 
-		if (wglMakeCurrent(_hdc, _hglrc) == FALSE)
+		if (!wglMakeCurrent(_hdc, tempContext))
 		{
-			throw std::runtime_error("Failed to activate OpenGL context.");
+			throw std::runtime_error("Failed to activate temporary OpenGL context.");
 		}
+
+		// Load OpenGL extensions
+		glewExperimental = GL_TRUE;
+		GLenum err = glewInit();
+		if (err != GLEW_OK)
+		{
+			throw std::runtime_error("Failed to initialize GLEW.");
+		}
+
+		// Load wglCreateContextAttribsARB extension
+		PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB =
+			(PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
+		if (!wglCreateContextAttribsARB)
+		{
+			throw std::runtime_error("Failed to load wglCreateContextAttribsARB.");
+		}
+
+		// Now create a modern OpenGL context
+		const int attribs[] = {
+			WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
+			WGL_CONTEXT_MINOR_VERSION_ARB, 5,
+			WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+			0
+		};
+
+		_hglrc = wglCreateContextAttribsARB(_hdc, nullptr, attribs);
+		if (!_hglrc)
+		{
+			throw std::runtime_error("Failed to create modern OpenGL context.");
+		}
+
+		// Delete the temporary context and activate the new one
+		wglMakeCurrent(nullptr, nullptr);
+		wglDeleteContext(tempContext);
+
+		if (!wglMakeCurrent(_hdc, _hglrc))
+		{
+			throw std::runtime_error("Failed to activate modern OpenGL context.");
+		}
+
+		// Optionally set VSync
+		if (wglSwapIntervalEXT)
+		{
+			wglSwapIntervalEXT(1); // Enable VSync
+		}
+
+		CHECK_GL_ERROR();
 	}
+
 
 	void Window::_destroyOpenGLContext()
 	{
@@ -138,7 +189,10 @@ namespace spk
 		_windowRendererThread(p_title + L" - Renderer"),
 		_windowUpdaterThread(p_title + L" - Updater")
 	{
-		_windowRendererThread.addPreparationStep([&]() {_createContext(); }).relinquish();
+		_windowRendererThread.addPreparationStep([&]() {
+				_createContext();
+				
+			}).relinquish();
 		_windowRendererThread.addExecutionStep([&]() {
 				pullEvents();
 				paintModule.treatMessages();

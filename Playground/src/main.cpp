@@ -588,6 +588,37 @@ public:
             _layoutBuffer.bzero();
             _elementBuffer.bzero();
         }
+
+        template <typename TDataType>
+        void pushVertices(const std::vector<TDataType>& p_datas)
+        {
+            if (sizeof(TDataType) != _layoutBuffer.stride())
+                throw std::runtime_error("Unexpected stride size received in storage push data\nexpected a vertex of [" + std::to_string(_layoutBuffer.stride()) + "] byte(s) but received a vertex of [" + std::to_string(sizeof(TDataType)) + "] byte(s)");
+            _layoutBuffer.push(p_datas);
+        }
+
+        template <typename TDataType>
+        void appendVertices(const TDataType& p_data)
+        {
+            if (sizeof(TDataType) != _layoutBuffer.stride())
+                throw std::runtime_error("Unexpected stride size received in storage append data\nexpected a vertex of [" + std::to_string(_layoutBuffer.stride()) + "] byte(s) but received a vertex of [" + std::to_string(sizeof(TDataType)) + "] byte(s)");
+            _layoutBuffer.append(p_data);
+        }
+        
+        void pushIndexes(const std::vector<size_t>& p_indexes)
+        {
+            _elementBuffer.push(p_indexes);
+        }
+
+        void appendIndex(size_t p_index)
+        {
+            _elementBuffer.append(p_index);
+        }
+
+        size_t nbTriangles() const
+        {
+            return (_elementBuffer.size() / _elementBuffer.stride());
+        }
     };
 
     class Uniform
@@ -744,7 +775,7 @@ public:
 				uniform.bind();
 			}
 	
-			_owner->draw(_storage.elementBuffer().size() / sizeof(size_t));
+			_owner->draw(_storage.nbTriangles());
 
 			_owner->deactivate();
 		}
@@ -759,7 +790,7 @@ public:
 				uniform.bind();
 			}
 			
-			_owner->drawInstanced(_storage.elementBuffer().size() / sizeof(size_t), p_nbInstance);
+			_owner->drawInstanced(_storage.nbTriangles(), p_nbInstance);
 
 			_owner->deactivate();
 		}
@@ -781,6 +812,8 @@ private:
 
 	GLuint compileShader(const std::string& p_code, GLenum mode)
 	{
+        CHECK_GL_ERROR();
+
 		GLuint shader = glCreateShader(mode);
 
 		const char* shaderSource = p_code.c_str();
@@ -887,8 +920,11 @@ public:
 		return (_name);
 	}
 
-    Object createObject() const
+    Object createObject()
     {
+        if (_loaded == false)
+            load();
+
         Object result(this);
 
         result.storage().layoutBuffer().setupStride(_objectStride);
@@ -1016,21 +1052,41 @@ std::wostream& operator<<(std::wostream& os, spk::Pipeline::VertexBufferObject::
 class TestWidget : public spk::Widget
 {
 private:
-	spk::Pipeline _pipeline;
-
+	static inline spk::Pipeline _pipeline = spk::Pipeline(spk::JSON::File("shader/shader.json"));
+    spk::Pipeline::Object _renderingObject;
     struct Vertex
     {
         spk::Vector2 position;
         spk::Color color;
     };
 
+
 	void _onGeometryChange()
 	{
-		DEBUG_LINE();
+        std::vector<Vertex> vertices = {
+            {
+                spk::Vector2(0, 1),
+                spk::Color::red
+            },
+            {
+                spk::Vector2(-1, -1),
+                spk::Color::red
+            },
+            {
+                spk::Vector2(1, -1),
+                spk::Color::red
+            }
+        };
+        std::vector<size_t> indexes = {0, 1, 2};
+
+        _renderingObject.storage().pushVertices(vertices);
+        _renderingObject.storage().pushIndexes(indexes);
 	}
 	
 	void _onPaintEvent(const spk::PaintEvent& p_event)
 	{
+        _renderingObject.render();
+
 		DEBUG_LINE();
 	}
 	
@@ -1057,7 +1113,7 @@ private:
 public:
 	TestWidget(spk::SafePointer<Widget> p_parent) :
 		spk::Widget(L"TestWidget", p_parent),
-		_pipeline(spk::JSON::File("shader/shader.json"))
+        _renderingObject(_pipeline.createObject())
 	{
 		
 	}
@@ -1068,11 +1124,11 @@ int main()
 	spk::GraphicalApplication app;
 	
 	spk::SafePointer<spk::Window> window = app.createWindow(L"Playground", spk::Geometry2DInt({100, 100}, {800, 800}));
+    
+    TestWidget testWidget(window->widget());
 
-	TestWidget testWidget(window->widget());
-	
-	testWidget.setGeometry(spk::Geometry2DInt({ 0, 0 }, { 800, 800 }));
-	testWidget.activate();
+    testWidget.setGeometry(spk::Geometry2DInt({ 0, 0 }, { 800, 800 }));
+    testWidget.activate();
 
 	return app.run();
 }
