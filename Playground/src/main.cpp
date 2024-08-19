@@ -6,6 +6,7 @@
 #include <span>
 
 #include "utils/spk_string_utils.hpp"
+#include "utils/spk_opengl_utils.hpp"
 
 namespace spk
 {
@@ -438,6 +439,7 @@ public:
                 {
                     for (const auto& attribute : _attributes)
                     {
+                        spk::cout << "Setting attribute [" << attribute.index << "] - Size : " << attribute.size << " / Type : " << spk::OpenGLUtils::to_wstring(attribute.type) << std::endl;
                         glVertexAttribPointer(
                             static_cast<GLuint>(attribute.index),
                             attribute.size,
@@ -448,6 +450,7 @@ public:
                         );
                         glEnableVertexAttribArray(static_cast<GLuint>(attribute.index));
                     }
+                    _needAttributeInitialization = false;
                 }
 
                 if (_needsUpdate == true && _datas.size() > 0)
@@ -1123,35 +1126,11 @@ private:
 
         _renderingObject.storage().pushVertices(vertices);
         _renderingObject.storage().pushIndexes(indexes);
-        DEBUG_LINE();
 	}
 	
 	void _onPaintEvent(const spk::PaintEvent& p_event)
 	{
-        CHECK_GL_ERROR();
         _renderingObject.render();
-        CHECK_GL_ERROR();
-        DEBUG_LINE();
-	}
-	
-	void _onUpdateEvent(const spk::UpdateEvent& p_event)
-	{
-		DEBUG_LINE();
-	}
-	
-	void _onKeyboardEvent(const spk::KeyboardEvent& p_event)
-	{
-		DEBUG_LINE();
-	}
-	
-	void _onMouseEvent(const spk::MouseEvent& p_event)
-	{
-
-	}
-	
-	void _onControllerEvent(const spk::ControllerEvent& p_event)
-	{
-		DEBUG_LINE();
 	}
 
 public:

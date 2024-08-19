@@ -46,6 +46,7 @@
     <ClCompile Include="src\structure\system\event\spk_event_output_operator.cpp" />
     <ClCompile Include="src\structure\system\exception\spk_exception.cpp" />
     <ClCompile Include="src\utils\spk_file_utils.cpp" />
+    <ClCompile Include="src\utils\spk_opengl_utils.cpp" />
     <ClCompile Include="src\utils\spk_string_utils.cpp" />
     <ClCompile Include="src\widget\spk_widget.cpp" />
   </ItemGroup>
@@ -94,6 +95,7 @@
     <ClInclude Include="include\structure\system\spk_input_state.hpp" />
     <ClInclude Include="include\structure\thread\spk_persistant_worker.hpp" />
     <ClInclude Include="include\structure\thread\spk_thread.hpp" />
+    <ClInclude Include="include\utils\spk_opengl_utils.hpp" />
     <ClInclude Include="include\utils\spk_string_utils.hpp" />
     <ClInclude Include="include\widget\spk_widget.hpp" />
   </ItemGroup>
