@@ -3,6 +3,10 @@
 #include <GL/glew.h>
 #include <GL/gl.h>
 
+#include <span>
+
+#include "utils/spk_string_utils.hpp"
+
 namespace spk
 {
 class Pipeline
@@ -38,10 +42,89 @@ public:
             StreamCopy = GL_STREAM_COPY    // Data will be copied to another buffer, written by OpenGL once and copied a few times
         };
 
+        struct Attribute
+        {
+            enum class Type
+            {
+                Float,           // 1 component, GL_FLOAT
+                Int,             // 1 component, GL_INT
+                UInt,            // 1 component, GL_UNSIGNED_INT
+                Vector2,         // 2 components, GL_FLOAT
+                Vector2Int,      // 2 components, GL_INT
+                Vector2UInt,     // 2 components, GL_UNSIGNED_INT
+                Vector3,         // 3 components, GL_FLOAT
+                Vector3Int,      // 3 components, GL_INT
+                Vector3UInt,     // 3 components, GL_UNSIGNED_INT
+                Vector4,         // 4 components, GL_FLOAT
+                Vector4Int,      // 4 components, GL_INT
+                Vector4UInt      // 4 components, GL_UNSIGNED_INT
+            };
+
+            static Type typeFromString(const std::wstring& p_input)
+            {
+                if (p_input == L"Float")
+                {
+                    return Type::Float;
+                }
+                else if (p_input == L"Int")
+                {
+                    return Type::Int;
+                }
+                else if (p_input == L"UInt")
+                {
+                    return Type::UInt;
+                }
+                else if (p_input == L"Vector2")
+                {
+                    return Type::Vector2;
+                }
+                else if (p_input == L"Vector2Int")
+                {
+                    return Type::Vector2Int;
+                }
+                else if (p_input == L"Vector2UInt")
+                {
+                    return Type::Vector2UInt;
+                }
+                else if (p_input == L"Vector3")
+                {
+                    return Type::Vector3;
+                }
+                else if (p_input == L"Vector3Int")
+                {
+                    return Type::Vector3Int;
+                }
+                else if (p_input == L"Vector3UInt")
+                {
+                    return Type::Vector3UInt;
+                }
+                else if (p_input == L"Vector4")
+                {
+                    return Type::Vector4;
+                }
+                else if (p_input == L"Vector4Int")
+                {
+                    return Type::Vector4Int;
+                }
+                else if (p_input == L"Vector4UInt")
+                {
+                    return Type::Vector4UInt;
+                }
+                else
+                {
+                    throw std::invalid_argument("Invalid input string [" + spk::StringUtils::wstringToString(p_input) + "] for Type.");
+                }
+            }
+
+            GLsizei index;
+            Type type;
+        };
+
     private:
         GLuint _id;
         Type _type;
         Usage _usage;
+        GLsizei _stride;
         GLsizeiptr _currentSize;
         spk::DataBuffer _datas;
         bool _needsUpdate;
@@ -52,7 +135,8 @@ public:
             _type(p_type),
             _usage(p_usage),
             _currentSize(0),
-            _needsUpdate(false)
+            _needsUpdate(false),
+            _stride(0)
         {
             glGenBuffers(1, &_id);
         }
@@ -62,7 +146,8 @@ public:
             _usage(other._usage),
             _currentSize(other._currentSize),
             _datas(other._datas),
-            _needsUpdate(other._needsUpdate)
+            _needsUpdate(other._needsUpdate),
+            _stride(other._stride)
         {
             glGenBuffers(1, &_id);
             glBindBuffer(static_cast<GLenum>(_type), _id);
@@ -75,7 +160,8 @@ public:
             _usage(other._usage),
             _currentSize(other._currentSize),
             _datas(std::move(other._datas)),
-            _needsUpdate(other._needsUpdate)
+            _needsUpdate(other._needsUpdate),
+            _stride(other._stride)
         {
             other._id = 0;
         }
@@ -96,6 +182,7 @@ public:
                 _currentSize = other._currentSize;
                 _datas = other._datas;
                 _needsUpdate = other._needsUpdate;
+                _stride = other._stride;
 
                 glGenBuffers(1, &_id);
                 glBindBuffer(static_cast<GLenum>(_type), _id);
@@ -116,6 +203,7 @@ public:
                 _currentSize = other._currentSize;
                 _datas = std::move(other._datas);
                 _needsUpdate = other._needsUpdate;
+                _stride = other._stride;
 
                 other._id = 0;
             }
@@ -135,6 +223,11 @@ public:
         size_t size() const
         {
             return (_datas.size());
+        }
+
+        size_t stride() const
+        {
+            return (_stride);
         }
 
         Usage usage() const
@@ -159,6 +252,92 @@ public:
         {
             std::lock_guard<std::mutex> lock(_mutex);
             glBindBuffer(static_cast<GLenum>(_type), 0);
+        }
+
+        void setupStride(size_t p_stride)
+        {
+            std::lock_guard<std::mutex> lock(_mutex);
+            _stride = static_cast<GLsizei>(p_stride);  // Save the desired stride
+        }
+
+        void setupAttribute(const Attribute& p_attribute)
+        {
+            GLint size = 0;
+            GLenum type = GL_FLOAT;
+
+            switch (p_attribute.type)
+            {
+            case Attribute::Type::Float:
+            case Attribute::Type::Int:
+            case Attribute::Type::UInt:
+                size = 1;
+                break;
+
+            case Attribute::Type::Vector2:
+            case Attribute::Type::Vector2Int:
+            case Attribute::Type::Vector2UInt:
+                size = 2;
+                break;
+
+            case Attribute::Type::Vector3:
+            case Attribute::Type::Vector3Int:
+            case Attribute::Type::Vector3UInt:
+                size = 3;
+                break;
+
+            case Attribute::Type::Vector4:
+            case Attribute::Type::Vector4Int:
+            case Attribute::Type::Vector4UInt:
+                size = 4;
+                break;
+
+            default:
+                throw std::invalid_argument("Unknown Attribute::Type");
+            }
+
+            switch (p_attribute.type)
+            {
+            case Attribute::Type::Float:
+            case Attribute::Type::Vector2:
+            case Attribute::Type::Vector3:
+            case Attribute::Type::Vector4:
+                type = GL_FLOAT;
+                break;
+
+            case Attribute::Type::Int:
+            case Attribute::Type::Vector2Int:
+            case Attribute::Type::Vector3Int:
+            case Attribute::Type::Vector4Int:
+                type = GL_INT;
+                break;
+
+            case Attribute::Type::UInt:
+            case Attribute::Type::Vector2UInt:
+            case Attribute::Type::Vector3UInt:
+            case Attribute::Type::Vector4UInt:
+                type = GL_UNSIGNED_INT;
+                break;
+
+            default:
+                throw std::invalid_argument("Unknown Attribute::Type");
+            }
+
+            activate();
+
+            {
+                std::lock_guard<std::mutex> lock(_mutex);
+                glVertexAttribPointer(
+                    static_cast<GLuint>(p_attribute.index),
+                    size,
+                    type,
+                    GL_FALSE,
+                    _stride,
+                    nullptr
+                );
+                glEnableVertexAttribArray(static_cast<GLuint>(p_attribute.index));
+            }
+
+            deactivate();
         }
 
         void* map(GLenum access) const
@@ -195,8 +374,19 @@ public:
         template <typename TType>
         void push(const TType& p_data, GLsizeiptr p_offset = 0)
         {
-            std::lock_guard<std::mutex> lock(_mutex);
             push(&p_data, sizeof(TType), p_offset);
+        }
+
+        template <typename TType>
+        void push(std::span<TType> p_data, GLsizeiptr p_offset = 0)
+        {
+            push(p_data.data(), static_cast<GLsizeiptr>(p_data.size_bytes()), p_offset);
+        }
+        
+        template <typename TType>
+        void push(const std::vector<TType>& p_data, GLsizeiptr p_offset = 0)
+        {
+            push(p_data.data(), static_cast<GLsizeiptr>(p_data.size() * sizeof(TType)), p_offset);
         }
 
         void append(const void* p_data, GLsizeiptr p_size)
@@ -208,8 +398,19 @@ public:
         template <typename TType>
         void append(const TType& p_data)
         {
-            std::lock_guard<std::mutex> lock(_mutex);
             append(&p_data, sizeof(TType));
+        }
+
+        template <typename TType>
+        void append(std::span<TType> p_data)
+        {
+            append(p_data.data(), static_cast<GLsizeiptr>(p_data.size_bytes()));
+        }
+
+        template <typename TType>
+        void append(const std::vector<TType>& p_data)
+        {
+            append(p_data.data(), static_cast<GLsizeiptr>(p_data.size() * sizeof(TType)));
         }
 
         void validate()
@@ -335,6 +536,7 @@ public:
             _layoutBuffer(VertexBufferObject::Type::Storage, VertexBufferObject::Usage::Static),
             _elementBuffer(VertexBufferObject::Type::Element, VertexBufferObject::Usage::Static)
         {
+            _elementBuffer.setupStride(sizeof(GLuint));
         }
 
         void activate()
@@ -462,7 +664,7 @@ public:
             auto it = _elements.find(p_name);
             if (it == _elements.end())
             {
-                throw std::runtime_error("Uniform element name not found: " + std::string(p_name.begin(), p_name.end()));
+                throw std::runtime_error("Uniform element name not found: " + spk::StringUtils::wstringToString(p_name));
             }
             return it->second;
         }
@@ -501,11 +703,11 @@ public:
 	friend class Pipeline;
 
 	private:
-		Pipeline* _owner;
+		const Pipeline* _owner;
 		Storage _storage;
 		std::unordered_map<std::wstring, Uniform> _attributes;
 
-		Object(Pipeline* p_owner) :
+		Object(const Pipeline* p_owner) :
 			_owner(p_owner)
 		{
 
@@ -572,6 +774,9 @@ private:
 	std::string _vertexCode;
 	std::string _fragmentCode;
 
+    size_t _objectStride;
+    std::vector<VertexBufferObject::Attribute> _objectAttributes;
+
 	std::unordered_map<std::wstring, Uniform> _constants;
 
 	GLuint compileShader(const std::string& p_code, GLenum mode)
@@ -616,23 +821,33 @@ private:
 		return program;
 	}
 
-	void activate()
+	void activate() const
 	{
 		glUseProgram(_id);
 	}
 
-	void deactivate()
+	void deactivate() const
 	{
 		glUseProgram(0);
 	}
 
-	void draw(size_t p_nbTriangle)
+	void draw(size_t p_nbTriangle) const
 	{
+        for (const auto& [key, uniform] : _constants)
+        {
+            uniform.bind();
+        }
+
 		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(p_nbTriangle), GL_UNSIGNED_INT, nullptr);
 	}
 
-	void drawInstanced(size_t p_nbTriangle, size_t p_nbInstance)
+	void drawInstanced(size_t p_nbTriangle, size_t p_nbInstance) const
 	{
+        for (const auto& [key, uniform] : _constants)
+        {
+            uniform.bind();
+        }
+
 		glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(p_nbTriangle), GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(p_nbInstance));
 	}
 
@@ -642,6 +857,18 @@ public:
 	{
 		_vertexCode = spk::StringUtils::wstringToString(p_inputFile[L"VertexShaderCode"].as<std::wstring>());
 		_fragmentCode = spk::StringUtils::wstringToString(p_inputFile[L"FragmentShaderCode"].as<std::wstring>());
+
+        const auto& pipelineFlowObject = p_inputFile[L"PipelineFlow"];
+        _objectStride = pipelineFlowObject[L"Stride"].as<long>();
+        const auto& attributeObjects = pipelineFlowObject[L"Attributes"];
+        for (size_t i = 0; i < attributeObjects.size(); i++)
+        {
+            const auto& attributeObject = attributeObjects[i];
+            _objectAttributes.push_back({
+                    static_cast<GLsizei>(attributeObject[L"Index"].as<long>()),
+                    VertexBufferObject::Attribute::typeFromString(attributeObject[L"Type"].as<std::wstring>())
+                });
+        }
 	}
 
 	void load()
@@ -659,6 +886,19 @@ public:
 	{
 		return (_name);
 	}
+
+    Object createObject() const
+    {
+        Object result(this);
+
+        result.storage().layoutBuffer().setupStride(_objectStride);
+        for (const auto& attribute : _objectAttributes)
+        {
+            result.storage().layoutBuffer().setupAttribute(attribute);
+        }
+
+        return (result);
+    }
 };
 std::wstring to_wstring(Pipeline::VertexBufferObject::Type type);
 std::wstring to_wstring(Pipeline::VertexBufferObject::Usage usage);
@@ -666,6 +906,38 @@ std::wstring to_wstring(Pipeline::VertexBufferObject::Usage usage);
 
 namespace spk
 {
+    std::wstring to_wstring(Pipeline::VertexBufferObject::Attribute::Type p_type)
+    {
+        switch (p_type)
+        {
+        case Pipeline::VertexBufferObject::Attribute::Type::Float:
+            return L"Float";
+        case Pipeline::VertexBufferObject::Attribute::Type::Int:
+            return L"Int";
+        case Pipeline::VertexBufferObject::Attribute::Type::UInt:
+            return L"UInt";
+        case Pipeline::VertexBufferObject::Attribute::Type::Vector2:
+            return L"Vector2";
+        case Pipeline::VertexBufferObject::Attribute::Type::Vector2Int:
+            return L"Vector2Int";
+        case Pipeline::VertexBufferObject::Attribute::Type::Vector2UInt:
+            return L"Vector2UInt";
+        case Pipeline::VertexBufferObject::Attribute::Type::Vector3:
+            return L"Vector3";
+        case Pipeline::VertexBufferObject::Attribute::Type::Vector3Int:
+            return L"Vector3Int";
+        case Pipeline::VertexBufferObject::Attribute::Type::Vector3UInt:
+            return L"Vector3UInt";
+        case Pipeline::VertexBufferObject::Attribute::Type::Vector4:
+            return L"Vector4";
+        case Pipeline::VertexBufferObject::Attribute::Type::Vector4Int:
+            return L"Vector4Int";
+        case Pipeline::VertexBufferObject::Attribute::Type::Vector4UInt:
+            return L"Vector4UInt";
+        default:                 throw std::invalid_argument("Invalid Type enum value.");
+        }
+    }
+
     std::wstring to_wstring(Pipeline::VertexBufferObject::Type type)
     {
         switch (type)
@@ -723,6 +995,12 @@ namespace spk
     }
 }
 
+std::wostream& operator<<(std::wostream& os, spk::Pipeline::VertexBufferObject::Attribute::Type type)
+{
+    os << spk::to_wstring(type);
+    return os;
+}
+
 std::wostream& operator<<(std::wostream& os, spk::Pipeline::VertexBufferObject::Type type)
 {
     os << spk::to_wstring(type);
@@ -739,6 +1017,12 @@ class TestWidget : public spk::Widget
 {
 private:
 	spk::Pipeline _pipeline;
+
+    struct Vertex
+    {
+        spk::Vector2 position;
+        spk::Color color;
+    };
 
 	void _onGeometryChange()
 	{

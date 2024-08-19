@@ -1,4 +1,17 @@
 {
-	"VertexShaderCode": "#version 330 core\n\nlayout(location = 0) in vec3 position;\n\nlayout(location = 0) in vec3 color;\n\nlayout(location = 0) out vec4 fragColor;\n\nvoid main()\n{\n\tgl_Position = vec4(position, 1.0);fragColor = color;\n}",
-	"FragmentShaderCode": "#version 330 core\n\nlayout(location = 0) in vec4 fragColor;\n\nout vec4 color;\n\nvoid main()\n{\n\tcolor = fragColor;\n}"
+	"PipelineFlow": {
+		"Stride": 7,
+		"Attributes": [
+			{
+				"Index": 0,
+				"Type": "Vector3"
+			},
+			{
+				"Index": 1,
+				"Type": "Vector4"
+			}
+		]
+	},
+	"VertexShaderCode": "#version 330 core\n\nlayout(location = 0) in vec3 position;\n\nlayout(location = 1) in vec4 color;\n\nlayout(location = 0) out vec4 fragColor;\n\nvoid main()\n{\n\tgl_Position = vec4(position, 1.0);fragColor = color;\n}",
+	"FragmentShaderCode": "#version 330 core\n\nlayout(location = 0) in vec4 fragColor;\n\nlayout(location = 0) out vec4 pixelColor;\n\nvoid main()\n{\n\tpixelColor = fragColor;\n}"
 }

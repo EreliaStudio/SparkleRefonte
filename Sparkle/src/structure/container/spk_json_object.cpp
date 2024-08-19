@@ -227,6 +227,12 @@ namespace spk
 
 		size_t Object::size() const
 		{
+			if (_initialized == false)
+				throw std::runtime_error("Can't get object size : it is uninitialized");
+			if (!std::holds_alternative<std::vector<Object*>>(_content))
+			{
+				throw std::runtime_error("Object does not hold a vector, cannot perform size operation");
+			}
 			return (std::get<std::vector<Object*>>(_content).size());
 		}
 
