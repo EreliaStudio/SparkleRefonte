@@ -117,7 +117,8 @@ public:
             }
 
             GLsizei index;
-            Type type;
+            GLint size;
+            GLenum type;
         };
 
     private:
@@ -125,6 +126,8 @@ public:
         Type _type;
         Usage _usage;
         GLsizei _stride;
+        bool _needAttributeInitialization;
+        std::vector<Attribute> _attributes;
         GLsizeiptr _currentSize;
         spk::DataBuffer _datas;
         bool _needsUpdate;
@@ -138,7 +141,7 @@ public:
             _needsUpdate(false),
             _stride(0)
         {
-            glGenBuffers(1, &_id);
+
         }
 
         VertexBufferObject(const VertexBufferObject& other) :
@@ -147,11 +150,10 @@ public:
             _currentSize(other._currentSize),
             _datas(other._datas),
             _needsUpdate(other._needsUpdate),
-            _stride(other._stride)
+            _stride(other._stride),
+            _attributes(other._attributes)
         {
-            glGenBuffers(1, &_id);
-            glBindBuffer(static_cast<GLenum>(_type), _id);
-            glBufferData(static_cast<GLenum>(_type), _datas.size(), _datas.data(), static_cast<GLenum>(_usage));
+            
         }
 
         VertexBufferObject(VertexBufferObject&& other) noexcept :
@@ -161,21 +163,37 @@ public:
             _currentSize(other._currentSize),
             _datas(std::move(other._datas)),
             _needsUpdate(other._needsUpdate),
-            _stride(other._stride)
+            _stride(other._stride),
+            _attributes(other._attributes)
         {
             other._id = 0;
         }
 
         ~VertexBufferObject()
         {
+            if (_id != 0)
+                release();
+        }
+
+        void allocate()
+        {
+            glGenBuffers(1, &_id);
+            glBindBuffer(static_cast<GLenum>(_type), _id);
+            glBufferData(static_cast<GLenum>(_type), _datas.size(), _datas.data(), static_cast<GLenum>(_usage));
+        }
+
+        void release()
+        {
             glDeleteBuffers(1, &_id);
+            _id = 0;
         }
 
         VertexBufferObject& operator=(const VertexBufferObject& other)
         {
             if (this != &other)
             {
-                glDeleteBuffers(1, &_id);
+                if (_id != 0)
+                    release();
 
                 _type = other._type;
                 _usage = other._usage;
@@ -184,9 +202,7 @@ public:
                 _needsUpdate = other._needsUpdate;
                 _stride = other._stride;
 
-                glGenBuffers(1, &_id);
-                glBindBuffer(static_cast<GLenum>(_type), _id);
-                glBufferData(static_cast<GLenum>(_type), _datas.size(), _datas.data(), static_cast<GLenum>(_usage));
+                allocate();
             }
             return *this;
         }
@@ -195,7 +211,8 @@ public:
         {
             if (this != &other)
             {
-                glDeleteBuffers(1, &_id);
+                if (_id != 0)
+                    release();
 
                 _id = other._id;
                 _type = other._type;
@@ -242,9 +259,11 @@ public:
             _currentSize = 0;
         }
 
-        void activate() const
+        void activate()
         {
             std::lock_guard<std::mutex> lock(_mutex);
+            if (_id == 0)
+                allocate();
             glBindBuffer(static_cast<GLenum>(_type), _id);
         }
 
@@ -260,12 +279,12 @@ public:
             _stride = static_cast<GLsizei>(p_stride);  // Save the desired stride
         }
 
-        void setupAttribute(const Attribute& p_attribute)
+        void setupAttribute(const size_t& p_index, Attribute::Type p_type)
         {
             GLint size = 0;
             GLenum type = GL_FLOAT;
 
-            switch (p_attribute.type)
+            switch (p_type)
             {
             case Attribute::Type::Float:
             case Attribute::Type::Int:
@@ -295,7 +314,7 @@ public:
                 throw std::invalid_argument("Unknown Attribute::Type");
             }
 
-            switch (p_attribute.type)
+            switch (p_type)
             {
             case Attribute::Type::Float:
             case Attribute::Type::Vector2:
@@ -322,25 +341,15 @@ public:
                 throw std::invalid_argument("Unknown Attribute::Type");
             }
 
-            activate();
-
-            {
-                std::lock_guard<std::mutex> lock(_mutex);
-                glVertexAttribPointer(
-                    static_cast<GLuint>(p_attribute.index),
-                    size,
-                    type,
-                    GL_FALSE,
-                    _stride,
-                    nullptr
-                );
-                glEnableVertexAttribArray(static_cast<GLuint>(p_attribute.index));
-            }
-
-            deactivate();
+            _attributes.push_back({
+                    static_cast<GLsizei>(p_index),
+                    static_cast<GLint>(size),
+                    static_cast<GLenum>(type)
+                });
+            _needAttributeInitialization = true;
         }
 
-        void* map(GLenum access) const
+        void* map(GLenum access)
         {
             std::lock_guard<std::mutex> lock(_mutex);
             activate();
@@ -349,7 +358,7 @@ public:
             return ptr;
         }
 
-        void unmap() const
+        void unmap()
         {
             std::lock_guard<std::mutex> lock(_mutex);
             activate();
@@ -421,22 +430,40 @@ public:
 
         void bind()
         {
-            std::lock_guard<std::mutex> lock(_mutex);
             activate();
 
-            if (_needsUpdate == true && _datas.size() > 0)
             {
-                if (_datas.size() <= static_cast<size_t>(_currentSize))
+                std::lock_guard<std::mutex> lock(_mutex);
+                if (_needAttributeInitialization == true)
                 {
-                    glBufferSubData(static_cast<GLenum>(_type), 0, _datas.size(), _datas.data());
-                }
-                else
-                {
-                    glBufferData(static_cast<GLenum>(_type), _datas.size(), _datas.data(), static_cast<GLenum>(_usage));
-                    _currentSize = _datas.size();
+                    for (const auto& attribute : _attributes)
+                    {
+                        glVertexAttribPointer(
+                            static_cast<GLuint>(attribute.index),
+                            attribute.size,
+                            attribute.type,
+                            GL_FALSE,
+                            _stride,
+                            nullptr
+                        );
+                        glEnableVertexAttribArray(static_cast<GLuint>(attribute.index));
+                    }
                 }
 
-                _needsUpdate = false;
+                if (_needsUpdate == true && _datas.size() > 0)
+                {
+                    if (_datas.size() <= static_cast<size_t>(_currentSize))
+                    {
+                        glBufferSubData(static_cast<GLenum>(_type), 0, _datas.size(), _datas.data());
+                    }
+                    else
+                    {
+                        glBufferData(static_cast<GLenum>(_type), _datas.size(), _datas.data(), static_cast<GLenum>(_usage));
+                        _currentSize = _datas.size();
+                    }
+
+                    _needsUpdate = false;
+                }
             }
 
             deactivate();
@@ -472,8 +499,7 @@ public:
             _id(0),
             _isBound(false)
         {
-            glGenVertexArrays(1, &_id);
-            activate();
+
         }
 
         VertexArrayObject(const VertexArrayObject&) = delete; // Technicly complicated to copy a VAO, as it will need to copy internal state
@@ -489,14 +515,31 @@ public:
 
         ~VertexArrayObject()
         {
+            if (_id != 0)
+            {
+                release();
+            }
+        }
+
+        void allocate()
+        {
+            glGenVertexArrays(1, &_id);
+        }
+
+        void release()
+        {
             glDeleteVertexArrays(1, &_id);
+            _id = 0;
         }
 
         VertexArrayObject& operator=(VertexArrayObject&& other) noexcept
         {
             if (this != &other)
             {
-                glDeleteVertexArrays(1, &_id);
+                if (_id != 0)
+                {
+                    release();
+                }
 
                 _id = other._id;
                 _isBound = other._isBound;
@@ -507,12 +550,14 @@ public:
             return *this;
         }
 
-        void activate() const
+        void activate()
         {
+            if (_id == 0)
+                allocate();
             glBindVertexArray(_id);
         }
 
-        void deactivate() const 
+        void deactivate() const
         {
             glBindVertexArray(0);
         }
@@ -604,13 +649,13 @@ public:
                 throw std::runtime_error("Unexpected stride size received in storage append data\nexpected a vertex of [" + std::to_string(_layoutBuffer.stride()) + "] byte(s) but received a vertex of [" + std::to_string(sizeof(TDataType)) + "] byte(s)");
             _layoutBuffer.append(p_data);
         }
-        
-        void pushIndexes(const std::vector<size_t>& p_indexes)
+
+        void pushIndexes(const std::vector<unsigned int>& p_indexes)
         {
             _elementBuffer.push(p_indexes);
         }
 
-        void appendIndex(size_t p_index)
+        void appendIndex(unsigned int p_index)
         {
             _elementBuffer.append(p_index);
         }
@@ -624,9 +669,9 @@ public:
     class Uniform
     {
     public:
-		using BindingPoint = long long;
+        using BindingPoint = long long;
 
-		class Element
+        class Element
         {
         private:
             GLint _gpuOffset;
@@ -675,7 +720,7 @@ public:
             }
 
             GLsizeiptr bufferSize = static_cast<GLsizeiptr>(p_jsonConfig[L"size"].as<long>());
-            _vbo.reserve(bufferSize); 
+            _vbo.reserve(bufferSize);
 
             const auto& members = p_jsonConfig[L"elements"].members();
 
@@ -711,7 +756,7 @@ public:
             return *this;
         }
 
-        void bind() const
+        void bind()
         {
             _vbo.activate();
             glBindBufferBase(GL_UNIFORM_BUFFER, _bindingPoint, _vbo.id());
@@ -729,167 +774,168 @@ public:
         }
     };
 
-	class Object
-	{
-	friend class Pipeline;
+    class Object
+    {
+        friend class Pipeline;
 
-	private:
-		const Pipeline* _owner;
-		Storage _storage;
-		std::unordered_map<std::wstring, Uniform> _attributes;
+    private:
+        Pipeline* _owner;
+        Storage _storage;
+        std::unordered_map<std::wstring, Uniform> _attributes;
 
-		Object(const Pipeline* p_owner) :
-			_owner(p_owner)
-		{
+        Object(Pipeline* p_owner) :
+            _owner(p_owner)
+        {
 
-		}
+        }
 
-	public:
-		Storage& storage()
-		{
-			return (_storage);
-		}
+    public:
+        Storage& storage()
+        {
+            return (_storage);
+        }
 
-		const Storage& storage() const
-		{
-			return (_storage);
-		}
+        const Storage& storage() const
+        {
+            return (_storage);
+        }
 
-		std::unordered_map<std::wstring, Uniform>& attributes()
-		{
-			return (_attributes);
-		}
+        std::unordered_map<std::wstring, Uniform>& attributes()
+        {
+            return (_attributes);
+        }
 
-		const std::unordered_map<std::wstring, Uniform>& attributes() const
-		{
-			return (_attributes);
-		}
+        const std::unordered_map<std::wstring, Uniform>& attributes() const
+        {
+            return (_attributes);
+        }
 
-		void render()
-		{
-			_owner->activate();
+        void render()
+        {
+            _owner->activate();
 
-			_storage.activate();
-			for (const auto& [key, uniform] : _attributes)
-			{
-				uniform.bind();
-			}
-	
-			_owner->draw(_storage.nbTriangles());
+            _storage.activate();
 
-			_owner->deactivate();
-		}
+            for (auto& [key, uniform] : _attributes)
+            {
+                uniform.bind();
+            }
 
-		void renderInstanced(size_t p_nbInstance)
-		{
-			_owner->activate();
+            _owner->draw(_storage.nbTriangles());
 
-			_storage.activate();
-			for (const auto& [key, uniform] : _attributes)
-			{
-				uniform.bind();
-			}
-			
-			_owner->drawInstanced(_storage.nbTriangles(), p_nbInstance);
+            _owner->deactivate();
+        }
 
-			_owner->deactivate();
-		}
-	};
+        void renderInstanced(size_t p_nbInstance)
+        {
+            _owner->activate();
+
+            _storage.activate();
+            for (auto& [key, uniform] : _attributes)
+            {
+                uniform.bind();
+            }
+
+            _owner->drawInstanced(_storage.nbTriangles(), p_nbInstance);
+
+            _owner->deactivate();
+        }
+    };
 
 private:
-	std::wstring _name;
+    std::wstring _name;
 
-	bool _loaded;
-	GLuint _id;
+    bool _isLoaded;
+    GLuint _id;
 
-	std::string _vertexCode;
-	std::string _fragmentCode;
+    std::string _vertexCode;
+    std::string _fragmentCode;
 
     size_t _objectStride;
-    std::vector<VertexBufferObject::Attribute> _objectAttributes;
+    std::vector<std::tuple<long, std::wstring>> _objectAttributes;
 
-	std::unordered_map<std::wstring, Uniform> _constants;
+    std::unordered_map<std::wstring, Uniform> _constants;
 
-	GLuint compileShader(const std::string& p_code, GLenum mode)
-	{
+    GLuint compileShader(const std::string& p_code, GLenum mode)
+    {
         CHECK_GL_ERROR();
 
-		GLuint shader = glCreateShader(mode);
+        GLuint shader = glCreateShader(mode);
 
-		const char* shaderSource = p_code.c_str();
-		glShaderSource(shader, 1, &shaderSource, nullptr);
+        const char* shaderSource = p_code.c_str();
+        glShaderSource(shader, 1, &shaderSource, nullptr);
 
-		glCompileShader(shader);
+        glCompileShader(shader);
 
-		GLint success;
-		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-		if (!success)
-		{
-			GLchar infoLog[512];
-			glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-			throw std::runtime_error("Shader compilation failed: " + std::string(infoLog));
-		}
+        GLint success;
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+        if (!success)
+        {
+            GLchar infoLog[512];
+            glGetShaderInfoLog(shader, 512, nullptr, infoLog);
+            throw std::runtime_error("Shader compilation failed: " + std::string(infoLog));
+        }
 
-		return shader;
-	}
+        return shader;
+    }
 
-	GLuint linkShaders(GLuint vertexShader, GLuint fragmentShader)
-	{
-		GLuint program = glCreateProgram();
+    GLuint linkShaders(GLuint vertexShader, GLuint fragmentShader)
+    {
+        GLuint program = glCreateProgram();
 
-		glAttachShader(program, vertexShader);
-		glAttachShader(program, fragmentShader);
+        glAttachShader(program, vertexShader);
+        glAttachShader(program, fragmentShader);
 
-		glLinkProgram(program);
+        glLinkProgram(program);
 
-		GLint success;
-		glGetProgramiv(program, GL_LINK_STATUS, &success);
-		if (!success)
-		{
-			GLchar infoLog[512];
-			glGetProgramInfoLog(program, 512, nullptr, infoLog);
-			throw std::runtime_error("Shader Program linking failed: " + std::string(infoLog));
-		}
+        GLint success;
+        glGetProgramiv(program, GL_LINK_STATUS, &success);
+        if (!success)
+        {
+            GLchar infoLog[512];
+            glGetProgramInfoLog(program, 512, nullptr, infoLog);
+            throw std::runtime_error("Shader Program linking failed: " + std::string(infoLog));
+        }
 
-		return program;
-	}
+        return program;
+    }
 
-	void activate() const
-	{
-		glUseProgram(_id);
-	}
+    void activate() const
+    {
+        glUseProgram(_id);
+    }
 
-	void deactivate() const
-	{
-		glUseProgram(0);
-	}
+    void deactivate() const
+    {
+        glUseProgram(0);
+    }
 
-	void draw(size_t p_nbTriangle) const
-	{
-        for (const auto& [key, uniform] : _constants)
+    void draw(size_t p_nbTriangle)
+    {
+        for (auto& [key, uniform] : _constants)
         {
             uniform.bind();
         }
 
-		glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(p_nbTriangle), GL_UNSIGNED_INT, nullptr);
-	}
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(p_nbTriangle), GL_UNSIGNED_INT, nullptr);
+    }
 
-	void drawInstanced(size_t p_nbTriangle, size_t p_nbInstance) const
-	{
-        for (const auto& [key, uniform] : _constants)
+    void drawInstanced(size_t p_nbTriangle, size_t p_nbInstance)
+    {
+        for (auto& [key, uniform] : _constants)
         {
             uniform.bind();
         }
 
-		glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(p_nbTriangle), GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(p_nbInstance));
-	}
+        glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(p_nbTriangle), GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(p_nbInstance));
+    }
 
 public:
-	Pipeline(const spk::JSON::File& p_inputFile) : 
-		_loaded(false)
-	{
-		_vertexCode = spk::StringUtils::wstringToString(p_inputFile[L"VertexShaderCode"].as<std::wstring>());
-		_fragmentCode = spk::StringUtils::wstringToString(p_inputFile[L"FragmentShaderCode"].as<std::wstring>());
+    Pipeline(const spk::JSON::File& p_inputFile) :
+        _isLoaded(false)
+    {
+        _vertexCode = spk::StringUtils::wstringToString(p_inputFile[L"VertexShaderCode"].as<std::wstring>());
+        _fragmentCode = spk::StringUtils::wstringToString(p_inputFile[L"FragmentShaderCode"].as<std::wstring>());
 
         const auto& pipelineFlowObject = p_inputFile[L"PipelineFlow"];
         _objectStride = pipelineFlowObject[L"Stride"].as<long>();
@@ -897,40 +943,37 @@ public:
         for (size_t i = 0; i < attributeObjects.size(); i++)
         {
             const auto& attributeObject = attributeObjects[i];
-            _objectAttributes.push_back({
-                    static_cast<GLsizei>(attributeObject[L"Index"].as<long>()),
-                    VertexBufferObject::Attribute::typeFromString(attributeObject[L"Type"].as<std::wstring>())
-                });
+            _objectAttributes.push_back(std::make_tuple(
+                    attributeObject[L"Index"].as<long>(),
+                    attributeObject[L"Type"].as<std::wstring>()
+                ));
         }
-	}
+    }
 
-	void load()
-	{
-		GLuint vertexShaderID = compileShader(_vertexCode, GL_VERTEX_SHADER);
-		GLuint fragmentShaderID = compileShader(_fragmentCode, GL_FRAGMENT_SHADER);
+    void load()
+    {
+        GLuint vertexShaderID = compileShader(_vertexCode, GL_VERTEX_SHADER);
+        GLuint fragmentShaderID = compileShader(_fragmentCode, GL_FRAGMENT_SHADER);
 
-		_id = linkShaders(vertexShaderID, fragmentShaderID);
-		
-		glDeleteShader(vertexShaderID);
-		glDeleteShader(fragmentShaderID);
-	}
+        _id = linkShaders(vertexShaderID, fragmentShaderID);
 
-	const std::wstring& name() const
-	{
-		return (_name);
-	}
+        glDeleteShader(vertexShaderID);
+        glDeleteShader(fragmentShaderID);
+    }
+
+    const std::wstring& name() const
+    {
+        return (_name);
+    }
 
     Object createObject()
     {
-        if (_loaded == false)
-            load();
-
         Object result(this);
 
         result.storage().layoutBuffer().setupStride(_objectStride);
         for (const auto& attribute : _objectAttributes)
         {
-            result.storage().layoutBuffer().setupAttribute(attribute);
+            result.storage().layoutBuffer().setupAttribute(std::get<0>(attribute), VertexBufferObject::Attribute::typeFromString(std::get<1>(attribute)));
         }
 
         return (result);
@@ -1060,7 +1103,6 @@ private:
         spk::Color color;
     };
 
-
 	void _onGeometryChange()
 	{
         std::vector<Vertex> vertices = {
@@ -1077,17 +1119,19 @@ private:
                 spk::Color::red
             }
         };
-        std::vector<size_t> indexes = {0, 1, 2};
+        std::vector<unsigned int> indexes = { 0, 1, 2 };
 
         _renderingObject.storage().pushVertices(vertices);
         _renderingObject.storage().pushIndexes(indexes);
+        DEBUG_LINE();
 	}
 	
 	void _onPaintEvent(const spk::PaintEvent& p_event)
 	{
+        CHECK_GL_ERROR();
         _renderingObject.render();
-
-		DEBUG_LINE();
+        CHECK_GL_ERROR();
+        DEBUG_LINE();
 	}
 	
 	void _onUpdateEvent(const spk::UpdateEvent& p_event)
@@ -1124,11 +1168,7 @@ int main()
 	spk::GraphicalApplication app;
 	
 	spk::SafePointer<spk::Window> window = app.createWindow(L"Playground", spk::Geometry2DInt({100, 100}, {800, 800}));
-    
-    TestWidget testWidget(window->widget());
-
-    testWidget.setGeometry(spk::Geometry2DInt({ 0, 0 }, { 800, 800 }));
-    testWidget.activate();
+    window->setMainWidget<TestWidget>(window->widget());
 
 	return app.run();
 }
