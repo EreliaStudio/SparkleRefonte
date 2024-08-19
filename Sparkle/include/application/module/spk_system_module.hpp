@@ -11,6 +11,8 @@ namespace spk
 	class SystemModule : public spk::Module<spk::SystemEvent>
 	{
 	private:		
+		spk::Geometry2DInt::Size newWindowSize;
+
 		void _treatEvent(spk::SystemEvent&& p_event) override;
 		spk::SystemEvent _convertEventToEventType(spk::Event&& p_event) override;
 

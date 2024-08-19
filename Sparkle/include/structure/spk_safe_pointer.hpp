@@ -19,6 +19,11 @@ namespace spk
 			return (_ptr);
 		}
 
+		operator SafePointer<const TType>() const
+		{
+			return (SafePointer<const TType>(_ptr));
+		}
+
 		TType& operator*() const { return (*_ptr); }
 		TType* operator->() const { return (_ptr); }
 		TType* get() const { return (_ptr); }

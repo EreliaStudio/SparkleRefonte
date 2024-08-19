@@ -1,7 +1,5 @@
 #include "structure/system/device/spk_controller.hpp"
 
-
-
 std::ostream& operator << (std::ostream& p_os, const spk::Controller::Button& p_button)
 {
 	switch (p_button)

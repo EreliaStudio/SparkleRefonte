@@ -49,13 +49,20 @@ namespace spk
 
 	void Window::_createContext()
 	{
+		RECT adjustedRect = { 0, 0, _geometry.width, _geometry.height };
+		if (!AdjustWindowRectEx(&adjustedRect, WS_OVERLAPPEDWINDOW, FALSE, 0))
+		{
+			throw std::runtime_error("Failed to adjust window rect.");
+		}
+
 		_hwnd = CreateWindowEx(
 			0,
 			L"SPKWindowClass",
 			_title.c_str(),
 			WS_OVERLAPPEDWINDOW,
 			_geometry.x, _geometry.y,
-			_geometry.width, _geometry.height,
+			adjustedRect.right - adjustedRect.left,
+			adjustedRect.bottom - adjustedRect.top,
 			nullptr, nullptr, GetModuleHandle(nullptr), this);
 
 
@@ -153,7 +160,7 @@ namespace spk
 			std::cout << "Severity: notification" << std::endl;
 			break;
 		}
-
+			
 		std::cout << "Debug message (" << id << "): " << message << std::endl;
 		if (severity != GL_DEBUG_SEVERITY_NOTIFICATION)
 			throw std::runtime_error("Unexpected opengl error detected");
@@ -262,7 +269,7 @@ namespace spk
 		glEnable(GL_DEPTH_TEST);
 		glDepthMask(GL_TRUE);
 		glClearDepth(1.0f);
-		glDepthFunc(GL_LESS);
+		glDepthFunc(GL_ALWAYS);
 
 		glDisable(GL_STENCIL_TEST);
 		glStencilFunc(GL_ALWAYS, 0, 0xFF);
@@ -273,7 +280,7 @@ namespace spk
 
 		wglSwapIntervalEXT(0);
 
-		CHECK_GL_ERROR();
+		GL_DEBUG_LINE();
 	}
 
 
@@ -374,7 +381,7 @@ namespace spk
 	void Window::clear()
 	{
 		glViewport(0, 0, geometry().size.width, geometry().size.height);
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
@@ -420,5 +427,15 @@ namespace spk
 	const spk::Geometry2DInt& Window::geometry() const
 	{
 		return (_geometry);
+	}
+
+	void Window::requestPaint() const
+	{
+		PostMessageA(_hwnd, WM_PAINT_REQUEST, 0, 0);
+	}
+
+	void Window::requestUpdate() const
+	{
+		PostMessageA(_hwnd, WM_UPDATE, 0, 0);
 	}
 }

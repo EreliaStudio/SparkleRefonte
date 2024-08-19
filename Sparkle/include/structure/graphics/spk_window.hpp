@@ -80,9 +80,10 @@ namespace spk
 		void setMainWidget(Args&&... p_args)
 		{
 			_centralWidgetConstructor = [this, ...forwarded_args = std::forward<Args>(p_args)]() mutable {
-				TMainWidget* newWidget = _rootWidget->makeChild<TMainWidget>(std::forward<decltype(forwarded_args)>(forwarded_args)...);
-				newWidget->setGeometry(spk::Geometry2DInt({ 0, 0 }, geometry().size));
-				newWidget->activate();
+					TMainWidget* newWidget = _rootWidget->makeChild<TMainWidget>(std::forward<decltype(forwarded_args)>(forwarded_args)...);
+					newWidget->setGeometry(spk::Geometry2DInt({ 0, 0 }, geometry().size));
+					newWidget->activate();
+					requestPaint();
 				};
 		}
 
@@ -94,6 +95,9 @@ namespace spk
 
 		void pullEvents();
 		void bindModule(spk::IModule* p_module);
+
+		void requestPaint() const;
+		void requestUpdate() const;
 
 		spk::SafePointer<Widget> widget() const;
 		operator spk::SafePointer<Widget>() const;

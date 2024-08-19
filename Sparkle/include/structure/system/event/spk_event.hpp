@@ -17,6 +17,7 @@
 #include <chrono>
 
 static const UINT WM_UPDATE = RegisterWindowMessage(L"WM_UPDATE");
+static const UINT WM_PAINT_REQUEST = RegisterWindowMessage(L"WM_PAINT_REQUEST");
 static const UINT WM_LEFT_JOYSTICK_MOTION = RegisterWindowMessage(L"WM_LEFT_JOYSTICK_MOTION");
 static const UINT WM_RIGHT_JOYSTICK_MOTION = RegisterWindowMessage(L"WM_RIGHT_JOYSTICK_MOTION");
 static const UINT WM_LEFT_TRIGGER_MOTION = RegisterWindowMessage(L"WM_LEFT_TRIGGER_MOTION");
@@ -56,7 +57,7 @@ namespace spk
 
 	struct PaintEvent : public IEvent
 	{
-		static inline std::vector<UINT> EventIDs = { WM_PAINT };
+		static inline std::vector<UINT> EventIDs = { WM_PAINT_REQUEST };
 		enum class Type
 		{
 			Requested
@@ -80,9 +81,10 @@ namespace spk
 		};
 		Type type;
 		long long time;
-		const spk::Mouse* mouse = nullptr;
-		const spk::Keyboard* keyboard = nullptr;
-		const spk::Controller* controller = nullptr;
+		spk::SafePointer<const spk::Window> window = nullptr;
+		spk::SafePointer<const spk::Mouse> mouse = nullptr;
+		spk::SafePointer<const spk::Keyboard> keyboard = nullptr;
+		spk::SafePointer<const spk::Controller> controller = nullptr;
 
 		UpdateEvent(HWND p_hwnd) :
 			IEvent(p_hwnd),
@@ -208,11 +210,15 @@ namespace spk
 			WM_KILLFOCUS,
 			WM_CLOSE,
 			WM_QUIT,
-			WM_MOVE
+			WM_MOVE,
+			WM_ENTERSIZEMOVE,
+			WM_EXITSIZEMOVE
 		};
 		enum class Type
 		{
+			EnterResize,
 			Resize,
+			ExitResize,
 			TakeFocus,
 			LoseFocus,
 			Quit,

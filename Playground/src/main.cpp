@@ -140,7 +140,8 @@ public:
             _usage(p_usage),
             _currentSize(0),
             _needsUpdate(false),
-            _stride(0)
+            _stride(0),
+			_needAttributeInitialization(false)
         {
 
         }
@@ -150,9 +151,10 @@ public:
             _usage(other._usage),
             _currentSize(other._currentSize),
             _datas(other._datas),
-            _needsUpdate(other._needsUpdate),
+            _needsUpdate(true),
             _stride(other._stride),
-            _attributes(other._attributes)
+            _attributes(other._attributes),
+			_needAttributeInitialization(true)
         {
             
         }
@@ -165,7 +167,8 @@ public:
             _datas(std::move(other._datas)),
             _needsUpdate(other._needsUpdate),
             _stride(other._stride),
-            _attributes(other._attributes)
+			_attributes(other._attributes),
+			_needAttributeInitialization(other._needAttributeInitialization)
         {
             other._id = 0;
         }
@@ -178,13 +181,14 @@ public:
 
         void allocate()
         {
+			std::lock_guard<std::mutex> lock(_mutex);
             glGenBuffers(1, &_id);
-            glBindBuffer(static_cast<GLenum>(_type), _id);
-            glBufferData(static_cast<GLenum>(_type), _datas.size(), _datas.data(), static_cast<GLenum>(_usage));
+			spk::cout << "Allocate VBO : " << _id << std::endl;
         }
 
         void release()
         {
+			spk::cout << "Release VBO : " << _id << std::endl;
             glDeleteBuffers(1, &_id);
             _id = 0;
         }
@@ -198,12 +202,12 @@ public:
 
                 _type = other._type;
                 _usage = other._usage;
-                _currentSize = other._currentSize;
-                _datas = other._datas;
-                _needsUpdate = other._needsUpdate;
                 _stride = other._stride;
+				_needsUpdate = true;
+				_needAttributeInitialization = true;
 
                 allocate();
+				push(other._datas);
             }
             return *this;
         }
@@ -220,7 +224,8 @@ public:
                 _usage = other._usage;
                 _currentSize = other._currentSize;
                 _datas = std::move(other._datas);
-                _needsUpdate = other._needsUpdate;
+				_needsUpdate = other._needsUpdate;
+				_needAttributeInitialization = other._needAttributeInitialization;
                 _stride = other._stride;
 
                 other._id = 0;
@@ -262,15 +267,40 @@ public:
 
         void activate()
         {
-            std::lock_guard<std::mutex> lock(_mutex);
             if (_id == 0)
                 allocate();
+
+			std::lock_guard<std::mutex> lock(_mutex);
+			spk::cout << "Activate VBO [" << _id << "]" << std::endl;
             glBindBuffer(static_cast<GLenum>(_type), _id);
+
+			if (_needAttributeInitialization == true)
+			{
+				size_t cumulatedSize = 0;
+				for (const auto& attribute : _attributes)
+				{
+					spk::cout << "glVertexAttribPointer(" << attribute.index << ", " << attribute.size << ", " << spk::OpenGLUtils::to_wstring(attribute.type) << ", GL_FALSE, " << _stride << ", " << cumulatedSize << ")" << std::endl;
+					glVertexAttribPointer(
+						static_cast<GLuint>(attribute.index),
+						attribute.size,
+						attribute.type,
+						GL_FALSE,
+						_stride,
+						(void*)(cumulatedSize)
+					);
+
+					spk::cout << "glEnableVertexAttribArray(" << attribute.index << ")" << std::endl;
+					glEnableVertexAttribArray(static_cast<GLuint>(attribute.index));
+					cumulatedSize += attribute.size * sizeof(float);
+				}
+				_needAttributeInitialization = false;
+			}
         }
 
         void deactivate() const
         {
             std::lock_guard<std::mutex> lock(_mutex);
+			spk::cout << "Deactivate VBO [" << _id << "]" << std::endl;
             glBindBuffer(static_cast<GLenum>(_type), 0);
         }
 
@@ -379,6 +409,7 @@ public:
             if (_datas.size() <= static_cast<size_t>(p_size + p_offset))
                 _datas.resize(p_size + p_offset);
             _datas.edit(p_offset, p_data, p_size);
+			_needsUpdate = true;
         }
 
         template <typename TType>
@@ -403,6 +434,7 @@ public:
         {
             std::lock_guard<std::mutex> lock(_mutex);
             _datas.append(p_data, p_size);
+			_needsUpdate = true;
         }
 
         template <typename TType>
@@ -433,43 +465,27 @@ public:
         {
             activate();
 
+            std::lock_guard<std::mutex> lock(_mutex);
+
+            if (_needsUpdate == true && _datas.size() > 0)
             {
-                std::lock_guard<std::mutex> lock(_mutex);
-                if (_needAttributeInitialization == true)
+				spk::cout << "Bind VBO [" << _id << "]" << std::endl;
+                if (_datas.size() <= static_cast<size_t>(_currentSize))
                 {
-                    for (const auto& attribute : _attributes)
-                    {
-                        spk::cout << "Setting attribute [" << attribute.index << "] - Size : " << attribute.size << " / Type : " << spk::OpenGLUtils::to_wstring(attribute.type) << std::endl;
-                        glVertexAttribPointer(
-                            static_cast<GLuint>(attribute.index),
-                            attribute.size,
-                            attribute.type,
-                            GL_FALSE,
-                            _stride,
-                            nullptr
-                        );
-                        glEnableVertexAttribArray(static_cast<GLuint>(attribute.index));
-                    }
-                    _needAttributeInitialization = false;
+					spk::cout << "Updating up [" << _datas.size() << "] bytes of data" << std::endl;
+
+                    glBufferSubData(static_cast<GLenum>(_type), 0, _datas.size(), _datas.data());
+                }
+                else
+                {
+					spk::cout << "Sending up [" << _datas.size() << "] bytes of data" << std::endl;
+
+                    glBufferData(static_cast<GLenum>(_type), _datas.size(), _datas.data(), static_cast<GLenum>(_usage));
+                    _currentSize = _datas.size();
                 }
 
-                if (_needsUpdate == true && _datas.size() > 0)
-                {
-                    if (_datas.size() <= static_cast<size_t>(_currentSize))
-                    {
-                        glBufferSubData(static_cast<GLenum>(_type), 0, _datas.size(), _datas.data());
-                    }
-                    else
-                    {
-                        glBufferData(static_cast<GLenum>(_type), _datas.size(), _datas.data(), static_cast<GLenum>(_usage));
-                        _currentSize = _datas.size();
-                    }
-
-                    _needsUpdate = false;
-                }
+                _needsUpdate = false;
             }
-
-            deactivate();
         }
 
         void bzero()
@@ -527,10 +543,12 @@ public:
         void allocate()
         {
             glGenVertexArrays(1, &_id);
+			spk::cout << "Allocate VAO [" << _id << "]" << std::endl;
         }
 
         void release()
         {
+			spk::cout << "Release VAO [" << _id << "]" << std::endl;
             glDeleteVertexArrays(1, &_id);
             _id = 0;
         }
@@ -557,11 +575,13 @@ public:
         {
             if (_id == 0)
                 allocate();
+			spk::cout << "Activate VAO [" << _id << "]" << std::endl;
             glBindVertexArray(_id);
         }
 
         void deactivate() const
         {
+			spk::cout << "Deactivate VAO [" << _id << "]" << std::endl;
             glBindVertexArray(0);
         }
 
@@ -589,6 +609,7 @@ public:
 
         void activate()
         {
+			spk::cout << "Activate storage" << std::endl;
             _vao.activate();
             _layoutBuffer.bind();
             _elementBuffer.bind();
@@ -596,6 +617,7 @@ public:
 
         void deactivate()
         {
+			spk::cout << "Deactivate storage" << std::endl;
             _layoutBuffer.deactivate();
             _elementBuffer.deactivate();
             _vao.deactivate();
@@ -640,8 +662,11 @@ public:
         template <typename TDataType>
         void pushVertices(const std::vector<TDataType>& p_datas)
         {
-            if (sizeof(TDataType) != _layoutBuffer.stride())
+			if (sizeof(TDataType) != _layoutBuffer.stride())
+			{
+				DEBUG_LINE();
                 throw std::runtime_error("Unexpected stride size received in storage push data\nexpected a vertex of [" + std::to_string(_layoutBuffer.stride()) + "] byte(s) but received a vertex of [" + std::to_string(sizeof(TDataType)) + "] byte(s)");
+			}
             _layoutBuffer.push(p_datas);
         }
 
@@ -663,10 +688,20 @@ public:
             _elementBuffer.append(p_index);
         }
 
-        size_t nbTriangles() const
-        {
-            return (_elementBuffer.size() / _elementBuffer.stride());
-        }
+		size_t nbIndexes() const
+		{
+			return (_elementBuffer.size() / _elementBuffer.stride());
+		}
+
+		size_t nbTriangles() const
+		{
+			return (nbIndexes() / 3);
+		}
+
+		size_t nbVertices() const
+		{
+			return (_layoutBuffer.size() / (_layoutBuffer.stride()));
+		}
     };
 
     class Uniform
@@ -815,53 +850,58 @@ public:
 
         void render()
         {
-            _owner->activate();
+			spk::cout << "Rendering object" << std::endl;
+			_owner->activate();
 
-            _storage.activate();
+			_storage.activate();
 
-            for (auto& [key, uniform] : _attributes)
-            {
-                uniform.bind();
-            }
+			for (auto& [key, uniform] : _attributes)
+			{
+				uniform.bind();
+			}
 
-            _owner->draw(_storage.nbTriangles());
+			spk::cout << "Drawing [" << _storage.nbTriangles() << "] triangles with [" << _storage.layoutBuffer().size() << "] bytes (" << _storage.nbVertices() << " vertices)" << std::endl;
+			_owner->draw(_storage.nbIndexes());
 
-            _owner->deactivate();
-        }
+			_storage.deactivate();
 
-        void renderInstanced(size_t p_nbInstance)
-        {
-            _owner->activate();
+			_owner->deactivate();
 
-            _storage.activate();
-            for (auto& [key, uniform] : _attributes)
-            {
-                uniform.bind();
-            }
+			spk::cout << std::endl << std::endl;
+		}
 
-            _owner->drawInstanced(_storage.nbTriangles(), p_nbInstance);
+		void renderInstanced(size_t p_nbInstance)
+		{
+			_owner->activate();
 
-            _owner->deactivate();
-        }
-    };
+			_storage.activate();
+			for (auto& [key, uniform] : _attributes)
+			{
+				uniform.bind();
+			}
+
+			_owner->drawInstanced(_storage.nbTriangles(), p_nbInstance);
+
+			_owner->deactivate();
+		}
+	};
 
 private:
-    std::wstring _name;
+	std::wstring _name;
 
-    bool _isLoaded;
-    GLuint _id;
+	bool _isLoaded;
+	GLuint _id;
 
-    std::string _vertexCode;
-    std::string _fragmentCode;
+	std::string _vertexCode;
+	std::string _fragmentCode;
 
-    size_t _objectStride;
-    std::vector<std::tuple<long, std::wstring>> _objectAttributes;
+	size_t _objectStride;
+	std::vector<std::tuple<long, std::wstring>> _objectAttributes;
 
-    std::unordered_map<std::wstring, Uniform> _constants;
+	std::unordered_map<std::wstring, Uniform> _constants;
 
-    GLuint compileShader(const std::string& p_code, GLenum mode)
-    {
-        CHECK_GL_ERROR();
+	GLuint compileShader(const std::string& p_code, GLenum mode)
+	{
 
         GLuint shader = glCreateShader(mode);
 
@@ -905,12 +945,14 @@ private:
 
     void activate() const
     {
+		spk::cout << "Activating program " << _id << std::endl;
         glUseProgram(_id);
     }
 
     void deactivate() const
     {
-        glUseProgram(0);
+		spk::cout << "Deactivating program " << _id << std::endl;
+		glUseProgram(0);
     }
 
     void draw(size_t p_nbTriangle)
@@ -1108,29 +1150,30 @@ private:
 
 	void _onGeometryChange()
 	{
-        std::vector<Vertex> vertices = {
-            {
-                spk::Vector2(0, 1),
-                spk::Color::red
-            },
-            {
-                spk::Vector2(-1, -1),
-                spk::Color::red
-            },
-            {
-                spk::Vector2(1, -1),
-                spk::Color::red
-            }
-        };
-        std::vector<unsigned int> indexes = { 0, 1, 2 };
+        //std::vector<Vertex> vertices = {
+        //    {
+        //        spk::Vector2(0, 1),
+        //        spk::Color::red
+        //    },
+        //    {
+        //        spk::Vector2(-1, -1),
+        //        spk::Color::red
+        //    },
+        //    {
+        //        spk::Vector2(1, -1),
+        //        spk::Color::red
+        //    }
+        //};
 
-        _renderingObject.storage().pushVertices(vertices);
-        _renderingObject.storage().pushIndexes(indexes);
+        //std::vector<unsigned int> indexes = { 0, 1, 2 };
+
+        //_renderingObject.storage().pushVertices(vertices);
+        //_renderingObject.storage().pushIndexes(indexes);
 	}
 	
 	void _onPaintEvent(const spk::PaintEvent& p_event)
 	{
-        _renderingObject.render();
+        //_renderingObject.render();
 	}
 
 public:

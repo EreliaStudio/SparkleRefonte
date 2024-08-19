@@ -20,9 +20,19 @@ namespace spk
 			p_event.window->close();
 			break;
 		}
+		case spk::SystemEvent::Type::EnterResize:
+		{
+
+			break;
+		}
 		case spk::SystemEvent::Type::Resize:
 		{
 			p_event.window->resize(p_event.newSize);
+			break;
+		}
+		case spk::SystemEvent::Type::ExitResize:
+		{
+			p_event.window->requestPaint();
 			break;
 		}
 		case spk::SystemEvent::Type::TakeFocus:

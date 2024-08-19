@@ -3,4 +3,4 @@
 #include "structure/spk_iostream.hpp"
 
 #define DEBUG_LINE() spk::cout << __FUNCTION__ << L"::" << __LINE__ << std::endl;
-#define CHECK_GL_ERROR() { GLenum err = glGetError(); if (err != GL_NO_ERROR) { std::cerr << "OpenGL error: " << err << std::endl; }}
+#define GL_DEBUG_LINE() { GLenum err = glGetError(); if (err != GL_NO_ERROR) { spk::cout << __FUNCTION__ << "::" << __LINE__ << " - OpenGL error: " << err << std::endl; } else {DEBUG_LINE();}}

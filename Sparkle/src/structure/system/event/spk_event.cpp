@@ -8,16 +8,6 @@
 
 namespace spk
 {
-	void IEvent::requestPaint() const
-	{
-		PostMessageA(_hwnd, WM_PAINT, 0, 0);
-	}
-
-	void IEvent::requestUpdate() const
-	{
-		PostMessageA(_hwnd, WM_UPDATE, 0, 0);
-	}
-
 	Controller::Button ControllerEvent::apiValueToControllerButton(int value)
 	{
 			switch (value)
@@ -51,7 +41,7 @@ namespace spk
 	const std::unordered_map<UINT, Event::ConstructorLambda> Event::_constructionMap =
 	{
 		{
-			WM_PAINT,
+			WM_PAINT_REQUEST,
 			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 				p_event->paintEvent.type = PaintEvent::Type::Requested;
@@ -171,12 +161,12 @@ namespace spk
 			}
 		},
 		{
-			WM_SIZE,
+			WM_MOVE,
 			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
-				p_event->systemEvent.type = SystemEvent::Type::Resize;
+				p_event->systemEvent.type = SystemEvent::Type::Move;
 				p_event->systemEvent.window = p_window;
-				p_event->systemEvent.newSize = spk::Geometry2DInt::Size(LOWORD(lParam), HIWORD(lParam));
+				p_event->systemEvent.newPosition = spk::Geometry2DInt::Position(LOWORD(lParam), HIWORD(lParam));
 			}
 		},
 		{
@@ -210,12 +200,28 @@ namespace spk
 			}
 		},
 		{
-			WM_MOVE,
+			WM_ENTERSIZEMOVE,
 			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
-				p_event->systemEvent.type = SystemEvent::Type::Move;
+				p_event->systemEvent.type = SystemEvent::Type::EnterResize;
 				p_event->systemEvent.window = p_window;
-				p_event->systemEvent.newPosition = spk::Geometry2DInt::Position(LOWORD(lParam), HIWORD(lParam));
+			}
+		},
+		{
+			WM_SIZE,
+			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
+			{
+				p_event->systemEvent.type = SystemEvent::Type::Resize;
+				p_event->systemEvent.newSize = spk::Geometry2DInt::Size(LOWORD(lParam), HIWORD(lParam));
+				p_event->systemEvent.window = p_window;
+			}
+		},
+		{
+			WM_EXITSIZEMOVE,
+			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
+			{
+				p_event->systemEvent.type = SystemEvent::Type::ExitResize;
+				p_event->systemEvent.window = p_window;
 			}
 		},
 		{
@@ -286,6 +292,11 @@ namespace spk
 			{
 				p_event->updateEvent.type = UpdateEvent::Type::Requested;
 
+				p_event->updateEvent.window = p_window;
+				p_event->updateEvent.mouse = &(p_window->mouseModule.mouse());
+				p_event->updateEvent.keyboard = &(p_window->keyboardModule.keyboard());
+				p_event->updateEvent.controller = &(p_window->controllerModule.controller());
+
 				p_event->updateEvent.time = duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
 			}
 		}
@@ -333,6 +344,8 @@ namespace spk
 			currentEvent = &keyboardEvent;
 			break;
 
+		case WM_ENTERSIZEMOVE:
+		case WM_EXITSIZEMOVE:
 		case WM_SIZE:
 		case WM_SETFOCUS:
 		case WM_KILLFOCUS:
