@@ -127,11 +127,11 @@ public:
         Type _type;
         Usage _usage;
         GLsizei _stride;
-        bool _needAttributeInitialization;
+        bool _needAttributeInitialization = true;
         std::vector<Attribute> _attributes;
         GLsizeiptr _currentSize;
         spk::DataBuffer _datas;
-        bool _needsUpdate;
+        bool _needsUpdate = false;
         mutable std::mutex _mutex;
 
     public:
@@ -418,7 +418,6 @@ public:
             if (_datas.size() <= static_cast<size_t>(p_size + p_offset))
                 _datas.resize(p_size + p_offset);
             _datas.edit(p_offset, p_data, p_size);
-			_needsUpdate = true;
         }
 
         template <typename TType>
@@ -767,14 +766,28 @@ public:
             template <typename TType>
             Element& operator=(const TType& p_data)
             {
+                spk::cout << "Receive edition of value [" << p_data << "]" << std::endl;
                 if (sizeof(TType) != _size)
                 {
                     throw std::runtime_error("Size mismatch in Uniform::Element assignment. "
                         "Expected a size of " + std::to_string(_size) + " bytes, "
                         "but received " + std::to_string(sizeof(TType)) + " bytes of data.");
                 }
-                _vbo->push(&p_data, _size, _gpuOffset);
-                return *this;
+
+                if (_elements.empty() == false)
+                {
+                    const void* dataPtr = &p_data;
+                    for (auto& [key, element] : _elements)
+                    {
+                        element.setDataFromBytes(dataPtr);
+                    }
+                }
+                else
+                {
+                    const void* dataPtr = &p_data;
+                    _vbo->push(dataPtr, _size, _gpuOffset);
+                }
+                return (*this);
             }
 
             Element& operator[](const std::wstring& p_name)
@@ -789,14 +802,26 @@ public:
 
             void setDataFromBytes(const void* p_basePtr)
             {
-                const void* dataPtr = static_cast<const char*>(p_basePtr) + _cpuOffset;
-                _vbo->push(dataPtr, _size, _gpuOffset);
+                if (_elements.empty() == false)
+                {
+                    for (auto& [key, element] : _elements)
+                    {
+                        element.setDataFromBytes(static_cast<const char*>(p_basePtr) + _cpuOffset);
+                    }
+                }
+                else
+                {
+                    const void* dataPtr = static_cast<const char*>(p_basePtr) + _cpuOffset;
+                    spk::cout << "Setting [" << _size << "] bytes (" << (*(float*)(dataPtr)) << ") at offset : " << _gpuOffset << std::endl;
+                    _vbo->push(dataPtr, _size, _gpuOffset);
+                }
             }
         };
 
     private:
         VertexBufferObject _vbo;
         std::wstring _name;
+        size_t _size;
         GLuint _bindingPoint;
         GLuint _blockIndex;
         std::unordered_map<std::wstring, Element> _elements;
@@ -814,8 +839,9 @@ public:
             _bindingPoint(p_bindingPoint)
         {
             _name = p_jsonConfig[L"Type"].as<std::wstring>();
+            _size = static_cast<GLsizeiptr>(p_jsonConfig[L"SizeCPU"].as<long>());
 
-            GLsizeiptr bufferSize = static_cast<GLsizeiptr>(p_jsonConfig[L"Size"].as<long>());
+            GLsizeiptr bufferSize = static_cast<GLsizeiptr>(p_jsonConfig[L"SizeGPU"].as<long>());
             _vbo.reserve(bufferSize);
             _vbo.setupStride(bufferSize);
 
@@ -828,13 +854,16 @@ public:
 
                 _elements[elementName] = std::move(Element(*attribute, &_vbo));
             }
-
-            DEBUG_LINE();
         }
 
         size_t size() const
         {
             return (_vbo.stride());
+        }
+
+        BindingPoint bindingPoint() const
+        {
+            return (_bindingPoint);
         }
 
         Element& operator[](const std::wstring& p_name)
@@ -849,6 +878,13 @@ public:
         template <typename TType>
         Uniform& operator=(const TType& p_data)
         {
+            if (sizeof(TType) != _size)
+            {
+                throw std::runtime_error("Size mismatch in Uniform::Element assignment. "
+                    "Expected a size of " + std::to_string(_size) + " bytes, "
+                    "but received " + std::to_string(sizeof(TType)) + " bytes of data.");
+            }
+
             const void* basePtr = &p_data;
             for (auto& [name, element] : _elements)
             {
@@ -867,8 +903,6 @@ public:
                 GLuint blockIndex = glGetUniformBlockIndex(program, spk::StringUtils::wstringToString(_name).c_str());
 
                 glUniformBlockBinding(program, blockIndex, _bindingPoint);
-
-                validate();
             }
             _vbo.bind();
             spk::cout << "Binding uniform [" << _vbo.id() << "](" << _name << ") to binding point [" << _bindingPoint << "]" << std::endl;
@@ -977,10 +1011,37 @@ private:
     static inline std::unordered_map<std::wstring, Uniform*> _constants;
     std::vector<Uniform*> _usedConstants;
 
-    void applyConstantLocation()
+    void applyUniformLocation(const std::string& p_uniformType, size_t p_bindingPoint)
     {
+        const std::string searchPattern = ") uniform " + p_uniformType;
+        const std::string insertPattern = ", binding = " + std::to_string(p_bindingPoint);
 
+        // Function to update shader code by adding the binding point
+        auto updateShaderCode = [&](std::string& shaderCode)
+            {
+                size_t pos = 0;
+                while ((pos = shaderCode.find(searchPattern, pos)) != std::string::npos)
+                {
+                    // Move the position back to before the " uniform " to insert the binding point
+                    pos = shaderCode.rfind("layout(", pos);
+                    if (pos != std::string::npos)
+                    {
+                        size_t endPos = shaderCode.find(")", pos);
+                        if (endPos != std::string::npos)
+                        {
+                            shaderCode.insert(endPos, insertPattern);
+                        }
+                    }
+                    // Move past the current occurrence
+                    pos += searchPattern.length();
+                }
+            };
+
+        // Update both vertex and fragment shader code
+        updateShaderCode(_vertexCode);
+        updateShaderCode(_fragmentCode);
     }
+
 
 	GLuint compileShader(const std::string& p_code, GLenum mode)
 	{
@@ -1076,13 +1137,8 @@ private:
         glDrawElementsInstanced(GL_TRIANGLES, static_cast<GLsizei>(p_nbTriangle), GL_UNSIGNED_INT, nullptr, static_cast<GLsizei>(p_nbInstance));
     }
 
-public:
-    Pipeline(const spk::JSON::File& p_inputFile) :
-        _id(0)
+    void parsePipelineFlow(const spk::JSON::File& p_inputFile)
     {
-        _vertexCode = spk::StringUtils::wstringToString(p_inputFile[L"VertexShaderCode"].as<std::wstring>());
-        _fragmentCode = spk::StringUtils::wstringToString(p_inputFile[L"FragmentShaderCode"].as<std::wstring>());
-
         const auto& pipelineFlowObject = p_inputFile[L"PipelineFlow"];
         _objectStride = pipelineFlowObject[L"Stride"].as<long>();
         const auto& attributeObjects = pipelineFlowObject[L"Attributes"];
@@ -1090,18 +1146,21 @@ public:
         {
             const auto& attributeObject = attributeObjects[i];
             _objectAttributes.push_back(std::make_tuple(
-                    attributeObject[L"Index"].as<long>(),
-                    attributeObject[L"Type"].as<std::wstring>()
-                ));
+                attributeObject[L"Index"].as<long>(),
+                attributeObject[L"Type"].as<std::wstring>()
+            ));
         }
+    }
 
+    void parseConstants(const spk::JSON::File& p_inputFile)
+    {
         const auto& constantsArray = p_inputFile[L"Constants"];
         for (size_t i = 0; i < constantsArray.size(); i++)
         {
             const auto& constantObject = constantsArray[i];
             std::wstring constantName = constantObject[L"Name"].as<std::wstring>();
             std::wstring constantType = constantObject[L"Type"].as<std::wstring>();
-            GLsizeiptr jsonSize = constantObject[L"Size"].as<long>();
+            GLsizeiptr jsonSize = constantObject[L"SizeGPU"].as<long>();
 
             auto it = _constants.find(constantName);
             if (it != _constants.end())
@@ -1127,7 +1186,21 @@ public:
 
                 _usedConstants.push_back(_constants[constantName]);
             }
+
+            applyUniformLocation(spk::StringUtils::wstringToString(constantType), _constants[constantName]->bindingPoint());
         }
+    }
+
+public:
+    Pipeline(const spk::JSON::File& p_inputFile) :
+        _id(0)
+    {
+        _vertexCode = spk::StringUtils::wstringToString(p_inputFile[L"VertexShaderCode"].as<std::wstring>());
+        _fragmentCode = spk::StringUtils::wstringToString(p_inputFile[L"FragmentShaderCode"].as<std::wstring>());
+
+        parsePipelineFlow(p_inputFile);
+
+        parseConstants(p_inputFile);
     }
 
     const std::wstring& name() const
@@ -1306,10 +1379,8 @@ private:
         _renderingObject.storage().pushIndexes(indexes);
         _renderingObject.storage().validate();
 
-        _pipeline.constant(L"colorBuffer")[L"solidColor"][L"r"] = 1.0f;
-        _pipeline.constant(L"colorBuffer")[L"solidColor"][L"g"] = 0.75f;
-        _pipeline.constant(L"colorBuffer")[L"solidColor"][L"b"] = 0.5f;
-        _pipeline.constant(L"colorBuffer")[L"solidColor"][L"a"] = 1.0f;
+        _pipeline.constant(L"colorBuffer") = spk::Color(255, 0, 0, 255);
+        _pipeline.constant(L"colorBuffer").validate();
 	}
 	
 	void _onPaintEvent(const spk::PaintEvent& p_event)
