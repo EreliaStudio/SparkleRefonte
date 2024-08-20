@@ -28,6 +28,7 @@ namespace spk
 		case spk::SystemEvent::Type::Resize:
 		{
 			p_event.window->resize(p_event.newSize);
+			p_event.window->requestPaint();
 			break;
 		}
 		case spk::SystemEvent::Type::ExitResize:

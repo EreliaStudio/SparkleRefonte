@@ -137,7 +137,7 @@ namespace spk
 
 		const std::vector<Object*>& Object::asArray() const
 		{
-			if (_initialized == false || std::holds_alternative<std::map<std::wstring, Object*>>(_content) == false)
+			if (_initialized == false || std::holds_alternative<std::vector<Object*>>(_content) == false)
 				throw std::runtime_error("Can't get object as array : object is not initialized or is not of type array");
 			return (std::get<std::vector<Object*>>(_content));
 		}

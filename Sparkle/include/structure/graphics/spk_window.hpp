@@ -39,6 +39,7 @@ namespace spk
 	{
 		friend struct Event;
 		friend class GraphicalApplication;
+		friend class SystemModule;
 
 	private:
 		std::unique_ptr<Widget> _rootWidget;

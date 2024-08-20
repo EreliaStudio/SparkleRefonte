@@ -22,7 +22,6 @@ namespace spk
 			_name(p_name),
 			_callback([&, p_name, p_callback]() {
 					spk::cout.setPrefix(p_name);
-					spk::cerr.setPrefix(p_name);
 					p_callback();
 				})
 		{

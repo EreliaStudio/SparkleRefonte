@@ -12,6 +12,52 @@
 			}
 		]
 	},
-	"VertexShaderCode": "#version 330 core\n\nlayout(location = 0) in vec2 position;\n\nlayout(location = 1) in vec4 color;\n\nlayout(location = 0) out vec4 fragColor;\n\nvoid main()\n{\n\tgl_Position = vec4(position, 0.0, 1.0);fragColor = color;\n}",
-	"FragmentShaderCode": "#version 330 core\n\nlayout(location = 0) in vec4 fragColor;\n\nlayout(location = 0) out vec4 pixelColor;\n\nvoid main()\n{\n\tpixelColor = fragColor;\n}"
+	"Constants": [
+		{
+			"Type": "UniformColorBuffer",
+			"Name": "colorBuffer",
+			"Size": 16,
+			"Attributes": [
+				{
+					"Name": "solidColor",
+					"Size": 16,
+					"Type": "Vector4",
+					"OffsetGPU": 0,
+					"OffsetCPU": 0,
+					"Attributes": [
+						{
+							"Name": "r",
+							"Size": 4,
+							"Type": "Float",
+							"OffsetGPU": 0,
+							"OffsetCPU": 0
+						},
+						{
+							"Name": "g",
+							"Size": 4,
+							"Type": "Float",
+							"OffsetGPU": 4,
+							"OffsetCPU": 4
+						},
+						{
+							"Name": "b",
+							"Size": 4,
+							"Type": "Float",
+							"OffsetGPU": 8,
+							"OffsetCPU": 8
+						},
+						{
+							"Name": "a",
+							"Size": 4,
+							"Type": "Float",
+							"OffsetGPU": 12,
+							"OffsetCPU": 12
+						}
+					]
+				}
+			]
+		}
+	],
+	"VertexShaderCode": "#version 430 core\n\nlayout(location = 0) in vec2 position;\n\nvoid main()\n{\n\tgl_Position = vec4(position, 0.0, 1.0);\n}",
+	"FragmentShaderCode": "#version 430 core\n\nlayout(std140, binding = 0) uniform UniformColorBuffer{vec4 solidColor;}colorBuffer;\n\nlayout(location = 0) out vec4 pixelColor;\n\nvoid main()\n{\n\tpixelColor = colorBuffer.solidColor;\n}"
 }
