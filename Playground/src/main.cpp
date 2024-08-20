@@ -194,12 +194,10 @@ public:
         {
 			std::lock_guard<std::mutex> lock(_mutex);
             glGenBuffers(1, &_id);
-            spk::cout << "Allocate " << (_type == Type::Storage ? "VBO" : (_type == Type::Element ? "EBO" : "UBO")) << _id << std::endl;
         }
 
         void release()
         {
-			spk::cout << "Release " << (_type == Type::Storage ? "VBO" : (_type == Type::Element ? "EBO" : "UBO")) << " : " << _id << std::endl;
             glDeleteBuffers(1, &_id);
             _id = 0;
         }
@@ -282,7 +280,7 @@ public:
                 allocate();
 
 			std::lock_guard<std::mutex> lock(_mutex);
-			spk::cout << "Activate " << (_type == Type::Storage ? "VBO" : (_type == Type::Element ? "EBO" : "UBO")) << " [" << _id << "]" << std::endl;
+
             glBindBuffer(static_cast<GLenum>(_type), _id);
 
 			if (_needAttributeInitialization == true)
@@ -309,7 +307,6 @@ public:
         void deactivate() const
         {
             std::lock_guard<std::mutex> lock(_mutex);
-			spk::cout << "Deactivate " << (_type == Type::Storage ? "VBO" : (_type == Type::Element ? "EBO" : "UBO")) << " [" << _id << "]" << std::endl;
             glBindBuffer(static_cast<GLenum>(_type), 0);
         }
 
@@ -477,17 +474,12 @@ public:
 
             if (_needsUpdate == true && _datas.size() > 0)
             {
-				spk::cout << "Bind VBO [" << _id << "]" << std::endl;
                 if (_datas.size() <= static_cast<size_t>(_currentSize))
                 {
-					spk::cout << "Updating up [" << _datas.size() << "] bytes of data" << std::endl;
-
                     glBufferSubData(static_cast<GLenum>(_type), 0, _datas.size(), _datas.data());
                 }
                 else
                 {
-					spk::cout << "Sending up [" << _datas.size() << "] bytes of data" << std::endl;
-
                     glBufferData(static_cast<GLenum>(_type), _datas.size(), _datas.data(), static_cast<GLenum>(_usage));
                     _currentSize = _datas.size();
                 }
@@ -551,12 +543,10 @@ public:
         void allocate()
         {
             glGenVertexArrays(1, &_id);
-			spk::cout << "Allocate VAO [" << _id << "]" << std::endl;
         }
 
         void release()
         {
-			spk::cout << "Release VAO [" << _id << "]" << std::endl;
             glDeleteVertexArrays(1, &_id);
             _id = 0;
         }
@@ -583,13 +573,11 @@ public:
         {
             if (_id == 0)
                 allocate();
-			spk::cout << "Activate VAO [" << _id << "]" << std::endl;
             glBindVertexArray(_id);
         }
 
         void deactivate() const
         {
-			spk::cout << "Deactivate VAO [" << _id << "]" << std::endl;
             glBindVertexArray(0);
         }
 
@@ -617,7 +605,6 @@ public:
 
         void activate()
         {
-			spk::cout << "Activate storage" << std::endl;
             _vao.activate();
             _layoutBuffer.bind();
             _elementBuffer.bind();
@@ -625,7 +612,6 @@ public:
 
         void deactivate()
         {
-			spk::cout << "Deactivate storage" << std::endl;
             _layoutBuffer.deactivate();
             _elementBuffer.deactivate();
             _vao.deactivate();
@@ -812,7 +798,6 @@ public:
                 else
                 {
                     const void* dataPtr = static_cast<const char*>(p_basePtr) + _cpuOffset;
-                    spk::cout << "Setting [" << _size << "] bytes (" << (*(float*)(dataPtr)) << ") at offset : " << _gpuOffset << std::endl;
                     _vbo->push(dataPtr, _size, _gpuOffset);
                 }
             }
@@ -828,6 +813,7 @@ public:
 
     public:
         Uniform() :
+            _vbo(VertexBufferObject::Type::Uniform, VertexBufferObject::Usage::Static),
             _bindingPoint(0),
             _blockIndex(0)
         {
@@ -854,6 +840,19 @@ public:
 
                 _elements[elementName] = std::move(Element(*attribute, &_vbo));
             }
+        }
+
+        Uniform duplicate() const
+        {
+            Uniform result;
+
+            result._name = _name;
+            result._size = _size;
+            result._bindingPoint = _bindingPoint;
+            result._blockIndex = _blockIndex;
+            result._elements = _elements;
+
+            return (result);
         }
 
         size_t size() const
@@ -905,14 +904,12 @@ public:
                 glUniformBlockBinding(program, blockIndex, _bindingPoint);
             }
             _vbo.bind();
-            spk::cout << "Binding uniform [" << _vbo.id() << "](" << _name << ") to binding point [" << _bindingPoint << "]" << std::endl;
 
             glBindBufferBase(GL_UNIFORM_BUFFER, _bindingPoint, _vbo.id());
         }
 
         void unbind() const
         {
-            spk::cout << "Releasing binding point [" << _bindingPoint << "]" << std::endl;
             glBindBufferBase(GL_UNIFORM_BUFFER, _bindingPoint, 0);
             _vbo.deactivate();
         }
@@ -930,12 +927,21 @@ public:
     private:
         Pipeline* _owner;
         Storage _storage;
-        std::unordered_map<std::wstring, Uniform> _attributes;
+        std::unordered_map<std::wstring, Uniform *> _attributes;
 
         Object(Pipeline* p_owner) :
             _owner(p_owner)
         {
 
+        }
+
+        void addAttribute(const std::wstring& p_name, Uniform* p_newAttribute)
+        {
+            if (_attributes.contains(p_name) == true)
+            {
+                throw std::runtime_error("Object already contains an attribute named [" + spk::StringUtils::wstringToString(p_name) + "]");
+            }
+            _attributes[p_name] = new Uniform(p_newAttribute->duplicate());
         }
 
     public:
@@ -949,36 +955,41 @@ public:
             return (_storage);
         }
 
-        std::unordered_map<std::wstring, Uniform>& attributes()
+        std::unordered_map<std::wstring, Uniform*>& attributes()
         {
             return (_attributes);
         }
 
-        const std::unordered_map<std::wstring, Uniform>& attributes() const
+        const std::unordered_map<std::wstring, Uniform*>& attributes() const
         {
             return (_attributes);
+        }
+
+        Uniform& attribute(const std::wstring& p_name)
+        {
+            if (_attributes.contains(p_name) == false)
+            {
+                throw std::runtime_error("Object doesn't contains an attribute named [" + spk::StringUtils::wstringToString(p_name) + "]");
+            }
+            return (*_attributes[p_name]);
         }
 
         void render()
         {
-			spk::cout << "Rendering object" << std::endl;
 			_owner->activate();
 
 			_storage.activate();
 
 			for (auto& [key, uniform] : _attributes)
 			{
-				uniform.bind();
+				uniform->bind();
 			}
 
-			spk::cout << "Drawing [" << _storage.nbTriangles() << "] triangles with [" << _storage.layoutBuffer().size() << "] bytes (" << _storage.nbVertices() << " vertices)" << std::endl;
 			_owner->draw(_storage.nbIndexes());
 
 			_storage.deactivate();
 
 			_owner->deactivate();
-
-			spk::cout << std::endl << std::endl;
 		}
 
 		void renderInstanced(size_t p_nbInstance)
@@ -988,7 +999,7 @@ public:
 			_storage.activate();
 			for (auto& [key, uniform] : _attributes)
 			{
-				uniform.bind();
+				uniform->bind();
 			}
 
 			_owner->drawInstanced(_storage.nbTriangles(), p_nbInstance);
@@ -1010,6 +1021,7 @@ private:
 
     static inline std::unordered_map<std::wstring, Uniform*> _constants;
     std::vector<Uniform*> _usedConstants;
+    std::unordered_map<std::wstring, Uniform*> _attributeBlueprints;
 
     void applyUniformLocation(const std::string& p_uniformType, size_t p_bindingPoint)
     {
@@ -1071,8 +1083,6 @@ private:
         glAttachShader(program, vertexShader);
         glAttachShader(program, fragmentShader);
 
-        spk::cout << "Fragment shader : " << fragmentShader << std::endl;
-
         glLinkProgram(program);
 
         GLint success;
@@ -1108,7 +1118,6 @@ private:
 
     void deactivate()
     {
-		spk::cout << "Deactivating program " << _id << std::endl;
 		glUseProgram(0);
     }
 
@@ -1117,14 +1126,10 @@ private:
 
         for (auto uniform : _usedConstants)
         {
-            GL_DEBUG_LINE();
             uniform->bind();
-            GL_DEBUG_LINE();
         }
 
-        GL_DEBUG_LINE();
         glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(p_nbTriangle), GL_UNSIGNED_INT, nullptr);
-        GL_DEBUG_LINE();
     }
 
     void drawInstanced(size_t p_nbTriangle, size_t p_nbInstance)
@@ -1181,13 +1186,30 @@ private:
             {
                 GLuint bindingPoint = static_cast<GLuint>(_constants.size());
 
-                spk::cout << "Creating uniform [" << constantName << "]" << std::endl;
                 _constants.emplace(constantName, new Uniform(constantObject, bindingPoint));
 
                 _usedConstants.push_back(_constants[constantName]);
             }
 
             applyUniformLocation(spk::StringUtils::wstringToString(constantType), _constants[constantName]->bindingPoint());
+        }
+    }
+
+    void parseAttributes(const spk::JSON::File& p_inputFile)
+    {
+        const auto& attributesArray = p_inputFile[L"Attributes"];
+        for (size_t i = 0; i < attributesArray.size(); i++)
+        {
+            const auto& attributeObject = attributesArray[i];
+            std::wstring attributeName = attributeObject[L"Name"].as<std::wstring>();
+            std::wstring attributeType = attributeObject[L"Type"].as<std::wstring>();
+            GLsizeiptr jsonSize = attributeObject[L"SizeGPU"].as<long>();
+
+            GLuint bindingPoint = static_cast<GLuint>(_constants.size());
+
+            _attributeBlueprints.emplace(attributeName, new Uniform(attributeObject, bindingPoint));
+
+            applyUniformLocation(spk::StringUtils::wstringToString(attributeType), bindingPoint);
         }
     }
 
@@ -1201,6 +1223,8 @@ public:
         parsePipelineFlow(p_inputFile);
 
         parseConstants(p_inputFile);
+
+        parseAttributes(p_inputFile);
     }
 
     const std::wstring& name() const
@@ -1218,17 +1242,20 @@ public:
             result.storage().layoutBuffer().setupAttribute(std::get<0>(attribute), VertexBufferObject::Attribute::typeFromString(std::get<1>(attribute)));
         }
 
+        for (const auto& [key, attribute] : _attributeBlueprints)
+        {
+            result.addAttribute(key, attribute);
+        }
+
         return (result);
     }
 
     Uniform& constant(const std::wstring& p_name)
     {
-        spk::cout << "Accessing object [" << p_name << "]" << std::endl;
         if (_constants.contains(p_name) == false)
         {
             throw std::runtime_error("No uniform named [" + spk::StringUtils::wstringToString(p_name) + "] found");
         }
-        spk::cout << "  Constant exist" << std::endl;
         return (*_constants.at(p_name));
     }
 };
@@ -1379,8 +1406,8 @@ private:
         _renderingObject.storage().pushIndexes(indexes);
         _renderingObject.storage().validate();
 
-        _pipeline.constant(L"colorBuffer") = spk::Color(255, 0, 0, 255);
-        _pipeline.constant(L"colorBuffer").validate();
+        _renderingObject.attribute(L"colorBuffer") = spk::Color(255, 0, 0, 255);
+        _renderingObject.attribute(L"colorBuffer").validate();
 	}
 	
 	void _onPaintEvent(const spk::PaintEvent& p_event)

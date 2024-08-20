@@ -14,7 +14,67 @@
 	},
 	"Constants": [
 		{
-			"Type": "UniformColorBuffer",
+			"Type": "ConstantColorBuffer",
+			"Name": "colorBuffer",
+			"SizeGPU": 16,
+			"SizeCPU": 16,
+			"Attributes": [
+				{
+					"Name": "rg",
+					"Size": 8,
+					"Type": "Vector2",
+					"OffsetGPU": 0,
+					"OffsetCPU": 0,
+					"Attributes": [
+						{
+							"Name": "r",
+							"Size": 4,
+							"Type": "Float",
+							"OffsetGPU": 0,
+							"OffsetCPU": 0,
+							"Attributes": []
+						},
+						{
+							"Name": "g",
+							"Size": 4,
+							"Type": "Float",
+							"OffsetGPU": 4,
+							"OffsetCPU": 4,
+							"Attributes": []
+						}
+					]
+				},
+				{
+					"Name": "ba",
+					"Size": 8,
+					"Type": "Vector2",
+					"OffsetGPU": 32,
+					"OffsetCPU": 8,
+					"Attributes": [
+						{
+							"Name": "b",
+							"Size": 4,
+							"Type": "Float",
+							"OffsetGPU": 32,
+							"OffsetCPU": 0,
+							"Attributes": []
+						},
+						{
+							"Name": "a",
+							"Size": 4,
+							"Type": "Float",
+							"OffsetGPU": 36,
+							"OffsetCPU": 4,
+							"Attributes": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"Attributes": [
+		{
+			"Type": "AttributeColorBuffer",
 			"Name": "colorBuffer",
 			"SizeGPU": 16,
 			"SizeCPU": 16,
@@ -73,5 +133,5 @@
 		}
 	],
 	"VertexShaderCode": "#version 430 core\n\nlayout(location = 0) in vec2 position;\n\nvoid main()\n{\n\tgl_Position = vec4(position, 0.0, 1.0);\n}",
-	"FragmentShaderCode": "#version 430 core\n\nlayout(std140) uniform UniformColorBuffer{vec2 rg; vec3 padding; vec2 ba;}colorBuffer;\n\nlayout(location = 0) out vec4 pixelColor;\n\nvoid main()\n{\n\tpixelColor = vec4(colorBuffer.rg.x, colorBuffer.rg.y, colorBuffer.ba.x, colorBuffer.ba.y);\n}"
+	"FragmentShaderCode": "#version 430 core\n\nlayout(std140) uniform AttributeColorBuffer{vec2 rg; vec3 padding; vec2 ba;}colorBuffer;\n\nlayout(location = 0) out vec4 pixelColor;\n\nvoid main()\n{\n\tpixelColor = vec4(colorBuffer.rg.x, colorBuffer.rg.y, colorBuffer.ba.x, colorBuffer.ba.y);\n}"
 }
