@@ -229,14 +229,13 @@ namespace spk
 		}
 
 		// Now create a modern OpenGL context
-		const int attribs[] = {
+		int attributes[] = {
 			WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-			WGL_CONTEXT_MINOR_VERSION_ARB, 5,
-			WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-			0
-		};
+			WGL_CONTEXT_MINOR_VERSION_ARB, 0,
+			WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+			0 };
 
-		_hglrc = wglCreateContextAttribsARB(_hdc, nullptr, attribs);
+		_hglrc = wglCreateContextAttribsARB(_hdc, nullptr, attributes);
 		if (!_hglrc)
 		{
 			throw std::runtime_error("Failed to create modern OpenGL context.");
@@ -269,7 +268,7 @@ namespace spk
 		glEnable(GL_DEPTH_TEST);
 		glDepthMask(GL_TRUE);
 		glClearDepth(1.0f);
-		glDepthFunc(GL_ALWAYS);
+		glDepthFunc(GL_LESS);
 
 		glDisable(GL_STENCIL_TEST);
 		glStencilFunc(GL_ALWAYS, 0, 0xFF);
@@ -279,8 +278,6 @@ namespace spk
 		glDisable(GL_SCISSOR_TEST);
 
 		wglSwapIntervalEXT(0);
-
-		GL_DEBUG_LINE();
 	}
 
 
@@ -381,8 +378,8 @@ namespace spk
 	void Window::clear()
 	{
 		glViewport(0, 0, geometry().size.width, geometry().size.height);
-		glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	}
 
 	void Window::swap() const

@@ -291,7 +291,7 @@ public:
 
 					spk::cout << "glEnableVertexAttribArray(" << attribute.index << ")" << std::endl;
 					glEnableVertexAttribArray(static_cast<GLuint>(attribute.index));
-					cumulatedSize += attribute.size * sizeof(float);
+                    cumulatedSize += attribute.size *sizeof(float);
 				}
 				_needAttributeInitialization = false;
 			}
@@ -664,7 +664,6 @@ public:
         {
 			if (sizeof(TDataType) != _layoutBuffer.stride())
 			{
-				DEBUG_LINE();
                 throw std::runtime_error("Unexpected stride size received in storage push data\nexpected a vertex of [" + std::to_string(_layoutBuffer.stride()) + "] byte(s) but received a vertex of [" + std::to_string(sizeof(TDataType)) + "] byte(s)");
 			}
             _layoutBuffer.push(p_datas);
@@ -889,7 +888,6 @@ public:
 private:
 	std::wstring _name;
 
-	bool _isLoaded;
 	GLuint _id;
 
 	std::string _vertexCode;
@@ -902,7 +900,6 @@ private:
 
 	GLuint compileShader(const std::string& p_code, GLenum mode)
 	{
-
         GLuint shader = glCreateShader(mode);
 
         const char* shaderSource = p_code.c_str();
@@ -929,6 +926,8 @@ private:
         glAttachShader(program, vertexShader);
         glAttachShader(program, fragmentShader);
 
+        spk::cout << "Fragment shader : " << fragmentShader << std::endl;
+
         glLinkProgram(program);
 
         GLint success;
@@ -943,13 +942,26 @@ private:
         return program;
     }
 
-    void activate() const
+    void load()
     {
-		spk::cout << "Activating program " << _id << std::endl;
+        GLuint vertexShaderID = compileShader(_vertexCode, GL_VERTEX_SHADER);
+        GLuint fragmentShaderID = compileShader(_fragmentCode, GL_FRAGMENT_SHADER);
+
+        _id = linkShaders(vertexShaderID, fragmentShaderID);
+
+        glDeleteShader(vertexShaderID);
+        glDeleteShader(fragmentShaderID);
+    }
+
+    void activate()
+    {
+        if (_id == 0)
+            load();
+
         glUseProgram(_id);
     }
 
-    void deactivate() const
+    void deactivate()
     {
 		spk::cout << "Deactivating program " << _id << std::endl;
 		glUseProgram(0);
@@ -957,6 +969,7 @@ private:
 
     void draw(size_t p_nbTriangle)
     {
+
         for (auto& [key, uniform] : _constants)
         {
             uniform.bind();
@@ -977,7 +990,7 @@ private:
 
 public:
     Pipeline(const spk::JSON::File& p_inputFile) :
-        _isLoaded(false)
+        _id(0)
     {
         _vertexCode = spk::StringUtils::wstringToString(p_inputFile[L"VertexShaderCode"].as<std::wstring>());
         _fragmentCode = spk::StringUtils::wstringToString(p_inputFile[L"FragmentShaderCode"].as<std::wstring>());
@@ -993,17 +1006,6 @@ public:
                     attributeObject[L"Type"].as<std::wstring>()
                 ));
         }
-    }
-
-    void load()
-    {
-        GLuint vertexShaderID = compileShader(_vertexCode, GL_VERTEX_SHADER);
-        GLuint fragmentShaderID = compileShader(_fragmentCode, GL_FRAGMENT_SHADER);
-
-        _id = linkShaders(vertexShaderID, fragmentShaderID);
-
-        glDeleteShader(vertexShaderID);
-        glDeleteShader(fragmentShaderID);
     }
 
     const std::wstring& name() const
@@ -1150,30 +1152,30 @@ private:
 
 	void _onGeometryChange()
 	{
-        //std::vector<Vertex> vertices = {
-        //    {
-        //        spk::Vector2(0, 1),
-        //        spk::Color::red
-        //    },
-        //    {
-        //        spk::Vector2(-1, -1),
-        //        spk::Color::red
-        //    },
-        //    {
-        //        spk::Vector2(1, -1),
-        //        spk::Color::red
-        //    }
-        //};
+        std::vector<Vertex> vertices = {
+            {
+                spk::Vector2(0, 1),
+                spk::Color::red
+            },
+            {
+                spk::Vector2(-1, -1),
+                spk::Color::blue
+            },
+            {
+                spk::Vector2(1, -1),
+                spk::Color::green
+            }
+        };
 
-        //std::vector<unsigned int> indexes = { 0, 1, 2 };
+        std::vector<unsigned int> indexes = { 0, 1, 2 };
 
-        //_renderingObject.storage().pushVertices(vertices);
-        //_renderingObject.storage().pushIndexes(indexes);
+        _renderingObject.storage().pushVertices(vertices);
+        _renderingObject.storage().pushIndexes(indexes);
 	}
 	
 	void _onPaintEvent(const spk::PaintEvent& p_event)
 	{
-        //_renderingObject.render();
+        _renderingObject.render();
 	}
 
 public:
