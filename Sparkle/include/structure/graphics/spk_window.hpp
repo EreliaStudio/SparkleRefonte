@@ -43,7 +43,6 @@ namespace spk
 
 	private:
 		std::unique_ptr<Widget> _rootWidget;
-		std::function<void()> _centralWidgetConstructor;
 		
 		std::wstring _title;
 		spk::Geometry2DInt _geometry;
@@ -76,17 +75,6 @@ namespace spk
 	public:
 		Window(const std::wstring& p_title, const spk::Geometry2DInt& p_geometry);
 		~Window();
-
-		template <typename TMainWidget, typename... Args>
-		void setMainWidget(Args&&... p_args)
-		{
-			_centralWidgetConstructor = [this, ...forwarded_args = std::forward<Args>(p_args)]() mutable {
-					TMainWidget* newWidget = _rootWidget->makeChild<TMainWidget>(std::forward<decltype(forwarded_args)>(forwarded_args)...);
-					newWidget->setGeometry(spk::Geometry2DInt({ 0, 0 }, geometry().size));
-					newWidget->activate();
-					requestPaint();
-				};
-		}
 
 		void move(const spk::Geometry2DInt::Position& p_newPosition);
 		void resize(const spk::Geometry2DInt::Size& p_newSize);

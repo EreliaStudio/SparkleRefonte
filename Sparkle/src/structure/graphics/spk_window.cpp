@@ -306,8 +306,6 @@ namespace spk
 	{
 		_windowRendererThread.addPreparationStep([&]() {
 				_createContext();
-				if (_centralWidgetConstructor != nullptr)
-					_centralWidgetConstructor();
 			}).relinquish();
 		_windowRendererThread.addExecutionStep([&]() {
 				pullEvents();
