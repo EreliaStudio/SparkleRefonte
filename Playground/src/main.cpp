@@ -311,7 +311,7 @@ namespace spk::OpenGL
 				_dataOutput = p_dataOutput;
 				for (auto& [key, member] : _internalLayouts)
 				{
-					member._setDataOutput(p_dataOutput);
+					member._setDataOutput(p_dataOutput + member._offset);
 				}
 			}
 
@@ -319,13 +319,14 @@ namespace spk::OpenGL
 			{
 				if (_tightlyPacked)
 				{
-					std::memcpy(_dataOutput + _offset, p_basePtr + _cppOffset, _size);
+					std::memcpy(_dataOutput, p_basePtr, _size);
 				}
 				else
 				{
 					for (auto& [name, member] : _internalLayouts)
 					{
-						member._copyFrom(p_basePtr);
+						spk::cout << "Moving to member [" << name << "]" << std::endl;
+						member._copyFrom(p_basePtr + member._cppOffset);
 					}
 				}
 			}
@@ -353,6 +354,12 @@ namespace spk::OpenGL
 			template <typename TType>
 			Layout& operator=(const TType& p_inputData)
 			{
+				if (sizeof(TType) != _size)
+				{
+					throw std::runtime_error("Size mismatch in Uniform assignment. "
+						"Expected a size of " + std::to_string(_size) + " bytes, "
+						"but received " + std::to_string(sizeof(TType)) + " bytes of data.");
+				}
 				_copyFrom(reinterpret_cast<const char*>(&p_inputData));
 				return *this;
 			}
@@ -452,8 +459,8 @@ int main()
         "tightlypacked": false,
         "members": {
 			"transform": {
-				"offset": 0,
-				"cppOffset": 0,
+				"offset": 32,
+				"cppOffset": 16,
 				"size": 48,
 				"tightlypacked": false,
 				"members": {
@@ -481,8 +488,8 @@ int main()
 					}
 			},
 			"color": {
-				"offset": 64,
-				"cppOffset": 48,
+				"offset": 0,
+				"cppOffset": 0,
 				"size": 16,
 				"tightlypacked": true,
 				"members": {}
@@ -498,9 +505,9 @@ int main()
 
 	// Example data to write to the buffer
 	spk::Vector3 position = { 1.0f, 2.0f, 3.0f };
-	spk::Vector3 rotation = { 0.1f, 0.2f, 0.3f };
-	spk::Vector3 scale = { 1.0f, 1.0f, 1.0f };
-	spk::Color color = { 1.0f, 0.5f, 0.25f, 1.0f };
+	spk::Vector3 rotation = { 4.0f, 5.0f, 6.0f };
+	spk::Vector3 scale = { 7.0f, 8.0f, 9.0f };
+	spk::Color color = { 10.0f, 11.0f, 12.0f, 13.0f };
 
 	// Assign the transform data to the buffer
 	ubo[L"transform"][L"position"] = position;
