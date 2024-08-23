@@ -29,6 +29,10 @@
     <ClCompile Include="src\application\module\spk_paint_module.cpp" />
     <ClCompile Include="src\application\module\spk_system_module.cpp" />
     <ClCompile Include="src\application\module\spk_update_module.cpp" />
+    <ClCompile Include="src\structure\graphics\opengl\spk_storage.cpp" />
+    <ClCompile Include="src\structure\graphics\opengl\spk_uniform_buffer_object.cpp" />
+    <ClCompile Include="src\structure\graphics\opengl\spk_vertex_array_object.cpp" />
+    <ClCompile Include="src\structure\graphics\opengl\spk_vertex_buffer_object.cpp" />
     <ClCompile Include="src\structure\graphics\spk_color.cpp" />
     <ClCompile Include="src\structure\graphics\spk_window.cpp" />
     <ClCompile Include="src\structure\math\spk_math.cpp" />
@@ -53,6 +57,7 @@
   <ItemGroup>
     <ClInclude Include="include\structure\container\spk_json_file.hpp" />
     <ClInclude Include="include\structure\container\spk_json_object.hpp" />
+    <ClInclude Include="include\structure\graphics\opengl\spk_storage.hpp" />
     <ClInclude Include="include\structure\graphics\spk_color.hpp" />
     <ClInclude Include="include\structure\system\device\spk_controller_input_thread.hpp" />
     <ClInclude Include="include\application\module\spk_controller_module.hpp" />
@@ -98,6 +103,9 @@
     <ClInclude Include="include\utils\spk_opengl_utils.hpp" />
     <ClInclude Include="include\utils\spk_string_utils.hpp" />
     <ClInclude Include="include\widget\spk_widget.hpp" />
+    <ClInclude Include="include\structure\graphics\opengl\spk_uniform_buffer_object.hpp" />
+    <ClInclude Include="include\structure\graphics\opengl\spk_vertex_array_object.hpp" />
+    <ClInclude Include="include\structure\graphics\opengl\spk_vertex_buffer_object.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="vcpkg.json" />
