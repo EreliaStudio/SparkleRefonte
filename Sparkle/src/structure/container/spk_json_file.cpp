@@ -175,6 +175,17 @@ namespace spk::JSON
 			throw std::runtime_error("Invalid JSON file: " + p_filePath.string());
 	}
 
+	File File::loadFromString(const std::wstring& p_content)
+	{
+		File result;
+		size_t index = 0;
+
+		result._root.reset();
+		_loadContent(result._root, _applyGrammar(p_content), index);
+
+		return (result);
+	}
+
 	void File::save(const std::filesystem::path& p_filePath) const
 	{
 		std::wofstream file;
