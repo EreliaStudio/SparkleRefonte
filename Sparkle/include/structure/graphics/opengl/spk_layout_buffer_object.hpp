@@ -6,7 +6,10 @@
 #include <span>
 #include <stdexcept>
 #include <string>
+
+#include "utils/spk_string_utils.hpp"
 #include "structure/container/spk_data_buffer.hpp"
+#include "structure/container/spk_json_object.hpp"
 #include "structure/graphics/opengl/spk_vertex_buffer_object.hpp"
 
 namespace spk::OpenGL
@@ -37,8 +40,19 @@ namespace spk::OpenGL
             GLenum type;
 
         public:
+            Attribute() = default;
             Attribute(Index p_index, GLint p_size, GLenum p_type);
             friend class LayoutBufferObject; // Allows LayoutBufferObject to access private members
+        };
+
+        class Factory
+        {
+        private:
+            std::vector<std::tuple<GLuint, std::string, LayoutBufferObject::Attribute::Type>> layoutInfo;
+
+        public:
+            void parse(const spk::JSON::Object& layoutJson);
+            void apply(LayoutBufferObject* layoutBuffer);
         };
 
     private:
@@ -98,13 +112,10 @@ namespace spk::OpenGL
         }
 
     private:
-        // Private method to apply attributes
         void _applyAttributes();
 
-        // Utility function to get the size of the OpenGL type
-        size_t getTypeSize(GLenum type) const;
+        size_t _typeSize(GLenum type) const;
 
-        // Template function to check the vertex size
         template<typename TType>
         void checkVertexSize() const
         {
@@ -116,4 +127,6 @@ namespace spk::OpenGL
             }
         }
     };
+
+    LayoutBufferObject::Attribute::Type wstringToAttributeType(const std::wstring& p_value);
 }

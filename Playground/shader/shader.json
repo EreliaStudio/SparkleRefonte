@@ -1,4 +1,16 @@
 {
-	"VertexShaderCode": "#version 430 core\n\nlayout(location = 0) in vec2 position;\n\nvoid main()\n{\n\tgl_Position = vec4(position, 0.0, 1.0);\n}",
-	"FragmentShaderCode": "#version 430 core\n\nlayout(std140) uniform AttributeColorBuffer{vec2 rg; vec3 padding; vec2 ba;}colorBuffer;\n\nlayout(location = 0) out vec4 pixelColor;\n\nvoid main()\n{\n\tpixelColor = vec4(colorBuffer.rg.x, colorBuffer.rg.y, colorBuffer.ba.x, colorBuffer.ba.y);\n}"
+	"Layout": [
+		{
+			"Name": "inPosition",
+			"Location": 0,
+			"Type": "vec2"
+		},
+		{
+			"Name": "inColor",
+			"Location": 1,
+			"Type": "vec3"
+		}
+	],
+	"VertexShaderCode": "#version 330 core\nlayout(location = 0) in vec2 inPosition;\nlayout(location = 1) in vec3 inColor;\nout vec3 fragColor;\nvoid main()\n{\n    gl_Position = vec4(inPosition, 0.0, 1.0);\n    fragColor = inColor;\n}",
+	"FragmentShaderCode": "#version 330 core\nin vec3 fragColor;\nout vec4 fragColorOut;\nvoid main()\n{\n    fragColorOut = vec4(fragColor, 1.0);\n}"
 }

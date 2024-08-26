@@ -25,5 +25,8 @@ namespace spk::OpenGL
         ElementBufferObject& operator<<(const unsigned int& data);
         ElementBufferObject& operator<<(const std::vector<unsigned int>& data);
         ElementBufferObject& operator<<(const std::span<unsigned int>& data);
+
+        size_t nbIndexes() const;
+        size_t nbTriangles() const;
     };
 }

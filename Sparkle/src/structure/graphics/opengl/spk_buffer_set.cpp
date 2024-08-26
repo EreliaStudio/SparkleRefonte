@@ -17,6 +17,16 @@ namespace spk::OpenGL
         return _element;
     }
 
+    const LayoutBufferObject& BufferSet::layout() const
+    {
+        return _layout;
+    }
+
+    const ElementBufferObject& BufferSet::element() const
+    {
+        return _element;
+    }
+
     void BufferSet::activate()
     {
         _vao.activate();

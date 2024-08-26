@@ -39,4 +39,15 @@ namespace spk::OpenGL
         append(data);
         return *this;
     }
+
+
+    size_t ElementBufferObject::nbIndexes() const
+    {
+        return _buffer.size() / sizeof(unsigned int);
+    }
+
+    size_t ElementBufferObject::nbTriangles() const
+    {
+        return nbIndexes() / 3;
+    }
 }

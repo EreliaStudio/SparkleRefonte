@@ -2,6 +2,36 @@
 
 namespace spk::OpenGL
 {
+	LayoutBufferObject::Attribute::Attribute(Index p_index, GLint p_size, GLenum p_type) :
+		index(p_index),
+		size(p_size),
+		type(p_type)
+	{
+
+	}
+	void LayoutBufferObject::Factory::parse(const spk::JSON::Object& layoutJson)
+	{
+		const auto& layoutArray = layoutJson.asArray();
+		for (const auto& item : layoutArray)
+		{
+			GLuint location = item->operator[](L"Location").as<long>();
+			std::wstring name = item->operator[](L"Name").as<std::wstring>();
+			std::wstring typeStr = item->operator[](L"Type").as<std::wstring>();
+
+			LayoutBufferObject::Attribute::Type type = wstringToAttributeType(typeStr);
+
+			layoutInfo.emplace_back(location, spk::StringUtils::wstringToString(name), type);
+		}
+	}
+
+	void LayoutBufferObject::Factory::apply(LayoutBufferObject* layoutBuffer)
+	{
+		for (const auto& [location, name, type] : layoutInfo)
+		{
+			layoutBuffer->addAttribute(location, type);
+		}
+	}
+
 	LayoutBufferObject::LayoutBufferObject() : VertexBufferObject(Type::Storage, Usage::Static)
 	{
 	}
@@ -53,7 +83,7 @@ namespace spk::OpenGL
 			throw std::runtime_error("Unknown attribute type.");
 		}
 
-		_vertexSize += size * getTypeSize(type);
+		_vertexSize += size * _typeSize(type);
 		_attributes.emplace_back(index, size, type);
 
 		_isAttributeInitialized = false; // Mark attributes as uninitialized
@@ -76,11 +106,11 @@ namespace spk::OpenGL
 		{
 			glEnableVertexAttribArray(attr.index);
 			glVertexAttribPointer(attr.index, attr.size, attr.type, GL_FALSE, static_cast<GLsizei>(_vertexSize), reinterpret_cast<void*>(offset));
-			offset += attr.size * getTypeSize(attr.type);
+			offset += attr.size * _typeSize(attr.type);
 		}
 	}
 
-	size_t LayoutBufferObject::getTypeSize(GLenum type) const
+	size_t LayoutBufferObject::_typeSize(GLenum type) const
 	{
 		switch (type)
 		{
@@ -94,5 +124,29 @@ namespace spk::OpenGL
 		case GL_DOUBLE: return sizeof(GLdouble);
 		default: throw std::runtime_error("Unknown GL type.");
 		}
+	}
+
+	LayoutBufferObject::Attribute::Type wstringToAttributeType(const std::wstring& p_value)
+	{
+		if (p_value == L"int")
+			return LayoutBufferObject::Attribute::Type::Int;
+		if (p_value == L"float")
+			return LayoutBufferObject::Attribute::Type::Float;
+		if (p_value == L"uint")
+			return LayoutBufferObject::Attribute::Type::UInt;
+		if (p_value == L"vec2")
+			return LayoutBufferObject::Attribute::Type::Vector2;
+		if (p_value == L"vec3")
+			return LayoutBufferObject::Attribute::Type::Vector3;
+		if (p_value == L"vec4")
+			return LayoutBufferObject::Attribute::Type::Vector4;
+		if (p_value == L"ivec2")
+			return LayoutBufferObject::Attribute::Type::Vector2Int;
+		if (p_value == L"ivec3")
+			return LayoutBufferObject::Attribute::Type::Vector3Int;
+		if (p_value == L"ivec4")
+			return LayoutBufferObject::Attribute::Type::Vector4Int;
+
+		throw std::runtime_error("Unknown attribute type: " + spk::StringUtils::wstringToString(p_value));
 	}
 }

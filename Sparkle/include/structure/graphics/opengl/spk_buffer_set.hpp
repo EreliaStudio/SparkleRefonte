@@ -20,6 +20,9 @@ namespace spk::OpenGL
         LayoutBufferObject& layout();
         ElementBufferObject& element();
 
+        const LayoutBufferObject& layout() const;
+        const ElementBufferObject& element() const;
+
         void activate();
         void deactivate();
     };
