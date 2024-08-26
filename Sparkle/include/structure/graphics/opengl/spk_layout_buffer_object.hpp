@@ -17,6 +17,7 @@ namespace spk::OpenGL
         class Attribute
         {
         public:
+            using Index = GLuint;
             enum class Type
             {
                 Int,
@@ -31,12 +32,12 @@ namespace spk::OpenGL
             };
 
         private:
-            GLuint index;
+            Index index;
             GLint size;
             GLenum type;
 
         public:
-            Attribute(GLuint p_index, GLint p_size, GLenum p_type);
+            Attribute(Index p_index, GLint p_size, GLenum p_type);
             friend class LayoutBufferObject; // Allows LayoutBufferObject to access private members
         };
 
@@ -47,7 +48,7 @@ namespace spk::OpenGL
 
     public:
         LayoutBufferObject();
-        void addAttribute(GLuint index, Attribute::Type attributeType);
+        void addAttribute(Attribute::Index index, Attribute::Type attributeType);
 
         virtual void activate() override;
 
@@ -116,4 +117,3 @@ namespace spk::OpenGL
         }
     };
 }
-#pragma once

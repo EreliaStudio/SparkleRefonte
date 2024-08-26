@@ -6,7 +6,7 @@ namespace spk::OpenGL
 	{
 	}
 
-	void LayoutBufferObject::addAttribute(GLuint index, Attribute::Type attributeType)
+	void LayoutBufferObject::addAttribute(Attribute::Index index, Attribute::Type attributeType)
 	{
 		GLint size;
 		GLenum type;
@@ -75,7 +75,7 @@ namespace spk::OpenGL
 		for (const auto& attr : _attributes)
 		{
 			glEnableVertexAttribArray(attr.index);
-			glVertexAttribPointer(attr.index, attr.size, attr.type, GL_FALSE, _vertexSize, reinterpret_cast<void*>(offset));
+			glVertexAttribPointer(attr.index, attr.size, attr.type, GL_FALSE, static_cast<GLsizei>(_vertexSize), reinterpret_cast<void*>(offset));
 			offset += attr.size * getTypeSize(attr.type);
 		}
 	}
