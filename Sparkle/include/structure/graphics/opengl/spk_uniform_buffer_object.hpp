@@ -18,6 +18,7 @@ namespace spk::OpenGL
         {
         private:
             char* _dataOutput = nullptr;
+            size_t _bindingPoint = 0;
             size_t _offset = 0;
             size_t _cppOffset = 0;
             size_t _size = 0;
@@ -50,8 +51,9 @@ namespace spk::OpenGL
         };
 
     private:
+        std::string _typeName = "";
         BindingPoint _bindingPoint = -1;
-        BlockIndex _blockIndex = -1;
+        BlockIndex _blockIndex = GL_INVALID_ENUM;
         bool _validated = false;
         Layout _layout;
 
@@ -59,6 +61,10 @@ namespace spk::OpenGL
         UniformBufferObject();
         UniformBufferObject(const spk::JSON::Object& layoutJson);
         UniformBufferObject(const UniformBufferObject& p_other);
+        UniformBufferObject(UniformBufferObject&& p_other) noexcept;
+
+        UniformBufferObject& operator=(const UniformBufferObject& p_other);
+        UniformBufferObject& operator=(UniformBufferObject&& p_other) noexcept;
 
         void activate() override;
 
