@@ -31,7 +31,6 @@
     <ClCompile Include="src\application\module\spk_update_module.cpp" />
     <ClCompile Include="src\structure\graphics\opengl\spk_buffer_set.cpp" />
     <ClCompile Include="src\structure\graphics\opengl\spk_index_buffer_object.cpp" />
-    <ClCompile Include="src\structure\graphics\opengl\spk_layout_buffer_object.cpp" />
     <ClCompile Include="src\structure\graphics\opengl\spk_uniform_buffer_object.cpp" />
     <ClCompile Include="src\structure\graphics\opengl\spk_vertex_array_object.cpp" />
     <ClCompile Include="src\structure\graphics\opengl\spk_vertex_buffer_object.cpp" />
