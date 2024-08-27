@@ -5,12 +5,12 @@ TEST_F(Geometry2DTest, DefaultConstructor)
 	ASSERT_EQ(geometry.anchor.x, 0);
 	ASSERT_EQ(geometry.anchor.y, 0);
 	ASSERT_EQ(geometry.size.width, 0);
-	ASSERT_EQ(geometry.size.height, 0);
+	ASSERT_EQ(geometry.size.heigth, 0);
 
 	ASSERT_EQ(geometryInt.anchor.x, 0);
 	ASSERT_EQ(geometryInt.anchor.y, 0);
 	ASSERT_EQ(geometryInt.size.width, 0);
-	ASSERT_EQ(geometryInt.size.height, 0);
+	ASSERT_EQ(geometryInt.size.heigth, 0);
 }
 
 TEST_F(Geometry2DTest, ParameterizedConstructor)
@@ -24,17 +24,17 @@ TEST_F(Geometry2DTest, ParameterizedConstructor)
 	ASSERT_EQ(geometry.anchor.x, 10.5);
 	ASSERT_EQ(geometry.anchor.y, 20.5);
 	ASSERT_EQ(geometry.size.width, 30.5);
-	ASSERT_EQ(geometry.size.height, 40.5);
+	ASSERT_EQ(geometry.size.heigth, 40.5);
 
 	ASSERT_EQ(geometry2.anchor.x, 10.5);
 	ASSERT_EQ(geometry2.anchor.y, 20.5);
 	ASSERT_EQ(geometry2.size.width, 30.5);
-	ASSERT_EQ(geometry2.size.height, 40.5);
+	ASSERT_EQ(geometry2.size.heigth, 40.5);
 
 	ASSERT_EQ(geometry3.anchor.x, 10);
 	ASSERT_EQ(geometry3.anchor.y, 20);
 	ASSERT_EQ(geometry3.size.width, 30);
-	ASSERT_EQ(geometry3.size.height, 40);
+	ASSERT_EQ(geometry3.size.heigth, 40);
 }
 
 TEST_F(Geometry2DTest, PositionAddition)
@@ -103,11 +103,11 @@ TEST_F(Geometry2DTest, SizeAddition)
 
 	auto result = size1 + size2;
 	ASSERT_EQ(result.width, 15);
-	ASSERT_EQ(result.height, 35);
+	ASSERT_EQ(result.heigth, 35);
 
 	size1 += size2;
 	ASSERT_EQ(size1.width, 15);
-	ASSERT_EQ(size1.height, 35);
+	ASSERT_EQ(size1.heigth, 35);
 }
 
 TEST_F(Geometry2DTest, SizeSubtraction)
@@ -117,11 +117,11 @@ TEST_F(Geometry2DTest, SizeSubtraction)
 
 	auto result = size1 - size2;
 	ASSERT_EQ(result.width, 5);
-	ASSERT_EQ(result.height, 5);
+	ASSERT_EQ(result.heigth, 5);
 
 	size1 -= size2;
 	ASSERT_EQ(size1.width, 5);
-	ASSERT_EQ(size1.height, 5);
+	ASSERT_EQ(size1.heigth, 5);
 }
 
 TEST_F(Geometry2DTest, SizeMultiplication)
@@ -131,11 +131,11 @@ TEST_F(Geometry2DTest, SizeMultiplication)
 
 	auto result = size1 * size2;
 	ASSERT_EQ(result.width, 50);
-	ASSERT_EQ(result.height, 300);
+	ASSERT_EQ(result.heigth, 300);
 
 	size1 *= size2;
 	ASSERT_EQ(size1.width, 50);
-	ASSERT_EQ(size1.height, 300);
+	ASSERT_EQ(size1.heigth, 300);
 }
 
 TEST_F(Geometry2DTest, SizeDivision)
@@ -145,11 +145,11 @@ TEST_F(Geometry2DTest, SizeDivision)
 
 	auto result = size1 / size2;
 	ASSERT_EQ(result.width, 5);
-	ASSERT_EQ(result.height, 4);
+	ASSERT_EQ(result.heigth, 4);
 
 	size1 /= size2;
 	ASSERT_EQ(size1.width, 5);
-	ASSERT_EQ(size1.height, 4);
+	ASSERT_EQ(size1.heigth, 4);
 
 	ASSERT_THROW(size1 / spk::Geometry2D::Size(0, 5), std::runtime_error);
 	ASSERT_THROW(size1 / spk::Geometry2D::Size(2, 0), std::runtime_error);

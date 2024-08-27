@@ -32,6 +32,8 @@ namespace spk::OpenGL
         public:
             Layout() = default;
 
+            Layout(VertexBufferObject& p_parentBuffer);
+            Layout(const spk::JSON::Object& p_layoutJson);
             Layout(const spk::JSON::Object& p_layoutJson, VertexBufferObject& p_parentBuffer);
 
             Layout& operator[](const std::wstring& p_memberName);
@@ -50,20 +52,19 @@ namespace spk::OpenGL
             }
         };
 
-    private:
+    private:        
         std::string _typeName = "";
         BindingPoint _bindingPoint = -1;
         BlockIndex _blockIndex = GL_INVALID_ENUM;
-        bool _validated = false;
         Layout _layout;
 
     public:
         UniformBufferObject();
-        UniformBufferObject(const spk::JSON::Object& layoutJson);
-        UniformBufferObject(const UniformBufferObject& p_other);
+        UniformBufferObject(const spk::JSON::Object& p_layoutJson);
+        UniformBufferObject(const UniformBufferObject& p_other) = delete;
         UniformBufferObject(UniformBufferObject&& p_other) noexcept;
 
-        UniformBufferObject& operator=(const UniformBufferObject& p_other);
+        UniformBufferObject& operator=(const UniformBufferObject& p_other) = delete;
         UniformBufferObject& operator=(UniformBufferObject&& p_other) noexcept;
 
         void activate() override;

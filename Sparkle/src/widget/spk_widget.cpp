@@ -73,16 +73,29 @@ namespace spk
 	{
 		_onGeometryChange();
 		_needGeometryChange = false;
+		for (auto& child : children())
+		{
+			child->requireGeometryUpdate();
+		}
 	}
 
 	void Widget::requireGeometryUpdate()
 	{
 		_needGeometryChange = true;
+		for (auto& child : children())
+		{
+			child->requireGeometryUpdate();
+		}
 	}
 
 	const Geometry2DInt& Widget::geometry() const
 	{
 		return (_geometry);
+	}
+
+	const Viewport& Widget::viewport() const
+	{
+		return (_viewport);
 	}
 
 	void Widget::_onGeometryChange()
@@ -95,21 +108,65 @@ namespace spk
 
 	}
 
+	spk::Geometry2DInt::Position Widget::_computeAbsoluteAnchor()
+	{
+		spk::Geometry2DInt::Position result = { 0, 0 };
+		const Widget* tmp = this;
+
+		while (tmp->parent() != nullptr)
+		{
+			result += tmp->geometry().anchor;
+			tmp = static_cast<const Widget*>(tmp->parent());
+		}
+
+		return (result);
+	}
+
+	void Widget::_computeViewport()
+	{
+		spk::Geometry2DInt::Position topLeft = _computeAbsoluteAnchor();
+		spk::Geometry2DInt::Size rightDown = geometry().size + spk::Geometry2DInt::Size(topLeft.x, topLeft.y);
+		
+
+
+		if (parent() != nullptr)
+		{
+			topLeft = Geometry2DInt::Position::max(topLeft, static_cast<const Widget*>(parent())->viewport().geometry().anchor);
+		}
+
+		if (parent() != nullptr)
+		{
+			spk::Geometry2DInt::Size tmpSize = static_cast<const Widget*>(parent())->geometry().size;
+			spk::Geometry2DInt::Size tmpAnchor = { static_cast<const Widget*>(parent())->geometry().x, static_cast<const Widget*>(parent())->geometry().y };
+			rightDown = Geometry2DInt::Size::min(rightDown, tmpSize + tmpAnchor);
+		}
+
+		spk::Geometry2DInt::Size size = { rightDown.width - topLeft.x, rightDown.heigth - topLeft.y };
+
+		_viewport.setGeometry({ topLeft, size });
+	}
+
 	void Widget::onPaintEvent(const spk::PaintEvent& p_event)
 	{
 		if (isActive() == false)
 			return;
 
+
 		if (_needGeometryChange == true)
 		{
 			updateGeometry();
+			_computeViewport();
 		}
 
 		_onPaintEvent(p_event);
 
 		for (auto& child : children())
 		{
-			child->onPaintEvent(p_event);
+			if (child->isActive() == true)
+			{
+				_viewport.apply();
+				child->onPaintEvent(p_event);
+			}
 		}
 	}
 

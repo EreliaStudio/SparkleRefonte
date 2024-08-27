@@ -49,7 +49,7 @@ namespace spk
 
 	void Window::_createContext()
 	{
-		RECT adjustedRect = { 0, 0, _viewport.geometry().width, _viewport.geometry().height};
+		RECT adjustedRect = { 0, 0, _viewport.geometry().width, _viewport.geometry().heigth};
 		if (!AdjustWindowRectEx(&adjustedRect, WS_OVERLAPPEDWINDOW, FALSE, 0))
 		{
 			throw std::runtime_error("Failed to adjust window rect.");

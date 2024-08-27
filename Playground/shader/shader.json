@@ -4,13 +4,29 @@
 			"Name": "inPosition",
 			"Location": 0,
 			"Type": "vec2"
-		},
-		{
-			"Name": "inColor",
-			"Location": 1,
-			"Type": "vec4"
 		}
 	],
-	"VertexShaderCode": "#version 330 core\nlayout(location = 0) in vec2 inPosition;\nlayout(location = 1) in vec4 inColor;\nout vec4 fragColor;\nvoid main()\n{\n    gl_Position = vec4(inPosition, 0.0, 1.0);\n    fragColor = inColor;\n}",
-	"FragmentShaderCode": "#version 330 core\nin vec4 fragColor;\nout vec4 fragColorOut;\nvoid main()\n{\n    fragColorOut = fragColor;\n}"
+	"Constants": [
+		{
+			"Name": "colorBuffer",
+			"Type": "ColorBufferType",
+			"BindingPoint": 1,
+			"Composition": {
+				"Offset": 0,
+				"CppOffset": 0,
+				"Size": 16,
+				"Tightlypacked": true,
+				"Members": {
+					"color": {
+						"Offset": 0,
+						"CppOffset": 0,
+						"Size": 16,
+						"Tightlypacked": true
+					}
+				}
+			}
+		}
+	],
+	"VertexShaderCode": "#version 430 core\nlayout(location = 0) in vec2 inPosition;\nout vec4 fragColor;\nlayout(std140, binding = 1) uniform ColorBufferType\n{\n    vec4 color;\n} colorBuffer;\nvoid main()\n{\n    gl_Position = vec4(inPosition, 0.0, 1.0);\n    fragColor = colorBuffer.color;\n}",
+	"FragmentShaderCode": "#version 430 core\nin vec4 fragColor;\nout vec4 fragColorOut;\nvoid main()\n{\n    fragColorOut = fragColor;\n}"
 }

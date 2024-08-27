@@ -52,6 +52,17 @@ namespace spk::OpenGL
         }
     }
 
+    UniformBufferObject::Layout::Layout(VertexBufferObject& p_parentBuffer)
+    {
+        p_parentBuffer.resize(0);
+        _setDataOutput(static_cast<char*>(p_parentBuffer.data()));
+    }
+
+    UniformBufferObject::Layout::Layout(const spk::JSON::Object& p_layoutJson)
+    {
+        *this = _parseLayout(p_layoutJson);
+    }
+
     UniformBufferObject::Layout::Layout(const spk::JSON::Object& p_layoutJson, VertexBufferObject& p_parentBuffer)
     {
         *this = _parseLayout(p_layoutJson);
@@ -71,55 +82,28 @@ namespace spk::OpenGL
 
     UniformBufferObject::UniformBufferObject() :
         VertexBufferObject(VertexBufferObject::Type::Uniform, VertexBufferObject::Usage::Static),
-        _layout(spk::JSON::Object(), *this),
-        _typeName("")
+        _layout(*this)
     {
     }
 
     UniformBufferObject::UniformBufferObject(const spk::JSON::Object& p_layoutJson) :
         VertexBufferObject(VertexBufferObject::Type::Uniform, VertexBufferObject::Usage::Static),
         _layout(p_layoutJson[L"Composition"], *this),
-        _typeName(spk::StringUtils::wstringToString(p_layoutJson[L"Type"].as<std::wstring>()))
+        _typeName(spk::StringUtils::wstringToString(p_layoutJson[L"Type"].as<std::wstring>())),
+        _bindingPoint(p_layoutJson[L"BindingPoint"].as<long>())
     {
-        _bindingPoint = p_layoutJson[L"BindingPoint"].as<long>();
-    }
 
-    UniformBufferObject::UniformBufferObject(const UniformBufferObject& p_other) :
-        VertexBufferObject(p_other),
-        _bindingPoint(p_other._bindingPoint),
-        _blockIndex(p_other._blockIndex),
-        _validated(p_other._validated),
-        _layout(p_other._layout),
-        _typeName(p_other._typeName)
-    {
     }
 
     UniformBufferObject::UniformBufferObject(UniformBufferObject&& p_other) noexcept :
         VertexBufferObject(std::move(p_other)),
         _bindingPoint(p_other._bindingPoint),
         _blockIndex(p_other._blockIndex),
-        _validated(p_other._validated),
         _layout(std::move(p_other._layout)),
         _typeName(std::move(p_other._typeName))
     {
         p_other._bindingPoint = 0;
         p_other._blockIndex = 0;
-        p_other._validated = true;
-    }
-
-    UniformBufferObject& UniformBufferObject::operator=(const UniformBufferObject& p_other)
-    {
-        if (this != &p_other)
-        {
-            VertexBufferObject::operator=(p_other);
-
-            _bindingPoint = p_other._bindingPoint;
-            _blockIndex = p_other._blockIndex;
-            _validated = p_other._validated;
-            _layout = p_other._layout;
-            _typeName = p_other._typeName;
-        }
-        return *this;
     }
 
     UniformBufferObject& UniformBufferObject::operator=(UniformBufferObject&& p_other) noexcept
@@ -135,13 +119,11 @@ namespace spk::OpenGL
 
             _bindingPoint = p_other._bindingPoint;
             _blockIndex = p_other._blockIndex;
-            _validated = p_other._validated;
             _layout = std::move(p_other._layout);
             _typeName = std::move(p_other._typeName);
 
             p_other._bindingPoint = 0;
             p_other._blockIndex = 0;
-            p_other._validated = false;
         }
         return *this;
     }
@@ -149,6 +131,8 @@ namespace spk::OpenGL
 
     void UniformBufferObject::activate()
     {
+        VertexBufferObject::activate();
+
         if (_blockIndex == GL_INVALID_ENUM)
         {
             GLint prog = 0;
@@ -158,9 +142,8 @@ namespace spk::OpenGL
 
             glUniformBlockBinding(prog, _blockIndex, _bindingPoint);
         }
-        VertexBufferObject::activate();
-        glBindBufferBase(GL_UNIFORM_BUFFER, _bindingPoint, _id);
 
+        glBindBufferBase(GL_UNIFORM_BUFFER, _bindingPoint, _id);
     }
 
     UniformBufferObject::Layout& UniformBufferObject::operator[](const std::wstring& p_memberName)

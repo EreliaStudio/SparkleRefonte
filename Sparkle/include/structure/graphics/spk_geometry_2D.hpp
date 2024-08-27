@@ -181,6 +181,16 @@ namespace spk
 				return p_os;
 			}
 
+			static Position min(const Position& p_min, const Position& p_max)
+			{
+				return Position(std::min(p_min.x, p_max.x), std::min(p_min.y, p_max.y));
+			}
+
+			static Position max(const Position& p_min, const Position& p_max)
+			{
+				return Position(std::max(p_min.x, p_max.x), std::max(p_min.y, p_max.y));
+			}
+
 			std::wstring to_wstring() const
 			{
 				std::wstringstream wss;
@@ -199,11 +209,11 @@ namespace spk
 		struct Size
 		{
 			TType width;
-			TType height;
+			TType heigth;
 
 			Size() :
 				width(0),
-				height(0)
+				heigth(0)
 			{
 
 			}
@@ -211,7 +221,7 @@ namespace spk
 			template<typename TScalarType>
 			explicit Size(const TScalarType& p_scalar) :
 				width(static_cast<TType>(p_scalar)),
-				height(static_cast<TType>(p_scalar))
+				heigth(static_cast<TType>(p_scalar))
 			{
 
 			}
@@ -219,7 +229,7 @@ namespace spk
 			template<typename TValueAType, typename TValueBType>
 			Size(const TValueAType& p_valueA, const TValueBType& p_valueB) :
 				width(static_cast<TType>(p_valueA)),
-				height(static_cast<TType>(p_valueB))
+				heigth(static_cast<TType>(p_valueB))
 			{
 
 			}
@@ -227,34 +237,34 @@ namespace spk
 			template<typename TScalarType>
 			Size operator+(const TScalarType& p_scalar) const
 			{
-				return { width + p_scalar, height + p_scalar };
+				return { width + p_scalar, heigth + p_scalar };
 			}
 
 			Size operator+(const Size& p_other) const
 			{
-				return { width + p_other.width, height + p_other.height };
+				return { width + p_other.width, heigth + p_other.heigth };
 			}
 
 			template<typename TScalarType>
 			Size operator-(const TScalarType& p_scalar) const
 			{
-				return { width - p_scalar, height - p_scalar };
+				return { width - p_scalar, heigth - p_scalar };
 			}
 
 			Size operator-(const Size& p_other) const
 			{
-				return { width - p_other.width, height - p_other.height };
+				return { width - p_other.width, heigth - p_other.heigth };
 			}
 
 			template<typename TScalarType>
 			Size operator*(const TScalarType& p_scalar) const
 			{
-				return { width * p_scalar, height * p_scalar };
+				return { width * p_scalar, heigth * p_scalar };
 			}
 
 			Size operator*(const Size& p_other) const
 			{
-				return { width * p_other.width, height * p_other.height };
+				return { width * p_other.width, heigth * p_other.heigth };
 			}
 
 			template<typename TScalarType>
@@ -262,28 +272,28 @@ namespace spk
 			{
 				if (p_scalar == 0)
 					throw std::runtime_error("Can't divide by zero");
-				return { width / p_scalar, height / p_scalar };
+				return { width / p_scalar, heigth / p_scalar };
 			}
 
 			Size operator/(const Size& p_other) const
 			{
-				if (p_other.width == 0 || p_other.height == 0)
+				if (p_other.width == 0 || p_other.heigth == 0)
 					throw std::runtime_error("Can't divide by zero");
-				return { width / p_other.width, height / p_other.height };
+				return { width / p_other.width, heigth / p_other.heigth };
 			}
 
 			template<typename TScalarType>
 			Size& operator+=(const TScalarType& p_scalar)
 			{
 				width += p_scalar;
-				height += p_scalar;
+				heigth += p_scalar;
 				return *this;
 			}
 
 			Size& operator+=(const Size& p_other)
 			{
 				width += p_other.width;
-				height += p_other.height;
+				heigth += p_other.heigth;
 				return *this;
 			}
 
@@ -291,14 +301,14 @@ namespace spk
 			Size& operator-=(const TScalarType& p_scalar)
 			{
 				width -= p_scalar;
-				height -= p_scalar;
+				heigth -= p_scalar;
 				return *this;
 			}
 
 			Size& operator-=(const Size& p_other)
 			{
 				width -= p_other.width;
-				height -= p_other.height;
+				heigth -= p_other.heigth;
 				return *this;
 			}
 
@@ -306,14 +316,14 @@ namespace spk
 			Size& operator*=(const TScalarType& p_scalar)
 			{
 				width *= p_scalar;
-				height *= p_scalar;
+				heigth *= p_scalar;
 				return *this;
 			}
 
 			Size& operator*=(const Size& p_other)
 			{
 				width *= p_other.width;
-				height *= p_other.height;
+				heigth *= p_other.heigth;
 				return *this;
 			}
 
@@ -323,22 +333,22 @@ namespace spk
 				if (p_scalar == 0)
 					throw std::runtime_error("Can't divide by zero");
 				width /= p_scalar;
-				height /= p_scalar;
+				heigth /= p_scalar;
 				return *this;
 			}
 
 			Size& operator/=(const Size& p_other)
 			{
-				if (p_other.width == 0 || p_other.height == 0)
+				if (p_other.width == 0 || p_other.heigth == 0)
 					throw std::runtime_error("Can't divide by zero");
 				width /= p_other.width;
-				height /= p_other.height;
+				heigth /= p_other.heigth;
 				return *this;
 			}
 
 			bool operator==(const Size& p_other) const
 			{
-				return width == p_other.width && height == p_other.height;
+				return width == p_other.width && heigth == p_other.heigth;
 			}
 
 			bool operator!=(const Size& p_other) const
@@ -349,7 +359,7 @@ namespace spk
 			template<typename TScalarType>
 			bool operator==(const TScalarType& p_scalar) const
 			{
-				return width == p_scalar && height == p_scalar;
+				return width == p_scalar && heigth == p_scalar;
 			}
 
 			template<typename TScalarType>
@@ -360,10 +370,19 @@ namespace spk
 
 			friend std::wostream& operator<<(std::wostream& p_os, const Size& p_size)
 			{
-				p_os << L"(" << p_size.width << L" x " << p_size.height << L")";
+				p_os << L"(" << p_size.width << L" x " << p_size.heigth << L")";
 				return p_os;
 			}
 
+			static Size min(const Size& p_min, const Size& p_max)
+			{
+				return Size(std::min(p_min.width, p_max.width), std::min(p_min.heigth, p_max.heigth));
+			}
+
+			static Size max(const Size& p_min, const Size& p_max)
+			{
+				return Size(std::max(p_min.width, p_max.width), std::max(p_min.heigth, p_max.heigth));
+			}
 
 			std::wstring to_wstring() const
 			{
@@ -396,7 +415,7 @@ namespace spk
 			struct
 			{
 				TType width;
-				TType height;
+				TType heigth;
 			};
 		};
 
@@ -415,9 +434,9 @@ namespace spk
 		}
 
 		template<typename TValueAType, typename TValueBType>
-		IGeometry2D(const Position& p_anchor, TValueAType p_width, TValueBType p_height) :
+		IGeometry2D(const Position& p_anchor, TValueAType p_width, TValueBType p_heigth) :
 			anchor(p_anchor),
-			size(static_cast<TType>(p_width), static_cast<TType>(p_height))
+			size(static_cast<TType>(p_width), static_cast<TType>(p_heigth))
 		{
 
 		}
@@ -431,9 +450,9 @@ namespace spk
 		}
 
 		template<typename TValueAType, typename TValueBType, typename TValueCType, typename TValueDType>
-		IGeometry2D(TValueAType p_x, TValueBType p_y, TValueCType p_width, TValueDType p_height) :
+		IGeometry2D(TValueAType p_x, TValueBType p_y, TValueCType p_width, TValueDType p_heigth) :
 			anchor(static_cast<TType>(p_x), static_cast<TType>(p_y)),
-			size(static_cast<TType>(p_width), static_cast<TType>(p_height))
+			size(static_cast<TType>(p_width), static_cast<TType>(p_heigth))
 		{
 
 		}

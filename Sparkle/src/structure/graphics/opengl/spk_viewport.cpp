@@ -2,6 +2,8 @@
 
 #include <GL/glew.h>
 
+#include "structure/spk_iostream.hpp"
+
 namespace spk
 {
 	Viewport::Viewport()
@@ -27,6 +29,7 @@ namespace spk
 
 	void Viewport::apply()
 	{
-		glViewport(_geometry.x, _geometry.y, _geometry.width, _geometry.height);
+		spk::cout << "Activating viewport [" << _geometry.x << "] / [" << _geometry.y << "] / [" << _geometry.width << "] / [" << _geometry.heigth << "]" << std::endl;
+		glViewport(_geometry.x, _geometry.y, _geometry.width, _geometry.heigth);
 	}
 }

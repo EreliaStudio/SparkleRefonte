@@ -6,6 +6,7 @@
 #include "structure/design_pattern/spk_activable_object.hpp"
 
 #include "structure/graphics/spk_geometry_2D.hpp"
+#include "structure/graphics/opengl/spk_viewport.hpp"
 
 #include "structure/system/event/spk_event.hpp"
 
@@ -22,7 +23,9 @@ namespace spk
 		std::vector<Widget*> _managedChildren;
 
 		bool _needGeometryChange = true;
-		Geometry2DInt _geometry;
+		spk::Geometry2DInt _geometry;
+		spk::Viewport _viewport;
+		
 		float _depth;
 
 		virtual void _onGeometryChange();
@@ -31,6 +34,10 @@ namespace spk
 		virtual void _onKeyboardEvent(const spk::KeyboardEvent& p_event);
 		virtual void _onMouseEvent(const spk::MouseEvent& p_event);
 		virtual void _onControllerEvent(const spk::ControllerEvent& p_event);
+
+
+		spk::Geometry2DInt::Position _computeAbsoluteAnchor();
+		void _computeViewport();
 
 	public:
 		Widget(const std::wstring& p_name);
@@ -63,6 +70,7 @@ namespace spk
 		void requireGeometryUpdate();
 
 		const Geometry2DInt& geometry() const;
+		const Viewport& viewport() const;
 
 		void onPaintEvent(const spk::PaintEvent& p_event);
 		void onUpdateEvent(const spk::UpdateEvent& p_event);

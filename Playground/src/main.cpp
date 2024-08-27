@@ -7,17 +7,24 @@
 
 #include "structure/container/spk_JSON_object.hpp"
 #include "structure/graphics/opengl/spk_buffer_set.hpp"
+#include "structure/graphics/opengl/spk_uniform_buffer_object.hpp"
 
 namespace spk::OpenGL
 {
     class Pipeline
     {
     public:
+        using Constant = UniformBufferObject;
+
         class Object
         {
+        public:
+            using Attribute = UniformBufferObject;
+
         private:
             Pipeline* _owner;
             BufferSet _bufferSet;
+            std::unordered_map<std::wstring, Attribute> _attributes;
 
         public:
             Object() :
@@ -26,8 +33,8 @@ namespace spk::OpenGL
 
             }
 
-            Object(Pipeline* owner)
-                : _owner(owner)
+            Object(Pipeline* owner) :
+                _owner(owner)
             {
             }
 
@@ -60,7 +67,11 @@ namespace spk::OpenGL
         std::string _vertexShaderCode;
         std::string _fragmentShaderCode;
         GLuint _programID;
+
         LayoutBufferObject::Factory _layoutFactory;
+        std::unordered_map<std::wstring, Object::Attribute::Layout> _objectAttributeLayouts;
+
+        std::unordered_map<std::wstring, Constant> _constants;
 
         GLuint _compileShader(const std::string& source, GLenum shaderType)
         {
@@ -109,12 +120,19 @@ namespace spk::OpenGL
             if (p_nbTriangles == 0)
                 return;
 
-            DEBUG_LINE();
+            for (auto& [name, constant] : _constants)
+            {
+                constant.activate();
+            }
+
             glDrawElements(GL_TRIANGLES, p_nbTriangles * 3, GL_UNSIGNED_INT, nullptr);
         }
 
         void _activate()
         {
+            if (_programID == 0)
+                _load();
+
             glUseProgram(_programID);
         }
 
@@ -141,18 +159,33 @@ namespace spk::OpenGL
             _fragmentShaderCode = spk::StringUtils::wstringToString(p_jsonFile[L"FragmentShaderCode"].as<std::wstring>());
             
             _layoutFactory.parse(p_jsonFile[L"Layout"]);
+
+            const auto& constantsArray = p_jsonFile[L"Constants"].asArray();
+
+            for (const auto& constantJson : constantsArray)
+            {
+                std::wstring name = (*constantJson)[L"Name"].as<std::wstring>();
+                _constants[name] = UniformBufferObject(*constantJson);
+            }
         }
 
         Object createObject()
         {
-            if (_programID == 0)
-                _load();
-
             Object newObject(this);
 
             _layoutFactory.apply(&newObject.layout());
 
             return newObject;
+        }
+
+        Constant& constant(const std::wstring& p_name)
+        {
+            auto it = _constants.find(p_name);
+            if (it == _constants.end())
+            {
+                throw std::out_of_range("No constant found with the name: " + spk::StringUtils::wstringToString(p_name));
+            }
+            return it->second;
         }
     };
 }
@@ -162,29 +195,27 @@ class TestWidget : public spk::Widget
 private:
     spk::OpenGL::Pipeline _pipeline;
     spk::OpenGL::Pipeline::Object _object;
+    spk::OpenGL::Pipeline::Constant& _colorConstants;
 
 	void _onGeometryChange()
 	{
-        _object = _pipeline.createObject();
+        _colorConstants = spk::Color::blue;
+        _colorConstants.validate();
 
         struct Vertex
         {
             spk::Vector2 position;
-            spk::Color color;
         };
 
         std::vector<Vertex> vertices = {
             {
-                spk::Vector2(0, 1),
-                spk::Color::red
+                spk::Vector2(0, 1)
             },
             {
-                spk::Vector2(-1, -1),
-                spk::Color::blue
+                spk::Vector2(-1, -1)
             },
             {
-                spk::Vector2(1, -1),
-                spk::Color::green
+                spk::Vector2(1, -1)
             }
         };
         std::vector<unsigned int> indexes = {
@@ -206,7 +237,9 @@ private:
 public:
 	TestWidget(spk::SafePointer<Widget> p_parent) :
 		spk::Widget(L"TestWidget", p_parent),
-        _pipeline(spk::JSON::File(L"shader/shader.json"))
+        _pipeline(spk::JSON::File(L"shader/shader.json")),
+        _object(_pipeline.createObject()),
+        _colorConstants(_pipeline.constant(L"colorBuffer"))
 	{
 		
 	}
@@ -219,7 +252,7 @@ int main()
     spk::SafePointer<spk::Window> window = app.createWindow(L"Playground", spk::Geometry2DInt({ 100, 100 }, { 800, 800 }));
 
     TestWidget testWidget = TestWidget(window->widget());
-    testWidget.setGeometry({ 0, 0, 400, 800 });
+    testWidget.setGeometry({ 0, 0, 800, 800 });
     testWidget.activate();
 
 	return app.run();
