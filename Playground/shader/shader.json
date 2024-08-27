@@ -21,7 +21,33 @@
 						"Offset": 0,
 						"CppOffset": 0,
 						"Size": 16,
-						"Tightlypacked": true
+						"Tightlypacked": true,
+						"Members": {
+							"r": {
+								"Offset": 0,
+								"CppOffset": 0,
+								"Size": 4,
+								"Tightlypacked": true
+							},
+							"g": {
+								"Offset": 4,
+								"CppOffset": 4,
+								"Size": 4,
+								"Tightlypacked": true
+							},
+							"b": {
+								"Offset": 8,
+								"CppOffset": 8,
+								"Size": 4,
+								"Tightlypacked": true
+							},
+							"a": {
+								"Offset": 12,
+								"CppOffset": 12,
+								"Size": 4,
+								"Tightlypacked": true
+							}
+						}
 					}
 				}
 			}

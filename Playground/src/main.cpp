@@ -231,12 +231,15 @@ class TestWidget : public spk::Widget
 private:
     spk::OpenGL::Pipeline _pipeline;
     spk::OpenGL::Pipeline::Object _object;
-    spk::OpenGL::Pipeline::Constant& _colorConstants;
+    spk::OpenGL::Pipeline::Constant& _colorAttributes;
 
 	void _onGeometryChange()
 	{
-        _colorConstants = spk::Color::blue;
-        _colorConstants.validate();
+        _colorAttributes[L"color"][L"r"] = 1.0f;
+        _colorAttributes[L"color"][L"g"] = 0.0f;
+        _colorAttributes[L"color"][L"b"] = 1.0f;
+        _colorAttributes[L"color"][L"a"] = 1.0f;
+        _colorAttributes.validate();
 
         struct Vertex
         {
@@ -275,7 +278,7 @@ public:
 		spk::Widget(L"TestWidget", p_parent),
         _pipeline(spk::JSON::File(L"shader/shader.json")),
         _object(_pipeline.createObject()),
-        _colorConstants(_object.attribute(L"colorBuffer"))
+        _colorAttributes(_object.attribute(L"colorBuffer"))
 	{
 		
 	}
