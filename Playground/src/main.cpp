@@ -106,6 +106,10 @@ namespace spk::OpenGL
 
         void _draw(size_t p_nbTriangles)
         {
+            if (p_nbTriangles == 0)
+                return;
+
+            DEBUG_LINE();
             glDrawElements(GL_TRIANGLES, p_nbTriangles * 3, GL_UNSIGNED_INT, nullptr);
         }
 
@@ -162,6 +166,36 @@ private:
 	void _onGeometryChange()
 	{
         _object = _pipeline.createObject();
+
+        struct Vertex
+        {
+            spk::Vector2 position;
+            spk::Color color;
+        };
+
+        std::vector<Vertex> vertices = {
+            {
+                spk::Vector2(0, 1),
+                spk::Color::red
+            },
+            {
+                spk::Vector2(-1, -1),
+                spk::Color::blue
+            },
+            {
+                spk::Vector2(1, -1),
+                spk::Color::green
+            }
+        };
+        std::vector<unsigned int> indexes = {
+            0, 1, 2
+        };
+
+        _object.bufferSet().layout().append(vertices);
+        _object.bufferSet().element().append(indexes);
+
+        _object.bufferSet().layout().validate();
+        _object.bufferSet().element().validate();
 	}
 	
 	void _onPaintEvent(const spk::PaintEvent& p_event)

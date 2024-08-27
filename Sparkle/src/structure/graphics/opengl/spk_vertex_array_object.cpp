@@ -2,6 +2,9 @@
 #include <GL/glew.h>
 #include <windows.h>
 
+#include <string>
+#include "spk_debug_macro.hpp"
+
 namespace spk::OpenGL
 {
     void VertexArrayObject::_allocate()
@@ -15,7 +18,9 @@ namespace spk::OpenGL
     void VertexArrayObject::_release()
     {
         if (wglGetCurrentContext() != nullptr)
+        {
             glDeleteVertexArrays(1, &_id);
+        }
         _id = 0;
     }
 
@@ -38,6 +43,7 @@ namespace spk::OpenGL
         {
             _allocate();
         }
+
         glBindVertexArray(_id);
     }
 

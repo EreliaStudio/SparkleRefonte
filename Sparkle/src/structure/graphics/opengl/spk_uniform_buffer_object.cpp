@@ -3,6 +3,8 @@
 #include <GL/glew.h>
 #include <windows.h>
 
+#include "spk_debug_macro.hpp"
+
 namespace spk::OpenGL
 {
     UniformBufferObject::Layout UniformBufferObject::Layout::_parseLayout(const spk::JSON::Object& p_layoutJson)

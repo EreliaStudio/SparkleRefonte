@@ -2,6 +2,9 @@
 #include <GL/glew.h>
 #include <windows.h>
 
+#include "spk_debug_macro.hpp"
+#include "utils/spk_opengl_utils.hpp"
+
 namespace spk::OpenGL
 {
     void VertexBufferObject::_allocate()
@@ -24,8 +27,6 @@ namespace spk::OpenGL
     void VertexBufferObject::_update()
     {
         size_t size = _buffer.size();
-
-        glBindBuffer(static_cast<GLenum>(_type), _id);
 
         if (size > _currentBufferMaxSize)
         {
@@ -131,16 +132,17 @@ namespace spk::OpenGL
 
     void VertexBufferObject::activate()
     {
-        if (_validated)
+        if (_id == 0)
         {
-            if (_id == 0)
-            {
-                _allocate();
-            }
+            _allocate();
+        }
+        
+        glBindBuffer(static_cast<GLenum>(_type), _id);  // Bind the buffer for usage
+        if (_validated)
+        {    
             _update();
         }
 
-        glBindBuffer(static_cast<GLenum>(_type), _id);  // Bind the buffer for usage
     }
 
     void VertexBufferObject::deactivate()

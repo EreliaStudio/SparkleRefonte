@@ -8,9 +8,9 @@
 		{
 			"Name": "inColor",
 			"Location": 1,
-			"Type": "vec3"
+			"Type": "vec4"
 		}
 	],
-	"VertexShaderCode": "#version 330 core\nlayout(location = 0) in vec2 inPosition;\nlayout(location = 1) in vec3 inColor;\nout vec3 fragColor;\nvoid main()\n{\n    gl_Position = vec4(inPosition, 0.0, 1.0);\n    fragColor = inColor;\n}",
-	"FragmentShaderCode": "#version 330 core\nin vec3 fragColor;\nout vec4 fragColorOut;\nvoid main()\n{\n    fragColorOut = vec4(fragColor, 1.0);\n}"
+	"VertexShaderCode": "#version 330 core\nlayout(location = 0) in vec2 inPosition;\nlayout(location = 1) in vec4 inColor;\nout vec4 fragColor;\nvoid main()\n{\n    gl_Position = vec4(inPosition, 0.0, 1.0);\n    fragColor = inColor;\n}",
+	"FragmentShaderCode": "#version 330 core\nin vec4 fragColor;\nout vec4 fragColorOut;\nvoid main()\n{\n    fragColorOut = fragColor;\n}"
 }

@@ -1,5 +1,7 @@
 #include "structure/graphics/opengl/spk_layout_buffer_object.hpp"
 
+#include "spk_debug_macro.hpp"
+
 namespace spk::OpenGL
 {
 	LayoutBufferObject::Attribute::Attribute(Index p_index, GLint p_size, GLenum p_type) :
@@ -105,7 +107,25 @@ namespace spk::OpenGL
 		for (const auto& attr : _attributes)
 		{
 			glEnableVertexAttribArray(attr.index);
-			glVertexAttribPointer(attr.index, attr.size, attr.type, GL_FALSE, static_cast<GLsizei>(_vertexSize), reinterpret_cast<void*>(offset));
+
+			switch (attr.type)
+			{
+			case GL_INT:
+			case GL_UNSIGNED_INT:
+			{
+				glVertexAttribIPointer(attr.index, attr.size, attr.type, static_cast<GLsizei>(_vertexSize), reinterpret_cast<void*>(offset));
+				break;
+			}
+			case GL_FLOAT:
+			{
+				glVertexAttribPointer(attr.index, attr.size, attr.type, GL_FALSE, static_cast<GLsizei>(_vertexSize), reinterpret_cast<void*>(offset));
+				break;
+			}
+			default:
+			{
+				throw std::runtime_error("Unexpected layout type.");
+			}
+			}
 			offset += attr.size * _typeSize(attr.type);
 		}
 	}
