@@ -14,9 +14,9 @@ namespace spk::OpenGL
         return _layout;
     }
 
-    ElementBufferObject& BufferSet::element()
+    ElementBufferObject& BufferSet::elements()
     {
-        return _element;
+        return _elements;
     }
 
     const LayoutBufferObject& BufferSet::layout() const
@@ -24,22 +24,22 @@ namespace spk::OpenGL
         return _layout;
     }
 
-    const ElementBufferObject& BufferSet::element() const
+    const ElementBufferObject& BufferSet::elements() const
     {
-        return _element;
+        return _elements;
     }
 
     void BufferSet::activate()
     {
         _vao.activate();
         _layout.activate();
-        _element.activate();
+        _elements.activate();
     }
 
     void BufferSet::deactivate()
     {
         _vao.deactivate();
         _layout.deactivate();
-        _element.deactivate();
+        _elements.deactivate();
     }
 }

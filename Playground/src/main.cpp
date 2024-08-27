@@ -37,21 +37,21 @@ namespace spk::OpenGL
 
                 _bufferSet.activate();
 
-                _owner->_draw(_bufferSet.element().nbTriangles());
+                _owner->_draw(_bufferSet.elements().nbTriangles());
 
                 _bufferSet.deactivate();
 
                 _owner->_deactivate();
             }
 
-            BufferSet& bufferSet()
+            LayoutBufferObject& layout()
             {
-                return _bufferSet;
+                return (_bufferSet.layout());
             }
 
-            const BufferSet& bufferSet() const
+            ElementBufferObject& elements()
             {
-                return _bufferSet;
+                return (_bufferSet.elements());
             }
         };
 
@@ -150,7 +150,7 @@ namespace spk::OpenGL
 
             Object newObject(this);
 
-            _layoutFactory.apply(&newObject.bufferSet().layout());
+            _layoutFactory.apply(&newObject.layout());
 
             return newObject;
         }
@@ -191,11 +191,11 @@ private:
             0, 1, 2
         };
 
-        _object.bufferSet().layout().append(vertices);
-        _object.bufferSet().element().append(indexes);
+        _object.layout() << vertices;
+        _object.elements() << indexes;
 
-        _object.bufferSet().layout().validate();
-        _object.bufferSet().element().validate();
+        _object.layout().validate();
+        _object.elements().validate();
 	}
 	
 	void _onPaintEvent(const spk::PaintEvent& p_event)

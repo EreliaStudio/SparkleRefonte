@@ -12,16 +12,16 @@ namespace spk::OpenGL
     private:
         VertexArrayObject _vao;
         LayoutBufferObject _layout;
-        ElementBufferObject _element;
+        ElementBufferObject _elements;
 
     public:
         BufferSet();
 
         LayoutBufferObject& layout();
-        ElementBufferObject& element();
+        ElementBufferObject& elements();
 
         const LayoutBufferObject& layout() const;
-        const ElementBufferObject& element() const;
+        const ElementBufferObject& elements() const;
 
         void activate();
         void deactivate();
