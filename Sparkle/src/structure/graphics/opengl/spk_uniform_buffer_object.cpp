@@ -80,13 +80,17 @@ namespace spk::OpenGL
     {
     }
 
-    void UniformBufferObject::Factory::apply(UniformBufferObject& p_object)
+    UniformBufferObject UniformBufferObject::Factory::construct()
     {
-        p_object._typeName = _typeName;
-        p_object._layout = _layout;
-        p_object._bindingPoint = _bindingPoint;
+        UniformBufferObject result;
 
-        p_object._layout.bind(p_object);
+        result._typeName = _typeName;
+        result._layout = _layout;
+        result._bindingPoint = _bindingPoint;
+
+        result._layout.bind(result);
+
+        return (result);
     }
 
     UniformBufferObject::UniformBufferObject() :
@@ -94,13 +98,6 @@ namespace spk::OpenGL
         _layout()
     {
         _layout.bind(*this);
-    }
-
-    UniformBufferObject::UniformBufferObject(const spk::JSON::Object& p_layoutJson) :
-        VertexBufferObject(VertexBufferObject::Type::Uniform, VertexBufferObject::Usage::Static)
-    {
-        Factory tmpFactory = Factory(p_layoutJson);
-        tmpFactory.apply(*this);
     }
 
     UniformBufferObject::UniformBufferObject(UniformBufferObject&& p_other) noexcept :

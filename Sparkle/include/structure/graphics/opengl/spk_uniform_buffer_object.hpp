@@ -60,7 +60,8 @@ namespace spk::OpenGL
 
             Factory() = default;
             Factory(const spk::JSON::Object& p_layoutJson);
-            void apply(UniformBufferObject& p_object);
+
+            UniformBufferObject construct();
         };
 
     private:        
@@ -71,8 +72,6 @@ namespace spk::OpenGL
 
     public:
         UniformBufferObject();
-        UniformBufferObject(const spk::JSON::Object& p_layoutJson);
-        UniformBufferObject(std::string p_typeName, BindingPoint p_bindingPoint, Layout p_layout);
         UniformBufferObject(const UniformBufferObject& p_other) = delete;
         UniformBufferObject(UniformBufferObject&& p_other) noexcept;
 

@@ -184,7 +184,7 @@ namespace spk::OpenGL
                 for (const auto& constantJson : constantsArray)
                 {
                     std::wstring name = (*constantJson)[L"Name"].as<std::wstring>();
-                    _constants[name] = UniformBufferObject(*constantJson);
+                    _constants[name] = Object::Attribute::Factory(*constantJson).construct();
                 }
             }
 
@@ -209,9 +209,7 @@ namespace spk::OpenGL
 
             for (auto& [name, attributeLayout] : _objectAttributeLayouts)
             {
-                newObject._attributes[name] = UniformBufferObject();
-
-                attributeLayout.apply(newObject._attributes[name]);
+                newObject._attributes[name] = attributeLayout.construct();
             }
             return newObject;
         }
