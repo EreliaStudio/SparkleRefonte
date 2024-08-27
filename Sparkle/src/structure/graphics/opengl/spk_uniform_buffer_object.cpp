@@ -52,20 +52,13 @@ namespace spk::OpenGL
         }
     }
 
-    UniformBufferObject::Layout::Layout(VertexBufferObject& p_parentBuffer)
-    {
-        p_parentBuffer.resize(0);
-        _setDataOutput(static_cast<char*>(p_parentBuffer.data()));
-    }
-
     UniformBufferObject::Layout::Layout(const spk::JSON::Object& p_layoutJson)
     {
         *this = _parseLayout(p_layoutJson);
     }
 
-    UniformBufferObject::Layout::Layout(const spk::JSON::Object& p_layoutJson, VertexBufferObject& p_parentBuffer)
+    void UniformBufferObject::Layout::bind(VertexBufferObject& p_parentBuffer)
     {
-        *this = _parseLayout(p_layoutJson);
         p_parentBuffer.resize(_size);
         _setDataOutput(static_cast<char*>(p_parentBuffer.data()));
     }
@@ -80,19 +73,34 @@ namespace spk::OpenGL
         return it->second;
     }
 
-    UniformBufferObject::UniformBufferObject() :
-        VertexBufferObject(VertexBufferObject::Type::Uniform, VertexBufferObject::Usage::Static),
-        _layout(*this)
-    {
-    }
-
-    UniformBufferObject::UniformBufferObject(const spk::JSON::Object& p_layoutJson) :
-        VertexBufferObject(VertexBufferObject::Type::Uniform, VertexBufferObject::Usage::Static),
-        _layout(p_layoutJson[L"Composition"], *this),
+    UniformBufferObject::Factory::Factory(const spk::JSON::Object& p_layoutJson) :
+        _layout(p_layoutJson[L"Composition"]),
         _typeName(spk::StringUtils::wstringToString(p_layoutJson[L"Type"].as<std::wstring>())),
         _bindingPoint(p_layoutJson[L"BindingPoint"].as<long>())
     {
+    }
 
+    void UniformBufferObject::Factory::apply(UniformBufferObject& p_object)
+    {
+        p_object._typeName = _typeName;
+        p_object._layout = _layout;
+        p_object._bindingPoint = _bindingPoint;
+
+        p_object._layout.bind(p_object);
+    }
+
+    UniformBufferObject::UniformBufferObject() :
+        VertexBufferObject(VertexBufferObject::Type::Uniform, VertexBufferObject::Usage::Static),
+        _layout()
+    {
+        _layout.bind(*this);
+    }
+
+    UniformBufferObject::UniformBufferObject(const spk::JSON::Object& p_layoutJson) :
+        VertexBufferObject(VertexBufferObject::Type::Uniform, VertexBufferObject::Usage::Static)
+    {
+        Factory tmpFactory = Factory(p_layoutJson);
+        tmpFactory.apply(*this);
     }
 
     UniformBufferObject::UniformBufferObject(UniformBufferObject&& p_other) noexcept :

@@ -18,6 +18,8 @@ namespace spk::OpenGL
 
         class Object
         {
+            friend class Pipeline;
+
         public:
             using Attribute = UniformBufferObject;
 
@@ -44,6 +46,11 @@ namespace spk::OpenGL
 
                 _bufferSet.activate();
 
+                for (auto& [name, attribute] : _attributes)
+                {
+                    attribute.activate();
+                }
+
                 _owner->_draw(_bufferSet.indexes().nbTriangles());
 
                 _bufferSet.deactivate();
@@ -60,6 +67,16 @@ namespace spk::OpenGL
             {
                 return (_bufferSet.indexes());
             }
+
+            Attribute& attribute(const std::wstring& p_name)
+            {
+                auto it = _attributes.find(p_name);
+                if (it == _attributes.end())
+                {
+                    throw std::out_of_range("No attribute found with the name: " + spk::StringUtils::wstringToString(p_name));
+                }
+                return it->second;
+            }
         };
 
     private:
@@ -69,7 +86,7 @@ namespace spk::OpenGL
         GLuint _programID;
 
         LayoutBufferObject::Factory _layoutFactory;
-        std::unordered_map<std::wstring, Object::Attribute::Layout> _objectAttributeLayouts;
+        std::unordered_map<std::wstring, Object::Attribute::Factory> _objectAttributeLayouts;
 
         std::unordered_map<std::wstring, Constant> _constants;
 
@@ -160,12 +177,27 @@ namespace spk::OpenGL
             
             _layoutFactory.parse(p_jsonFile[L"Layout"]);
 
-            const auto& constantsArray = p_jsonFile[L"Constants"].asArray();
-
-            for (const auto& constantJson : constantsArray)
+            if (p_jsonFile.contains(L"Constants") == true)
             {
-                std::wstring name = (*constantJson)[L"Name"].as<std::wstring>();
-                _constants[name] = UniformBufferObject(*constantJson);
+                const auto& constantsArray = p_jsonFile[L"Constants"].asArray();
+
+                for (const auto& constantJson : constantsArray)
+                {
+                    std::wstring name = (*constantJson)[L"Name"].as<std::wstring>();
+                    _constants[name] = UniformBufferObject(*constantJson);
+                }
+            }
+
+            if (p_jsonFile.contains(L"Attributes") == true)
+            {
+                const auto& attributesArray = p_jsonFile[L"Attributes"].asArray();
+
+                for (const auto& attributeJson : attributesArray)
+                {
+                    std::wstring name = (*attributeJson)[L"Name"].as<std::wstring>();
+
+                    _objectAttributeLayouts[name] = Object::Attribute::Factory(*attributeJson);
+                }
             }
         }
 
@@ -175,6 +207,12 @@ namespace spk::OpenGL
 
             _layoutFactory.apply(&newObject.layout());
 
+            for (auto& [name, attributeLayout] : _objectAttributeLayouts)
+            {
+                newObject._attributes[name] = UniformBufferObject();
+
+                attributeLayout.apply(newObject._attributes[name]);
+            }
             return newObject;
         }
 
@@ -239,7 +277,7 @@ public:
 		spk::Widget(L"TestWidget", p_parent),
         _pipeline(spk::JSON::File(L"shader/shader.json")),
         _object(_pipeline.createObject()),
-        _colorConstants(_pipeline.constant(L"colorBuffer"))
+        _colorConstants(_object.attribute(L"colorBuffer"))
 	{
 		
 	}

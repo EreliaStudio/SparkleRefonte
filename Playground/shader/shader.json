@@ -6,7 +6,7 @@
 			"Type": "vec2"
 		}
 	],
-	"Constants": [
+	"Attributes": [
 		{
 			"Name": "colorBuffer",
 			"Type": "ColorBufferType",
