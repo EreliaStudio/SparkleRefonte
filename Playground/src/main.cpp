@@ -88,7 +88,7 @@ namespace spk::OpenGL
         LayoutBufferObject::Factory _layoutFactory;
         std::unordered_map<std::wstring, Object::Attribute::Factory> _objectAttributeLayouts;
 
-        std::unordered_map<std::wstring, Constant> _constants;
+        static inline std::unordered_map<std::wstring, Constant> _constants;
 
         GLuint _compileShader(const std::string& source, GLenum shaderType)
         {
@@ -184,7 +184,20 @@ namespace spk::OpenGL
                 for (const auto& constantJson : constantsArray)
                 {
                     std::wstring name = (*constantJson)[L"Name"].as<std::wstring>();
-                    _constants[name] = Object::Attribute::Factory(*constantJson).construct();
+
+                    Constant newConstant = Constant::Factory(*constantJson).construct();
+
+                    if (_constants.contains(name) == true)
+                    {
+                        if (newConstant.size() != _constants[name].size())
+                        {
+                            throw std::runtime_error("Constant [" + spk::StringUtils::wstringToString(name) + "] already exist with a different size.");
+                        }
+                    }
+                    else
+                    {
+                        _constants[name] = std::move(newConstant);
+                    }
                 }
             }
 
@@ -214,7 +227,7 @@ namespace spk::OpenGL
             return newObject;
         }
 
-        Constant& constant(const std::wstring& p_name)
+        static Constant& constant(const std::wstring& p_name)
         {
             auto it = _constants.find(p_name);
             if (it == _constants.end())
