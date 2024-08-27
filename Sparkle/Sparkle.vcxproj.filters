@@ -117,7 +117,7 @@
     <ClCompile Include="src\structure\graphics\opengl\spk_layout_buffer_object.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="src\structure\graphics\opengl\spk_element_buffer_object.cpp">
+    <ClCompile Include="src\structure\graphics\opengl\spk_index_buffer_object.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="src\structure\graphics\opengl\spk_buffer_set.cpp">
@@ -278,7 +278,7 @@
     <ClInclude Include="include\structure\graphics\opengl\spk_layout_buffer_object.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\structure\graphics\opengl\spk_element_buffer_object.hpp">
+    <ClInclude Include="include\structure\graphics\opengl\spk_index_buffer_object.hpp">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="include\structure\graphics\opengl\spk_buffer_set.hpp">

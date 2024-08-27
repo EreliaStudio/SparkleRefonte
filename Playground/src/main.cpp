@@ -37,7 +37,7 @@ namespace spk::OpenGL
 
                 _bufferSet.activate();
 
-                _owner->_draw(_bufferSet.elements().nbTriangles());
+                _owner->_draw(_bufferSet.indexes().nbTriangles());
 
                 _bufferSet.deactivate();
 
@@ -49,9 +49,9 @@ namespace spk::OpenGL
                 return (_bufferSet.layout());
             }
 
-            ElementBufferObject& elements()
+            IndexBufferObject& indexes()
             {
-                return (_bufferSet.elements());
+                return (_bufferSet.indexes());
             }
         };
 
@@ -192,10 +192,10 @@ private:
         };
 
         _object.layout() << vertices;
-        _object.elements() << indexes;
+        _object.indexes() << indexes;
 
         _object.layout().validate();
-        _object.elements().validate();
+        _object.indexes().validate();
 	}
 	
 	void _onPaintEvent(const spk::PaintEvent& p_event)

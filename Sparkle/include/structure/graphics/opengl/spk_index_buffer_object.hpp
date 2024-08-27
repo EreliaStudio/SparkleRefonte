@@ -9,10 +9,10 @@
 
 namespace spk::OpenGL
 {
-    class ElementBufferObject : private VertexBufferObject
+    class IndexBufferObject : private VertexBufferObject
     {
     public:
-        ElementBufferObject();
+        IndexBufferObject();
 
         using VertexBufferObject::activate;
         using VertexBufferObject::deactivate;
@@ -22,9 +22,9 @@ namespace spk::OpenGL
         void append(const std::vector<unsigned int>& data);
         void append(const std::span<unsigned int>& data);
 
-        ElementBufferObject& operator<<(const unsigned int& data);
-        ElementBufferObject& operator<<(const std::vector<unsigned int>& data);
-        ElementBufferObject& operator<<(const std::span<unsigned int>& data);
+        IndexBufferObject& operator<<(const unsigned int& data);
+        IndexBufferObject& operator<<(const std::vector<unsigned int>& data);
+        IndexBufferObject& operator<<(const std::span<unsigned int>& data);
 
         size_t nbIndexes() const;
         size_t nbTriangles() const;
