@@ -215,12 +215,12 @@ public:
 int main()
 {
 	spk::GraphicalApplication app;
-	
-	spk::SafePointer<spk::Window> window = app.createWindow(L"Playground", spk::Geometry2DInt({100, 100}, {800, 800}));
-    
-	TestWidget testWidget = TestWidget(window->widget());
-	testWidget.setGeometry({0, 0, 800, 800});
-	testWidget.activate();
+
+    spk::SafePointer<spk::Window> window = app.createWindow(L"Playground", spk::Geometry2DInt({ 100, 100 }, { 800, 800 }));
+
+    TestWidget testWidget = TestWidget(window->widget());
+    testWidget.setGeometry({ 0, 0, 400, 800 });
+    testWidget.activate();
 
 	return app.run();
 }

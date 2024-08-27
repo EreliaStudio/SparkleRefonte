@@ -35,6 +35,7 @@
     <ClCompile Include="src\structure\graphics\opengl\spk_uniform_buffer_object.cpp" />
     <ClCompile Include="src\structure\graphics\opengl\spk_vertex_array_object.cpp" />
     <ClCompile Include="src\structure\graphics\opengl\spk_vertex_buffer_object.cpp" />
+    <ClCompile Include="src\structure\graphics\opengl\spk_viewport.cpp" />
     <ClCompile Include="src\structure\graphics\spk_color.cpp" />
     <ClCompile Include="src\structure\graphics\spk_window.cpp" />
     <ClCompile Include="src\structure\math\spk_math.cpp" />
@@ -62,6 +63,7 @@
     <ClInclude Include="include\structure\graphics\opengl\spk_buffer_set.hpp" />
     <ClInclude Include="include\structure\graphics\opengl\spk_index_buffer_object.hpp" />
     <ClInclude Include="include\structure\graphics\opengl\spk_layout_buffer_object.hpp" />
+    <ClInclude Include="include\structure\graphics\opengl\spk_viewport.hpp" />
     <ClInclude Include="include\structure\graphics\spk_color.hpp" />
     <ClInclude Include="include\structure\system\device\spk_controller_input_thread.hpp" />
     <ClInclude Include="include\application\module\spk_controller_module.hpp" />

@@ -49,7 +49,7 @@ namespace spk
 
 	void Window::_createContext()
 	{
-		RECT adjustedRect = { 0, 0, _geometry.width, _geometry.height };
+		RECT adjustedRect = { 0, 0, _viewport.geometry().width, _viewport.geometry().height};
 		if (!AdjustWindowRectEx(&adjustedRect, WS_OVERLAPPEDWINDOW, FALSE, 0))
 		{
 			throw std::runtime_error("Failed to adjust window rect.");
@@ -60,7 +60,7 @@ namespace spk
 			L"SPKWindowClass",
 			_title.c_str(),
 			WS_OVERLAPPEDWINDOW,
-			_geometry.x, _geometry.y,
+			_viewport.geometry().x, _viewport.geometry().y,
 			adjustedRect.right - adjustedRect.left,
 			adjustedRect.bottom - adjustedRect.top,
 			nullptr, nullptr, GetModuleHandle(nullptr), this);
@@ -300,7 +300,7 @@ namespace spk
 	Window::Window(const std::wstring& p_title, const spk::Geometry2DInt& p_geometry) :
 		_rootWidget(std::make_unique<Widget>(p_title + L" - CentralWidget")),
 		_title(p_title),
-		_geometry(p_geometry),
+		_viewport(p_geometry),
 		_windowRendererThread(p_title + L" - Renderer"),
 		_windowUpdaterThread(p_title + L" - Updater")
 	{
@@ -346,14 +346,14 @@ namespace spk
 
 	void Window::move(const spk::Geometry2DInt::Position& p_newPosition)
 	{
-		_geometry.anchor = p_newPosition;
-		_rootWidget->setGeometry(_geometry);
+		_viewport.setGeometry({ 0, 0, _viewport.geometry().size });
+		_rootWidget->setGeometry(_viewport.geometry());
 	}
 	
 	void Window::resize(const spk::Geometry2DInt::Size& p_newSize)
 	{
-		_geometry.size = p_newSize;
-		_rootWidget->setGeometry(_geometry);
+		_viewport.setGeometry({ _viewport.geometry().anchor, p_newSize});
+		_rootWidget->setGeometry(_viewport.geometry());
 	}
 
 	void Window::close()
@@ -375,7 +375,7 @@ namespace spk
 
 	void Window::clear()
 	{
-		glViewport(0, 0, geometry().size.width, geometry().size.height);
+		_viewport.apply();
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	}
@@ -421,7 +421,7 @@ namespace spk
 	
 	const spk::Geometry2DInt& Window::geometry() const
 	{
-		return (_geometry);
+		return (_viewport.geometry());
 	}
 
 	void Window::requestPaint() const

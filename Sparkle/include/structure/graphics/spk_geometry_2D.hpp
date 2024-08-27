@@ -414,6 +414,22 @@ namespace spk
 
 		}
 
+		template<typename TValueAType, typename TValueBType>
+		IGeometry2D(const Position& p_anchor, TValueAType p_width, TValueBType p_height) :
+			anchor(p_anchor),
+			size(static_cast<TType>(p_width), static_cast<TType>(p_height))
+		{
+
+		}
+
+		template<typename TValueAType, typename TValueBType>
+		IGeometry2D(TValueAType p_x, TValueBType p_y, const Size& p_size) :
+			anchor(static_cast<TType>(p_x), static_cast<TType>(p_y)),
+			size(p_size)
+		{
+
+		}
+
 		template<typename TValueAType, typename TValueBType, typename TValueCType, typename TValueDType>
 		IGeometry2D(TValueAType p_x, TValueBType p_y, TValueCType p_width, TValueDType p_height) :
 			anchor(static_cast<TType>(p_x), static_cast<TType>(p_y)),

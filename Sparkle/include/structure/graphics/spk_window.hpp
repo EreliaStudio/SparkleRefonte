@@ -1,17 +1,14 @@
 #pragma once
 
-
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
 
 #include "structure/spk_safe_pointer.hpp"
-#include "structure/graphics/spk_geometry_2D.hpp"
 
 #include "structure/container/spk_thread_safe_queue.hpp"
 
 #include "structure/system/device/spk_controller_input_thread.hpp"
-
 
 #include "structure/design_pattern/spk_contract_provider.hpp"
 
@@ -20,6 +17,8 @@
 #include "structure/thread/spk_persistant_worker.hpp"
 
 #include "application/module/spk_module.hpp"
+
+#include "structure/graphics/opengl/spk_viewport.hpp"
 
 #include <deque>
 #include <map>
@@ -45,7 +44,7 @@ namespace spk
 		std::unique_ptr<Widget> _rootWidget;
 		
 		std::wstring _title;
-		spk::Geometry2DInt _geometry;
+		spk::Viewport _viewport;
 		spk::PersistantWorker _windowRendererThread;
 		spk::PersistantWorker _windowUpdaterThread;
 		ControllerInputThread _controllerInputThread;
