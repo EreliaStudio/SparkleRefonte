@@ -1,3 +1,43 @@
+## LAYOUTS DEFINITION ##
+## CONSTANTS DEFINITION ##
+ColorBufferType //Type
+colorBuffer //Name
+16 //Size
+1  //Nb component
+color // Name
+16 // CPU Size
+0 // CPU offset
+16 // GPU Size
+0 // GPU offset
+true //Tightly packed
+4 // NbComponent
+r // Name
+4 // CPU Size
+0 // CPU offset
+4 // GPU Size
+0 // GPU offset
+true //Tightly packed
+g // Name
+4 // CPU Size
+4 // CPU offset
+4 // GPU Size
+4 // GPU offset
+true //Tightly packed
+b // Name
+4 // CPU Size
+8 // CPU offset
+4 // GPU Size
+8 // GPU offset
+true //Tightly packed
+a // Name
+4 // CPU Size
+12 // CPU offset
+4 // GPU Size
+12 // GPU offset
+true //Tightly packed
+
+## ATTRIBUTES DEFINITION ##
+
 ## VERTEX SHADER CODE ##
 #version 430 core
 
@@ -13,7 +53,12 @@ void main()
 
 out vec4 FragColor;
 
+layout(constant) uniform ColorBufferType
+{
+    vec4 color;
+} colorBuffer;
+
 void main()
 {
-    FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    FragColor = colorBuffer.color;
 }

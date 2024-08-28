@@ -12,5 +12,8 @@ namespace spk
 
 		std::vector<std::string> splitString(const std::string& p_str, const std::string& p_delimiter);
 		std::vector<std::wstring> splitWString(const std::wstring& p_wstr, const std::wstring& p_delimiter);
+
+		std::string trimWhitespace(const std::string& p_str);
+		std::wstring trimWhitespace(const std::wstring& p_str);
 	}
 }
