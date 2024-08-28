@@ -15,15 +15,40 @@ namespace spk::OpenGL
         IndexBufferObject _indexes;
 
     public:
-        BufferSet();
+        BufferSet()
+        {
 
-        LayoutBufferObject& layout();
-        IndexBufferObject& indexes();
+        }
 
-        const LayoutBufferObject& layout() const;
-        const IndexBufferObject& indexes() const;
+        LayoutBufferObject& layout()
+        {
+            return _layout;
+        }
+        IndexBufferObject& indexes()
+        {
+            return _indexes;
+        }
 
-        void activate();
-        void deactivate();
+        const LayoutBufferObject& layout() const
+        {
+            return _layout;
+        }
+        const IndexBufferObject& indexes() const
+        {
+            return _indexes;
+        }
+
+        void activate()
+        {
+            _vao.activate();
+            _layout.activate();
+            _indexes.activate();
+        }
+        void deactivate()
+        {
+            _vao.deactivate();
+            _layout.deactivate();
+            _indexes.deactivate();
+        }
     };
 }

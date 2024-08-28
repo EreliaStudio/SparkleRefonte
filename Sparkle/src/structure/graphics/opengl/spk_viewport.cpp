@@ -29,7 +29,6 @@ namespace spk
 
 	void Viewport::apply()
 	{
-		spk::cout << "Activating viewport [" << _geometry.x << "] / [" << _geometry.y << "] / [" << _geometry.width << "] / [" << _geometry.heigth << "]" << std::endl;
 		glViewport(_geometry.x, _geometry.y, _geometry.width, _geometry.heigth);
 	}
 }

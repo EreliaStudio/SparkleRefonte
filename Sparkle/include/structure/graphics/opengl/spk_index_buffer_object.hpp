@@ -9,24 +9,56 @@
 
 namespace spk::OpenGL
 {
-    class IndexBufferObject : private VertexBufferObject
+    class IndexBufferObject : public VertexBufferObject
     {
     public:
-        IndexBufferObject();
+        IndexBufferObject() :
+            VertexBufferObject(Type::Layout, Usage::Static)
+        {
+        }
 
-        using VertexBufferObject::activate;
-        using VertexBufferObject::deactivate;
-        using VertexBufferObject::validate;
+        void append(const unsigned int& data)
+        {
+            VertexBufferObject::append(&data, sizeof(unsigned int));
+        }
 
-        void append(const unsigned int& data);
-        void append(const std::vector<unsigned int>& data);
-        void append(const std::span<unsigned int>& data);
+        void append(const std::vector<unsigned int>& data)
+        {
+            VertexBufferObject::append(data.data(), data.size() * sizeof(unsigned int));
+        }
 
-        IndexBufferObject& operator<<(const unsigned int& data);
-        IndexBufferObject& operator<<(const std::vector<unsigned int>& data);
-        IndexBufferObject& operator<<(const std::span<unsigned int>& data);
+        void append(const std::span<unsigned int>& data)
+        {
+            VertexBufferObject::append(data.data(), data.size() * sizeof(unsigned int));
+        }
 
-        size_t nbIndexes() const;
-        size_t nbTriangles() const;
+        IndexBufferObject& operator<<(const unsigned int& data)
+        {
+            append(data);
+            return *this;
+        }
+
+        IndexBufferObject& operator<<(const std::vector<unsigned int>& data)
+        {
+            append(data);
+            return *this;
+        }
+
+        IndexBufferObject& operator<<(const std::span<unsigned int>& data)
+        {
+            append(data);
+            return *this;
+        }
+
+
+        size_t nbIndexes() const
+        {
+            return size() / sizeof(unsigned int);
+        }
+
+        size_t nbTriangles() const
+        {
+            return nbIndexes() / 3;
+        }
     };
 }

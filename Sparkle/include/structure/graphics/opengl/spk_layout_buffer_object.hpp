@@ -116,12 +116,12 @@ namespace spk::OpenGL
 				case Attribute::Type::Int:
 				case Attribute::Type::UInt:
 				{
-					glVertexAttribIPointer(attr.index, attr.size, static_cast<GLenum>(attr.type), static_cast<GLsizei>(_vertexSize), reinterpret_cast<void*>(offset));
+					glVertexAttribIPointer(attr.index, static_cast<GLint>(attr.size), static_cast<GLenum>(attr.type), static_cast<GLsizei>(_vertexSize), reinterpret_cast<void*>(offset));
 					break;
 				}
 				case Attribute::Type::Float:
 				{
-					glVertexAttribPointer(attr.index, attr.size, static_cast<GLenum>(attr.type), GL_FALSE, static_cast<GLsizei>(_vertexSize), reinterpret_cast<void*>(offset));
+					glVertexAttribPointer(attr.index, static_cast<GLint>(attr.size), static_cast<GLenum>(attr.type), GL_FALSE, static_cast<GLsizei>(_vertexSize), reinterpret_cast<void*>(offset));
 					break;
 				}
 				default:
@@ -135,12 +135,12 @@ namespace spk::OpenGL
 			_attributesToApply.clear();
 		}
 
+    public:
 		LayoutBufferObject() : VertexBufferObject(Type::Storage, Usage::Static)
 		{
 
 		}
 
-    public:
 		LayoutBufferObject(const LayoutBufferObject& p_other) = delete;
 		LayoutBufferObject& operator = (const LayoutBufferObject& p_other) = delete;
 		
