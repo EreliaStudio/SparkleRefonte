@@ -28,7 +28,7 @@ namespace spk
         std::string _vertexShaderCode;
         std::string _fragmentShaderCode;
 
-        std::unordered_map<std::string, spk::OpenGL::UniformBufferObject> _uniformBuffers;
+        static std::unordered_map<std::wstring, spk::OpenGL::UniformBufferObject> _uniformBuffers;
 
         std::string _getFileSection(const std::string& p_inputCode, const std::string& p_delimiter)
         {
@@ -49,21 +49,35 @@ namespace spk
             return p_inputCode.substr(startPos, endPos - startPos);
         }
 
-        spk::OpenGL::UniformBufferObject::Factory createFactory(const std::vector<std::wstring>& p_word, size_t& p_index)
-        {
+		void parseLayout(spk::OpenGL::UniformBufferObject::Layout& p_layoutToFeed, const std::vector<std::wstring>& p_word, size_t& p_index)
+		{
 
+		}
+
+        spk::OpenGL::UniformBufferObject::Factory createFactory(const std::vector<std::string>& p_words, size_t& p_index)
+        {
+			spk::OpenGL::UniformBufferObject::Factory result;
+
+			result.setTypeName(p_words[p_index]);
+
+
+			return (result);
         }
 
-        std::unordered_map<std::wstring, spk::OpenGL::UniformBufferObject::Factory> _parseConstants(const std::wstring& p_constantDescriptors)
+        std::unordered_map<std::wstring, spk::OpenGL::UniformBufferObject::Factory> _parseConstants(const std::string& p_constantDescriptors)
         {
             std::unordered_map<std::wstring, spk::OpenGL::UniformBufferObject::Factory> constants;
             
-            std::vector<std::wstring> words = StringUtils::splitWString(StringUtils::mergeWhitespace(p_constantDescriptors), L" ");
+            std::vector<std::string> words = StringUtils::splitString(StringUtils::mergeWhitespace(p_constantDescriptors), " ");
             size_t index = 0;
 
-            for (const auto& word : words)
+
+            for (size_t i = 0; i < words.size(); i++)
             {
-                spk::cout << "Word : " << word << std::endl;
+				std::string uniformType = words[i];
+				std::string uniformName = words[i + 1];
+
+				constants[StringUtils::stringToWString(uniformType)] = createFactory(words, index);
             }
 
             return constants;
