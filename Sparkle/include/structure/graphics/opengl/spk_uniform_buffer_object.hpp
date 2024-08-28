@@ -26,7 +26,7 @@ namespace spk::OpenGL
                 size_t size;
             };
 
-        private:
+        public:
             char* _destination = nullptr; //The buffer where to write the data
             DataRepresentation _gpu;
             DataRepresentation _cpu;
@@ -99,13 +99,26 @@ namespace spk::OpenGL
             {
                 _typeName = p_name;
             }
+            
             void setBindingPoint(BindingPoint p_bindingPoint)
             {
                 _bindingPoint = p_bindingPoint;
             }
-            void addInnerLayout(Layout& p_layout, const std::wstring& p_name, const Layout::DataRepresentation& p_cpu, const Layout::DataRepresentation& p_gpu)
+            
+            Layout& mainLayout()
+            {
+                return (_layout);
+            }
+
+            const Layout& mainLayout() const
+            {
+                return (_layout);
+            }
+
+            Layout& addInnerLayout(Layout& p_layout, const std::wstring& p_name, const Layout::DataRepresentation& p_cpu, const Layout::DataRepresentation& p_gpu)
             {
                 p_layout._innerLayouts[p_name] = Layout(p_cpu, p_gpu);
+                return (p_layout._innerLayouts[p_name]);
             }
 
             UniformBufferObject construct()

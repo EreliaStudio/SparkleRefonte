@@ -58,6 +58,72 @@ namespace spk
 			return result;
 		}
 
+		std::wstring mergeWhitespace(const std::wstring& str)
+		{
+			std::wstring result;
+			bool spaceInserted = false;
+
+			for (wchar_t ch : str)
+			{
+				if (ch == L'\t' || ch == L'\n' || ch == L' ')
+				{
+					if (!spaceInserted)
+					{
+						result += L' ';
+						spaceInserted = true;
+					}
+				}
+				else
+				{
+					result += ch;
+					spaceInserted = false;
+				}
+			}
+
+			auto start = result.find_first_not_of(L' ');
+			auto end = result.find_last_not_of(L' ');
+
+			if (start == std::wstring::npos)
+			{
+				return L"";
+			}
+
+			return result.substr(start, end - start + 1);
+		}
+
+		std::string mergeWhitespace(const std::string& str)
+		{
+			std::string result;
+			bool spaceInserted = false;
+
+			for (char ch : str)
+			{
+				if (ch == '\t' || ch == '\n' || ch == ' ')
+				{
+					if (!spaceInserted)
+					{
+						result += ' ';
+						spaceInserted = true;
+					}
+				}
+				else
+				{
+					result += ch;
+					spaceInserted = false;
+				}
+			}
+
+			auto start = result.find_first_not_of(' ');
+			auto end = result.find_last_not_of(' ');
+
+			if (start == std::string::npos)
+			{
+				return "";
+			}
+
+			return result.substr(start, end - start + 1);
+		}
+
 		std::string trimWhitespace(const std::string& p_str)
 		{
 			const char* whitespace = " \t\n\r\f\v";
