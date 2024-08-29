@@ -109,6 +109,11 @@ namespace spk::OpenGL
             {
                 return (_typeName);
             }
+
+            const BindingPoint& bindingPoint() const
+            {
+                return (_bindingPoint);
+            }
             
             Layout& mainLayout()
             {
@@ -124,6 +129,11 @@ namespace spk::OpenGL
             {
                 p_layout._innerLayouts[p_name] = Layout(p_cpu, p_gpu);
                 return (p_layout._innerLayouts[p_name]);
+            }
+
+            void parse()
+            {
+
             }
 
             UniformBufferObject construct() const
@@ -177,6 +187,16 @@ namespace spk::OpenGL
                 p_other._blockIndex = 0;
             }
             return *this;
+        }
+
+        const std::string& typeName() const
+        {
+            return (_typeName);
+        }
+
+        const BindingPoint& bindingPoint() const
+        {
+            return (_bindingPoint);
         }
 
         void activate()

@@ -1,39 +1,22 @@
 ## LAYOUTS DEFINITION ##
+0 3 5126
 
 ## CONSTANTS DEFINITION ##
-ConstantTypeA constantA 20 20 {
-    A 0 16 0 16 {
-        Aa  0 4  0 4 {}
-        Ab  4 4  4 4 {}
-        Ac  8 4  8 4 {}
-        Ad 12 4 12 4 {}
-    }
-    B 16 4 16 4 {}
-}
-ConstantTypeB constantB 24 32 {
-    C 0 8 0 8 {
-        Ca 0 4 0 4 {}
-        Cb 4 4 4 4 {}
-    }
-    D 16 16 16 16 {
-        Da  0 4  0 4 {}
-        Db  4 4  4 4 {}
-        Dc  8 4  8 4 {}
-        Dd 12 4 12 4 {}
-    }
-}
 
 ## ATTRIBUTES DEFINITION ##
+ColorBufferType colorBuffer 16 16 {
+    color 0 16 0 16 {
+        r  0 4  0 4 {}
+        g  4 4  4 4 {}
+        b  8 4  8 4 {}
+        a 12 4 12 4 {}
+    }
+}
 
 ## VERTEX SHADER CODE ##
 #version 430 core
 
 layout (location = 0) in vec3 aPos;
-
-layout(constant) uniform ColorBufferType
-{
-    vec4 color;
-} colorBuffer;
 
 void main()
 {
@@ -45,7 +28,7 @@ void main()
 
 out vec4 FragColor;
 
-layout(constant) uniform ColorBufferType
+layout(attribute) uniform ColorBufferType
 {
     vec4 color;
 } colorBuffer;

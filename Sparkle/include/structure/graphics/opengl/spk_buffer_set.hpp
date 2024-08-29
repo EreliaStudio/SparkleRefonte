@@ -9,6 +9,28 @@ namespace spk::OpenGL
 {
     class BufferSet
     {
+    public:
+        class Factory
+        {
+        private:
+            OpenGL::LayoutBufferObject::Factory _layoutFactory;
+
+        public:
+            void insert(OpenGL::LayoutBufferObject::Attribute::Index p_index, size_t p_size, OpenGL::LayoutBufferObject::Attribute::Type p_type)
+            {
+                _layoutFactory.insert(p_index, p_size, p_type);
+            }
+
+            BufferSet construct()
+            {
+                BufferSet result;
+
+                result._layout = _layoutFactory.construct();
+
+                return (result);
+            }
+        };
+
     private:
         VertexArrayObject _vao;
         LayoutBufferObject _layout;
