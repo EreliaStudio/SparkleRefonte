@@ -77,7 +77,7 @@ namespace spk::OpenGL
 				_attributes.push_back(Attribute(p_index, p_size, p_type));
 			}
 
-			LayoutBufferObject construct()
+			LayoutBufferObject construct() const
 			{
 				LayoutBufferObject result;
 

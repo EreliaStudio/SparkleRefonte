@@ -21,7 +21,7 @@ namespace spk::OpenGL
                 _layoutFactory.insert(p_index, p_size, p_type);
             }
 
-            BufferSet construct()
+            BufferSet construct() const
             {
                 BufferSet result;
 
