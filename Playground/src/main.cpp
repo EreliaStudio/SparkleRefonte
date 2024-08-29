@@ -18,6 +18,9 @@ namespace spk
 {
     class Pipeline
     {
+    public:
+        using Constant = spk::OpenGL::UniformBufferObject;
+
     private:
         static inline const std::string LAYOUTS_DELIMITER = "## LAYOUTS DEFINITION ##";
         static inline const std::string CONSTANTS_DELIMITER = "## CONSTANTS DEFINITION ##";
@@ -28,7 +31,7 @@ namespace spk
         std::string _vertexShaderCode;
         std::string _fragmentShaderCode;
 
-        static std::unordered_map<std::wstring, spk::OpenGL::UniformBufferObject> _uniformBuffers;
+        static inline std::unordered_map<std::wstring, Constant> _constantBuffers;
 
         std::string _getFileSection(const std::string& p_inputCode, const std::string& p_delimiter)
         {
@@ -49,38 +52,55 @@ namespace spk
             return p_inputCode.substr(startPos, endPos - startPos);
         }
 
-		void parseLayout(spk::OpenGL::UniformBufferObject::Layout& p_layoutToFeed, const std::vector<std::wstring>& p_word, size_t& p_index)
+		void parseLayout(Constant::Factory& p_factory, Constant::Layout& p_layoutToFeed, const std::vector<std::string>& p_words, size_t& p_index)
 		{
-
+            std::wstring name = StringUtils::stringToWString(p_words[p_index]);
+            size_t cpuOffset = std::stoi(p_words[p_index + 1]);
+            size_t cpuSize = std::stoi(p_words[p_index + 2]);
+            size_t gpuOffset = std::stoi(p_words[p_index + 3]);
+            size_t gpuSize = std::stoi(p_words[p_index + 4]);
+            Constant::Layout& newLayout = p_factory.addInnerLayout(p_layoutToFeed, name, { cpuOffset, cpuSize }, { gpuOffset, gpuSize });
+            p_index += 5;
+            if (p_words[p_index] == "{")
+            {
+                p_index++;
+                while (p_words[p_index] != "}")
+                {
+                    parseLayout(p_factory, newLayout, p_words, p_index);
+                }
+                p_index++;
+            }
+            else if (p_words[p_index] == "{}")
+                p_index++;
 		}
 
-        spk::OpenGL::UniformBufferObject::Factory createFactory(const std::vector<std::string>& p_words, size_t& p_index)
+        std::unordered_map<std::wstring, Constant::Factory> _parseUniformDescriptors(const std::string& p_constantDescriptors)
         {
-			spk::OpenGL::UniformBufferObject::Factory result;
-
-			result.setTypeName(p_words[p_index]);
-
-
-			return (result);
-        }
-
-        std::unordered_map<std::wstring, spk::OpenGL::UniformBufferObject::Factory> _parseConstants(const std::string& p_constantDescriptors)
-        {
-            std::unordered_map<std::wstring, spk::OpenGL::UniformBufferObject::Factory> constants;
+            std::unordered_map<std::wstring, Constant::Factory> result;
             
             std::vector<std::string> words = StringUtils::splitString(StringUtils::mergeWhitespace(p_constantDescriptors), " ");
-            size_t index = 0;
-
 
             for (size_t i = 0; i < words.size(); i++)
             {
 				std::string uniformType = words[i];
 				std::string uniformName = words[i + 1];
+                
+                Constant::Factory newFactory;
 
-				constants[StringUtils::stringToWString(uniformType)] = createFactory(words, index);
+                newFactory.setTypeName(words[i]);
+                newFactory.mainLayout()._cpu.size = std::stoi(words[i + 2]);
+                newFactory.mainLayout()._gpu.size = std::stoi(words[i + 3]);
+
+                i += 5; // Skip type, name, cpu size, gpu size and {
+                while (words[i] != "}")
+                {
+                    parseLayout(newFactory, newFactory.mainLayout(), words, i);
+                }
+
+				result[StringUtils::stringToWString(uniformName)] = newFactory;
             }
 
-            return constants;
+            return result;
         }
 
         void print(const std::wstring p_name, const OpenGL::UniformBufferObject::Layout& p_layout, size_t tabulation)
@@ -99,13 +119,21 @@ namespace spk
 
             std::string constantDescriptors = _getFileSection(fileContent, CONSTANTS_DELIMITER);
 
-            std::cout << "Constant file : " << constantDescriptors << std::endl;
-
-            auto parsedConstants = _parseConstants(StringUtils::stringToWString(constantDescriptors));
+            auto constantFactories = _parseUniformDescriptors(constantDescriptors);
             
-            for (const auto& [key, constant] : parsedConstants)
+            for (auto& [key, factory] : constantFactories)
             {
-                print(key, constant.mainLayout(), 0);
+                std::wstring typeName = StringUtils::stringToWString(factory.typeName());
+                if (_constantBuffers.contains(typeName) == false)
+                {
+                    factory.setBindingPoint(_constantBuffers.size());
+                    _constantBuffers[typeName] = factory.construct();
+                }
+                else if (_constantBuffers[typeName].size() != factory.mainLayout()._cpu.size)
+                {
+                    throw std::runtime_error("Constant [" + factory.typeName() + "] already parsed with a different size");
+                }
+                print(key, factory.mainLayout(), 0);
             }
 
             _vertexShaderCode = _getFileSection(fileContent, VERTEX_DELIMITER);

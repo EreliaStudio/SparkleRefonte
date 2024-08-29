@@ -104,6 +104,11 @@ namespace spk::OpenGL
             {
                 _bindingPoint = p_bindingPoint;
             }
+
+            const std::string& typeName() const
+            {
+                return (_typeName);
+            }
             
             Layout& mainLayout()
             {
@@ -121,7 +126,7 @@ namespace spk::OpenGL
                 return (p_layout._innerLayouts[p_name]);
             }
 
-            UniformBufferObject construct()
+            UniformBufferObject construct() const
             {
                 UniformBufferObject result;
 

@@ -1,25 +1,25 @@
 ## LAYOUTS DEFINITION ##
 
 ## CONSTANTS DEFINITION ##
-ConstantTypeA constantA {
+ConstantTypeA constantA 20 20 {
     A 0 16 0 16 {
-        a  0 4  0 4 {}
-        b  4 4  4 4 {}
-        c  8 4  8 4 {}
-        d 12 4 12 4 {}
+        Aa  0 4  0 4 {}
+        Ab  4 4  4 4 {}
+        Ac  8 4  8 4 {}
+        Ad 12 4 12 4 {}
     }
     B 16 4 16 4 {}
 }
-ConstantTypeB constantB {
-    A 0 8 0 8 {
-        a 0 4 0 4 {}
-        b 4 4 4 4 {}
+ConstantTypeB constantB 24 32 {
+    C 0 8 0 8 {
+        Ca 0 4 0 4 {}
+        Cb 4 4 4 4 {}
     }
-    B 16 16 16 16 {
-        a  0 4  0 4 {}
-        b  4 4  4 4 {}
-        c  8 4  8 4 {}
-        d 12 4 12 4 {}
+    D 16 16 16 16 {
+        Da  0 4  0 4 {}
+        Db  4 4  4 4 {}
+        Dc  8 4  8 4 {}
+        Dd 12 4 12 4 {}
     }
 }
 
