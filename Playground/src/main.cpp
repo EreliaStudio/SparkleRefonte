@@ -53,7 +53,7 @@ namespace spk
 				throw std::runtime_error("Delimiter [" + p_delimiter + "] not found in input code.");
 			}
 
-			startPos += p_delimiter.length();
+			startPos += p_delimiter.length() + 1;
 
 			auto endPos = p_inputCode.find("##", startPos);
 			if (endPos == std::string::npos)
@@ -61,7 +61,7 @@ namespace spk
 				endPos = p_inputCode.length();
 			}
 
-			return _cleanAndCondenseWhitespace(p_inputCode.substr(startPos, endPos - startPos));
+			return p_inputCode.substr(startPos, endPos - startPos);
 		}
 
 		std::string _cleanAndCondenseWhitespace(const std::string& input)
@@ -193,7 +193,9 @@ namespace spk
 		{
 			spk::OpenGL::BufferSet::Factory result;
 
-			std::vector<std::string> words = StringUtils::splitString(p_layoutDescriptors, " ");
+			std::string section = StringUtils::mergeWhitespace(p_layoutDescriptors);
+
+			std::vector<std::string> words = StringUtils::splitString(section, " ");
 
 			for (size_t i = 0; i < words.size(); i += 3)
 			{
@@ -383,6 +385,9 @@ namespace spk
 
 		void _load()
 		{
+			std::cout << "Vertex code : " << std::endl << "[" << _parser.getVertexShaderCode() << "]" << std::endl;
+			std::cout << "Fragment code : " << std::endl << "[" << _parser.getFragmentShaderCode() << "]" << std::endl;
+
 			GLuint vertexShader = _compileShader(_parser.getVertexShaderCode(), GL_VERTEX_SHADER);
 			GLuint fragmentShader = _compileShader(_parser.getFragmentShaderCode(), GL_FRAGMENT_SHADER);
 			_programID = _linkProgram(vertexShader, fragmentShader);
@@ -516,19 +521,9 @@ int main()
 	
 	spk::SafePointer<spk::Window> window = app.createWindow(L"Playground", spk::Geometry2DInt({ 100, 100 }, { 800, 800 }));
 
-	try
-	{
-
-
 	TestWidget testWidget = TestWidget(window->widget());
 	testWidget.setGeometry({ 0, 0, 800, 800 });
 	testWidget.activate();
-
-	}
-	catch (std::exception& e)
-	{
-		std::cout << e.what() << std::endl;
-	}
 
 	return app.run();
 
