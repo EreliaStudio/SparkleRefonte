@@ -57,8 +57,11 @@
     <ClInclude Include="include\structure\graphics\opengl\spk_buffer_set.hpp" />
     <ClInclude Include="include\structure\graphics\opengl\spk_index_buffer_object.hpp" />
     <ClInclude Include="include\structure\graphics\opengl\spk_layout_buffer_object.hpp" />
+    <ClInclude Include="include\structure\graphics\opengl\spk_program.hpp" />
+    <ClInclude Include="include\structure\graphics\opengl\spk_shader_parser.hpp" />
     <ClInclude Include="include\structure\graphics\opengl\spk_viewport.hpp" />
     <ClInclude Include="include\structure\graphics\spk_color.hpp" />
+    <ClInclude Include="include\structure\graphics\spk_pipeline.hpp" />
     <ClInclude Include="include\structure\system\device\spk_controller_input_thread.hpp" />
     <ClInclude Include="include\application\module\spk_controller_module.hpp" />
     <ClInclude Include="include\application\module\spk_keyboard_module.hpp" />

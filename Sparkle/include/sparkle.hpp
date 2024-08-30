@@ -23,3 +23,5 @@
 
 #include "application/spk_console_application.hpp"
 #include "application/spk_graphical_application.hpp"
+
+#include "structure/graphics/spk_pipeline.hpp"
