@@ -1,39 +1,33 @@
 ## LAYOUTS DEFINITION ##
-0 3 5126
+0 2 5126
+1 4 5126
 
 ## CONSTANTS DEFINITION ##
 
 ## ATTRIBUTES DEFINITION ##
-ColorBufferType colorBuffer 16 16 {
-    color 0 16 0 16 {
-        r  0 4  0 4 {}
-        g  4 4  4 4 {}
-        b  8 4  8 4 {}
-        a 12 4 12 4 {}
-    }
-}
 
 ## VERTEX SHADER CODE ##
 #version 430 core
 
-layout (location = 0) in vec3 aPos;
+layout (location = 0) in vec2 modelPosition;
+layout (location = 1) in vec4 modelColor;
+
+out vec4 fragmentColor;
 
 void main()
 {
-    gl_Position = vec4(aPos, 1.0);
+    gl_Position = vec4(modelPosition, 1.0);
+    fragmentColor = modelColor;
 }
 
 ## FRAGMENT SHADER CODE ##
 #version 430 core
 
-out vec4 FragColor;
+in vec4 fragmentColor;
 
-layout(attribute) uniform ColorBufferType
-{
-    vec4 color;
-} colorBuffer;
+out vec4 FragColor;
 
 void main()
 {
-    FragColor = colorBuffer.color;
+    FragColor = fragmentColor;
 }
