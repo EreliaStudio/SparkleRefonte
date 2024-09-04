@@ -32,8 +32,21 @@ namespace spk
         // Copy constructor
         IVector2(const IVector2<TType>& p_other) = default;
 
+        template <typename UType>
+        explicit operator IVector2<UType>() const
+        {
+            return IVector2<UType>(static_cast<UType>(x), static_cast<UType>(y));
+        }
+
         // Copy assignment operator
-        IVector2& operator=(const IVector2<TType>& p_other) = default;
+        template <typename UType>
+        IVector2& operator=(const IVector2<UType>& p_other)
+        {
+            x = static_cast<TType>(p_other.x);
+            y = static_cast<TType>(p_other.y);
+
+            return (*this);
+        }
 
         // Stream insertion operator
         friend std::wostream& operator<<(std::wostream& p_os, const IVector2& p_vec)

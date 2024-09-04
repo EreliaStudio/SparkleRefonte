@@ -131,6 +131,10 @@ namespace spk
 			{
 				result._attributes[key] = factory.construct();
 			}
+			for (const auto& [key, factory] : _parser.getSamplerFactories())
+			{
+				result._samplers[key] = factory.construct();
+			}
 
 			return (result);
 		}

@@ -26,7 +26,7 @@ namespace spk::OpenGL
 			void setDesignator(const std::string& designator) { _designator = designator; }
 			void setIndex(size_t index) { _index = index; }
 
-			SamplerObject create()
+			SamplerObject construct() const
 			{
 				return SamplerObject(_name, _designator, _index);
 			}

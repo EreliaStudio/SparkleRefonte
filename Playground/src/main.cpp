@@ -13,21 +13,21 @@ private:
 		struct Vertex
 		{
 			spk::Vector2 position;
-			spk::Color color;
+			spk::Vector2 uvs;
 		};
 
 		std::vector<Vertex> vertices = {
 			{
 				spk::Vector2(0, 1),
-				spk::Color::red
+				spk::Vector2(0, 0)
 			},
 			{
 				spk::Vector2(-1, -1),
-				spk::Color::blue
+				spk::Vector2(0, 1)
 			},
 			{
 				spk::Vector2(1, -1),
-				spk::Color::green
+				spk::Vector2(1, 0)
 			}
 		};
 		std::vector<unsigned int> indexes = {

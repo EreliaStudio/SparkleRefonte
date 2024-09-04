@@ -1,9 +1,11 @@
 #pragma once
 
-#include <GL/gl.h>
 #include <GL/glew.h>
+#include <GL/gl.h>
+
 #include <vector>
 #include <cstring>
+
 #include "structure/graphics/spk_geometry_2D.hpp"
 
 namespace spk::OpenGL
@@ -47,7 +49,7 @@ namespace spk::OpenGL
 		GLuint _id;
 		bool _needUpload = false;
 
-		std::vector<char> _datas;
+		std::vector<uint8_t> _datas;
 		spk::Vector2UInt _size;
 		Format _format;
 		Filtering _filtering;
@@ -92,6 +94,18 @@ namespace spk::OpenGL
 			}
 		}
 
+		size_t _getBytesPerPixel(const Format& format) const
+		{
+			switch (format)
+			{
+			case Format::GreyLevel: return 1;
+			case Format::DualChannel: return 2;
+			case Format::RGB: return 3;
+			case Format::RGBA: return 4;
+			default: return 0; // Error or unsupported format
+			}
+		}
+
 	public:
 		TextureObject() :
 			_id(0),
@@ -101,19 +115,6 @@ namespace spk::OpenGL
 			_wrap(Wrap::Repeat),
 			_mipmap(Mipmap::Disable)
 		{
-		}
-
-		TextureObject(const uint8_t* p_textureData)
-		{
-			_id = 0;
-			_needUpload = false;
-			_size = { 0, 0 };
-			_format = Format::Error;
-			_filtering = Filtering::Nearest;
-			_wrap = Wrap::Repeat;
-			_mipmap = Mipmap::Disable;
-
-			setData(std::vector<char>(p_textureData, p_textureData + std::strlen(reinterpret_cast<const char*>(p_textureData))));
 		}
 
 		virtual ~TextureObject()
@@ -160,11 +161,11 @@ namespace spk::OpenGL
 			return *this;
 		}
 
-		void setData(std::vector<char>&& p_data, const spk::Vector2UInt& p_size,
+		void setData(const std::vector<uint8_t>& p_data, const spk::Vector2UInt& p_size,
 			const Format& p_format, const Filtering& p_filtering,
 			const Wrap& p_wrap, const Mipmap& p_mipmap)
 		{
-			_datas = std::move(p_data);
+			_datas = p_data;
 			_size = p_size;
 			_format = p_format;
 			_filtering = p_filtering;
@@ -173,43 +174,45 @@ namespace spk::OpenGL
 			_needUpload = true;
 		}
 
-		void setData(std::vector<char>&& p_data)
+		void setData(const std::vector<uint8_t>& p_data, const spk::Vector2UInt& p_size, const Format& p_format)
 		{
-			_datas = std::move(p_data);
-			_needUpload = true;
-		}
-
-		void resize(const spk::Vector2UInt& p_size)
-		{
+			_datas = p_data;
 			_size = p_size;
-			_needUpload = true;
-		}
-
-		void setFormat(const Format& p_format)
-		{
 			_format = p_format;
 			_needUpload = true;
 		}
 
-		void setFiltering(const Filtering& p_filtering)
+		void setData(const uint8_t* p_data, const spk::Vector2UInt& p_size,
+			const Format& p_format, const Filtering& p_filtering,
+			const Wrap& p_wrap, const Mipmap& p_mipmap)
 		{
+			_datas.assign(p_data, p_data + (p_size.x * p_size.y * _getBytesPerPixel(p_format)));
+			_size = p_size;
+			_format = p_format;
 			_filtering = p_filtering;
-			_needUpload = true;
-		}
-
-		void setWrap(const Wrap& p_wrap)
-		{
 			_wrap = p_wrap;
-			_needUpload = true;
-		}
-
-		void setMipmap(const Mipmap& p_mipmap)
-		{
 			_mipmap = p_mipmap;
 			_needUpload = true;
 		}
 
-		std::vector<char>& data()
+		void setData(const uint8_t* p_data, const spk::Vector2UInt& p_size, const Format& p_format)
+		{
+			_datas.assign(p_data, p_data + (p_size.x * p_size.y * _getBytesPerPixel(p_format)));
+			_size = p_size;
+			_format = p_format;
+			_needUpload = true;
+		}
+
+		void setProperties(const Filtering& p_filtering,
+			const Wrap& p_wrap, const Mipmap& p_mipmap)
+		{
+			_filtering = p_filtering;
+			_wrap = p_wrap;
+			_mipmap = p_mipmap;
+			_needUpload = true;
+		}
+
+		const std::vector<uint8_t>& data() const
 		{
 			return _datas;
 		}

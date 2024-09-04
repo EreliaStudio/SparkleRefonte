@@ -32,6 +32,8 @@
     <ClCompile Include="src\structure\graphics\opengl\spk_viewport.cpp" />
     <ClCompile Include="src\structure\graphics\spk_color.cpp" />
     <ClCompile Include="src\structure\graphics\spk_window.cpp" />
+    <ClCompile Include="src\structure\graphics\texture\spk_font.cpp" />
+    <ClCompile Include="src\structure\graphics\texture\spk_font_true_type_related.cpp" />
     <ClCompile Include="src\structure\math\spk_math.cpp" />
     <ClCompile Include="src\structure\math\spk_matrix4x4.cpp" />
     <ClCompile Include="src\application\spk_application.cpp" />
@@ -52,6 +54,8 @@
     <ClCompile Include="src\widget\spk_widget.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\external_libraries\stb_image.h" />
+    <ClInclude Include="include\external_libraries\stb_truetype.h" />
     <ClInclude Include="include\structure\container\spk_json_file.hpp" />
     <ClInclude Include="include\structure\container\spk_json_object.hpp" />
     <ClInclude Include="include\structure\graphics\opengl\spk_buffer_set.hpp" />
@@ -63,7 +67,10 @@
     <ClInclude Include="include\structure\graphics\opengl\spk_texture_object.hpp" />
     <ClInclude Include="include\structure\graphics\opengl\spk_viewport.hpp" />
     <ClInclude Include="include\structure\graphics\spk_color.hpp" />
+    <ClInclude Include="include\structure\graphics\texture\spk_font.hpp" />
+    <ClInclude Include="include\structure\graphics\texture\spk_image.hpp" />
     <ClInclude Include="include\structure\graphics\spk_pipeline.hpp" />
+    <ClInclude Include="include\structure\graphics\texture\spk_sprite_sheet.hpp" />
     <ClInclude Include="include\structure\system\device\spk_controller_input_thread.hpp" />
     <ClInclude Include="include\application\module\spk_controller_module.hpp" />
     <ClInclude Include="include\application\module\spk_keyboard_module.hpp" />

@@ -1,35 +1,38 @@
 ## LAYOUTS DEFINITION ##
 0 2 5126
-1 4 5126
+1 2 5126
 
 ## CONSTANTS DEFINITION ##
 
 ## ATTRIBUTES DEFINITION ##
 
 ## TEXTURES DEFINITION ##
+test::texture luminaTexture_test_texture 0
 
 ## VERTEX SHADER CODE ##
-#version 430 core
+#version 430
 
-layout (location = 0) in vec2 modelPosition;
-layout (location = 1) in vec4 modelColor;
+layout(location = 0) in vec2 modelPosition;
 
-out vec4 fragmentColor;
+layout(location = 1) in vec2 modelUV;
 
-void main()
-{
+layout(location = 0) out vec2 fragmentUV;
+
+void main(){
     gl_Position = vec4(modelPosition, 0.0, 1.0);
-    fragmentColor = modelColor;
+    fragmentUV = modelUV;
 }
 
 ## FRAGMENT SHADER CODE ##
-#version 430 core
+#version 430
 
-in vec4 fragmentColor;
+layout(location = 0) in vec2 fragmentUV;
 
-out vec4 FragColor;
+uniform sampler2D luminaTexture_test_texture;
 
-void main()
-{
-    FragColor = fragmentColor;
+layout(location = 0) out vec4 pixelColor;
+
+void main(){
+    pixelColor = texture(luminaTexture_test_texture, fragmentUV);
 }
+

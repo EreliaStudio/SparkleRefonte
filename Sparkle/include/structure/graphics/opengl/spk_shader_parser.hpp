@@ -39,7 +39,7 @@ namespace spk
 		static inline std::unordered_map<std::wstring, ConstantInformation> _constantInfoMap;
 		std::unordered_map<std::wstring, spk::OpenGL::UniformBufferObject::Factory> _currentConstantFactories;
 		std::unordered_map<std::wstring, spk::OpenGL::UniformBufferObject::Factory> _attributeFactories;
-		std::unordered_map<std::wstring, spk::OpenGL::SamplerObject::Factory> _textureFactories;
+		std::unordered_map<std::wstring, spk::OpenGL::SamplerObject::Factory> _samplerFactories;
 		spk::OpenGL::BufferSet::Factory _objectBufferFactory;
 
 		std::string _getFileSection(const std::string& p_inputCode, const std::string& p_delimiter)
@@ -207,26 +207,26 @@ namespace spk
 			return (result);
 		}
 
-		std::unordered_map<std::wstring, spk::OpenGL::SamplerObject::Factory> _parseTextureDescriptors(const std::string& p_textureDescriptors)
+		std::unordered_map<std::wstring, spk::OpenGL::SamplerObject::Factory> _parseSamplerDescriptors(const std::string& p_textureDescriptors)
 		{
 			std::unordered_map<std::wstring, spk::OpenGL::SamplerObject::Factory> result;
-			std::vector<std::string> lines = StringUtils::splitString(p_textureDescriptors, " ");
 
-			if (lines.size() > 1)
+			std::string section = StringUtils::mergeWhitespace(p_textureDescriptors);
+
+			std::vector<std::string> lines = StringUtils::splitString(section, " ");
+
+			for (size_t i = 0; i < lines.size(); i += 3)
 			{
-				for (size_t i = 0; i < lines.size(); i += 3)
-				{
-					std::string name = lines[i];
-					std::string designator = lines[i + 1];
-					size_t index = std::stoi(lines[i + 2]);
+				std::string name = lines[i];
+				std::string designator = lines[i + 1];
+				size_t index = std::stoi(lines[i + 2]);
 
-					spk::OpenGL::SamplerObject::Factory factory;
-					factory.setName(name);
-					factory.setDesignator(designator);
-					factory.setIndex(index);
+				spk::OpenGL::SamplerObject::Factory factory;
+				factory.setName(name);
+				factory.setDesignator(designator);
+				factory.setIndex(index);
 
-					result[StringUtils::stringToWString(name)] = factory;
-				}
+				result[StringUtils::stringToWString(name)] = factory;
 			}
 
 			return result;
@@ -242,7 +242,7 @@ namespace spk
 			_objectBufferFactory = _parseLayoutDescriptors(layoutDescriptors);
 
 			std::string textureDescriptors = _getFileSection(p_fileContent, ShaderParser::TEXTURES_DELIMITER);
-			_textureFactories = _parseTextureDescriptors(textureDescriptors);
+			_samplerFactories = _parseSamplerDescriptors(textureDescriptors);
 
 			std::string constantDescriptors = _getFileSection(p_fileContent, ShaderParser::CONSTANTS_DELIMITER);
 			_currentConstantFactories = _parseUniformDescriptors(constantDescriptors);
@@ -276,9 +276,9 @@ namespace spk
 			return _objectBufferFactory;
 		}
 
-		const std::unordered_map<std::wstring, spk::OpenGL::SamplerObject::Factory>& getTextureFactories() const
+		const std::unordered_map<std::wstring, spk::OpenGL::SamplerObject::Factory>& getSamplerFactories() const
 		{
-			return _textureFactories;
+			return _samplerFactories;
 		}
 
 		const std::string& getVertexShaderCode() const

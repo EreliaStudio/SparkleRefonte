@@ -2,6 +2,7 @@
 
 #include <GL/glew.h>
 #include <GL/gl.h>
+#include <Windows.h>
 #include "structure/container/spk_data_buffer.hpp"
 
 namespace spk::OpenGL
