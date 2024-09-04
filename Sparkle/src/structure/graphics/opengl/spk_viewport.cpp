@@ -11,24 +11,24 @@ namespace spk
 
 	}
 
-	Viewport::Viewport(const spk::Geometry2DInt& p_geometry) :
+	Viewport::Viewport(const Geometry2D& p_geometry) :
 		_geometry(p_geometry)
 	{
 
 	}
 
-	const spk::Geometry2DInt& Viewport::geometry() const
+	const Geometry2D& Viewport::geometry() const
 	{
 		return (_geometry);
 	}
 
-	void Viewport::setGeometry(const spk::Geometry2DInt& p_geometry)
+	void Viewport::setGeometry(const Geometry2D& p_geometry)
 	{
 		_geometry = p_geometry;
 	}
 
 	void Viewport::apply()
 	{
-		glViewport(_geometry.x, _geometry.y, _geometry.width, _geometry.heigth);
+		glViewport(static_cast<GLint>(_geometry.x), static_cast<GLint>(_geometry.y), static_cast<GLsizei>(_geometry.width), static_cast<GLsizei>(_geometry.heigth));
 	}
 }

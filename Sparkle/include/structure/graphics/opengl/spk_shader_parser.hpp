@@ -7,6 +7,7 @@
 
 #include "structure/graphics/opengl/spk_uniform_buffer_object.hpp"
 #include "structure/graphics/opengl/spk_buffer_set.hpp"
+#include "structure/graphics/opengl/spk_sampler_object.hpp"
 
 
 namespace spk
@@ -28,6 +29,7 @@ namespace spk
 		static inline const std::string LAYOUTS_DELIMITER = "## LAYOUTS DEFINITION ##";
 		static inline const std::string CONSTANTS_DELIMITER = "## CONSTANTS DEFINITION ##";
 		static inline const std::string ATTRIBUTES_DELIMITER = "## ATTRIBUTES DEFINITION ##";
+		static inline const std::string TEXTURES_DELIMITER = "## TEXTURES DEFINITION ##";
 		static inline const std::string VERTEX_DELIMITER = "## VERTEX SHADER CODE ##";
 		static inline const std::string FRAGMENT_DELIMITER = "## FRAGMENT SHADER CODE ##";
 
@@ -37,6 +39,7 @@ namespace spk
 		static inline std::unordered_map<std::wstring, ConstantInformation> _constantInfoMap;
 		std::unordered_map<std::wstring, spk::OpenGL::UniformBufferObject::Factory> _currentConstantFactories;
 		std::unordered_map<std::wstring, spk::OpenGL::UniformBufferObject::Factory> _attributeFactories;
+		std::unordered_map<std::wstring, spk::OpenGL::SamplerObject::Factory> _textureFactories;
 		spk::OpenGL::BufferSet::Factory _objectBufferFactory;
 
 		std::string _getFileSection(const std::string& p_inputCode, const std::string& p_delimiter)
@@ -204,6 +207,31 @@ namespace spk
 			return (result);
 		}
 
+		std::unordered_map<std::wstring, spk::OpenGL::SamplerObject::Factory> _parseTextureDescriptors(const std::string& p_textureDescriptors)
+		{
+			std::unordered_map<std::wstring, spk::OpenGL::SamplerObject::Factory> result;
+			std::vector<std::string> lines = StringUtils::splitString(p_textureDescriptors, " ");
+
+			if (lines.size() > 1)
+			{
+				for (size_t i = 0; i < lines.size(); i += 3)
+				{
+					std::string name = lines[i];
+					std::string designator = lines[i + 1];
+					size_t index = std::stoi(lines[i + 2]);
+
+					spk::OpenGL::SamplerObject::Factory factory;
+					factory.setName(name);
+					factory.setDesignator(designator);
+					factory.setIndex(index);
+
+					result[StringUtils::stringToWString(name)] = factory;
+				}
+			}
+
+			return result;
+		}
+
 	public:
 		ShaderParser(const std::string& p_fileContent)
 		{
@@ -212,6 +240,9 @@ namespace spk
 
 			std::string layoutDescriptors = _getFileSection(p_fileContent, ShaderParser::LAYOUTS_DELIMITER);
 			_objectBufferFactory = _parseLayoutDescriptors(layoutDescriptors);
+
+			std::string textureDescriptors = _getFileSection(p_fileContent, ShaderParser::TEXTURES_DELIMITER);
+			_textureFactories = _parseTextureDescriptors(textureDescriptors);
 
 			std::string constantDescriptors = _getFileSection(p_fileContent, ShaderParser::CONSTANTS_DELIMITER);
 			_currentConstantFactories = _parseUniformDescriptors(constantDescriptors);
@@ -243,6 +274,11 @@ namespace spk
 		const spk::OpenGL::BufferSet::Factory& getLayoutFactory() const
 		{
 			return _objectBufferFactory;
+		}
+
+		const std::unordered_map<std::wstring, spk::OpenGL::SamplerObject::Factory>& getTextureFactories() const
+		{
+			return _textureFactories;
 		}
 
 		const std::string& getVertexShaderCode() const

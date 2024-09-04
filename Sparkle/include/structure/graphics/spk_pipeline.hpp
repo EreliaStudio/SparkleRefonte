@@ -20,11 +20,13 @@ namespace spk
 
 		public:
 			using Attribute = spk::OpenGL::UniformBufferObject;
+			using Sampler2D = spk::OpenGL::SamplerObject;
 
 		private:
 			Pipeline* _owner;
 			OpenGL::BufferSet _bufferSet;
 			std::unordered_map<std::wstring, Attribute> _attributes;
+			std::unordered_map<std::wstring, Sampler2D> _samplers;
 
 			void _activate()
 			{
@@ -33,6 +35,11 @@ namespace spk
 				for (auto& [name, attribute] : _attributes)
 				{
 					attribute.activate();
+				}
+
+				for (auto& [name, sampler] : _samplers)
+				{
+					sampler.activate();
 				}
 			}
 
@@ -66,6 +73,15 @@ namespace spk
 					throw std::runtime_error("Attribute [" + StringUtils::wstringToString(p_name) + "] not found inside Object");
 				}
 				return (_attributes[p_name]);
+			}
+
+			Sampler2D& sampler2D(const std::wstring& p_name)
+			{
+				if (_samplers.contains(p_name) == false)
+				{
+					throw std::runtime_error("Sampler2D [" + StringUtils::wstringToString(p_name) + "] not found inside Object");
+				}
+				return (_samplers[p_name]);
 			}
 
 			void render()

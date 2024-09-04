@@ -32,9 +32,9 @@ namespace spk
 
 	struct Modifiers
 	{
-		bool control;
-		bool alt;
-		bool shift;
+		bool control = false;
+		bool alt = false;
+		bool shift = false;
 	};
 
 	struct IEvent
@@ -47,8 +47,9 @@ namespace spk
 		Modifiers modifiers;
 
 		IEvent(HWND p_hwnd) :
+			_hwnd(p_hwnd),
 			consumed(false),
-			_hwnd(p_hwnd)
+			modifiers()
 		{}
 
 		void requestPaint() const;
@@ -60,9 +61,10 @@ namespace spk
 		static inline std::vector<UINT> EventIDs = { WM_PAINT_REQUEST };
 		enum class Type
 		{
+			Unknow,
 			Requested
 		};
-		Type type;
+		Type type = Type::Unknow;
 		spk::SafePointer<spk::Window> window;
 
 		PaintEvent(HWND p_hwnd) :
@@ -77,9 +79,10 @@ namespace spk
 		static inline std::vector<UINT> EventIDs = {};
 		enum class Type
 		{
+			Unknow,
 			Requested
 		};
-		Type type;
+		Type type = Type::Unknow;
 		long long time;
 		spk::SafePointer<const spk::Window> window = nullptr;
 		spk::SafePointer<const spk::Mouse> mouse = nullptr;
@@ -105,14 +108,15 @@ namespace spk
 		};
 		enum class Type
 		{
+			Unknow,
 			Press,
 			Release,
 			DoubleClick,
 			Motion,
 			Wheel
 		};
-		Type type;
-		const spk::Mouse* mouse;
+		Type type = Type::Unknow;
+		const spk::Mouse* mouse = nullptr;
 		union
 		{
 			spk::Mouse::Button button;
@@ -134,12 +138,13 @@ namespace spk
 		};
 		enum class Type
 		{
+			Unknow,
 			Press,
 			Release,
 			Glyph
 		};
-		Type type;
-		const spk::Keyboard* keyboard;
+		Type type = Type::Unknow;
+		const spk::Keyboard* keyboard = nullptr;
 		union
 		{
 			spk::Keyboard::Key key;
@@ -166,6 +171,7 @@ namespace spk
 		};
 		enum class Type
 		{
+			Unknow,
 			Press,
 			Release,
 			TriggerMotion,
@@ -174,7 +180,7 @@ namespace spk
 		};
 		static Controller::Button apiValueToControllerButton(int value);
 
-		Type type;
+		Type type = Type::Unknow;
 		const spk::Controller* controller;
 		union
 		{
@@ -216,6 +222,7 @@ namespace spk
 		};
 		enum class Type
 		{
+			Unknow,
 			EnterResize,
 			Resize,
 			ExitResize,
@@ -224,18 +231,18 @@ namespace spk
 			Quit,
 			Move
 		};
-		Type type;
+		Type type = Type::Unknow;
 		union
 		{
 			struct
 			{
 				spk::SafePointer<spk::Window> window;
-				spk::Geometry2DInt::Size newSize;
+				spk::Geometry2D::Size newSize;
 			};
 			struct
 			{
 				spk::SafePointer<spk::Window> window;
-				spk::Geometry2DInt::Position newPosition;
+				spk::Geometry2D::Point newPosition;
 			};
 		};
 

@@ -57,13 +57,13 @@ namespace spk
 		return (_depth);
 	}
 
-	void Widget::forceGeometryChange(const Geometry2DInt& p_geometry)
+	void Widget::forceGeometryChange(const Geometry2D& p_geometry)
 	{
 		_geometry = p_geometry;
 		updateGeometry();
 	}
 	
-	void Widget::setGeometry(const Geometry2DInt& p_geometry)
+	void Widget::setGeometry(const Geometry2D& p_geometry)
 	{
 		_geometry = p_geometry;
 		_needGeometryChange = true;
@@ -88,7 +88,7 @@ namespace spk
 		}
 	}
 
-	const Geometry2DInt& Widget::geometry() const
+	const Geometry2D& Widget::geometry() const
 	{
 		return (_geometry);
 	}
@@ -108,9 +108,9 @@ namespace spk
 
 	}
 
-	spk::Geometry2DInt::Position Widget::_computeAbsoluteAnchor()
+	spk::Geometry2D::Point Widget::_computeAbsoluteAnchor()
 	{
-		spk::Geometry2DInt::Position result = { 0, 0 };
+		spk::Geometry2D::Point result = { 0, 0 };
 		const Widget* tmp = this;
 
 		while (tmp->parent() != nullptr)
@@ -124,24 +124,24 @@ namespace spk
 
 	void Widget::_computeViewport()
 	{
-		spk::Geometry2DInt::Position topLeft = _computeAbsoluteAnchor();
-		spk::Geometry2DInt::Size rightDown = geometry().size + spk::Geometry2DInt::Size(topLeft.x, topLeft.y);
+		spk::Geometry2D::Point topLeft = _computeAbsoluteAnchor();
+		spk::Geometry2D::Size rightDown = geometry().size + spk::Geometry2D::Size(topLeft.x, topLeft.y);
 		
 
 
 		if (parent() != nullptr)
 		{
-			topLeft = Geometry2DInt::Position::max(topLeft, static_cast<const Widget*>(parent())->viewport().geometry().anchor);
+			topLeft = Geometry2D::Point::max(topLeft, static_cast<const Widget*>(parent())->viewport().geometry().anchor);
 		}
 
 		if (parent() != nullptr)
 		{
-			spk::Geometry2DInt::Size tmpSize = static_cast<const Widget*>(parent())->geometry().size;
-			spk::Geometry2DInt::Size tmpAnchor = { static_cast<const Widget*>(parent())->geometry().x, static_cast<const Widget*>(parent())->geometry().y };
-			rightDown = Geometry2DInt::Size::min(rightDown, tmpSize + tmpAnchor);
+			spk::Geometry2D::Size tmpSize = static_cast<const Widget*>(parent())->geometry().size;
+			spk::Geometry2D::Size tmpAnchor = { static_cast<const Widget*>(parent())->geometry().x, static_cast<const Widget*>(parent())->geometry().y };
+			rightDown = Geometry2D::Size::min(rightDown, tmpSize + tmpAnchor);
 		}
 
-		spk::Geometry2DInt::Size size = { rightDown.width - topLeft.x, rightDown.heigth - topLeft.y };
+		spk::Geometry2D::Size size = { rightDown.x - topLeft.x, rightDown.y - topLeft.y };
 
 		_viewport.setGeometry({ topLeft, size });
 	}

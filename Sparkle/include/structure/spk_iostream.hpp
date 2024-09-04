@@ -17,6 +17,7 @@ namespace spk
 		void _flushBuffer();
 
 	public:
+		IOStream();
 		IOStream(std::wostream& p_outputStream);
 		void setPrefix(const std::wstring& p_prefix);
 
@@ -38,6 +39,6 @@ namespace spk
 		std::wstring str() const;
 	};
 
-	extern thread_local IOStream cout;
-	extern thread_local IOStream cerr;
+	extern IOStream cout;
+	extern IOStream cerr;
 }

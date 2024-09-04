@@ -49,7 +49,12 @@ namespace spk
 
 	void Window::_createContext()
 	{
-		RECT adjustedRect = { 0, 0, _viewport.geometry().width, _viewport.geometry().heigth};
+		RECT adjustedRect = {
+			static_cast<LONG>(0),
+			static_cast<LONG>(0),
+			static_cast<LONG>(_viewport.geometry().width),
+			static_cast<LONG>(_viewport.geometry().heigth)
+		};
 		if (!AdjustWindowRectEx(&adjustedRect, WS_OVERLAPPEDWINDOW, FALSE, 0))
 		{
 			throw std::runtime_error("Failed to adjust window rect.");
@@ -297,7 +302,7 @@ namespace spk
 		}
 	}
 
-	Window::Window(const std::wstring& p_title, const spk::Geometry2DInt& p_geometry) :
+	Window::Window(const std::wstring& p_title, const spk::Geometry2D& p_geometry) :
 		_rootWidget(std::make_unique<Widget>(p_title + L" - CentralWidget")),
 		_title(p_title),
 		_viewport(p_geometry),
@@ -344,13 +349,13 @@ namespace spk
 		_rootWidget.release();
 	}
 
-	void Window::move(const spk::Geometry2DInt::Position& p_newPosition)
+	void Window::move(const spk::Geometry2D::Point& p_newPosition)
 	{
 		_viewport.setGeometry({ 0, 0, _viewport.geometry().size });
 		_rootWidget->setGeometry(_viewport.geometry());
 	}
 	
-	void Window::resize(const spk::Geometry2DInt::Size& p_newSize)
+	void Window::resize(const spk::Geometry2D::Size& p_newSize)
 	{
 		_viewport.setGeometry({ _viewport.geometry().anchor, p_newSize});
 		_rootWidget->setGeometry(_viewport.geometry());
@@ -419,7 +424,7 @@ namespace spk
 		return (_title);
 	}
 	
-	const spk::Geometry2DInt& Window::geometry() const
+	const spk::Geometry2D& Window::geometry() const
 	{
 		return (_viewport.geometry());
 	}

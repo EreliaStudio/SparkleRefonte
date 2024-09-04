@@ -7,14 +7,14 @@ namespace spk
 	class Viewport
 	{
 	private:
-		spk::Geometry2DInt _geometry;
+		Geometry2D _geometry;
 
 	public:
 		Viewport();
-		Viewport(const spk::Geometry2DInt& p_geometry);
+		Viewport(const Geometry2D& p_geometry);
 
-		const spk::Geometry2DInt& geometry() const;
-		void setGeometry(const spk::Geometry2DInt& p_geometry);
+		const Geometry2D& geometry() const;
+		void setGeometry(const Geometry2D& p_geometry);
 
 		void apply();
 	};

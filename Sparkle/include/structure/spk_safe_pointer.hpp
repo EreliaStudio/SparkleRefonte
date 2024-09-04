@@ -7,6 +7,9 @@ namespace spk
 	template <typename TType>
 	class SafePointer
 	{
+	private:
+		TType* _ptr = nullptr;
+
 	public:
 		SafePointer(TType* p_ptr = nullptr) : _ptr(p_ptr) {}
 
@@ -59,8 +62,5 @@ namespace spk
 			p_os << p_ptr.get();
 			return (p_os);
 		}
-
-	private:
-		TType* _ptr;
 	};
 }

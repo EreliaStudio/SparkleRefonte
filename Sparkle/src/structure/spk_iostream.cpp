@@ -2,8 +2,8 @@
 
 namespace spk
 {
-	thread_local spk::IOStream cout(std::wcout);
-	thread_local spk::IOStream cerr(std::wcerr);
+	spk::IOStream cout(std::wcout);
+	spk::IOStream cerr(std::wcerr);
 
 	void IOStream::_flushBuffer()
 	{
@@ -24,11 +24,19 @@ namespace spk
 		_buffer.clear();
 	}
 
-	IOStream::IOStream(std::wostream& p_outputStream) :
-		_outputStream(&p_outputStream),
-		_prefix(L"")
-	{
 
+	IOStream::IOStream() :
+		_prefix(L""),
+		_buffer(),
+		_outputStream(nullptr)
+	{
+	}
+
+	IOStream::IOStream(std::wostream& p_outputStream) :
+		_prefix(L""),
+		_buffer(),
+		_outputStream(&p_outputStream)
+	{
 	}
 
 	void IOStream::setPrefix(const std::wstring& p_prefix)

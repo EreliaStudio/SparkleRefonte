@@ -43,7 +43,7 @@ namespace spk
 		}).relinquish();
 	}
 
-	spk::SafePointer<Window> GraphicalApplication::createWindow(const std::wstring& p_title, const spk::Geometry2DInt& p_geometry)
+	spk::SafePointer<Window> GraphicalApplication::createWindow(const std::wstring& p_title, const spk::Geometry2D& p_geometry)
 	{
 		if (_windows.contains(p_title) == true)
 			throw std::runtime_error("Can't create a second window named [" + StringUtils::wstringToString(p_title) + "]");

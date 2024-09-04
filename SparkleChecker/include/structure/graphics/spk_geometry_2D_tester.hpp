@@ -7,11 +7,11 @@ class Geometry2DTest : public ::testing::Test
 {
 protected:
 	spk::Geometry2D geometry;
-	spk::Geometry2DInt geometryInt;
+	spk::Geometry2D geometryInt;
 
 	virtual void SetUp()
 	{
 		geometry = spk::Geometry2D();
-		geometryInt = spk::Geometry2DInt();
+		geometryInt = spk::Geometry2D();
 	}
 };

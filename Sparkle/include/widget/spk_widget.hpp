@@ -23,7 +23,7 @@ namespace spk
 		std::vector<Widget*> _managedChildren;
 
 		bool _needGeometryChange = true;
-		spk::Geometry2DInt _geometry;
+		spk::Geometry2D _geometry;
 		spk::Viewport _viewport;
 		
 		float _depth;
@@ -36,7 +36,7 @@ namespace spk
 		virtual void _onControllerEvent(const spk::ControllerEvent& p_event);
 
 
-		spk::Geometry2DInt::Position _computeAbsoluteAnchor();
+		spk::Geometry2D::Point _computeAbsoluteAnchor();
 		void _computeViewport();
 
 	public:
@@ -64,12 +64,12 @@ namespace spk
 		void setDepth(const float& p_depth);
 		const float& depth() const;
 
-		void forceGeometryChange(const Geometry2DInt& p_geometry);
-		void setGeometry(const Geometry2DInt& p_geometry);
+		void forceGeometryChange(const Geometry2D& p_geometry);
+		void setGeometry(const Geometry2D& p_geometry);
 		void updateGeometry();
 		void requireGeometryUpdate();
 
-		const Geometry2DInt& geometry() const;
+		const Geometry2D& geometry() const;
 		const Viewport& viewport() const;
 
 		void onPaintEvent(const spk::PaintEvent& p_event);

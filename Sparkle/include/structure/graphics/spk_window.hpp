@@ -72,11 +72,11 @@ namespace spk
 		bool _receiveEvent(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	public:
-		Window(const std::wstring& p_title, const spk::Geometry2DInt& p_geometry);
+		Window(const std::wstring& p_title, const spk::Geometry2D& p_geometry);
 		~Window();
 
-		void move(const spk::Geometry2DInt::Position& p_newPosition);
-		void resize(const spk::Geometry2DInt::Size& p_newSize);
+		void move(const spk::Geometry2D::Point& p_newPosition);
+		void resize(const spk::Geometry2D::Size& p_newSize);
 		void close();
 		void clear();
 		void swap() const;
@@ -91,6 +91,6 @@ namespace spk
 		operator spk::SafePointer<Widget>() const;
 
 		const std::wstring& title() const;
-		const spk::Geometry2DInt& geometry() const;
+		const spk::Geometry2D& geometry() const;
 	};
 }

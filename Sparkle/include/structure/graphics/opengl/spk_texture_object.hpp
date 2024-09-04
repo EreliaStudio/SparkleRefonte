@@ -1,5 +1,6 @@
 #pragma once
 
+#include <GL/gl.h>
 #include <GL/glew.h>
 #include <vector>
 #include <cstring>
@@ -47,7 +48,7 @@ namespace spk::OpenGL
 		bool _needUpload = false;
 
 		std::vector<char> _datas;
-		Size _size;
+		spk::Vector2UInt _size;
 		Format _format;
 		Filtering _filtering;
 		Wrap _wrap;
@@ -77,7 +78,7 @@ namespace spk::OpenGL
 
 				glTexImage2D(
 					GL_TEXTURE_2D, 0, static_cast<GLint>(_format),
-					static_cast<GLsizei>(_size.width), static_cast<GLsizei>(_size.height),
+					static_cast<GLsizei>(_size.x), static_cast<GLsizei>(_size.y),
 					0, static_cast<GLenum>(_format), GL_UNSIGNED_BYTE, _datas.data());
 
 				if (_mipmap == Mipmap::Enable)
@@ -159,7 +160,7 @@ namespace spk::OpenGL
 			return *this;
 		}
 
-		void setData(std::vector<char>&& p_data, const Size& p_size,
+		void setData(std::vector<char>&& p_data, const spk::Vector2UInt& p_size,
 			const Format& p_format, const Filtering& p_filtering,
 			const Wrap& p_wrap, const Mipmap& p_mipmap)
 		{
@@ -178,7 +179,7 @@ namespace spk::OpenGL
 			_needUpload = true;
 		}
 
-		void resize(const Size& p_size)
+		void resize(const spk::Vector2UInt& p_size)
 		{
 			_size = p_size;
 			_needUpload = true;
@@ -213,7 +214,7 @@ namespace spk::OpenGL
 			return _datas;
 		}
 
-		Size size() const
+		spk::Vector2UInt size() const
 		{
 			return _size;
 		}

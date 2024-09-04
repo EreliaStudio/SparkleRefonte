@@ -6,6 +6,8 @@
 
 ## ATTRIBUTES DEFINITION ##
 
+## TEXTURES DEFINITION ##
+
 ## VERTEX SHADER CODE ##
 #version 430 core
 

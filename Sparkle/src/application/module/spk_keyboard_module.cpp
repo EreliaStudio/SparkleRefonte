@@ -41,7 +41,8 @@ namespace spk
 		return (p_event.keyboardEvent);
 	}
 
-	KeyboardModule::KeyboardModule()
+	KeyboardModule::KeyboardModule() : 
+		_rootWidget(nullptr)
 	{
 
 	}

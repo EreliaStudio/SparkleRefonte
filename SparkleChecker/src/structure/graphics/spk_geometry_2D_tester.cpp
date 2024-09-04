@@ -4,18 +4,18 @@ TEST_F(Geometry2DTest, DefaultConstructor)
 {
 	ASSERT_EQ(geometry.anchor.x, 0);
 	ASSERT_EQ(geometry.anchor.y, 0);
-	ASSERT_EQ(geometry.size.width, 0);
-	ASSERT_EQ(geometry.size.heigth, 0);
+	ASSERT_EQ(geometry.size.x, 0);
+	ASSERT_EQ(geometry.size.y, 0);
 
 	ASSERT_EQ(geometryInt.anchor.x, 0);
 	ASSERT_EQ(geometryInt.anchor.y, 0);
-	ASSERT_EQ(geometryInt.size.width, 0);
-	ASSERT_EQ(geometryInt.size.heigth, 0);
+	ASSERT_EQ(geometryInt.size.x, 0);
+	ASSERT_EQ(geometryInt.size.y, 0);
 }
 
 TEST_F(Geometry2DTest, ParameterizedConstructor)
 {
-	spk::Geometry2D::Position anchor(10.5, 20.5);
+	spk::Geometry2D::Point anchor(10.5, 20.5);
 	spk::Geometry2D::Size size(30.5, 40.5);
 	spk::Geometry2D geometry(anchor, size);
 	spk::Geometry2D geometry2(10.5, 20.5, 30.5, 40.5);
@@ -23,24 +23,24 @@ TEST_F(Geometry2DTest, ParameterizedConstructor)
 
 	ASSERT_EQ(geometry.anchor.x, 10.5);
 	ASSERT_EQ(geometry.anchor.y, 20.5);
-	ASSERT_EQ(geometry.size.width, 30.5);
-	ASSERT_EQ(geometry.size.heigth, 40.5);
+	ASSERT_EQ(geometry.size.x, 30.5);
+	ASSERT_EQ(geometry.size.y, 40.5);
 
 	ASSERT_EQ(geometry2.anchor.x, 10.5);
 	ASSERT_EQ(geometry2.anchor.y, 20.5);
-	ASSERT_EQ(geometry2.size.width, 30.5);
-	ASSERT_EQ(geometry2.size.heigth, 40.5);
+	ASSERT_EQ(geometry2.size.x, 30.5);
+	ASSERT_EQ(geometry2.size.y, 40.5);
 
 	ASSERT_EQ(geometry3.anchor.x, 10);
 	ASSERT_EQ(geometry3.anchor.y, 20);
-	ASSERT_EQ(geometry3.size.width, 30);
-	ASSERT_EQ(geometry3.size.heigth, 40);
+	ASSERT_EQ(geometry3.size.x, 30);
+	ASSERT_EQ(geometry3.size.y, 40);
 }
 
 TEST_F(Geometry2DTest, PositionAddition)
 {
-	spk::Geometry2D::Position pos1(10, 20);
-	spk::Geometry2D::Position pos2(5, 15);
+	spk::Geometry2D::Point pos1(10, 20);
+	spk::Geometry2D::Point pos2(5, 15);
 
 	auto result = pos1 + pos2;
 	ASSERT_EQ(result.x, 15);
@@ -53,8 +53,8 @@ TEST_F(Geometry2DTest, PositionAddition)
 
 TEST_F(Geometry2DTest, PositionSubtraction)
 {
-	spk::Geometry2D::Position pos1(10, 20);
-	spk::Geometry2D::Position pos2(5, 15);
+	spk::Geometry2D::Point pos1(10, 20);
+	spk::Geometry2D::Point pos2(5, 15);
 
 	auto result = pos1 - pos2;
 	ASSERT_EQ(result.x, 5);
@@ -67,8 +67,8 @@ TEST_F(Geometry2DTest, PositionSubtraction)
 
 TEST_F(Geometry2DTest, PositionMultiplication)
 {
-	spk::Geometry2D::Position pos1(10, 20);
-	spk::Geometry2D::Position pos2(5, 15);
+	spk::Geometry2D::Point pos1(10, 20);
+	spk::Geometry2D::Point pos2(5, 15);
 
 	auto result = pos1 * pos2;
 	ASSERT_EQ(result.x, 50);
@@ -81,8 +81,8 @@ TEST_F(Geometry2DTest, PositionMultiplication)
 
 TEST_F(Geometry2DTest, PositionDivision)
 {
-	spk::Geometry2D::Position pos1(10, 20);
-	spk::Geometry2D::Position pos2(2, 5);
+	spk::Geometry2D::Point pos1(10, 20);
+	spk::Geometry2D::Point pos2(2, 5);
 
 	auto result = pos1 / pos2;
 	ASSERT_EQ(result.x, 5);
@@ -92,8 +92,8 @@ TEST_F(Geometry2DTest, PositionDivision)
 	ASSERT_EQ(pos1.x, 5);
 	ASSERT_EQ(pos1.y, 4);
 
-	ASSERT_THROW(pos1 / spk::Geometry2D::Position(0, 5), std::runtime_error);
-	ASSERT_THROW(pos1 / spk::Geometry2D::Position(2, 0), std::runtime_error);
+	ASSERT_THROW(pos1 / spk::Geometry2D::Point(0, 5), std::runtime_error);
+	ASSERT_THROW(pos1 / spk::Geometry2D::Point(2, 0), std::runtime_error);
 }
 
 TEST_F(Geometry2DTest, SizeAddition)
@@ -102,12 +102,12 @@ TEST_F(Geometry2DTest, SizeAddition)
 	spk::Geometry2D::Size size2(5, 15);
 
 	auto result = size1 + size2;
-	ASSERT_EQ(result.width, 15);
-	ASSERT_EQ(result.heigth, 35);
+	ASSERT_EQ(result.x, 15);
+	ASSERT_EQ(result.y, 35);
 
 	size1 += size2;
-	ASSERT_EQ(size1.width, 15);
-	ASSERT_EQ(size1.heigth, 35);
+	ASSERT_EQ(size1.x, 15);
+	ASSERT_EQ(size1.y, 35);
 }
 
 TEST_F(Geometry2DTest, SizeSubtraction)
@@ -116,12 +116,12 @@ TEST_F(Geometry2DTest, SizeSubtraction)
 	spk::Geometry2D::Size size2(5, 15);
 
 	auto result = size1 - size2;
-	ASSERT_EQ(result.width, 5);
-	ASSERT_EQ(result.heigth, 5);
+	ASSERT_EQ(result.x, 5);
+	ASSERT_EQ(result.y, 5);
 
 	size1 -= size2;
-	ASSERT_EQ(size1.width, 5);
-	ASSERT_EQ(size1.heigth, 5);
+	ASSERT_EQ(size1.x, 5);
+	ASSERT_EQ(size1.y, 5);
 }
 
 TEST_F(Geometry2DTest, SizeMultiplication)
@@ -130,12 +130,12 @@ TEST_F(Geometry2DTest, SizeMultiplication)
 	spk::Geometry2D::Size size2(5, 15);
 
 	auto result = size1 * size2;
-	ASSERT_EQ(result.width, 50);
-	ASSERT_EQ(result.heigth, 300);
+	ASSERT_EQ(result.x, 50);
+	ASSERT_EQ(result.y, 300);
 
 	size1 *= size2;
-	ASSERT_EQ(size1.width, 50);
-	ASSERT_EQ(size1.heigth, 300);
+	ASSERT_EQ(size1.x, 50);
+	ASSERT_EQ(size1.y, 300);
 }
 
 TEST_F(Geometry2DTest, SizeDivision)
@@ -144,12 +144,12 @@ TEST_F(Geometry2DTest, SizeDivision)
 	spk::Geometry2D::Size size2(2, 5);
 
 	auto result = size1 / size2;
-	ASSERT_EQ(result.width, 5);
-	ASSERT_EQ(result.heigth, 4);
+	ASSERT_EQ(result.x, 5);
+	ASSERT_EQ(result.y, 4);
 
 	size1 /= size2;
-	ASSERT_EQ(size1.width, 5);
-	ASSERT_EQ(size1.heigth, 4);
+	ASSERT_EQ(size1.x, 5);
+	ASSERT_EQ(size1.y, 4);
 
 	ASSERT_THROW(size1 / spk::Geometry2D::Size(0, 5), std::runtime_error);
 	ASSERT_THROW(size1 / spk::Geometry2D::Size(2, 0), std::runtime_error);
@@ -157,9 +157,9 @@ TEST_F(Geometry2DTest, SizeDivision)
 
 TEST_F(Geometry2DTest, EqualityOperators)
 {
-	spk::Geometry2D::Position pos1(10, 20);
-	spk::Geometry2D::Position pos2(10, 20);
-	spk::Geometry2D::Position pos3(5, 15);
+	spk::Geometry2D::Point pos1(10, 20);
+	spk::Geometry2D::Point pos2(10, 20);
+	spk::Geometry2D::Point pos3(5, 15);
 
 	ASSERT_TRUE(pos1 == pos2);
 	ASSERT_FALSE(pos1 == pos3);
@@ -178,15 +178,15 @@ TEST_F(Geometry2DTest, EqualityOperators)
 
 TEST_F(Geometry2DTest, GeometryEquality)
 {
-	spk::Geometry2D::Position anchor1(10, 20);
+	spk::Geometry2D::Point anchor1(10, 20);
 	spk::Geometry2D::Size size1(30, 40);
 	spk::Geometry2D geometry1(anchor1, size1);
 
-	spk::Geometry2D::Position anchor2(10, 20);
+	spk::Geometry2D::Point anchor2(10, 20);
 	spk::Geometry2D::Size size2(30, 40);
 	spk::Geometry2D geometry2(anchor2, size2);
 
-	spk::Geometry2D::Position anchor3(15, 25);
+	spk::Geometry2D::Point anchor3(15, 25);
 	spk::Geometry2D::Size size3(35, 45);
 	spk::Geometry2D geometry3(anchor3, size3);
 
@@ -197,15 +197,15 @@ TEST_F(Geometry2DTest, GeometryEquality)
 
 TEST_F(Geometry2DTest, GeometryInequality)
 {
-	spk::Geometry2D::Position anchor1(10, 20);
+	spk::Geometry2D::Point anchor1(10, 20);
 	spk::Geometry2D::Size size1(30, 40);
 	spk::Geometry2D geometry1(anchor1, size1);
 
-	spk::Geometry2D::Position anchor2(10, 20);
+	spk::Geometry2D::Point anchor2(10, 20);
 	spk::Geometry2D::Size size2(30, 40);
 	spk::Geometry2D geometry2(anchor2, size2);
 
-	spk::Geometry2D::Position anchor3(15, 25);
+	spk::Geometry2D::Point anchor3(15, 25);
 	spk::Geometry2D::Size size3(35, 45);
 	spk::Geometry2D geometry3(anchor3, size3);
 
@@ -216,7 +216,7 @@ TEST_F(Geometry2DTest, GeometryInequality)
 
 TEST_F(Geometry2DTest, OperatorStreamOutput)
 {
-	spk::Geometry2D::Position pos(10, 20);
+	spk::Geometry2D::Point pos(10, 20);
 	spk::Geometry2D::Size size(30, 40);
 	spk::Geometry2D geometry(pos, size);
 

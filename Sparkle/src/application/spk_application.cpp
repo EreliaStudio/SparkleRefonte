@@ -2,10 +2,9 @@
 
 namespace spk
 {
-	Application::Application() :
-		_mainThreadWorker(worker(MainThreadName))
+	Application::Application()
 	{
-
+		_mainThreadWorker = worker(MainThreadName);
 	}
 
 	Application::~Application()

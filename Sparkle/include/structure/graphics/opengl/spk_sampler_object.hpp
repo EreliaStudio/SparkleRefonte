@@ -11,18 +11,47 @@ namespace spk::OpenGL
 {
 	class SamplerObject
 	{
+	public:
+		class Factory
+		{
+		private:
+			std::string _name;
+			std::string _designator;
+			size_t _index;
+
+		public:
+			Factory() = default;
+
+			void setName(const std::string& name) { _name = name; }
+			void setDesignator(const std::string& designator) { _designator = designator; }
+			void setIndex(size_t index) { _index = index; }
+
+			SamplerObject create()
+			{
+				return SamplerObject(_name, _designator, _index);
+			}
+		};
+
 	private:
 		std::string _name;
 		std::string _designator;
-		size_t _index;
+		GLint _index;
 		TextureObject* _texture = nullptr;
 		GLint _uniformDestination = -1;
 
 	public:
-		SamplerObject(std::string p_name, std::string p_designator, size_t p_index) :
-			_name(std::move(p_name)),
-			_designator(std::move(p_designator)),
-			_index(p_index)
+		SamplerObject() :
+			_name("unknow name"),
+			_designator("unknow designator"),
+			_index(-1)
+		{
+
+		}
+
+		SamplerObject(const std::string& p_name, const std::string& p_designator, size_t p_index) :
+			_name(p_name),
+			_designator(p_designator),
+			_index(static_cast<GLint>(p_index))
 		{
 
 		}
@@ -38,7 +67,7 @@ namespace spk::OpenGL
 			_uniformDestination(p_other._uniformDestination)
 		{
 			p_other._texture = nullptr;
-			p_other._index = static_cast<size_t>(-1);
+			p_other._index = static_cast<GLint>(-1);
 			p_other._uniformDestination = -1;
 		}
 
@@ -53,13 +82,13 @@ namespace spk::OpenGL
 				_uniformDestination = p_other._uniformDestination;
 
 				p_other._texture = nullptr;
-				p_other._index = static_cast<size_t>(-1);
+				p_other._index = static_cast<GLint>(-1);
 				p_other._uniformDestination = -1;
 			}
 			return *this;
 		}
 
-		void bind(TextureObject* p_texture) const
+		void bind(TextureObject* p_texture)
 		{
 			_texture = p_texture;
 		}

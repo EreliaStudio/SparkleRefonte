@@ -60,7 +60,7 @@ TEST_F(WidgetTest, GeometryChange)
 
 	EXPECT_EQ(widget.geometryChangeCounter(), 0) << "Geometry change counter should be 0 at the start of the test";
 
-	spk::Geometry2DInt newGeometry{ 0, 0, 100, 100 };
+	spk::Geometry2D newGeometry{ 0, 0, 100, 100 };
 	widget.setGeometry(newGeometry);
 	widget.updateGeometry();
 
@@ -120,7 +120,7 @@ TEST_F(WidgetTest, GeometryChangeOnRender)
 
 	EXPECT_EQ(widget.geometryChangeCounter(), 0) << "Geometry change counter should be 0 at the start of the test";
 
-	spk::Geometry2DInt newGeometry{ 0, 0, 100, 100 };
+	spk::Geometry2D newGeometry{ 0, 0, 100, 100 };
 	widget.setGeometry(newGeometry);
 
 	EXPECT_EQ(widget.geometryChangeCounter(), 0) << "Geometry change counter should still be 0 after setting geometry but before rendering";
@@ -175,7 +175,7 @@ TEST_F(WidgetTest, ForceGeometryChange)
 
 	EXPECT_EQ(widget.geometryChangeCounter(), 0) << "Geometry change counter should be 0 at the start of the test";
 
-	spk::Geometry2DInt newGeometry{ 0, 0, 100, 100 };
+	spk::Geometry2D newGeometry{ 0, 0, 100, 100 };
 	widget.forceGeometryChange(newGeometry);
 
 	EXPECT_EQ(widget.geometryChangeCounter(), 1) << "Geometry change counter should be 1 after forcing geometry change";

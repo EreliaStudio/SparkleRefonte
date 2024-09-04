@@ -166,7 +166,7 @@ namespace spk
 			{
 				p_event->systemEvent.type = SystemEvent::Type::Move;
 				p_event->systemEvent.window = p_window;
-				p_event->systemEvent.newPosition = spk::Geometry2DInt::Position(LOWORD(lParam), HIWORD(lParam));
+				p_event->systemEvent.newPosition = spk::Geometry2D::Point(LOWORD(lParam), HIWORD(lParam));
 			}
 		},
 		{
@@ -212,7 +212,7 @@ namespace spk
 			[&](Event* p_event, spk::SafePointer<Window> p_window, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			{
 				p_event->systemEvent.type = SystemEvent::Type::Resize;
-				p_event->systemEvent.newSize = spk::Geometry2DInt::Size(LOWORD(lParam), HIWORD(lParam));
+				p_event->systemEvent.newSize = spk::Geometry2D::Size(LOWORD(lParam), HIWORD(lParam));
 				p_event->systemEvent.window = p_window;
 			}
 		},
