@@ -25,3 +25,7 @@
 #include "application/spk_graphical_application.hpp"
 
 #include "structure/graphics/spk_pipeline.hpp"
+
+#include "structure/graphics/texture/spk_image.hpp"
+#include "structure/graphics/texture/spk_sprite_sheet.hpp"
+#include "structure/graphics/texture/spk_font.hpp"

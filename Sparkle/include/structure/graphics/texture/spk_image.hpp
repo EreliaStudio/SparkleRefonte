@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#define STB_IMAGE_IMPLEMENTATION
 #include "external_libraries/stb_image.h"
 #include "structure/graphics/opengl/spk_texture_object.hpp"
 
@@ -17,10 +18,10 @@ namespace spk
 		void loadFromFile(const std::filesystem::path& filePath)
 		{
 			int width, height, channels;
-			stbi_uc* imageData = stbi_load(filePath.c_str(), &width, &height, &channels, 0);
+			stbi_uc* imageData = stbi_load(filePath.string().c_str(), &width, &height, &channels, 0);
 			if (!imageData)
 			{
-				throw std::runtime_error("Failed to load image: " + filePath);
+				throw std::runtime_error("Failed to load image: " + filePath.string());
 			}
 
 			spk::Vector2UInt size{ static_cast<unsigned int>(width), static_cast<unsigned int>(height) };

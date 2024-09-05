@@ -47,7 +47,7 @@ namespace spk
 
 		_nextGlyphAnchor.x += p_glyphSize.x;
 
-		if (_nextLineAnchor.y < result.y + p_glyphSize.y)
+		if (_nextLineAnchor.y < result.y + static_cast<int>(p_glyphSize.y))
 		{
 			_nextLineAnchor.y = result.y + p_glyphSize.y;
 		}
@@ -56,14 +56,14 @@ namespace spk
 		{
 		case Quadrant::TopLeft:
 		{
-			if (_nextLineAnchor.y >= _quadrantAnchor.y + _quadrantSize.y)
+			if (_nextLineAnchor.y >= _quadrantAnchor.y + static_cast<int>(_quadrantSize.y))
 			{
 				_currentQuadrant = Quadrant::TopRight;
 				_resizeData(_size * 2);
 				_quadrantAnchor = Vector2UInt(_size.x / 2, 0);
 				result = _nextGlyphAnchor = _nextLineAnchor = _quadrantAnchor;
 				_nextGlyphAnchor.x += p_glyphSize.x;
-				if (_nextLineAnchor.y < result.y + p_glyphSize.y)
+				if (_nextLineAnchor.y < result.y + static_cast<int>(p_glyphSize.y))
 				{
 					_nextLineAnchor.y = result.y + p_glyphSize.y;
 				}
@@ -73,13 +73,13 @@ namespace spk
 		}
 		case Quadrant::TopRight:
 		{
-			if (_nextLineAnchor.y >= _quadrantAnchor.y + _quadrantSize.y)
+			if (_nextLineAnchor.y >= _quadrantAnchor.y + static_cast<int>(_quadrantSize.y))
 			{
 				_currentQuadrant = Quadrant::DownLeft;
 				_quadrantAnchor = Vector2UInt(0, _size.y / 2);
 				result = _nextGlyphAnchor = _nextLineAnchor = _quadrantAnchor;
 				_nextGlyphAnchor.x += p_glyphSize.x;
-				if (_nextLineAnchor.y < result.y + p_glyphSize.y)
+				if (_nextLineAnchor.y < result.y + static_cast<int>(p_glyphSize.y))
 				{
 					_nextLineAnchor.y = result.y + p_glyphSize.y;
 				}
@@ -88,13 +88,13 @@ namespace spk
 		}
 		case Quadrant::DownLeft:
 		{
-			if (_nextLineAnchor.y >= _quadrantAnchor.y + _quadrantSize.y)
+			if (_nextLineAnchor.y >= _quadrantAnchor.y + static_cast<int>(_quadrantSize.y))
 			{
 				_currentQuadrant = Quadrant::DownRight;
 				_quadrantAnchor = Vector2UInt(_size.x / 2, _size.y / 2);
 				result = _nextGlyphAnchor = _nextLineAnchor = _quadrantAnchor;
 				_nextGlyphAnchor.x += p_glyphSize.x;
-				if (_nextLineAnchor.y < result.y + p_glyphSize.y)
+				if (_nextLineAnchor.y < result.y + static_cast<int>(p_glyphSize.y))
 				{
 					_nextLineAnchor.y = result.y + p_glyphSize.y;
 				}
@@ -103,14 +103,14 @@ namespace spk
 		}
 		case Quadrant::DownRight:
 		{
-			if (_nextLineAnchor.y >= _quadrantAnchor.y + _quadrantSize.y)
+			if (_nextLineAnchor.y >= _quadrantAnchor.y + static_cast<int>(_quadrantSize.y))
 			{
 				_currentQuadrant = Quadrant::TopRight;
 				_resizeData(_size * 2);
 				_quadrantAnchor = Vector2UInt(_size.x / 2, 0);
 				result = _nextGlyphAnchor = _nextLineAnchor = _quadrantAnchor;
 				_nextGlyphAnchor.x += p_glyphSize.x;
-				if (_nextLineAnchor.y < result.y + p_glyphSize.y)
+				if (_nextLineAnchor.y < result.y + static_cast<int>(p_glyphSize.y))
 				{
 					_nextLineAnchor.y = result.y + p_glyphSize.y;
 				}

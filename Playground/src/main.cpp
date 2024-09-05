@@ -5,11 +5,11 @@ class TestWidget : public spk::Widget
 private:
 	spk::Pipeline _pipeline;
 	spk::Pipeline::Object _object;
+	spk::Pipeline::Object::Sampler2D& _sampler;
+	spk::Image _texture;
 
 	void _onGeometryChange()
 	{
-		_object = _pipeline.createObject();
-
 		struct Vertex
 		{
 			spk::Vector2 position;
@@ -39,6 +39,8 @@ private:
 
 		_object.layout().validate();
 		_object.indexes().validate();
+
+		_sampler.bind(&_texture);
 	}
 
 	void _onPaintEvent(const spk::PaintEvent& p_event)
@@ -49,7 +51,10 @@ private:
 public:
 	TestWidget(spk::SafePointer<Widget> p_parent) :
 		spk::Widget(L"TestWidget", p_parent),
-		_pipeline(L"shader/shader.lum")
+		_pipeline(L"shader/shader.lum"),
+		_object(_pipeline.createObject()),
+		_sampler(_object.sampler2D(L"test::texture")),
+		_texture(L"resources/texture/test.png")
 	{
 
 	}

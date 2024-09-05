@@ -161,7 +161,7 @@ namespace spk
 			return (Font::Size(resultTextSize, resultOutlineSize));
 		}
 
-		for (int i = 0; i < deltas.size(); i++)
+		for (int i = 0; i < static_cast<int>(deltas.size()); i++)
 		{
 			if (deltas[i] > p_textArea.y)
 				continue;

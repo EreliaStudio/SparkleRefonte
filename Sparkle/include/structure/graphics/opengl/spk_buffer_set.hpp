@@ -1,76 +1,38 @@
 #pragma once
 
-#include "structure/graphics/opengl/spk_vertex_array_object.hpp"
-#include "structure/graphics/opengl/spk_index_buffer_object.hpp"
-#include "structure/graphics/opengl/spk_layout_buffer_object.hpp"
-
+#include "spk_vertex_array_object.hpp"
+#include "spk_index_buffer_object.hpp"
+#include "spk_layout_buffer_object.hpp"
 
 namespace spk::OpenGL
 {
-    class BufferSet
-    {
-    public:
-        class Factory
-        {
-        private:
-            OpenGL::LayoutBufferObject::Factory _layoutFactory;
+	class BufferSet
+	{
+	public:
+		class Factory
+		{
+		private:
+			OpenGL::LayoutBufferObject::Factory _layoutFactory;
 
-        public:
-            void insert(OpenGL::LayoutBufferObject::Attribute::Index p_index, size_t p_size, OpenGL::LayoutBufferObject::Attribute::Type p_type)
-            {
-                _layoutFactory.insert(p_index, p_size, p_type);
-            }
+		public:
+			void insert(OpenGL::LayoutBufferObject::Attribute::Index p_index, size_t p_size, OpenGL::LayoutBufferObject::Attribute::Type p_type);
+			BufferSet construct() const;
+		};
 
-            BufferSet construct() const
-            {
-                BufferSet result;
+	private:
+		VertexArrayObject _vao;
+		LayoutBufferObject _layout;
+		IndexBufferObject _indexes;
 
-                result._layout = _layoutFactory.construct();
+	public:
+		BufferSet();
+		LayoutBufferObject& layout();
+		IndexBufferObject& indexes();
 
-                return (result);
-            }
-        };
+		const LayoutBufferObject& layout() const;
+		const IndexBufferObject& indexes() const;
 
-    private:
-        VertexArrayObject _vao;
-        LayoutBufferObject _layout;
-        IndexBufferObject _indexes;
-
-    public:
-        BufferSet()
-        {
-
-        }
-
-        LayoutBufferObject& layout()
-        {
-            return _layout;
-        }
-        IndexBufferObject& indexes()
-        {
-            return _indexes;
-        }
-
-        const LayoutBufferObject& layout() const
-        {
-            return _layout;
-        }
-        const IndexBufferObject& indexes() const
-        {
-            return _indexes;
-        }
-
-        void activate()
-        {
-            _vao.activate();
-            _layout.activate();
-            _indexes.activate();
-        }
-        void deactivate()
-        {
-            _vao.deactivate();
-            _layout.deactivate();
-            _indexes.deactivate();
-        }
-    };
+		void activate();
+		void deactivate();
+	};
 }

@@ -4,107 +4,27 @@
 #include <string>
 #include <stdexcept>
 
-namespace spk
+namespace spk::OpenGL
 {
-	namespace OpenGL
+	class Program
 	{
-		class Program
-		{
-		private:
-			std::string _vertexShaderCode;
-			std::string _fragmentShaderCode;
+	private:
+		std::string _vertexShaderCode;
+		std::string _fragmentShaderCode;
 
-			GLuint _programID;
+		GLuint _programID;
 
-			GLuint _compileShader(const std::string& shaderCode, GLenum shaderType)
-			{
-				GLuint shader = glCreateShader(shaderType);
-				const char* source = shaderCode.c_str();
-				glShaderSource(shader, 1, &source, nullptr);
-				glCompileShader(shader);
+		GLuint _compileShader(const std::string& shaderCode, GLenum shaderType);
+		GLuint _linkProgram(GLuint vertexShader, GLuint fragmentShader);
+		void _load();
 
-				GLint success;
-				glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-				if (!success)
-				{
-					GLchar infoLog[512];
-					glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-					std::string shaderTypeStr = (shaderType == GL_VERTEX_SHADER) ? "Vertex Shader" : "Fragment Shader";
-					throw std::runtime_error(shaderTypeStr + " compilation failed: " + std::string(infoLog));
-				}
+	public:
+		Program(const std::string& p_vertexShaderCode, const std::string& p_fragmentShaderCode);
 
-				return shader;
-			}
+		void activate();
+		void deactivate();
+		void render(GLsizei nbIndexes);
 
-			GLuint _linkProgram(GLuint vertexShader, GLuint fragmentShader)
-			{
-				GLuint program = glCreateProgram();
-				glAttachShader(program, vertexShader);
-				glAttachShader(program, fragmentShader);
-				glLinkProgram(program);
-
-				GLint success;
-				glGetProgramiv(program, GL_LINK_STATUS, &success);
-				if (!success)
-				{
-					GLchar infoLog[512];
-					glGetProgramInfoLog(program, 512, nullptr, infoLog);
-					throw std::runtime_error("Shader Program linking failed: " + std::string(infoLog));
-				}
-
-				// Clean up shaders as they're now linked into the program and no longer needed
-				glDeleteShader(vertexShader);
-				glDeleteShader(fragmentShader);
-
-				return program;
-			}
-
-			void _load()
-			{
-				GLuint vertexShader = _compileShader(_vertexShaderCode, GL_VERTEX_SHADER);
-				GLuint fragmentShader = _compileShader(_fragmentShaderCode, GL_FRAGMENT_SHADER);
-				_programID = _linkProgram(vertexShader, fragmentShader);
-			}
-
-		public:
-			Program(const std::string& p_vertexShaderCode, const std::string& p_fragmentShaderCode) :
-				_vertexShaderCode(p_vertexShaderCode),
-				_fragmentShaderCode(p_fragmentShaderCode)
-			{
-				
-			}
-
-			void activate()
-			{
-				if (_programID == 0)
-					_load();
-
-				glUseProgram(_programID);
-			}
-
-			void deactivate()
-			{
-				if (_programID == 0)
-					_load();
-
-				glUseProgram(0);
-			}
-
-			void render(GLsizei nbIndexes)
-			{
-				if (_programID == 0)
-					_load();
-
-				glDrawElements(GL_TRIANGLES, nbIndexes, GL_UNSIGNED_INT, nullptr);
-			}
-
-			~Program()
-			{
-				if (wglGetCurrentContext() != nullptr && _programID != 0)
-				{
-					glDeleteProgram(_programID);
-				}
-			}
-		};
-	}
+		~Program();
+	};
 }
