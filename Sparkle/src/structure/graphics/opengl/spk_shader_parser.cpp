@@ -160,20 +160,45 @@ namespace spk
 
 	spk::OpenGL::BufferSet::Factory ShaderParser::_parseLayoutDescriptors(const std::string& p_layoutDescriptors)
 	{
+		std::unordered_map<std::string, std::tuple<size_t, OpenGL::LayoutBufferObject::Attribute::Type> > _typeToSizeMap = {
+			{"bool", {1, OpenGL::LayoutBufferObject::Attribute::Type::Byte}},
+			{"int", {1, OpenGL::LayoutBufferObject::Attribute::Type::Int}},
+			{"uint", {1, OpenGL::LayoutBufferObject::Attribute::Type::UInt}},
+			{"float", {1, OpenGL::LayoutBufferObject::Attribute::Type::Float}},
+
+			{"Vector2", {2, OpenGL::LayoutBufferObject::Attribute::Type::Float}},
+			{"Vector2Int", {2, OpenGL::LayoutBufferObject::Attribute::Type::Int}},
+			{"Vector2UInt", {2, OpenGL::LayoutBufferObject::Attribute::Type::UInt}},
+
+			{"Vector3", {3, OpenGL::LayoutBufferObject::Attribute::Type::Float}},
+			{"Vector3Int", {3, OpenGL::LayoutBufferObject::Attribute::Type::Int}},
+			{"Vector3UInt", {3, OpenGL::LayoutBufferObject::Attribute::Type::UInt}},
+
+			{"Vector4", {4, OpenGL::LayoutBufferObject::Attribute::Type::Float}},
+			{"Vector4Int", {4, OpenGL::LayoutBufferObject::Attribute::Type::Int}},
+			{"Vector4UInt", {4, OpenGL::LayoutBufferObject::Attribute::Type::UInt}},
+		};
 		spk::OpenGL::BufferSet::Factory result;
 
 		std::string section = StringUtils::mergeWhitespace(p_layoutDescriptors);
 
 		std::vector<std::string> words = StringUtils::splitString(section, " ");
 
-		for (size_t i = 0; i < words.size(); i += 3)
+		for (size_t i = 0; i < words.size(); i += 4)
 		{
 			GLuint index = static_cast<GLuint>(std::stoi(words[i]));
-			size_t size = static_cast<size_t>(std::stoi(words[i + 1]));
 
-			OpenGL::LayoutBufferObject::Attribute::Type type = static_cast<OpenGL::LayoutBufferObject::Attribute::Type>(std::stoi(words[i + 2]));
+			std::string locationString = words[i + 0];
+			spk::OpenGL::BufferSet::Direction direction = (words[i + 1] == "in" ? spk::OpenGL::BufferSet::Direction::In : spk::OpenGL::BufferSet::Direction::Out);
+			std::string layoutTypeString = words[i + 2];
+			std::string layoutNameString = words[i + 3];
 
-			result.insert(index, size, type);
+			result.insert(
+				direction,
+				std::stol(locationString),
+				std::get<0>(_typeToSizeMap[layoutTypeString]),
+				std::get<1>(_typeToSizeMap[layoutTypeString])
+			);
 		}
 
 		return (result);

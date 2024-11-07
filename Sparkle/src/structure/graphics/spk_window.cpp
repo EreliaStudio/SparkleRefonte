@@ -310,18 +310,42 @@ namespace spk
 		_windowUpdaterThread(p_title + L" - Updater")
 	{
 		_windowRendererThread.addPreparationStep([&]() {
-				_createContext();
+				try
+				{
+					_createContext();
+				}
+				catch (std::exception& e)
+				{
+					std::cout << "Error catched : " << e.what() << std::endl;
+					close();
+				}
 			}).relinquish();
 		_windowRendererThread.addExecutionStep([&]() {
-				pullEvents();
-				paintModule.treatMessages();
-				systemModule.treatMessages();
+				try
+				{
+					pullEvents();
+					paintModule.treatMessages();
+					systemModule.treatMessages();
+				}
+				catch (std::exception& e)
+				{
+					std::cout << "Error catched : " << e.what() << std::endl;
+					close();
+				}
 			}).relinquish();
 		_windowUpdaterThread.addExecutionStep([&]() {
-				mouseModule.treatMessages();
-				keyboardModule.treatMessages();
-				controllerModule.treatMessages();
-				updateModule.treatMessages();
+				try
+				{
+					mouseModule.treatMessages();
+					keyboardModule.treatMessages();
+					controllerModule.treatMessages();
+					updateModule.treatMessages();
+				}
+				catch (std::exception& e)
+				{
+					std::cout << "Error catched : " << e.what() << std::endl;
+					close();
+				}
 			}).relinquish();
 
 		bindModule(&mouseModule);

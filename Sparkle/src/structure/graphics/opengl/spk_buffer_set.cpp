@@ -2,15 +2,27 @@
 
 namespace spk::OpenGL
 {
-	void BufferSet::Factory::insert(OpenGL::LayoutBufferObject::Attribute::Index p_index, size_t p_size, OpenGL::LayoutBufferObject::Attribute::Type p_type)
+	void BufferSet::Factory::insert(Direction p_direction, OpenGL::LayoutBufferObject::Attribute::Index p_index, size_t p_size, OpenGL::LayoutBufferObject::Attribute::Type p_type)
 	{
-		_layoutFactory.insert(p_index, p_size, p_type);
+		switch (p_direction)
+		{
+		case Direction::In:
+		{
+			_inputLayoutFactory.insert(p_index, p_size, p_type);
+			break;
+		}
+		case Direction::Out:
+		{
+			_outputLayoutFactory.insert(p_index, p_size, p_type);
+			break;
+		}
+		}
 	}
 
-	BufferSet BufferSet::Factory::construct() const
+	BufferSet BufferSet::Factory::construct(Direction p_direction) const
 	{
 		BufferSet result;
-		result._layout = _layoutFactory.construct();
+		result._layout = (p_direction == Direction::In ? _inputLayoutFactory.construct() : _outputLayoutFactory.construct());
 		return result;
 	}
 

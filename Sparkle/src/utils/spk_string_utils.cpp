@@ -26,6 +26,9 @@ namespace spk
 
 		std::vector<std::string> splitString(const std::string& p_str, const std::string& p_delimiter)
 		{
+			if (p_str == "")
+				return (std::vector<std::string>());
+
 			std::vector<std::string> result;
 			size_t start = 0;
 			size_t end = p_str.find(p_delimiter);

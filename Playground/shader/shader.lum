@@ -1,38 +1,11 @@
-## LAYOUTS DEFINITION ##
-0 2 5126
-1 2 5126
+Input -> VertexPass : Vector2 modelPosition;
 
-## CONSTANTS DEFINITION ##
-
-## ATTRIBUTES DEFINITION ##
-
-## TEXTURES DEFINITION ##
-test::texture luminaTexture_test_texture 0
-
-## VERTEX SHADER CODE ##
-#version 430
-
-layout(location = 0) in vec2 modelPosition;
-
-layout(location = 1) in vec2 modelUV;
-
-layout(location = 0) out vec2 fragmentUV;
-
-void main(){
-    gl_Position = vec4(modelPosition, 0.0, 1.0);
-    fragmentUV = modelUV;
+VertexPass()
+{
+    pixelPosition = Vector4(modelPosition, 0, 1);
 }
 
-## FRAGMENT SHADER CODE ##
-#version 430
-
-layout(location = 0) in vec2 fragmentUV;
-
-uniform sampler2D luminaTexture_test_texture;
-
-layout(location = 0) out vec4 pixelColor;
-
-void main(){
-    pixelColor = texture(luminaTexture_test_texture, fragmentUV);
+FragmentPass()
+{
+	pixelColor = Color(1, 0, 0, 1);
 }
-

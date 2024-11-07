@@ -24,7 +24,8 @@ namespace spk
 
 		private:
 			Pipeline* _owner;
-			OpenGL::BufferSet _bufferSet;
+			OpenGL::BufferSet _inputBufferSet;
+			OpenGL::BufferSet _outputBufferSet;
 			std::unordered_map<std::wstring, Attribute> _attributes;
 			std::unordered_map<std::wstring, Sampler2D> _samplers;
 
@@ -34,7 +35,8 @@ namespace spk
 		public:
 			Object() = default;
 
-			OpenGL::LayoutBufferObject& layout();
+			OpenGL::LayoutBufferObject& inputLayout();
+			OpenGL::LayoutBufferObject& outputLayout();
 			OpenGL::IndexBufferObject& indexes();
 			Attribute& attribute(const std::wstring& p_name);
 			Sampler2D& sampler2D(const std::wstring& p_name);

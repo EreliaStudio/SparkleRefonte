@@ -44,17 +44,24 @@ namespace spk
 	{
 		_isRunning = true;
 
-		for (auto& [key, worker] : _workers)
+		try
 		{
-			if (key != MainThreadName)
-				worker->start();
-		}
+			for (auto& [key, worker] : _workers)
+			{
+				if (key != MainThreadName)
+					worker->start();
+			}
 
-		spk::cout.setPrefix(L"MainThread");
-		_mainThreadWorker->preparationJobs().trigger();
-		while (_isRunning == true)
+			spk::cout.setPrefix(L"MainThread");
+			_mainThreadWorker->preparationJobs().trigger();
+			while (_isRunning == true)
+			{
+				_mainThreadWorker->executionJobs().trigger();
+			}
+		}
+		catch (std::exception& e)
 		{
-			_mainThreadWorker->executionJobs().trigger();
+			std::cout << e.what() << std::endl;
 		}
 
 		for (auto& [key, worker] : _workers)
