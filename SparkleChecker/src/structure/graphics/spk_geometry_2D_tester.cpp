@@ -18,7 +18,7 @@ TEST_F(Geometry2DTest, ParameterizedConstructor)
 	spk::Geometry2D::Point anchor(10.5, 20.5);
 	spk::Geometry2D::Size size(30.5, 40.5);
 	spk::Geometry2D geometry(anchor, size);
-	spk::Geometry2D geometry2(10.5, 20.5, 30.5, 40.5);
+	spk::Geometry2D geometry2(static_cast<int>(10.5), static_cast<int>(20.5), static_cast<size_t>(30.5), static_cast<size_t>(40.5));
 	spk::Geometry2D geometry3{ 10, 20, 30, 40 };
 
 	ASSERT_EQ(geometry.anchor.x, 10.5);

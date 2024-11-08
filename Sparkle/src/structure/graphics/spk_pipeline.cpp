@@ -6,8 +6,7 @@ namespace spk
 {
 	void Pipeline::Object::_activate()
 	{
-		_inputBufferSet.activate();
-		_outputBufferSet.activate();
+		_bufferSet.activate();
 
 		for (auto& [name, attribute] : _attributes)
 		{
@@ -22,8 +21,7 @@ namespace spk
 
 	void Pipeline::Object::_deactivate()
 	{
-		_inputBufferSet.deactivate();
-		_outputBufferSet.deactivate();
+		_bufferSet.deactivate();
 
 		for (auto& [name, attribute] : _attributes)
 		{
@@ -31,19 +29,14 @@ namespace spk
 		}
 	}
 
-	OpenGL::LayoutBufferObject& Pipeline::Object::inputLayout()
+	OpenGL::LayoutBufferObject& Pipeline::Object::layout()
 	{
-		return _inputBufferSet.layout();
-	}
-
-	OpenGL::LayoutBufferObject& Pipeline::Object::outputLayout()
-	{
-		return _outputBufferSet.layout();
+		return _bufferSet.layout();
 	}
 
 	OpenGL::IndexBufferObject& Pipeline::Object::indexes()
 	{
-		return _inputBufferSet.indexes();
+		return _bufferSet.indexes();
 	}
 
 	Pipeline::Object::Attribute& Pipeline::Object::attribute(const std::wstring& p_name)
@@ -99,8 +92,8 @@ namespace spk
 		Object result;
 
 		result._owner = this;
-		result._inputBufferSet = _parser.getLayoutFactory().construct(OpenGL::BufferSet::Direction::In);
-		result._outputBufferSet = _parser.getLayoutFactory().construct(OpenGL::BufferSet::Direction::Out);
+		result._bufferSet = _parser.getLayoutFactory().construct();
+
 		for (const auto& [key, factory] : _parser.getAttributeFactories())
 		{
 			result._attributes[key] = factory.construct();

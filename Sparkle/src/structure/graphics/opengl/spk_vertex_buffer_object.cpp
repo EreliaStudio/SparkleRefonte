@@ -125,7 +125,7 @@ namespace spk::OpenGL
 		}
 
 		glBindBuffer(static_cast<GLenum>(_type), _id);
-		if (_validated)
+		if (_validated == true)
 		{
 			_update();
 		}

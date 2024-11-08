@@ -28,10 +28,10 @@ private:
 			0, 1, 2
 		};
 
-		_object.inputLayout() << vertices;
+		_object.layout() << vertices;
 		_object.indexes() << indexes;
 
-		_object.inputLayout().validate();
+		_object.layout().validate();
 		_object.indexes().validate();
 	}
 

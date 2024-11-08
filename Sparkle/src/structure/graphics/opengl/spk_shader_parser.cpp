@@ -177,6 +177,8 @@ namespace spk
 			{"Vector4", {4, OpenGL::LayoutBufferObject::Attribute::Type::Float}},
 			{"Vector4Int", {4, OpenGL::LayoutBufferObject::Attribute::Type::Int}},
 			{"Vector4UInt", {4, OpenGL::LayoutBufferObject::Attribute::Type::UInt}},
+
+			{"Color", {4, OpenGL::LayoutBufferObject::Attribute::Type::Float}},
 		};
 		spk::OpenGL::BufferSet::Factory result;
 
@@ -189,16 +191,14 @@ namespace spk
 			GLuint index = static_cast<GLuint>(std::stoi(words[i]));
 
 			std::string locationString = words[i + 0];
-			spk::OpenGL::BufferSet::Direction direction = (words[i + 1] == "in" ? spk::OpenGL::BufferSet::Direction::In : spk::OpenGL::BufferSet::Direction::Out);
-			std::string layoutTypeString = words[i + 2];
-			std::string layoutNameString = words[i + 3];
+			std::string layoutTypeString = words[i + 1];
+			std::string layoutNameString = words[i + 2];
 
 			result.insert(
-				direction,
-				std::stol(locationString),
-				std::get<0>(_typeToSizeMap[layoutTypeString]),
-				std::get<1>(_typeToSizeMap[layoutTypeString])
-			);
+					std::stol(locationString),
+					std::get<0>(_typeToSizeMap[layoutTypeString]),
+					std::get<1>(_typeToSizeMap[layoutTypeString])
+				);
 		}
 
 		return (result);

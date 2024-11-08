@@ -9,21 +9,14 @@ namespace spk::OpenGL
 	class BufferSet
 	{
 	public:
-		enum class Direction
-		{
-			In,
-			Out
-		};
-
 		class Factory
 		{
 		private:
-			OpenGL::LayoutBufferObject::Factory _inputLayoutFactory;
-			OpenGL::LayoutBufferObject::Factory _outputLayoutFactory;
+			OpenGL::LayoutBufferObject::Factory _layoutFactory;
 
 		public:
-			void insert(Direction p_direction, OpenGL::LayoutBufferObject::Attribute::Index p_index, size_t p_size, OpenGL::LayoutBufferObject::Attribute::Type p_type);
-			BufferSet construct(Direction p_direction) const;
+			void insert(OpenGL::LayoutBufferObject::Attribute::Index p_index, size_t p_size, OpenGL::LayoutBufferObject::Attribute::Type p_type);
+			BufferSet construct() const;
 		};
 
 	private:
